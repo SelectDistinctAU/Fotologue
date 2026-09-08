@@ -1,0 +1,78 @@
+package com.fotologue.app.ui.navigation
+
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed class Route : NavKey {
+    @Serializable
+    data object Welcome : Route()
+
+    @Serializable
+    data object Timeline : Route()
+
+    @Serializable
+    data class LogDetail(val logId: Long) : Route()
+
+    @Serializable
+    data object AddLog : Route()
+
+    @Serializable
+    data class EditLog(val logId: Long) : Route()
+
+    @Serializable
+    data object GearLibrary : Route()
+
+    @Serializable
+    data object AddCamera : Route()
+
+    @Serializable
+    data class EditCamera(val cameraId: Long) : Route()
+
+    @Serializable
+    data object AddFilm : Route()
+
+    @Serializable
+    data class EditFilm(val filmId: Long) : Route()
+
+    @Serializable
+    data class AddEditLens(val lensId: Long? = null, val cameraId: Long? = null) : Route()
+
+    @Serializable
+    data class AddEditTeleconverter(val teleconverterId: Long? = null) : Route()
+
+    @Serializable
+    data class AddEditFilter(val filterId: Long? = null) : Route()
+
+    @Serializable
+    data class AddEditFlash(val flashId: Long? = null) : Route()
+
+    @Serializable
+    data class AddEditCameraKit(val kitId: Long? = null) : Route()
+
+    @Serializable
+    data class LightMeter(
+        val targetIso: Int,
+        val cameraId: Long? = null,
+        val lensId: Long? = null,
+        val teleconverterId: Long? = null,
+        val filterId: Long? = null,
+        val filmId: Long? = null,
+        val autoStartCalibration: Boolean = false
+    ) : Route()
+
+    @Serializable
+    data object Settings : Route()
+
+    @Serializable
+    data object RemoteControl : Route()
+
+    @Serializable
+    data object Calibration : Route()
+
+    @Serializable
+    data object Help : Route()
+
+    @Serializable
+    data object RollCounter : Route()
+}

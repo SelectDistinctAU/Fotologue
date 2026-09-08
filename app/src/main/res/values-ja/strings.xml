@@ -1,0 +1,302 @@
+<resources>
+    <string name="app_name">Fotologue</string>
+    <string name="appwidget_text">例</string>
+    <string name="add_widget">ウィジェットを追加</string>
+    <string name="app_widget_description">これはアプリウィジェットの説明です</string>
+
+    <!-- Navigation & General Actions -->
+    <string name="category_kits">キット</string>
+    <string name="category_cameras">カメラ</string>
+    <string name="category_lenses">レンズ</string>
+    <string name="category_accessories">アクセサリ</string>
+    <string name="category_accessories_tcs">テレコン</string>
+    <string name="category_accessories_filters">フィルター</string>
+    <string name="category_accessories_flashes">フラッシュ</string>
+    <string name="category_films">フィルム</string>
+    <string name="category_subjects">被写体</string>
+    <string name="category_content">コンテンツ</string>
+    <string name="category_tags">タグ</string>
+    <string name="settings">設定</string>
+    <string name="help">ヘルプ</string>
+    <string name="action_back">戻る</string>
+    <string name="action_save">保存</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_edit">編集</string>
+    <string name="action_delete">削除</string>
+    <string name="action_clear">クリア</string>
+    <string name="action_lookup">検索</string>
+    <string name="loading">読み込み中…</string>
+    <string name="unknown_deleted">不明/削除済み</string>
+    <string name="unknown_camera">不明なカメラ</string>
+    <string name="unknown_lens">不明なレンズ</string>
+    <string name="unknown_film">不明なフィルム</string>
+
+    <!-- Onboarding / Welcome -->
+    <string name="welcome_headline">ようこそ！撮影に出かけられるよう、機材ライブラリを整えましょう。</string>
+    <string name="welcome_body">撮影設定を行い、必要な機材を追加して始めましょう。データは非公開でデバイス内に保存されます。</string>
+    <string name="welcome_quick_settings_header">クイック設定（任意）</string>
+    <string name="welcome_equipment_setup_header">機材セットアップ（必須）</string>
+    <string name="welcome_equipment_more_info">アクセサリやキットなどの詳細な機材設定は、後ほど「機材ライブラリ」から行えます。</string>
+    <string name="onboarding_add_camera">最初のカメラを追加</string>
+    <string name="onboarding_add_lens">最初のレンズを追加</string>
+    <string name="onboarding_add_lens_description">レンズ一体型カメラの場合は、そのレンズをここに追加してください。</string>
+    <string name="onboarding_add_film">最初のフィルムを追加</string>
+    <string name="how_it_works_help">使い方 / ヘルプ</string>
+    <string name="restore_from_backup">バックアップから復元</string>
+
+    <!-- Timeline -->
+    <string name="timeline_empty">ログがまだありません。追加してみましょう！</string>
+    <string name="select_log_detail_placeholder">詳細を表示するログを選択してください</string>
+    <string name="filter_all_cameras">すべてのカメラ</string>
+    <string name="label_filter_by_camera">カメラでフィルタ</string>
+    <string name="add_log">ログを追加</string>
+    <string name="selected_count">%1$d 個選択</string>
+    <string name="export_options">エクスポートオプション</string>
+    <string name="export_as_csv">CSVとして書き出し</string>
+    <string name="export_as_json">JSONとして書き出し</string>
+    <string name="export_as_zip">フルパッケージとして書き出し (ZIP)</string>
+
+    <!-- Add/Edit Log & Details -->
+    <string name="add_exposure_log">露出ログを追加</string>
+    <string name="edit_exposure_log">露出ログを編集</string>
+    <string name="log_details">ログ詳細</string>
+    <string name="measure_exposure">露出を測定</string>
+    <string name="save_log">ログを保存</string>
+    <string name="save_changes">変更を保存</string>
+    <string name="grant_location_save">位置情報を許可して保存</string>
+    <string name="label_notes">メモ</string>
+    <string name="label_conditions">状況</string>
+    <string name="label_tags">タグ</string>
+    <string name="label_tag_dimension">ディメンション（カテゴリ）</string>
+    <string name="label_tag_dimension_desc">プロフェッショナルなディメンション（だれ、なに、なぜ、など）は、標準的な写真ソフトウェア用にライブラリを整理するのに役立ちます。</string>
+    <string name="label_select_subject">件名を選択</string>
+    <string name="label_related_content">関連コンテンツ</string>
+    <string name="msg_no_content_for_subject">この件名に関するコンテンツタグが見つかりません。</string>
+    <string name="msg_choose_subject_hint">件名を選択して、特定のコンテンツタグを表示します。</string>
+    <string name="label_also_selected">以下も選択されています:</string>
+    <string name="label_film_roll">Film Roll.Frame</string>
+    <string name="label_iso">ISO</string>
+    <string name="label_camera">カメラ</string>
+    <string name="label_lens">レンズ</string>
+    <string name="label_film">フィルム</string>
+    <string name="label_teleconverter">テレコンバーター</string>
+    <string name="label_teleconverter_optional">テレコンバーター（任意）</string>
+    <string name="label_filter">フィルター</string>
+    <string name="label_filter_optional">フィルター（任意）</string>
+    <string name="label_flash">フラッシュ</string>
+    <string name="label_flash_optional">フラッシュ（任意）</string>
+    <string name="label_shutter_speed">シャッタースピード</string>
+    <string name="label_aperture">絞り</string>
+    <string name="label_focal_length">焦点距離</string>
+    <string name="label_effective_specs">実効スペック</string>
+    <string name="label_effective_focal_length">実効焦点距離</string>
+    <string name="label_effective_aperture">実効絞り</string>
+    <string name="label_location">位置情報</string>
+    <string name="location_lat_long">緯度: %1$.6f\n経度: %2$.6f</string>
+    <string name="last_updated_at">最終更新日: %1$s</string>
+    <string name="label_exposure">露出</string>
+    <string name="focal_length_mm">焦点距離: %1$dmm</string>
+    <string name="camera_kit">カメラキット</string>
+    <string name="quick_fill_from_kit">キットからクイック入力</string>
+
+    <!-- Gear Forms -->
+    <string name="add_camera">カメラを追加</string>
+    <string name="edit_camera">カメラを編集</string>
+    <string name="camera_name">カメラ名</string>
+    <string name="error_name_empty">名前を入力してください</string>
+    <string name="label_model_number_optional">型番（任意）</string>
+    <string name="online_lookup">オンライン検索</string>
+    <string name="search_web_for_specs">Webでスペックを検索</string>
+    <string name="label_lens_mount">レンズマウント (例: EF, F, M)</string>
+    <string name="label_camera_type">カメラタイプ</string>
+    <string name="label_shutter_speeds_comma">シャッタースピード (カンマ区切り)</string>
+    <string name="shutter_speeds_placeholder">1/1000, 1/500, 1/250, …</string>
+    <string name="save_camera">カメラを保存</string>
+
+    <string name="add_film">フィルムを追加</string>
+    <string name="edit_film">フィルムを編集</string>
+    <string name="film_name">フィルム名</string>
+    <string name="film_type">フィルムタイプ</string>
+    <string name="error_invalid_film_type">標準的なフィルムタイプを選択してください</string>
+    <string name="presets">プリセット</string>
+    <string name="common_films">よく使われるフィルム</string>
+    <string name="select_manufacturer">メーカーを選択:</string>
+    <string name="save_film">フィルムを保存</string>
+
+    <string name="lens_details">レンズ詳細</string>
+    <string name="associated_cameras">対応カメラ</string>
+    <string name="error_no_cameras">カメラが見つかりません。先にカメラを追加してください。</string>
+    <string name="error_select_at_least_one_camera">少なくとも1つの関連するカメラを選択してください。</string>
+    <string name="label_lens_model_hint">型番 (例: EF10028LIS)</string>
+    <string name="manual_entry">手動入力</string>
+    <string name="label_make">メーカー</string>
+    <string name="label_model_name">モデル名</string>
+    <string name="label_type">タイプ</string>
+    <string name="label_mount">マウント</string>
+    <string name="label_focal_length_mm">焦点距離 (mm)</string>
+    <string name="label_min_focal_length_mm">最小焦点距離 (mm)</string>
+    <string name="label_max_focal_length_mm">最大焦点距離 (mm)</string>
+    <string name="label_max_aperture_hint">最大絞り (例: 1.8)</string>
+    <string name="label_min_aperture_hint">最小絞り (例: 22)</string>
+    <string name="label_filter_size_mm">フィルター径 (mm)</string>
+    <string name="label_image_stabilized">手ブレ補正</string>
+    <string name="label_min_focus_m">最短撮影距離 (m)</string>
+    <string name="label_max_magnification_x">最大撮影倍率 (x)</string>
+    <string name="save_lens">レンズを保存</string>
+
+    <string name="add_teleconverter">テレコンバーターを追加</string>
+    <string name="edit_teleconverter">テレコンバーターを編集</string>
+    <string name="label_tc_name_hint">名称 (例: Nikon TC-14E III)</string>
+    <string name="label_magnification_hint">倍率 (例: 1.4)</string>
+    <string name="label_light_loss_hint">露出減少 (段、例: 1.0)</string>
+    <string name="save_teleconverter">テレコンバーターを保存</string>
+
+    <string name="add_filter">フィルターを追加</string>
+    <string name="edit_filter">フィルターを編集</string>
+    <string name="label_filter_name_hint">名称 (例: Hoya ND8)</string>
+    <string name="label_filter_type">フィルタータイプ</string>
+    <string name="label_compensation_stops_hint">露出補正 (段、例: 3.0)</string>
+    <string name="save_filter">フィルターを保存</string>
+
+    <string name="add_flash">フラッシュを追加</string>
+    <string name="edit_flash">フラッシュを編集</string>
+    <string name="label_make_hint">メーカー (例: Nikon)</string>
+    <string name="label_model_hint">モデル (例: SB-700)</string>
+    <string name="label_guide_number_hint">ガイドナンバー (ISO 100, メートル)</string>
+    <string name="save_flash">フラッシュを保存</string>
+
+    <string name="add_kit">キットを追加</string>
+    <string name="edit_kit">キットを編集</string>
+    <string name="kit_name">キット名</string>
+    <string name="kit_name_placeholder">例: ストリートキット、風景単焦点</string>
+    <string name="error_select_camera">カメラを選択してください</string>
+    <string name="error_select_film">フィルムを選択してください</string>
+    <string name="error_select_lens">レンズを選択してください</string>
+    <string name="save_kit">キットを保存</string>
+
+    <!-- Light Meter -->
+    <string name="light_meter_title">露出計</string>
+    <string name="metering_mode_spot">スポット</string>
+    <string name="metering_mode_center">中央重点</string>
+    <string name="ev_display">EV: %1$.1f</string>
+    <string name="focal_length_display">焦点距離: %1$dmm</string>
+    <string name="permission_camera_rationale">このアプリにはカメラが必要です。権限を許可してください。</string>
+    <string name="permission_camera_required">この機能にはカメラの権限が必要です。</string>
+    <string name="action_request_permission">権限をリクエスト</string>
+    <string name="action_use">使用する</string>
+
+    <!-- Calibration -->
+    <string name="ev_calibration_title">EVキャリブレーション</string>
+    <string name="exposure_compensation">露出補正</string>
+    <string name="ev_calibration_description">露出計の基準値を調整し、好みの露出や特定のカメラの挙動に合わせます。</string>
+    <string name="action_reset_zero">0.0にリセット</string>
+
+    <!-- Settings -->
+    <string name="settings_title">設定</string>
+    <string name="backup_success">バックアップを作成しました</string>
+    <string name="restore_success">ライブラリを復元しました</string>
+    <string name="error_message">エラー: %1$s</string>
+    <string name="header_capture">キャプチャ</string>
+    <string name="setting_auto_thumbnail">サムネイルの自動キャプチャ</string>
+    <string name="setting_auto_thumbnail_desc">ログ追加時にカメラでサムネイルを自動撮影する</string>
+    <string name="setting_face_detection">スマート顔認識タギング</string>
+    <string name="setting_face_detection_desc">露出計測中に顔が検出された場合に、人物タグを自動的に提案します。</string>
+    <string name="face_detected_suggestion">顔を検出しました！人物タグの提案:</string>
+    <string name="header_export">エクスポート</string>
+    <string name="setting_export_size">画像書き出しサイズ</string>
+    <string name="header_light_meter">露出計</string>
+    <string name="setting_ev_calibration">EVキャリブレーション</string>
+    <string name="setting_ev_calibration_desc">露出補正のための露出計基準値調整</string>
+    <string name="header_support">サポート</string>
+    <string name="setting_how_to_help">使い方 / ヘルプ</string>
+    <string name="setting_how_to_help_desc">スタートガイドとアプリの使い方を表示</string>
+    <string name="header_backup_privacy">バックアップとプライバシー</string>
+    <string name="privacy_note">データはデバイス内に保持されます。画像、位置情報、機材、タグ、コメントが開発者に公開されることはありません。</string>
+    <string name="action_backup_library">ライブラリと設定をバックアップ</string>
+    <string name="action_backup_library_desc">機材と設定をJSONファイルとして書き出します</string>
+    <string name="action_restore_backup">バックアップから復元</string>
+    <string name="action_restore_backup_desc">以前書き出したJSONファイルから機材と設定を読み込みます</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="privacy_policy_desc">詳細なプライバシーポリシーをオンラインで確認</string>
+
+    <!-- Remote Control -->
+    <string name="remote_control_title">リモートコントロール</string>
+    <string name="action_clear_log">ログをクリア</string>
+    <string name="bluetooth_permission_required">リモートコントロールにはBluetoothの権限が必要です。</string>
+    <string name="action_grant_permissions">権限を許可</string>
+    <string name="bluetooth_disabled">Bluetoothが無効です。</string>
+    <string name="action_check_again">再確認</string>
+    <string name="header_ble_settings">BLE設定</string>
+    <string name="label_device_name">デバイス名</string>
+    <string name="label_service_uuid">サービスUUID</string>
+    <string name="label_characteristic_uuid">キャラクタリスティックUUID</string>
+    <string name="header_message_log">メッセージログ</string>
+    <string name="status_disconnected">未接続</string>
+    <string name="status_scanning">%1$s をスキャン中…</string>
+    <string name="status_connecting">接続中…</string>
+    <string name="status_connected">%1$s に接続済み</string>
+    <string name="status_error">接続エラー</string>
+    <string name="action_connect">接続</string>
+    <string name="action_disconnect">解除</string>
+
+    <!-- Gear Selection -->
+    <string name="select_camera">カメラを選択</string>
+    <string name="select_lens">レンズを選択</string>
+    <string name="select_film">フィルムを選択</string>
+    <string name="select_teleconverter">テレコンバーターを選択</string>
+    <string name="select_filter">フィルターを選択</string>
+    <string name="select_flash">フラッシュを選択</string>
+    <string name="none_custom">なし / カスタム</string>
+    <string name="none">なし</string>
+    <string name="add_new_lens">新しいレンズを追加…</string>
+
+    <!-- Gear Library -->
+    <string name="gear_library_title">機材ライブラリ</string>
+    <string name="action_clear_selection">選択解除</string>
+    <string name="action_back_to_categories">カテゴリに戻る</string>
+    <string name="action_select_all">すべて選択</string>
+    <string name="action_add">追加</string>
+
+    <string name="empty_tags">タグがまだありません。</string>
+    <string name="empty_kits">キットがまだありません。</string>
+    <string name="empty_teleconverters">テレコンバーターがまだありません。</string>
+    <string name="empty_filters">フィルターがまだありません。</string>
+    <string name="empty_flashes">フラッシュがまだありません。</string>
+    <string name="empty_lenses">レンズがまだありません。</string>
+    <string name="empty_cameras">カメラがまだありません。</string>
+    <string name="empty_films">フィルムがまだありません。</string>
+
+    <!-- Subjects & Content -->
+    <string name="add_subject">被写体を追加</string>
+    <string name="edit_subject">被写体を編集</string>
+    <string name="label_subject_name">被写体名</string>
+    <string name="add_content">コンテンツを追加</string>
+    <string name="edit_content">コンテンツを編集</string>
+    <string name="label_content_name">コンテンツ名</string>
+    <string name="select_subject">被写体を選択</string>
+    <string name="associated_subject">関連付けられた被写体</string>
+    <string name="empty_subjects">被写体はまだ追加されていません。</string>
+    <string name="empty_content">コンテンツはまだ追加されていません。</string>
+    <string name="label_uncategorised">未分類</string>
+    <string name="label_none">なし</string>
+    <string name="label_parent_subject">親被写体</string>
+    <string name="select_subject_optional">被写体を選択 (任意)</string>
+
+    <!-- Photographer Information -->
+    <string name="header_photographer_info">フォトグラファー情報</string>
+    <string name="label_creator">作成者 / フォトグラファー</string>
+    <string name="label_copyright">著作権表示</string>
+    <string name="label_auto_copyright">著作権表示の自動作成</string>
+    <string name="label_auto_copyright_preview">プレビュー: © %1$d %2$s</string>
+    <string name="label_contact">連絡先情報 (メール、Web、SNS)</string>
+    <string name="photographer_info_desc">この情報は、ログをエクスポートする際にXMPサイドカーファイルに埋め込まれます。</string>
+    <!-- Privacy Disclosures -->
+    <string name="face_detection_disclosure_title">顔検出のプライバシー</string>
+    <string name="face_detection_disclosure_body">この機能は、デバイス上の機械学習を使用して、測光中に顔を検出します。画像や生体認証データが保存または共有されることはありません。連絡先ライブラリからのタグを提案するためにのみ使用されます。\n\nこの機能を有効にしますか？</string>
+    <string name="action_enable">有効にする</string>
+    <string name="label_build_info">ビルド情報</string>
+    <string name="build_version_format">バージョン: %1$s (%2$d)</string>
+    <string name="build_date_format">ビルド日: %1$s</string>
+</resources>
+
+

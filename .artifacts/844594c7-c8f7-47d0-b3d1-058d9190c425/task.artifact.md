@@ -1,0 +1,7 @@
+- `[ ]` Rename package in `app/src/main/java` to `com.fotologue.app`
+- `[ ]` Rename package in `app/src/androidTest/java` to `com.fotologue.app`
+- `[ ]` Rename package in `app/src/test/java` to `com.fotologue.app`
+- `[ ]` Update `AndroidManifest.xml`
+- `[ ]` Update `app/build.gradle.kts`
+- `[ ]` Remove old `com.Fotologue.app` directories
+- `[ ]` Verify build and run tests

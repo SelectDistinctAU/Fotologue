@@ -1,0 +1,302 @@
+<resources>
+    <string name="app_name">Fotologue</string>
+    <string name="appwidget_text">示例</string>
+    <string name="add_widget">添加微件</string>
+    <string name="app_widget_description">这是一个应用微件描述</string>
+
+    <!-- Navigation & General Actions -->
+    <string name="category_kits">套装</string>
+    <string name="category_cameras">相机</string>
+    <string name="category_lenses">镜头</string>
+    <string name="category_accessories">配件</string>
+    <string name="category_accessories_tcs">增距镜</string>
+    <string name="category_accessories_filters">滤镜</string>
+    <string name="category_accessories_flashes">闪光灯</string>
+    <string name="category_films">胶卷</string>
+    <string name="category_subjects">主体</string>
+    <string name="category_content">内容</string>
+    <string name="category_tags">标签</string>
+    <string name="settings">设置</string>
+    <string name="help">帮助</string>
+    <string name="action_back">返回</string>
+    <string name="action_save">保存</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_edit">编辑</string>
+    <string name="action_delete">删除</string>
+    <string name="action_clear">清除</string>
+    <string name="action_lookup">查询</string>
+    <string name="loading">加载中…</string>
+    <string name="unknown_deleted">未知/已删除</string>
+    <string name="unknown_camera">未知相机</string>
+    <string name="unknown_lens">未知镜头</string>
+    <string name="unknown_film">未知胶卷</string>
+
+    <!-- Onboarding / Welcome -->
+    <string name="welcome_headline">欢迎使用！让我们先整理您的装备库，以便开始拍摄！</string>
+    <string name="welcome_body">配置您的拍摄偏好并添加必备装备以开始使用。您的数据保留在本地并保持私密。</string>
+    <string name="welcome_quick_settings_header">快速设置（可选）</string>
+    <string name="welcome_equipment_setup_header">设备设置（必填）</string>
+    <string name="welcome_equipment_more_info">稍后可在“装备库”中进行更多设备设置（配件、套装等）。</string>
+    <string name="onboarding_add_camera">添加您的第一台相机</string>
+    <string name="onboarding_add_lens">添加您的第一只镜头</string>
+    <string name="onboarding_add_lens_description">如果您使用固定镜头相机，请在此添加其镜头。</string>
+    <string name="onboarding_add_film">添加您的第一卷胶卷</string>
+    <string name="how_it_works_help">使用说明 / 帮助</string>
+    <string name="restore_from_backup">从备份恢复</string>
+
+    <!-- Timeline -->
+    <string name="timeline_empty">暂无记录。点击添加！</string>
+    <string name="select_log_detail_placeholder">选择一条记录以查看详情</string>
+    <string name="filter_all_cameras">所有相机</string>
+    <string name="label_filter_by_camera">按相机筛选</string>
+    <string name="add_log">添加记录</string>
+    <string name="selected_count">已选择 %1$d 项</string>
+    <string name="export_options">导出选项</string>
+    <string name="export_as_csv">导出为 CSV</string>
+    <string name="export_as_json">导出为 JSON</string>
+    <string name="export_as_zip">导出为完整包 (ZIP)</string>
+
+    <!-- Add/Edit Log & Details -->
+    <string name="add_exposure_log">添加曝光记录</string>
+    <string name="edit_exposure_log">编辑曝光记录</string>
+    <string name="log_details">记录详情</string>
+    <string name="measure_exposure">测量曝光</string>
+    <string name="save_log">保存记录</string>
+    <string name="save_changes">保存更改</string>
+    <string name="grant_location_save">授予位置权限并保存</string>
+    <string name="label_notes">笔记</string>
+    <string name="label_conditions">拍摄环境</string>
+    <string name="label_tags">标签</string>
+    <string name="label_tag_dimension">维度（类别）</string>
+    <string name="label_tag_dimension_desc">专业维度（谁、什么、为什么等）有助于为标准照片软件组织您的库。</string>
+    <string name="label_select_subject">选择主题</string>
+    <string name="label_related_content">相关内容</string>
+    <string name="msg_no_content_for_subject">未找到该主题的内容标签。</string>
+    <string name="msg_choose_subject_hint">选择一个主题以查看具体的内容标签。</string>
+    <string name="label_also_selected">同时选择：</string>
+    <string name="label_film_roll">Film Roll.Frame</string>
+    <string name="label_iso">ISO</string>
+    <string name="label_camera">相机</string>
+    <string name="label_lens">镜头</string>
+    <string name="label_film">胶卷</string>
+    <string name="label_teleconverter">增距镜</string>
+    <string name="label_teleconverter_optional">增距镜（可选）</string>
+    <string name="label_filter">滤镜</string>
+    <string name="label_filter_optional">滤镜（可选）</string>
+    <string name="label_flash">闪光灯</string>
+    <string name="label_flash_optional">闪光灯（可选）</string>
+    <string name="label_shutter_speed">快门速度</string>
+    <string name="label_aperture">光圈</string>
+    <string name="label_focal_length">焦距</string>
+    <string name="label_effective_specs">等效参数</string>
+    <string name="label_effective_focal_length">等效焦距</string>
+    <string name="label_effective_aperture">等效光圈</string>
+    <string name="label_location">位置</string>
+    <string name="location_lat_long">纬度: %1$.6f\n经度: %2$.6f</string>
+    <string name="last_updated_at">最后更新于：%1$s</string>
+    <string name="label_exposure">曝光</string>
+    <string name="focal_length_mm">焦距: %1$dmm</string>
+    <string name="camera_kit">相机套装</string>
+    <string name="quick_fill_from_kit">从套装快速填写</string>
+
+    <!-- Gear Forms -->
+    <string name="add_camera">添加相机</string>
+    <string name="edit_camera">编辑相机</string>
+    <string name="camera_name">相机名称</string>
+    <string name="error_name_empty">名称不能为空</string>
+    <string name="label_model_number_optional">型号（可选）</string>
+    <string name="online_lookup">在线查询</string>
+    <string name="search_web_for_specs">从网页搜索规格</string>
+    <string name="label_lens_mount">镜头卡口 (如 EF, F, M)</string>
+    <string name="label_camera_type">相机类型</string>
+    <string name="label_shutter_speeds_comma">快门速度 (用逗号分隔)</string>
+    <string name="shutter_speeds_placeholder">1/1000, 1/500, 1/250, …</string>
+    <string name="save_camera">保存相机</string>
+
+    <string name="add_film">添加胶卷</string>
+    <string name="edit_film">编辑胶卷</string>
+    <string name="film_name">胶卷名称</string>
+    <string name="film_type">胶卷类型</string>
+    <string name="error_invalid_film_type">请选择标准胶卷类型</string>
+    <string name="presets">预设</string>
+    <string name="common_films">常用胶卷</string>
+    <string name="select_manufacturer">选择制造商:</string>
+    <string name="save_film">保存胶卷</string>
+
+    <string name="lens_details">镜头详情</string>
+    <string name="associated_cameras">关联相机</string>
+    <string name="error_no_cameras">未发现相机。请先添加相机。</string>
+    <string name="error_select_at_least_one_camera">请至少选择一个关联的相机。</string>
+    <string name="label_lens_model_hint">型号 (如 EF10028LIS)</string>
+    <string name="manual_entry">手动输入</string>
+    <string name="label_make">品牌</string>
+    <string name="label_model_name">型号名称</string>
+    <string name="label_type">类型</string>
+    <string name="label_mount">卡口</string>
+    <string name="label_focal_length_mm">焦距 (mm)</string>
+    <string name="label_min_focal_length_mm">最小焦距 (mm)</string>
+    <string name="label_max_focal_length_mm">最大焦距 (mm)</string>
+    <string name="label_max_aperture_hint">最大光圈 (如 1.8)</string>
+    <string name="label_min_aperture_hint">最小光圈 (如 22)</string>
+    <string name="label_filter_size_mm">滤镜口径 (mm)</string>
+    <string name="label_image_stabilized">图像防抖</string>
+    <string name="label_min_focus_m">最近对焦距离 (m)</string>
+    <string name="label_max_magnification_x">最大放大倍率 (x)</string>
+    <string name="save_lens">保存镜头</string>
+
+    <string name="add_teleconverter">添加增距镜</string>
+    <string name="edit_teleconverter">编辑增距镜</string>
+    <string name="label_tc_name_hint">名称 (如 Nikon TC-14E III)</string>
+    <string name="label_magnification_hint">倍率 (如 1.4)</string>
+    <string name="label_light_loss_hint">进光量减少 (档位, 如 1.0)</string>
+    <string name="save_teleconverter">保存增距镜</string>
+
+    <string name="add_filter">添加滤镜</string>
+    <string name="edit_filter">编辑滤镜</string>
+    <string name="label_filter_name_hint">名称 (如 Hoya ND8)</string>
+    <string name="label_filter_type">滤镜类型</string>
+    <string name="label_compensation_stops_hint">补偿 (档位, 如 3.0)</string>
+    <string name="save_filter">保存滤镜</string>
+
+    <string name="add_flash">添加闪光灯</string>
+    <string name="edit_flash">编辑闪光灯</string>
+    <string name="label_make_hint">品牌 (如 Nikon)</string>
+    <string name="label_model_hint">型号 (如 SB-700)</string>
+    <string name="label_guide_number_hint">闪光指数 (ISO 100, 米)</string>
+    <string name="save_flash">保存闪光灯</string>
+
+    <string name="add_kit">添加套装</string>
+    <string name="edit_kit">编辑套装</string>
+    <string name="kit_name">套装名称</string>
+    <string name="kit_name_placeholder">如：街拍套装，风景定焦</string>
+    <string name="error_select_camera">请选择相机</string>
+    <string name="error_select_film">请选择胶卷</string>
+    <string name="error_select_lens">请选择镜头</string>
+    <string name="save_kit">保存套装</string>
+
+    <!-- Light Meter -->
+    <string name="light_meter_title">测光表</string>
+    <string name="metering_mode_spot">点测光</string>
+    <string name="metering_mode_center">中央重点测光</string>
+    <string name="ev_display">EV: %1$.1f</string>
+    <string name="focal_length_display">焦距: %1$dmm</string>
+    <string name="permission_camera_rationale">相机对于此应用非常重要，请授予权限。</string>
+    <string name="permission_camera_required">此功能需要相机权限。</string>
+    <string name="action_request_permission">申请权限</string>
+    <string name="action_use">使用</string>
+
+    <!-- Calibration -->
+    <string name="ev_calibration_title">EV 校准</string>
+    <string name="exposure_compensation">曝光补偿</string>
+    <string name="ev_calibration_description">调整测光表基准，以匹配您的曝光偏好或特定相机的特性。</string>
+    <string name="action_reset_zero">重置为 0.0</string>
+
+    <!-- Settings -->
+    <string name="settings_title">设置</string>
+    <string name="backup_success">备份创建成功</string>
+    <string name="restore_success">装备库恢复成功</string>
+    <string name="error_message">错误: %1$s</string>
+    <string name="header_capture">拍摄</string>
+    <string name="setting_auto_thumbnail">自动拍摄缩略图</string>
+    <string name="setting_auto_thumbnail_desc">添加记录时自动使用相机拍摄缩略图</string>
+    <string name="setting_face_detection">智能人脸识别标签</string>
+    <string name="setting_face_detection_desc">如果在测光期间检测到人脸，则自动建议人物标签。</string>
+    <string name="face_detected_suggestion">检测到人脸！建议人物标签：</string>
+    <string name="header_export">导出</string>
+    <string name="setting_export_size">图片导出尺寸</string>
+    <string name="header_light_meter">测光表</string>
+    <string name="setting_ev_calibration">EV 校准</string>
+    <string name="setting_ev_calibration_desc">为曝光补偿调整测光表基准</string>
+    <string name="header_support">支持</string>
+    <string name="setting_how_to_help">使用方法 / 帮助</string>
+    <string name="setting_how_to_help_desc">查看入门指南和应用说明</string>
+    <string name="header_backup_privacy">备份与隐私</string>
+    <string name="privacy_note">您的数据保留在设备上。开发者在任何时候都无法看到您的图片、位置、设备、标签或评论。</string>
+    <string name="action_backup_library">备份装备库与设置</string>
+    <string name="action_backup_library_desc">将您的设备和设置导出为 JSON 文件</string>
+    <string name="action_restore_backup">从备份恢复</string>
+    <string name="action_restore_backup_desc">从之前导出的 JSON 文件导入设备和设置</string>
+    <string name="privacy_policy">隐私政策</string>
+    <string name="privacy_policy_desc">在线查看我们的完整隐私声明</string>
+
+    <!-- Remote Control -->
+    <string name="remote_control_title">远程控制</string>
+    <string name="action_clear_log">清除记录</string>
+    <string name="bluetooth_permission_required">远程控制需要蓝牙权限。</string>
+    <string name="action_grant_permissions">授予权限</string>
+    <string name="bluetooth_disabled">蓝牙已禁用。</string>
+    <string name="action_check_again">再次检查</string>
+    <string name="header_ble_settings">BLE 设置</string>
+    <string name="label_device_name">设备名称</string>
+    <string name="label_service_uuid">服务 UUID</string>
+    <string name="label_characteristic_uuid">特征值 UUID</string>
+    <string name="header_message_log">消息记录</string>
+    <string name="status_disconnected">已断开</string>
+    <string name="status_scanning">正在扫描 %1$s…</string>
+    <string name="status_connecting">连接中…</string>
+    <string name="status_connected">已连接到 %1$s</string>
+    <string name="status_error">连接错误</string>
+    <string name="action_connect">连接</string>
+    <string name="action_disconnect">断开</string>
+
+    <!-- Gear Selection -->
+    <string name="select_camera">选择相机</string>
+    <string name="select_lens">选择镜头</string>
+    <string name="select_film">选择胶卷</string>
+    <string name="select_teleconverter">选择增距镜</string>
+    <string name="select_filter">选择滤镜</string>
+    <string name="select_flash">选择闪光灯</string>
+    <string name="none_custom">无 / 自定义</string>
+    <string name="none">无</string>
+    <string name="add_new_lens">添加新镜头…</string>
+
+    <!-- Gear Library -->
+    <string name="gear_library_title">装备库</string>
+    <string name="action_clear_selection">清除选择</string>
+    <string name="action_back_to_categories">返回分类</string>
+    <string name="action_select_all">全选</string>
+    <string name="action_add">添加</string>
+
+    <string name="empty_tags">尚未添加标签。</string>
+    <string name="empty_kits">尚未添加套装。</string>
+    <string name="empty_teleconverters">尚未添加增距镜。</string>
+    <string name="empty_filters">尚未添加滤镜。</string>
+    <string name="empty_flashes">尚未添加闪光灯。</string>
+    <string name="empty_lenses">尚未添加镜头。</string>
+    <string name="empty_cameras">尚未添加相机。</string>
+    <string name="empty_films">尚未添加胶卷。</string>
+
+    <!-- Subjects & Content -->
+    <string name="add_subject">添加主题</string>
+    <string name="edit_subject">编辑主题</string>
+    <string name="label_subject_name">主题名称</string>
+    <string name="add_content">添加内容</string>
+    <string name="edit_content">编辑内容</string>
+    <string name="label_content_name">内容名称</string>
+    <string name="select_subject">选择主题</string>
+    <string name="associated_subject">关联主题</string>
+    <string name="empty_subjects">尚未添加任何主题。</string>
+    <string name="empty_content">尚未添加任何内容。</string>
+    <string name="label_uncategorised">未分类</string>
+    <string name="label_none">无</string>
+    <string name="label_parent_subject">父主题</string>
+    <string name="select_subject_optional">选择主题（可选）</string>
+
+    <!-- Photographer Information -->
+    <string name="header_photographer_info">摄影师信息</string>
+    <string name="label_creator">作者/摄影师</string>
+    <string name="label_copyright">版权声明</string>
+    <string name="label_auto_copyright">自动版权声明</string>
+    <string name="label_auto_copyright_preview">预览：© %1$d %2$s</string>
+    <string name="label_contact">联系信息（电子邮件、网页、社交媒体）</string>
+    <string name="photographer_info_desc">导出日志时，此信息将嵌入在 XMP 挂钩文件中。</string>
+    <!-- Privacy Disclosures -->
+    <string name="face_detection_disclosure_title">人脸检测隐私</string>
+    <string name="face_detection_disclosure_body">此功能使用设备端机器学习在测光期间检测人脸。不存储或共享任何图像或生物识别数据。它仅用于从您的“人物”库中建议标签。\n\n您要启用此功能吗？</string>
+    <string name="action_enable">启用</string>
+    <string name="label_build_info">版本信息</string>
+    <string name="build_version_format">版本：%1$s (%2$d)</string>
+    <string name="build_date_format">构建日期：%1$s</string>
+</resources>
+
+

@@ -1,0 +1,302 @@
+<resources>
+    <string name="app_name">Fotologue</string>
+    <string name="appwidget_text">BEISPIEL</string>
+    <string name="add_widget">Widget hinzufügen</string>
+    <string name="app_widget_description">Dies ist eine App-Widget-Beschreibung</string>
+
+    <!-- Navigation & General Actions -->
+    <string name="category_kits">Kits</string>
+    <string name="category_cameras">Kameras</string>
+    <string name="category_lenses">Objektive</string>
+    <string name="category_accessories">Zubehör</string>
+    <string name="category_accessories_tcs">Telekonverter</string>
+    <string name="category_accessories_filters">Filter</string>
+    <string name="category_accessories_flashes">Blitzgeräte</string>
+    <string name="category_films">Filme</string>
+    <string name="category_subjects">Themen</string>
+    <string name="category_content">Inhalt</string>
+    <string name="category_tags">Tags</string>
+    <string name="settings">Einstellungen</string>
+    <string name="help">Hilfe</string>
+    <string name="action_back">Zurück</string>
+    <string name="action_save">Speichern</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="action_edit">Bearbeiten</string>
+    <string name="action_delete">Löschen</string>
+    <string name="action_clear">Leeren</string>
+    <string name="action_lookup">Nachschlagen</string>
+    <string name="loading">Laden…</string>
+    <string name="unknown_deleted">Unbekannt/Gelöscht</string>
+    <string name="unknown_camera">Unbekannte Kamera</string>
+    <string name="unknown_lens">Unbekanntes Objektiv</string>
+    <string name="unknown_film">Unbekannter Film</string>
+
+    <!-- Onboarding / Welcome -->
+    <string name="welcome_headline">Willkommen! Statten wir deine Ausrüstung aus, damit wir fotografieren gehen können!</string>
+    <string name="welcome_body">Konfiguriere deine Aufnahmeeinstellungen und füge deine wichtigste Ausrüstung hinzu, um loszulegen. Deine Daten bleiben privat und auf dem Gerät.</string>
+    <string name="welcome_quick_settings_header">Schnelleinstellungen (Optional)</string>
+    <string name="welcome_equipment_setup_header">Ausrüstungs-Setup (Erforderlich)</string>
+    <string name="welcome_equipment_more_info">Weitere Ausrüstungseinstellungen (Zubehör, Kits usw.) sind später in der Ausrüstungsbibliothek verfügbar.</string>
+    <string name="onboarding_add_camera">Füge deine erste Kamera hinzu</string>
+    <string name="onboarding_add_lens">Füge dein erstes Objektiv hinzu</string>
+    <string name="onboarding_add_lens_description">Wenn du eine Kamera mit fest verbautem Objektiv hast, füge das Objektiv hier hinzu.</string>
+    <string name="onboarding_add_film">Füge deinen ersten Film hinzu</string>
+    <string name="how_it_works_help">Wie es funktioniert / Hilfe</string>
+    <string name="restore_from_backup">Aus Backup wiederherstellen</string>
+
+    <!-- Timeline -->
+    <string name="timeline_empty">Noch keine Protokolle. Fange an, eins hinzuzufügen!</string>
+    <string name="select_log_detail_placeholder">Wähle ein Protokoll aus, um Details anzuzeigen</string>
+    <string name="filter_all_cameras">Alle Kameras</string>
+    <string name="label_filter_by_camera">Nach Kamera filtern</string>
+    <string name="add_log">Protokoll hinzufügen</string>
+    <string name="selected_count">%1$d ausgewählt</string>
+    <string name="export_options">Exportoptionen</string>
+    <string name="export_as_csv">Als CSV exportieren</string>
+    <string name="export_as_json">Als JSON exportieren</string>
+    <string name="export_as_zip">Als Gesamtpaket exportieren (ZIP)</string>
+
+    <!-- Add/Edit Log & Details -->
+    <string name="add_exposure_log">Belichtungsprotokoll hinzufügen</string>
+    <string name="edit_exposure_log">Belichtungsprotokoll bearbeiten</string>
+    <string name="log_details">Protokolldetails</string>
+    <string name="measure_exposure">Belichtung messen</string>
+    <string name="save_log">Protokoll speichern</string>
+    <string name="save_changes">Änderungen speichern</string>
+    <string name="grant_location_save">Standort erlauben &amp; Speichern</string>
+    <string name="label_notes">Notizen</string>
+    <string name="label_conditions">Bedingungen</string>
+    <string name="label_tags">Tags</string>
+    <string name="label_tag_dimension">Dimension (Kategorie)</string>
+    <string name="label_tag_dimension_desc">Professionelle Dimensionen (Wer, Was, Warum usw.) helfen Ihnen, Ihre Bibliothek für Standard-Fotosoftware zu organisieren.</string>
+    <string name="label_select_subject">Thema auswählen</string>
+    <string name="label_related_content">Zugehörige Inhalte</string>
+    <string name="msg_no_content_for_subject">Keine Content-Tags für dieses Thema gefunden.</string>
+    <string name="msg_choose_subject_hint">Wählen Sie ein Thema aus, um spezifische Content-Tags anzuzeigen.</string>
+    <string name="label_also_selected">Ebenfalls ausgewählt:</string>
+    <string name="label_film_roll">Film Roll.Frame</string>
+    <string name="label_iso">ISO</string>
+    <string name="label_camera">Kamera</string>
+    <string name="label_lens">Objektiv</string>
+    <string name="label_film">Film</string>
+    <string name="label_teleconverter">Telekonverter</string>
+    <string name="label_teleconverter_optional">Telekonverter (Optional)</string>
+    <string name="label_filter">Filter</string>
+    <string name="label_filter_optional">Filter (Optional)</string>
+    <string name="label_flash">Blitz</string>
+    <string name="label_flash_optional">Blitz (Optional)</string>
+    <string name="label_shutter_speed">Verschlusszeit</string>
+    <string name="label_aperture">Blende</string>
+    <string name="label_focal_length">Brennweite</string>
+    <string name="label_effective_specs">Effektive Werte</string>
+    <string name="label_effective_focal_length">Effektive Brennweite</string>
+    <string name="label_effective_aperture">Effektive Blende</string>
+    <string name="label_location">Standort</string>
+    <string name="location_lat_long">Breitengrad: %1$.6f\nLängengrad: %2$.6f</string>
+    <string name="last_updated_at">Zuletzt aktualisiert: %1$s</string>
+    <string name="label_exposure">Belichtung</string>
+    <string name="focal_length_mm">Brennweite: %1$dmm</string>
+    <string name="camera_kit">Kamera-Kit</string>
+    <string name="quick_fill_from_kit">Schnellfüllung aus Kit</string>
+
+    <!-- Gear Forms -->
+    <string name="add_camera">Kamera hinzufügen</string>
+    <string name="edit_camera">Kamera bearbeiten</string>
+    <string name="camera_name">Kameraname</string>
+    <string name="error_name_empty">Name darf nicht leer sein</string>
+    <string name="label_model_number_optional">Modellnummer (Optional)</string>
+    <string name="online_lookup">Online-Suche</string>
+    <string name="search_web_for_specs">Web nach Spezifikationen durchsuchen</string>
+    <string name="label_lens_mount">Objektivanschluss (z.B. EF, F, M)</string>
+    <string name="label_camera_type">Kameratyp</string>
+    <string name="label_shutter_speeds_comma">Verschlusszeiten (kommagetrennt)</string>
+    <string name="shutter_speeds_placeholder">1/1000, 1/500, 1/250, …</string>
+    <string name="save_camera">Kamera speichern</string>
+
+    <string name="add_film">Film hinzufügen</string>
+    <string name="edit_film">Film bearbeiten</string>
+    <string name="film_name">Filmname</string>
+    <string name="film_type">Filmtyp</string>
+    <string name="error_invalid_film_type">Bitte wähle einen Standard-Filmtyp aus</string>
+    <string name="presets">Voreinstellungen</string>
+    <string name="common_films">Häufige Filme</string>
+    <string name="select_manufacturer">Hersteller auswählen:</string>
+    <string name="save_film">Film speichern</string>
+
+    <string name="lens_details">Objektivdetails</string>
+    <string name="associated_cameras">Zugehörige Kameras</string>
+    <string name="error_no_cameras">Keine Kameras gefunden. Bitte füge zuerst eine Kamera hinzu.</string>
+    <string name="error_select_at_least_one_camera">Bitte wählen Sie mindestens eine zugehörige Kamera aus.</string>
+    <string name="label_lens_model_hint">Modellnummer (z.B. EF10028LIS)</string>
+    <string name="manual_entry">Manuelle Eingabe</string>
+    <string name="label_make">Marke</string>
+    <string name="label_model_name">Modellname</string>
+    <string name="label_type">Typ</string>
+    <string name="label_mount">Anschluss</string>
+    <string name="label_focal_length_mm">Brennweite (mm)</string>
+    <string name="label_min_focal_length_mm">Min. Brennweite (mm)</string>
+    <string name="label_max_focal_length_mm">Max. Brennweite (mm)</string>
+    <string name="label_max_aperture_hint">Max. Blende (z.B. 1.8)</string>
+    <string name="label_min_aperture_hint">Min. Blende (z.B. 22)</string>
+    <string name="label_filter_size_mm">Filtergröße (mm)</string>
+    <string name="label_image_stabilized">Bildstabilisiert</string>
+    <string name="label_min_focus_m">Naheinstellgrenze (m)</string>
+    <string name="label_max_magnification_x">Max. Vergrößerung (x)</string>
+    <string name="save_lens">Objektiv speichern</string>
+
+    <string name="add_teleconverter">Telekonverter hinzufügen</string>
+    <string name="edit_teleconverter">Telekonverter bearbeiten</string>
+    <string name="label_tc_name_hint">Name (z.B. Nikon TC-14E III)</string>
+    <string name="label_magnification_hint">Vergrößerung (z.B. 1.4)</string>
+    <string name="label_light_loss_hint">Lichtverlust (Blendenstufen, z.B. 1.0)</string>
+    <string name="save_teleconverter">Telekonverter speichern</string>
+
+    <string name="add_filter">Filter hinzufügen</string>
+    <string name="edit_filter">Filter bearbeiten</string>
+    <string name="label_filter_name_hint">Name (z.B. Hoya ND8)</string>
+    <string name="label_filter_type">Filtertyp</string>
+    <string name="label_compensation_stops_hint">Kompensation (Blendenstufen, z.B. 3.0)</string>
+    <string name="save_filter">Filter speichern</string>
+
+    <string name="add_flash">Blitz hinzufügen</string>
+    <string name="edit_flash">Blitz bearbeiten</string>
+    <string name="label_make_hint">Marke (z.B. Nikon)</string>
+    <string name="label_model_hint">Modell (z.B. SB-700)</string>
+    <string name="label_guide_number_hint">Leitzahl (ISO 100, Meter)</string>
+    <string name="save_flash">Blitz speichern</string>
+
+    <string name="add_kit">Kit hinzufügen</string>
+    <string name="edit_kit">Kit bearbeiten</string>
+    <string name="kit_name">Kitname</string>
+    <string name="kit_name_placeholder">z.B. Street-Kit, Landschafts-Prime</string>
+    <string name="error_select_camera">Bitte wähle eine Kamera aus</string>
+    <string name="error_select_film">Bitte wähle einen Film aus</string>
+    <string name="error_select_lens">Bitte wähle ein Objektiv aus</string>
+    <string name="save_kit">Kit speichern</string>
+
+    <!-- Light Meter -->
+    <string name="light_meter_title">Belichtungsmesser</string>
+    <string name="metering_mode_spot">Spot</string>
+    <string name="metering_mode_center">Mittenbetont</string>
+    <string name="ev_display">EV: %1$.1f</string>
+    <string name="focal_length_display">Brennweite: %1$dmm</string>
+    <string name="permission_camera_rationale">Die Kamera ist wichtig für diese App. Bitte erteile die Berechtigung.</string>
+    <string name="permission_camera_required">Kameraberechtigung für diese Funktion erforderlich.</string>
+    <string name="action_request_permission">Berechtigung anfordern</string>
+    <string name="action_use">Verwenden</string>
+
+    <!-- Calibration -->
+    <string name="ev_calibration_title">EV-Kalibrierung</string>
+    <string name="exposure_compensation">Belichtungskorrektur</string>
+    <string name="ev_calibration_description">Passe die Basis des Belichtungsmessers an deine bevorzugte Belichtung oder das spezifische Kameraverhalten an.</string>
+    <string name="action_reset_zero">Auf 0.0 zurücksetzen</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="backup_success">Backup erfolgreich erstellt</string>
+    <string name="restore_success">Bibliothek erfolgreich wiederhergestellt</string>
+    <string name="error_message">Fehler: %1$s</string>
+    <string name="header_capture">Aufnahme</string>
+    <string name="setting_auto_thumbnail">Automatische Thumbnail-Aufnahme</string>
+    <string name="setting_auto_thumbnail_desc">Automatisch ein Thumbnail mit der Kamera aufnehmen, wenn ein Protokolleintrag hinzugefügt wird</string>
+    <string name="setting_face_detection">Intelligentes gesichtsbasiertes Tagging</string>
+    <string name="setting_face_detection_desc">Personen-Tags automatisch vorschlagen, wenn während der Messung ein Gesicht erkannt wird.</string>
+    <string name="face_detected_suggestion">Gesicht erkannt! Personen-Tags werden vorgeschlagen:</string>
+    <string name="header_export">Export</string>
+    <string name="setting_export_size">Bildexportgröße</string>
+    <string name="header_light_meter">Belichtungsmesser</string>
+    <string name="setting_ev_calibration">EV-Kalibrierung</string>
+    <string name="setting_ev_calibration_desc">Belichtungsmesserbasis für Belichtungskorrektur anpassen</string>
+    <string name="header_support">Support</string>
+    <string name="setting_how_to_help">Verwendung / Hilfe</string>
+    <string name="setting_how_to_help_desc">Startanleitung und App-Anweisungen anzeigen</string>
+    <string name="header_backup_privacy">Backup &amp; Datenschutz</string>
+    <string name="privacy_note">Deine Daten bleiben auf deinem Gerät. Zu keinem Zeitpunkt sind deine Bilder, Standorte, Ausrüstung, Tags oder Kommentare für die Entwickler sichtbar.</string>
+    <string name="action_backup_library">Bibliothek &amp; Einstellungen sichern</string>
+    <string name="action_backup_library_desc">Deine Ausrüstung und Einstellungen in eine JSON-Datei exportieren</string>
+    <string name="action_restore_backup">Aus Backup wiederherstellen</string>
+    <string name="action_restore_backup_desc">Ausrüstung und Einstellungen aus einer zuvor exportierten JSON-Datei importieren</string>
+    <string name="privacy_policy">Datenschutzerklärung</string>
+    <string name="privacy_policy_desc">Unsere vollständige Datenschutzerklärung online ansehen</string>
+
+    <!-- Remote Control -->
+    <string name="remote_control_title">Fernbedienung</string>
+    <string name="action_clear_log">Protokoll leeren</string>
+    <string name="bluetooth_permission_required">Bluetooth-Berechtigungen sind für die Fernbedienung erforderlich.</string>
+    <string name="action_grant_permissions">Berechtigungen erteilen</string>
+    <string name="bluetooth_disabled">Bluetooth ist deaktiviert.</string>
+    <string name="action_check_again">Erneut prüfen</string>
+    <string name="header_ble_settings">BLE-Einstellungen</string>
+    <string name="label_device_name">Gerätename</string>
+    <string name="label_service_uuid">Service-UUID</string>
+    <string name="label_characteristic_uuid">Characteristic-UUID</string>
+    <string name="header_message_log">Meldungsprotokoll</string>
+    <string name="status_disconnected">Getrennt</string>
+    <string name="status_scanning">Scannen nach %1$s…</string>
+    <string name="status_connecting">Verbinden…</string>
+    <string name="status_connected">Verbunden mit %1$s</string>
+    <string name="status_error">Verbindungsfehler</string>
+    <string name="action_connect">Verbinden</string>
+    <string name="action_disconnect">Trennen</string>
+
+    <!-- Gear Selection -->
+    <string name="select_camera">Kamera auswählen</string>
+    <string name="select_lens">Objektiv auswählen</string>
+    <string name="select_film">Film auswählen</string>
+    <string name="select_teleconverter">Telekonverter auswählen</string>
+    <string name="select_filter">Filter auswählen</string>
+    <string name="select_flash">Blitz auswählen</string>
+    <string name="none_custom">Kein / Eigener</string>
+    <string name="none">Kein</string>
+    <string name="add_new_lens">Neues Objektiv hinzufügen…</string>
+
+    <!-- Gear Library -->
+    <string name="gear_library_title">Ausrüstungsbibliothek</string>
+    <string name="action_clear_selection">Auswahl aufheben</string>
+    <string name="action_back_to_categories">Zurück zu Kategorien</string>
+    <string name="action_select_all">Alle auswählen</string>
+    <string name="action_add">Hinzufügen</string>
+
+    <string name="empty_tags">Noch keine Tags hinzugefügt.</string>
+    <string name="empty_kits">Noch keine Kits hinzugefügt.</string>
+    <string name="empty_teleconverters">Noch keine Telekonverter hinzugefügt.</string>
+    <string name="empty_filters">Noch keine Filter hinzugefügt.</string>
+    <string name="empty_flashes">Noch keine Blitzgeräte hinzugefügt.</string>
+    <string name="empty_lenses">Noch keine Objektive hinzugefügt.</string>
+    <string name="empty_cameras">Noch keine Kameras hinzugefügt.</string>
+    <string name="empty_films">Noch keine Filme hinzugefügt.</string>
+
+    <!-- Subjects & Content -->
+    <string name="add_subject">Subjekt hinzufügen</string>
+    <string name="edit_subject">Subjekt bearbeiten</string>
+    <string name="label_subject_name">Subjektname</string>
+    <string name="add_content">Inhalt hinzufügen</string>
+    <string name="edit_content">Inhalt bearbeiten</string>
+    <string name="label_content_name">Inhaltname</string>
+    <string name="select_subject">Subjekt auswählen</string>
+    <string name="associated_subject">Zugehöriges Subjekt</string>
+    <string name="empty_subjects">Noch keine Subjekte hinzugefügt.</string>
+    <string name="empty_content">Noch keine Inhalte hinzugefügt.</string>
+    <string name="label_uncategorised">Nicht kategorisiert</string>
+    <string name="label_none">Keine</string>
+    <string name="label_parent_subject">Übergeordnetes Subjekt</string>
+    <string name="select_subject_optional">Subjekt auswählen (optional)</string>
+
+    <!-- Photographer Information -->
+    <string name="header_photographer_info">Fotografeninformationen</string>
+    <string name="label_creator">Urheber / Fotograf</string>
+    <string name="label_copyright">Urheberrechtshinweis</string>
+    <string name="label_auto_copyright">Automatischer Urheberrechtshinweis</string>
+    <string name="label_auto_copyright_preview">Vorschau: © %1$d %2$s</string>
+    <string name="label_contact">Kontaktinfo (E-Mail, Web, Social Media)</string>
+    <string name="photographer_info_desc">Diese Informationen werden beim Exportieren von Protokollen in XMP-Sidecar-Dateien eingebettet.</string>
+    <!-- Privacy Disclosures -->
+    <string name="face_detection_disclosure_title">Datenschutz bei der Gesichtserkennung</string>
+    <string name="face_detection_disclosure_body">Diese Funktion nutzt geräteseitiges maschinelles Lernen, um Gesichter während der Messung zu erkennen. Es werden keine Bilder oder biometrischen Daten gespeichert oder weitergegeben. Sie wird nur verwendet, um Tags aus Ihrer Personen-Bibliothek vorzuschlagen.\n\nMöchten Sie diese Funktion aktivieren?</string>
+    <string name="action_enable">Aktivieren</string>
+    <string name="label_build_info">Build-Informationen</string>
+    <string name="build_version_format">Version: %1$s (%2$d)</string>
+    <string name="build_date_format">Build-Datum: %1$s</string>
+</resources>
+
+

@@ -1,0 +1,510 @@
+package com.fotologue.app.ui.screens
+
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import com.fotologue.app.data.Camera
+import com.fotologue.app.data.Film
+import com.fotologue.app.data.LogEntry
+import com.fotologue.app.data.LogEntryWithGear
+import com.fotologue.app.ui.theme.FotologueTheme
+import com.fotologue.app.ui.viewmodel.TimelineViewModel
+import com.fotologue.app.ui.viewmodel.ExportType
+import com.fotologue.app.R
+import com.fotologue.app.data.CameraType
+import com.fotologue.app.data.ExposureSettings
+import android.net.Uri
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
+import java.text.SimpleDateFormat
+import java.util.Date
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimelineScreen(
+    viewModel: TimelineViewModel,
+    onAddLogClick: () -> Unit,
+    onLogClick: (Long) -> Unit,
+    onGearLibraryClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    selectedLogId: Long? = null,
+) {
+    val logs by viewModel.logEntries.collectAsStateWithLifecycle()
+    val cameras by viewModel.allCameras.collectAsStateWithLifecycle()
+    val selectedCameraId by viewModel.selectedCameraId.collectAsStateWithLifecycle()
+    val isOnboardingComplete by viewModel.isOnboardingComplete.collectAsStateWithLifecycle()
+    val selectedIds by viewModel.selectedIds.collectAsStateWithLifecycle()
+
+    TimelineScreenContent(
+        logs = logs,
+        cameras = cameras,
+        selectedCameraId = selectedCameraId,
+        isOnboardingComplete = isOnboardingComplete,
+        selectedIds = selectedIds,
+        selectedLogId = selectedLogId,
+        onAddLogClick = onAddLogClick,
+        onLogClick = onLogClick,
+        onGearLibraryClick = onGearLibraryClick,
+        onSettingsClick = onSettingsClick,
+        onCameraFilterClick = viewModel::setCameraFilter,
+        onToggleSelection = viewModel::toggleSelection,
+        onClearSelection = viewModel::clearSelection,
+        onSelectAll = viewModel::selectAll,
+        onDeleteSelected = viewModel::deleteSelected,
+        onExportLogs = viewModel::exportLogs
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimelineScreenContent(
+    logs: List<LogEntryWithGear>,
+    cameras: List<Camera>,
+    selectedCameraId: Long?,
+    isOnboardingComplete: Boolean,
+    selectedIds: Set<Long>,
+    selectedLogId: Long?,
+    onAddLogClick: () -> Unit,
+    onLogClick: (Long) -> Unit,
+    onGearLibraryClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onCameraFilterClick: (Long?) -> Unit,
+    onToggleSelection: (Long) -> Unit,
+    onClearSelection: () -> Unit,
+    onSelectAll: () -> Unit,
+    onDeleteSelected: () -> Unit,
+    onExportLogs: (ExportType, Uri) -> Unit
+) {
+    val isSelectionMode = selectedIds.isNotEmpty()
+    var showExportOptions by remember { mutableStateOf(value = false) }
+
+    val csvExportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("text/csv")
+    ) { uri -> uri?.let { onExportLogs(ExportType.CSV, it) } }
+
+    val jsonExportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri -> uri?.let { onExportLogs(ExportType.JSON, it) } }
+
+    val zipExportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/zip")
+    ) { uri -> uri?.let { onExportLogs(ExportType.ZIP, it) } }
+
+    if (showExportOptions) {
+        ModalBottomSheet(
+            onDismissRequest = { showExportOptions = false }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .navigationBarsPadding()
+            ) {
+                Text(
+                    text = stringResource(R.string.export_options),
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.export_as_csv)) },
+                    leadingContent = { Icon(painterResource(R.drawable.ic_share), contentDescription = null) },
+                    modifier = Modifier.clickable {
+                        showExportOptions = false
+                        val fileName = "fotologue_export_${System.currentTimeMillis()}.csv"
+                        csvExportLauncher.launch(fileName)
+                    }
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.export_as_json)) },
+                    leadingContent = { Icon(painterResource(R.drawable.ic_share), contentDescription = null) },
+                    modifier = Modifier.clickable {
+                        showExportOptions = false
+                        val fileName = "fotologue_export_${System.currentTimeMillis()}.json"
+                        jsonExportLauncher.launch(fileName)
+                    }
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.export_as_zip)) },
+                    leadingContent = { Icon(painterResource(R.drawable.ic_share), contentDescription = null) },
+                    modifier = Modifier.clickable {
+                        showExportOptions = false
+                        val fileName = "fotologue_export_${System.currentTimeMillis()}.zip"
+                        zipExportLauncher.launch(fileName)
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            if (isSelectionMode) {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.selected_count, selectedIds.size)) },
+                    navigationIcon = {
+                        IconButton(onClick = onClearSelection) {
+                            Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.action_clear_selection))
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = onSelectAll) {
+                            Icon(painterResource(R.drawable.ic_select_all), contentDescription = stringResource(R.string.action_select_all))
+                        }
+                        IconButton(onClick = { showExportOptions = true }) {
+                            Icon(painterResource(R.drawable.ic_share), contentDescription = "Export")
+                        }
+                        IconButton(onClick = onDeleteSelected) {
+                            Icon(painterResource(R.drawable.ic_delete), contentDescription = stringResource(R.string.action_delete))
+                        }
+                    }
+                )
+            } else {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.app_name)) },
+                    actions = {
+                        IconButton(onClick = onGearLibraryClick) {
+                            Icon(painterResource(R.drawable.ic_handyman), contentDescription = stringResource(R.string.gear_library_title))
+                        }
+                        IconButton(onClick = onSettingsClick) {
+                            Icon(painterResource(R.drawable.ic_settings), contentDescription = stringResource(R.string.settings))
+                        }
+                    }
+                )
+            }
+        },
+        floatingActionButton = {
+            if (!isSelectionMode && isOnboardingComplete) {
+                FloatingActionButton(
+                    onClick = onAddLogClick,
+                    modifier = Modifier.navigationBarsPadding()
+                ) {
+                    Icon(painterResource(R.drawable.ic_add), contentDescription = stringResource(R.string.add_log))
+                }
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = innerPadding.calculateTopPadding())
+                .consumeWindowInsets(innerPadding)
+        ) {
+            if (cameras.isNotEmpty()) {
+                Text(
+                    text = stringResource(R.string.label_filter_by_camera),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+                LazyRow(
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 8.dp,
+                        bottom = 8.dp
+                    ),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    item {
+                        FilterChip(
+                            selected = selectedCameraId == null,
+                            onClick = { onCameraFilterClick(null) },
+                            label = { Text(stringResource(R.string.filter_all_cameras)) }
+                        )
+                    }
+                    items(cameras) { camera ->
+                        FilterChip(
+                            selected = selectedCameraId == camera.id,
+                            onClick = { onCameraFilterClick(camera.id) },
+                            label = { Text(camera.name) }
+                        )
+                    }
+                }
+            }
+
+            if (logs.isEmpty()) {
+                Text(
+                    stringResource(R.string.timeline_empty),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        bottom = innerPadding.calculateBottomPadding() + 80.dp,
+                        start = 8.dp,
+                        end = 8.dp
+                    )
+                ) {
+                    items(logs) { logWithGear ->
+                        val isSelected = selectedIds.contains(logWithGear.logEntry.id)
+                        LogEntryItem(
+                            logWithGear = logWithGear,
+                            onClick = {
+                                if (isSelectionMode) {
+                                    onToggleSelection(logWithGear.logEntry.id)
+                                } else {
+                                    onLogClick(logWithGear.logEntry.id)
+                                }
+                            },
+                            onLongClick = {
+                                onToggleSelection(logWithGear.logEntry.id)
+                            },
+                            isSelected = isSelected || (logWithGear.logEntry.id == selectedLogId),
+                            showCheckbox = isSelectionMode
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ExportBadge(text: String) {
+    Surface(
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
+        color = Color.Transparent,
+        modifier = Modifier.size(20.dp)
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp, fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun LogEntryItem(
+    logWithGear: LogEntryWithGear,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
+    isSelected: Boolean,
+    showCheckbox: Boolean = false
+) {
+    val log = logWithGear.logEntry
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
+        colors = if (isSelected) {
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            )
+        } else {
+            CardDefaults.cardColors()
+        }
+    ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                log.exposureSettings.thumbnailUri?.let { uri ->
+                    AsyncImage(
+                        model = uri,
+                        contentDescription = "Thumbnail",
+                        modifier = Modifier
+                            .size(64.dp)
+                            .padding(end = 16.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    val locale = LocalConfiguration.current.locales[0]
+                    val dateFormat = remember(locale) { SimpleDateFormat("MMM dd, yyyy HH:mm", locale) }
+                    Text(
+                        text = dateFormat.format(Date(log.timestamp)),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                    val gearString = buildString {
+                        append(logWithGear.camera?.name ?: stringResource(R.string.unknown_camera))
+                        logWithGear.lens?.let { lens ->
+                            append(" + ${lens.make} ${lens.model}")
+                        }
+                        logWithGear.teleconverter?.let { tc ->
+                            append(" + ${tc.name}")
+                        }
+                        logWithGear.filter?.let { filter ->
+                            append(" + ${filter.name}")
+                        }
+                        logWithGear.flash?.let { flash ->
+                            append(" + ${flash.make} ${flash.model}")
+                        }
+                    }
+                    Text(
+                        text = gearString,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = logWithGear.film?.let { "${it.name} (ISO ${it.iso})" } ?: stringResource(R.string.unknown_film),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    if (!log.filmRoll.isNullOrBlank()) {
+                        Text(
+                            text = stringResource(R.string.label_film_roll) + " ${log.filmRoll}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "${log.exposureSettings.shutterSpeed} @ ${log.exposureSettings.aperture}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    if (log.latitude != null && log.longitude != null) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(top = 4.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_location_on),
+                                contentDescription = null,
+                                modifier = Modifier.size(12.dp),
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            val locale = LocalConfiguration.current.locales[0]
+                            Text(
+                                text = String.format(locale, "%.4f, %.4f", log.latitude, log.longitude),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
+                    if (logWithGear.tags.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            logWithGear.tags.forEach { tag ->
+                                SuggestionChip(
+                                    onClick = { },
+                                    label = { Text(tag.name, style = MaterialTheme.typography.labelSmall) },
+                                    modifier = Modifier.height(24.dp)
+                                )
+                            }
+                        }
+                    }
+                    if (log.notes.isNotEmpty()) {
+                        Text(
+                            text = log.notes,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 8.dp),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    // Export Status Badges (Bottom Right)
+                    if (log.isExportedZip || log.isExportedCsv || log.isExportedJson) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (log.isExportedZip) ExportBadge("Z")
+                            if (log.isExportedCsv) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                ExportBadge("C")
+                            }
+                            if (log.isExportedJson) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                ExportBadge("J")
+                            }
+                        }
+                    }
+                }
+            }
+            if (showCheckbox) {
+                Checkbox(
+                    checked = isSelected,
+                    onCheckedChange = { onClick() },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun TimelineScreenPreview() {
+    FotologueTheme {
+        // Mock data for preview
+        val logWithGear = LogEntryWithGear(
+            logEntry = LogEntry(
+                timestamp = System.currentTimeMillis(),
+                notes = "Test note",
+                environmentalConditions = "Sunny",
+                cameraId = 1,
+                filmId = 1,
+                exposureSettings = ExposureSettings("1/125", "f/8", 400),
+                latitude = 37.7749,
+                longitude = -122.4194
+            ),
+            camera = Camera(1, "Leica M3", CameraType.FILM_SLR),
+            film = Film(1, "Kodak Portra 400", 400, Film.TYPE_COLOR_NEGATIVE),
+            lens = null,
+            teleconverter = null,
+            filter = null,
+            flash = null,
+            kit = null
+        )
+        TimelineScreenContent(
+            logs = listOf(logWithGear),
+            cameras = listOf(Camera(1, "Leica M3", CameraType.FILM_SLR)),
+            selectedCameraId = null,
+            isOnboardingComplete = true,
+            selectedIds = emptySet(),
+            selectedLogId = null,
+            onAddLogClick = {},
+            onLogClick = {},
+            onGearLibraryClick = {},
+            onSettingsClick = {},
+            onCameraFilterClick = {},
+            onToggleSelection = {},
+            onClearSelection = {},
+            onSelectAll = {},
+            onDeleteSelected = {},
+            onExportLogs = { _, _ -> }
+        )
+    }
+}
