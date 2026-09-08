@@ -43,6 +43,9 @@
     <string name="onboarding_add_film">Add your first Film</string>
     <string name="how_it_works_help">How it Works / Help</string>
     <string name="restore_from_backup">Restore from Backup</string>
+    <string name="welcome_advanced_config_header">Advanced Configuration (Optional)</string>
+    <string name="onboarding_calibrate_meter">Calibrate Light Meter</string>
+    <string name="onboarding_calibrate_meter_description">Tune your phone\'s sensor for professional accuracy.</string>
 
     <!-- Timeline -->
     <string name="timeline_empty">No logs yet. Start by adding one!</string>

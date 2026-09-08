@@ -10,5 +10,6 @@ data class Flash(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val make: String,
     val model: String,
-    val guideNumber: Int
+    val guideNumber: Int,
+    val position: Int = 0
 )

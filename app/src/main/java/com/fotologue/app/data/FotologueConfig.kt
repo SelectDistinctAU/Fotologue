@@ -15,5 +15,6 @@ data class FotologueConfig(
     val tags: List<Tag> = emptyList(),
     val logs: List<LogEntry> = emptyList(),
     val logEntryTags: List<LogEntryTagCrossRef> = emptyList(),
+    val filmRollSessions: List<FilmRollSession> = emptyList(),
     val settings: Map<String, String> = emptyMap()
 )

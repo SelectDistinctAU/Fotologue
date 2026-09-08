@@ -10,5 +10,6 @@ data class Filter(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val type: String, // ND, Polarizer, UV, etc.
-    val compensationStops: Double // e.g. 1.0, 2.0, 3.0
+    val compensationStops: Double, // e.g. 1.0, 2.0, 3.0
+    val position: Int = 0
 )

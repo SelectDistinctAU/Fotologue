@@ -51,12 +51,16 @@ class AddLogViewModelTest {
         every { repository.clearMeteringResult() } just Runs
         every { repository.getCameraById(any()) } returns flowOf(null)
         every { repository.getLensById(any()) } returns flowOf(null)
+        every { repository.getSuggestedFilmRollFlow(any(), any()) } returns flowOf("1.01")
         every { repository.newlyAddedLensId } returns newlyAddedLensIdFlow
         coEvery { repository.getSuggestedFilmRoll(any(), any()) } returns "1.01"
         coEvery { repository.insertDefaultTagsIfNeeded() } just Runs
         
         every { gearConfigurationManager.currentConfiguration } returns MutableStateFlow(GearConfiguration())
         every { gearConfigurationManager.updateConfiguration(any()) } just Runs
+        
+        every { repository.getFilmRollSession(any(), any()) } returns flowOf(null)
+        coEvery { repository.updateFilmRollSession(any()) } just Runs
 
         viewModel = AddLogViewModel(repository, gearConfigurationManager, savedStateHandle)
     }

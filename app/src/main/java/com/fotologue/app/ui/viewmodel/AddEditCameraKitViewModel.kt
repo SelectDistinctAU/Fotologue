@@ -222,9 +222,9 @@ class AddEditCameraKitViewModel @Inject constructor(
             val kit = CameraKit(
                 id = kitId ?: 0,
                 name = currentState.name.trim(),
-                cameraId = currentState.cameraId!!,
-                lensId = currentState.lensId!!,
-                filmId = currentState.filmId!!,
+                cameraId = currentState.cameraId,
+                lensId = currentState.lensId,
+                filmId = currentState.filmId,
                 teleconverterId = currentState.teleconverterId,
                 filterId = currentState.filterId,
                 flashId = currentState.flashId

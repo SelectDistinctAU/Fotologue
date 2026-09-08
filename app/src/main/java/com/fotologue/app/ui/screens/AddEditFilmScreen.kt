@@ -98,6 +98,16 @@ fun AddEditFilmScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = uiState.abbreviation,
+                onValueChange = viewModel::onAbbreviationChange,
+                label = { Text("Abbreviation (for file naming, e.g. P400)") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                placeholder = { Text("E.g. TX400, G200") }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             val filmFormats = Film.ALL_FORMATS
             var formatExpanded by remember { mutableStateOf(false) }
@@ -132,6 +142,16 @@ fun AddEditFilmScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = uiState.abbreviation,
+                onValueChange = viewModel::onAbbreviationChange,
+                label = { Text("Abbreviation (for file naming, e.g. P400)") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                placeholder = { Text("E.g. TX400, G200") }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(

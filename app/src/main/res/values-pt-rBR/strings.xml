@@ -43,6 +43,9 @@
     <string name="onboarding_add_film">Adicione seu primeiro Filme</string>
     <string name="how_it_works_help">Como Funciona / Ajuda</string>
     <string name="restore_from_backup">Restaurar do Backup</string>
+    <string name="welcome_advanced_config_header">Configuração Avançada (Opcional)</string>
+    <string name="onboarding_calibrate_meter">Calibrar Fotômetro</string>
+    <string name="onboarding_calibrate_meter_description">Ajuste o sensor do seu telefone para precisão profissional.</string>
 
     <!-- Timeline -->
     <string name="timeline_empty">Nenhum registro ainda. Comece adicionando um!</string>

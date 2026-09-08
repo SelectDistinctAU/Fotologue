@@ -86,6 +86,7 @@ class MainActivity : ComponentActivity() {
                                         onAddCamera = { backStack.add(Route.AddCamera) },
                                         onAddLens = { backStack.add(Route.AddEditLens()) },
                                         onAddFilm = { backStack.add(Route.AddFilm) },
+                                        onCalibrateMeter = { backStack.add(Route.LightMeter(targetIso = 400, autoStartCalibration = true)) },
                                         onShowHelp = { backStack.add(Route.Help) }
                                     )
                                 }

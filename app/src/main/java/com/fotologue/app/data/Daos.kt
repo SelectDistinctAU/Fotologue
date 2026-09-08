@@ -6,15 +6,18 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Embedded
+import androidx.room.Junction
+import androidx.room.OnConflictStrategy
 import androidx.room.Relation
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CameraDao {
-    @Query("SELECT * FROM cameras")
+    @Query("SELECT * FROM cameras ORDER BY position ASC, id ASC")
     fun getAllCameras(): Flow<List<Camera>>
 
-    @Query("SELECT * FROM cameras")
+    @Query("SELECT * FROM cameras ORDER BY position ASC, id ASC")
     suspend fun getAllCamerasOnce(): List<Camera>
 
     @Insert
@@ -22,6 +25,9 @@ interface CameraDao {
 
     @Update
     suspend fun updateCamera(camera: Camera)
+
+    @Update
+    suspend fun updateCameras(cameras: List<Camera>)
 
     @Delete
     suspend fun deleteCamera(camera: Camera)
@@ -41,10 +47,10 @@ interface CameraDao {
 
 @Dao
 interface FilmDao {
-    @Query("SELECT * FROM films")
+    @Query("SELECT * FROM films ORDER BY position ASC, id ASC")
     fun getAllFilms(): Flow<List<Film>>
 
-    @Query("SELECT * FROM films")
+    @Query("SELECT * FROM films ORDER BY position ASC, id ASC")
     suspend fun getAllFilmsOnce(): List<Film>
 
     @Insert
@@ -52,6 +58,9 @@ interface FilmDao {
 
     @Update
     suspend fun updateFilm(film: Film)
+
+    @Update
+    suspend fun updateFilms(films: List<Film>)
 
     @Delete
     suspend fun deleteFilm(film: Film)
@@ -74,7 +83,7 @@ interface LogEntryDao {
     @Query("SELECT * FROM log_entries ORDER BY timestamp DESC")
     fun getAllLogEntries(): Flow<List<LogEntry>>
 
-    @androidx.room.Transaction
+    @Transaction
     @Query("SELECT * FROM log_entries ORDER BY timestamp DESC")
     fun getAllLogEntriesWithGear(): Flow<List<LogEntryWithGear>>
 
@@ -84,7 +93,7 @@ interface LogEntryDao {
     @Query("SELECT * FROM log_entries WHERE id = :id")
     fun getLogEntryById(id: Long): Flow<LogEntry?>
 
-    @androidx.room.Transaction
+    @Transaction
     @Query("SELECT * FROM log_entries WHERE id = :id")
     fun getLogEntryWithGearById(id: Long): Flow<LogEntryWithGear?>
 
@@ -118,17 +127,20 @@ interface LogEntryDao {
 
 @Dao
 interface LensDao {
-    @Query("SELECT * FROM lenses")
+    @Query("SELECT * FROM lenses ORDER BY position ASC, id ASC")
     fun getAllLenses(): Flow<List<Lens>>
 
-    @Query("SELECT * FROM lenses")
+    @Query("SELECT * FROM lenses ORDER BY position ASC, id ASC")
     suspend fun getAllLensesOnce(): List<Lens>
 
-    @Insert(onConflict = androidx.room.OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLens(lens: Lens): Long
 
     @Update
     suspend fun updateLens(lens: Lens)
+
+    @Update
+    suspend fun updateLenses(lenses: List<Lens>)
 
     @Delete
     suspend fun deleteLens(lens: Lens)
@@ -136,19 +148,19 @@ interface LensDao {
     @Query("SELECT * FROM lenses WHERE id = :id")
     fun getLensById(id: Long): Flow<Lens?>
 
-    @Query("SELECT lenses.* FROM lenses INNER JOIN camera_lens_cross_ref ON lenses.id = camera_lens_cross_ref.lensId WHERE camera_lens_cross_ref.cameraId = :cameraId")
+    @Query("SELECT lenses.* FROM lenses INNER JOIN camera_lens_cross_ref ON lenses.id = camera_lens_cross_ref.lensId WHERE camera_lens_cross_ref.cameraId = :cameraId ORDER BY position ASC, id ASC")
     fun getLensesForCamera(cameraId: Long): Flow<List<Lens>>
 
-    @Query("SELECT lenses.* FROM lenses INNER JOIN camera_lens_cross_ref ON lenses.id = camera_lens_cross_ref.lensId WHERE camera_lens_cross_ref.cameraId = :cameraId")
+    @Query("SELECT lenses.* FROM lenses INNER JOIN camera_lens_cross_ref ON lenses.id = camera_lens_cross_ref.lensId WHERE camera_lens_cross_ref.cameraId = :cameraId ORDER BY position ASC, id ASC")
     suspend fun getLensesForCameraOnce(cameraId: Long): List<Lens>
 
-    @Query("SELECT cameras.* FROM cameras INNER JOIN camera_lens_cross_ref ON cameras.id = camera_lens_cross_ref.cameraId WHERE camera_lens_cross_ref.lensId = :lensId")
+    @Query("SELECT cameras.* FROM cameras INNER JOIN camera_lens_cross_ref ON cameras.id = camera_lens_cross_ref.cameraId WHERE camera_lens_cross_ref.lensId = :lensId ORDER BY position ASC, id ASC")
     fun getCamerasForLens(lensId: Long): Flow<List<Camera>>
 
-    @Query("SELECT cameras.* FROM cameras INNER JOIN camera_lens_cross_ref ON cameras.id = camera_lens_cross_ref.cameraId WHERE camera_lens_cross_ref.lensId = :lensId")
+    @Query("SELECT cameras.* FROM cameras INNER JOIN camera_lens_cross_ref ON cameras.id = camera_lens_cross_ref.cameraId WHERE camera_lens_cross_ref.lensId = :lensId ORDER BY position ASC, id ASC")
     suspend fun getCamerasForLensOnce(lensId: Long): List<Camera>
 
-    @Insert(onConflict = androidx.room.OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCameraLensCrossRef(crossRef: CameraLensCrossRef)
 
     @Query("SELECT * FROM camera_lens_cross_ref")
@@ -178,10 +190,10 @@ interface LensDao {
 
 @Dao
 interface TeleconverterDao {
-    @Query("SELECT * FROM teleconverters")
+    @Query("SELECT * FROM teleconverters ORDER BY position ASC, id ASC")
     fun getAllTeleconverters(): Flow<List<Teleconverter>>
 
-    @Query("SELECT * FROM teleconverters")
+    @Query("SELECT * FROM teleconverters ORDER BY position ASC, id ASC")
     suspend fun getAllTeleconvertersOnce(): List<Teleconverter>
 
     @Insert
@@ -189,6 +201,9 @@ interface TeleconverterDao {
 
     @Update
     suspend fun updateTeleconverter(teleconverter: Teleconverter)
+
+    @Update
+    suspend fun updateTeleconverters(tcs: List<Teleconverter>)
 
     @Delete
     suspend fun deleteTeleconverter(teleconverter: Teleconverter)
@@ -205,10 +220,10 @@ interface TeleconverterDao {
 
 @Dao
 interface FilterDao {
-    @Query("SELECT * FROM filters")
+    @Query("SELECT * FROM filters ORDER BY position ASC, id ASC")
     fun getAllFilters(): Flow<List<Filter>>
 
-    @Query("SELECT * FROM filters")
+    @Query("SELECT * FROM filters ORDER BY position ASC, id ASC")
     suspend fun getAllFiltersOnce(): List<Filter>
 
     @Insert
@@ -216,6 +231,9 @@ interface FilterDao {
 
     @Update
     suspend fun updateFilter(filter: Filter)
+
+    @Update
+    suspend fun updateFilters(filters: List<Filter>)
 
     @Delete
     suspend fun deleteFilter(filter: Filter)
@@ -232,10 +250,10 @@ interface FilterDao {
 
 @Dao
 interface FlashDao {
-    @Query("SELECT * FROM flashes")
+    @Query("SELECT * FROM flashes ORDER BY position ASC, id ASC")
     fun getAllFlashes(): Flow<List<Flash>>
 
-    @Query("SELECT * FROM flashes")
+    @Query("SELECT * FROM flashes ORDER BY position ASC, id ASC")
     suspend fun getAllFlashesOnce(): List<Flash>
 
     @Insert
@@ -243,6 +261,9 @@ interface FlashDao {
 
     @Update
     suspend fun updateFlash(flash: Flash)
+
+    @Update
+    suspend fun updateFlashes(flashes: List<Flash>)
 
     @Delete
     suspend fun deleteFlash(flash: Flash)
@@ -259,14 +280,14 @@ interface FlashDao {
 
 @Dao
 interface CameraKitDao {
-    @Query("SELECT * FROM camera_kits")
+    @Query("SELECT * FROM camera_kits ORDER BY position ASC, id ASC")
     fun getAllCameraKits(): Flow<List<CameraKit>>
 
-    @androidx.room.Transaction
-    @Query("SELECT * FROM camera_kits")
+    @Transaction
+    @Query("SELECT * FROM camera_kits ORDER BY position ASC, id ASC")
     fun getAllCameraKitsWithGear(): Flow<List<CameraKitWithGear>>
 
-    @Query("SELECT * FROM camera_kits")
+    @Query("SELECT * FROM camera_kits ORDER BY position ASC, id ASC")
     suspend fun getAllCameraKitsOnce(): List<CameraKit>
 
     @Insert
@@ -274,6 +295,9 @@ interface CameraKitDao {
 
     @Update
     suspend fun updateCameraKit(cameraKit: CameraKit)
+
+    @Update
+    suspend fun updateCameraKits(kits: List<CameraKit>)
 
     @Delete
     suspend fun deleteCameraKit(cameraKit: CameraKit)
@@ -290,17 +314,20 @@ interface CameraKitDao {
 
 @Dao
 interface TagDao {
-    @Query("SELECT * FROM tags")
+    @Query("SELECT * FROM tags ORDER BY position ASC, id ASC")
     fun getAllTags(): Flow<List<Tag>>
 
-    @Query("SELECT * FROM tags")
+    @Query("SELECT * FROM tags ORDER BY position ASC, id ASC")
     suspend fun getAllTagsOnce(): List<Tag>
 
-    @Insert(onConflict = androidx.room.OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTag(tag: Tag): Long
 
     @Update
     suspend fun updateTag(tag: Tag)
+
+    @Update
+    suspend fun updateTags(tags: List<Tag>)
 
     @Delete
     suspend fun deleteTag(tag: Tag)
@@ -311,7 +338,7 @@ interface TagDao {
     @Query("DELETE FROM tags")
     suspend fun deleteAllTags()
 
-    @Insert(onConflict = androidx.room.OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLogEntryTagCrossRef(crossRef: LogEntryTagCrossRef)
 
     @Query("SELECT * FROM log_entry_tag_cross_ref")
@@ -323,9 +350,33 @@ interface TagDao {
     @Query("DELETE FROM log_entry_tag_cross_ref WHERE logEntryId = :logEntryId")
     suspend fun deleteCrossRefsForLogEntry(logEntryId: Long)
 
-    @androidx.room.Transaction
+    @Transaction
     @Query("SELECT * FROM log_entries WHERE id = :logEntryId")
     fun getTagsForLogEntry(logEntryId: Long): Flow<LogEntryWithTags?>
+}
+
+@Dao
+interface FilmRollSessionDao {
+    @Query("SELECT * FROM film_roll_sessions")
+    suspend fun getAllSessionsOnce(): List<FilmRollSession>
+
+    @Query("SELECT * FROM film_roll_sessions WHERE cameraId = :cameraId AND filmId = :filmId")
+    fun getSession(cameraId: Long, filmId: Long): Flow<FilmRollSession?>
+
+    @Query("SELECT * FROM film_roll_sessions WHERE cameraId = :cameraId AND filmId = :filmId")
+    suspend fun getSessionOnce(cameraId: Long, filmId: Long): FilmRollSession?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSession(session: FilmRollSession)
+
+    @Update
+    suspend fun updateSession(session: FilmRollSession)
+
+    @Query("DELETE FROM film_roll_sessions WHERE cameraId = :cameraId AND filmId = :filmId")
+    suspend fun deleteSession(cameraId: Long, filmId: Long)
+
+    @Query("DELETE FROM film_roll_sessions")
+    suspend fun deleteAllSessions()
 }
 
 data class LogEntryWithTags(
@@ -333,7 +384,7 @@ data class LogEntryWithTags(
     @Relation(
         parentColumn = "id",
         entityColumn = "id",
-        associateBy = androidx.room.Junction(
+        associateBy = Junction(
             value = LogEntryTagCrossRef::class,
             parentColumn = "logEntryId",
             entityColumn = "tagId"

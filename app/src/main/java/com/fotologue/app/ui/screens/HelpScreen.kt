@@ -16,7 +16,7 @@ import com.fotologue.app.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HelpScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -59,13 +59,19 @@ fun HelpScreen(
             )
 
             HelpSection(
-                title = "4. Managing Logs",
+                title = "4. Meter Calibration",
+                iconRes = R.drawable.ic_handyman,
+                content = "To ensure professional accuracy, use the Pro Calibration Wizard. You can find it in Settings > EV Calibration. Use 'The Void' stage to zero sensor noise with a covered lens, and 'The Balance' stage to match a grey card or neutral wall."
+            )
+
+            HelpSection(
+                title = "5. Managing Logs",
                 iconRes = R.drawable.ic_timeline,
                 content = "Your logs are displayed in the Timeline. Long-press any entry to enter selection mode, where you can bulk-delete entries or export them to CSV, JSON, or a full ZIP package (including thumbnails)."
             )
 
             HelpSection(
-                title = "5. Backup & Privacy",
+                title = "6. Backup & Privacy",
                 iconRes = R.drawable.ic_security,
                 content = "Your data stays on your device. At no time are your images, locations, equipment, tags, or comments visible to the developers. Use the Settings screen to create a backup file if you want to move your data to a new device."
             )

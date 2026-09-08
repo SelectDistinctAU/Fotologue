@@ -58,23 +58,6 @@ fun AddEditCameraScreen(
                 supportingText = { if (!uiState.isNameValid) Text(stringResource(R.string.error_name_empty)) }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Checkbox(
-                    checked = uiState.isHalfFrame,
-                    onCheckedChange = viewModel::onIsHalfFrameChange
-                )
-                Text(
-                    text = "Is Half-Frame Camera? (Double exposures per roll)",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = uiState.modelNumber,
                 onValueChange = viewModel::onModelNumberChange,

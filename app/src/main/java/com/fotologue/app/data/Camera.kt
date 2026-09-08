@@ -14,5 +14,6 @@ data class Camera(
     val mount: String = "",
     @ColumnInfo(name = "modelNumber") val modelNumber: String = "",
     val shutterSpeeds: List<String> = emptyList(),
-    val isHalfFrame: Boolean = false
+    val isHalfFrame: Boolean = false,
+    val position: Int = 0
 )

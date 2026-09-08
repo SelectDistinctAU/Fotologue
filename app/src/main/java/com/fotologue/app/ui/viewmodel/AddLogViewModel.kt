@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.fotologue.app.data.*
 import com.fotologue.app.util.ExposureSuggester
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -46,11 +48,11 @@ data class AddLogUiState(
     val showRollFinishedDialog: Boolean = false
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AddLogViewModel @Inject constructor(
     private val repository: FotologueRepository,
     private val gearConfigurationManager: GearConfigurationManager,
-    private val settingsRepository: SettingsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -195,50 +197,31 @@ class AddLogViewModel @Inject constructor(
                     selectedFlashId = config.flashId,
                     selectedKitId = config.kitId
                 ) }
-                updateSuggestedRollNumber()
             }
         }
 
-        // Active Roll/Frame tracking
+        // Active Roll/Frame tracking per gear combination
         viewModelScope.launch {
-            combine<Any?, Unit>(
-                listOf(
-                    settingsRepository.currentRoll,
-                    settingsRepository.currentFrame,
-                    allCameras,
-                    allFilms,
-                    _uiState.map { it.selectedCameraId }.distinctUntilChanged(),
-                    _uiState.map { it.selectedFilmId }.distinctUntilChanged()
-                )
-            ) { args: Array<Any?> ->
-                val roll = args[0] as Int
-                val frame = args[1] as Int
-                val cameras = args[2] as List<Camera>
-                val films = args[3] as List<Film>
-                val cameraId = args[4] as Long?
-                val filmId = args[5] as Long?
-
-                val camera = cameras.find { it.id == cameraId }
-                val film = films.find { it.id == filmId }
-                val expected = film?.expectedExposures ?: 36
-                val isHalf = camera?.isHalfFrame ?: false
-                val totalExpected = if (isHalf) expected * 2 else expected
-                
-                _uiState.update { it.copy(
-                    currentRoll = roll,
-                    currentFrame = frame,
-                    expectedExposures = totalExpected
-                ) }
-            }.collect {}
-        }
-    }
-
-    private fun updateSuggestedRollNumber() {
-        if (editingLogId != null) return
-        viewModelScope.launch {
-            val state = _uiState.value
-            val suggested = repository.getSuggestedFilmRoll(state.selectedCameraId, state.selectedFilmId)
-            _uiState.update { it.copy(filmRoll = suggested) }
+            _uiState.map { Triple(it.selectedCameraId, it.selectedFilmId, editingLogId) }
+                .distinctUntilChanged()
+                .flatMapLatest { (cameraId, filmId, editingId) ->
+                    if (editingId == null) {
+                        repository.getSuggestedFilmRollFlow(cameraId, filmId).map { suggested ->
+                            val camera = allCameras.value.find { it.id == cameraId }
+                            val film = allFilms.value.find { it.id == filmId }
+                            val expected = film?.expectedExposures ?: 36
+                            val isHalf = camera?.isHalfFrame ?: false
+                            val totalExpected = if (isHalf) expected * 2 else expected
+                            
+                            _uiState.update { it.copy(
+                                expectedExposures = totalExpected,
+                                filmRoll = suggested
+                            ) }
+                        }
+                    } else {
+                        flowOf(Unit)
+                    }
+                }.collect {}
         }
     }
 
@@ -330,7 +313,6 @@ class AddLogViewModel @Inject constructor(
                 )
             }
             if (updatePersistent) syncGearToPersistent()
-            updateSuggestedRollNumber()
         }
     }
 
@@ -356,7 +338,6 @@ class AddLogViewModel @Inject constructor(
                 )
             }
             if (updatePersistent) syncGearToPersistent()
-            updateSuggestedRollNumber()
         }
     }
 
@@ -378,7 +359,6 @@ class AddLogViewModel @Inject constructor(
     fun onFilmSelected(filmId: Long?, filmIso: Int, updatePersistent: Boolean = true) {
         _uiState.update { it.copy(selectedFilmId = filmId, iso = filmIso) }
         if (updatePersistent) syncGearToPersistent()
-        updateSuggestedRollNumber()
     }
 
     fun onCameraKitSelected(kitId: Long?) {
@@ -427,7 +407,6 @@ class AddLogViewModel @Inject constructor(
                         availableApertures = apertures.map { "f/${if (it % 1.0 == 0.0) it.toInt() else it}" }
                     )
                 }
-                updateSuggestedRollNumber()
                 
                 // Manually sync to ensure we use the values from the kit immediately
                 if (editingLogId == null) {
@@ -472,6 +451,23 @@ class AddLogViewModel @Inject constructor(
 
     fun onFilmRollChange(filmRoll: String) {
         _uiState.update { it.copy(filmRoll = filmRoll) }
+        
+        // Attempt to sync manual typing back to the repository if it matches the format
+        val state = _uiState.value
+        if (editingLogId == null && filmRoll.contains(".") && state.selectedCameraId != null && state.selectedFilmId != null) {
+            val parts = filmRoll.split(".")
+            if (parts.size == 2) {
+                val roll = parts[0].toIntOrNull()
+                val frame = parts[1].toIntOrNull()
+                if (roll != null && frame != null) {
+                    viewModelScope.launch {
+                        repository.updateFilmRollSession(
+                            FilmRollSession(state.selectedCameraId, state.selectedFilmId, roll, frame)
+                        )
+                    }
+                }
+            }
+        }
     }
 
     fun onIsoChange(iso: Int) {
@@ -501,9 +497,14 @@ class AddLogViewModel @Inject constructor(
     }
 
     fun finishRollAndStartNew() {
+        val state = _uiState.value
+        if (state.selectedCameraId == null || state.selectedFilmId == null) return
+
         viewModelScope.launch {
-            val nextRoll = _uiState.value.currentRoll + 1
-            settingsRepository.setCurrentRollAndFrame(nextRoll, 1)
+            val nextRoll = state.currentRoll + 1
+            repository.updateFilmRollSession(
+                FilmRollSession(state.selectedCameraId, state.selectedFilmId, nextRoll, 1)
+            )
             _uiState.update { it.copy(showRollFinishedDialog = false) }
         }
     }
@@ -581,14 +582,10 @@ class AddLogViewModel @Inject constructor(
                     longitude = state.longitude,
                     filmRoll = state.filmRoll.trim()
                 )
-                // Increment the frame counter in settings if we're not editing an old log
-                val currentFrame = _uiState.value.currentFrame
-                val expected = _uiState.value.expectedExposures
                 
-                if (currentFrame >= expected) {
+                // Roll check logic for new entries
+                if (state.currentFrame >= state.expectedExposures) {
                     _uiState.update { it.copy(showRollFinishedDialog = true) }
-                } else {
-                    settingsRepository.incrementFrame()
                 }
             }
         }

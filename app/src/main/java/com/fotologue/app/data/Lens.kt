@@ -23,7 +23,8 @@ data class Lens(
     val minAperture: Double,
     val maxAperture: Double,
     val minFocalLength: Int,
-    val maxFocalLength: Int
+    val maxFocalLength: Int,
+    val position: Int = 0
 ) {
     companion object {
         val TYPES = listOf("Prime", "Zoom", "Telephoto")

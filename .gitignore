@@ -38,9 +38,11 @@ captures/
 # Google Services
 google-services.json
 
-# Built variants
+# Built variants / Release outputs
 *.apk
 *.aab
+app/release/
+mapping.txt
 
 # OS files
 .DS_Store

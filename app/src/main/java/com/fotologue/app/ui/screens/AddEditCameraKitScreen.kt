@@ -72,19 +72,6 @@ fun AddEditCameraKitScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             GearDropdown(
-                label = stringResource(R.string.label_film),
-                items = uiState.allFilms,
-                selectedId = uiState.filmId,
-                onItemSelected = { viewModel.onFilmSelected(it.id) },
-                itemLabel = { it.name },
-                getItemId = { it.id },
-                isError = !uiState.isFilmValid,
-                supportingText = { if (!uiState.isFilmValid) Text(stringResource(R.string.error_select_film)) }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            GearDropdown(
                 label = stringResource(R.string.label_lens),
                 items = uiState.filteredLenses,
                 selectedId = uiState.lensId,
@@ -93,6 +80,19 @@ fun AddEditCameraKitScreen(
                 getItemId = { it.id },
                 isError = !uiState.isLensValid,
                 supportingText = { if (!uiState.isLensValid) Text(stringResource(R.string.error_select_lens)) }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            GearDropdown(
+                label = stringResource(R.string.label_film),
+                items = uiState.allFilms,
+                selectedId = uiState.filmId,
+                onItemSelected = { viewModel.onFilmSelected(it.id) },
+                itemLabel = { "${it.name} (${it.expectedExposures} exp)" },
+                getItemId = { it.id },
+                isError = !uiState.isFilmValid,
+                supportingText = { if (!uiState.isFilmValid) Text(stringResource(R.string.error_select_film)) }
             )
 
             if (uiState.isTeleconverterVisible) {

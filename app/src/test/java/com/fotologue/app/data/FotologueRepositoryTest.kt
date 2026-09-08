@@ -23,6 +23,7 @@ class FotologueRepositoryTest {
     private val logEntryDao: LogEntryDao = mockk()
     private val cameraKitDao: CameraKitDao = mockk()
     private val tagDao: TagDao = mockk()
+    private val filmRollSessionDao: FilmRollSessionDao = mockk()
     private val locationProvider: LocationProvider = mockk()
     private val settingsRepository: SettingsRepository = mockk()
 
@@ -54,7 +55,7 @@ class FotologueRepositoryTest {
         repository = FotologueRepository(
             db, cameraDao, filmDao, lensDao, teleconverterDao,
             filterDao, flashDao, logEntryDao, cameraKitDao,
-            tagDao, locationProvider, settingsRepository
+            tagDao, filmRollSessionDao, locationProvider, settingsRepository
         )
     }
 

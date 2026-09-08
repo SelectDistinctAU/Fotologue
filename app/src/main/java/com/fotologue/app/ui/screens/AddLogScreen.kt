@@ -811,7 +811,7 @@ private fun FilmSelection(
         onExpandedChange = { filmExpanded = !filmExpanded }
     ) {
         OutlinedTextField(
-            value = selectedFilm?.name ?: stringResource(R.string.select_film),
+            value = selectedFilm?.let { "${it.name} (${it.expectedExposures} exp)" } ?: stringResource(R.string.select_film),
             onValueChange = {},
             readOnly = true,
             label = { Text(stringResource(R.string.label_film)) },
@@ -824,7 +824,7 @@ private fun FilmSelection(
         ) {
             films.forEach { film ->
                 DropdownMenuItem(
-                    text = { Text("${film.name} (ISO ${film.iso})") },
+                    text = { Text("${film.name} (ISO ${film.iso}, ${film.expectedExposures} exp)") },
                     onClick = {
                         onFilmSelected(film.id, film.iso)
                         filmExpanded = false

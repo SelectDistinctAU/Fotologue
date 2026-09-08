@@ -43,6 +43,9 @@
     <string name="onboarding_add_film">最初のフィルムを追加</string>
     <string name="how_it_works_help">使い方 / ヘルプ</string>
     <string name="restore_from_backup">バックアップから復元</string>
+    <string name="welcome_advanced_config_header">詳細設定（オプション）</string>
+    <string name="onboarding_calibrate_meter">露出計のキャリブレーション</string>
+    <string name="onboarding_calibrate_meter_description">プロレベルの精度を得るためにスマートフォンのセンサーを調整します。</string>
 
     <!-- Timeline -->
     <string name="timeline_empty">ログがまだありません。追加してみましょう！</string>

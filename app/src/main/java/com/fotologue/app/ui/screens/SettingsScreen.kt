@@ -257,33 +257,6 @@ fun SettingsScreen(
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Surface(
-                onClick = onNavigateToRollCounter,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Film Roll Counter",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Text(
-                            text = "Manage current roll number and frame count",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Icon(
-                        painter = painterResource(R.drawable.ic_camera_roll),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(16.dp))
 

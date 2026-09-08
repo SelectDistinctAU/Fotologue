@@ -64,5 +64,6 @@ data class CameraKit(
     val filmId: Long?,
     val teleconverterId: Long? = null,
     val filterId: Long? = null,
-    val flashId: Long? = null
+    val flashId: Long? = null,
+    val position: Int = 0
 )

@@ -2,10 +2,7 @@ package com.fotologue.app.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fotologue.app.data.Camera
-import com.fotologue.app.data.Film
-import com.fotologue.app.data.FotologueRepository
-import com.fotologue.app.data.SettingsRepository
+import com.fotologue.app.data.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -17,7 +14,8 @@ data class RollCounterUiState(
     val expectedExposures: Int = 36,
     val isHalfFrame: Boolean = false,
     val activeCamera: Camera? = null,
-    val activeFilm: Film? = null
+    val activeFilm: Film? = null,
+    val hasActiveSession: Boolean = false
 )
 
 @HiltViewModel
@@ -32,51 +30,96 @@ class RollCounterViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             combine(
-                settingsRepository.currentRoll,
-                settingsRepository.currentFrame,
                 settingsRepository.lastCameraId,
                 settingsRepository.lastFilmId
-            ) { roll, frame, cameraId, filmId ->
-                val camera = cameraId?.let { repository.getCameraById(it).first() }
-                val film = filmId?.let { repository.getFilmById(it).first() }
-                
-                val expected = film?.expectedExposures ?: 36
-                val isHalf = camera?.isHalfFrame ?: false
-                
-                RollCounterUiState(
-                    currentRoll = roll,
-                    currentFrame = frame,
-                    expectedExposures = if (isHalf) expected * 2 else expected,
-                    isHalfFrame = isHalf,
-                    activeCamera = camera,
-                    activeFilm = film
-                )
-            }.collect { _uiState.value = it }
+            ) { cameraId, filmId ->
+                if (cameraId != null && filmId != null) {
+                    val camera = repository.getCameraById(cameraId).first()
+                    val film = repository.getFilmById(filmId).first()
+                    
+                    if (camera != null && film != null) {
+                        repository.getFilmRollSession(cameraId, filmId).collect { session ->
+                            val currentSession = session ?: FilmRollSession(cameraId, filmId)
+                            val expected = film.expectedExposures
+                            val isHalf = camera.isHalfFrame
+                            
+                            _uiState.update { it.copy(
+                                currentRoll = currentSession.rollNumber,
+                                currentFrame = currentSession.nextFrameNumber,
+                                expectedExposures = if (isHalf) expected * 2 else expected,
+                                isHalfFrame = isHalf,
+                                activeCamera = camera,
+                                activeFilm = film,
+                                hasActiveSession = true
+                            ) }
+                        }
+                    } else {
+                        _uiState.update { it.copy(hasActiveSession = false) }
+                    }
+                } else {
+                    _uiState.update { it.copy(hasActiveSession = false) }
+                }
+            }.collect {}
         }
     }
 
     fun updateRoll(roll: Int) {
+        val state = _uiState.value
+        if (!state.hasActiveSession) return
         viewModelScope.launch {
-            settingsRepository.setCurrentRollAndFrame(roll, _uiState.value.currentFrame)
+            repository.updateFilmRollSession(
+                FilmRollSession(
+                    cameraId = state.activeCamera!!.id,
+                    filmId = state.activeFilm!!.id,
+                    rollNumber = roll,
+                    nextFrameNumber = state.currentFrame
+                )
+            )
         }
     }
 
     fun updateFrame(frame: Int) {
+        val state = _uiState.value
+        if (!state.hasActiveSession) return
         viewModelScope.launch {
-            settingsRepository.setCurrentRollAndFrame(_uiState.value.currentRoll, frame)
+            repository.updateFilmRollSession(
+                FilmRollSession(
+                    cameraId = state.activeCamera!!.id,
+                    filmId = state.activeFilm!!.id,
+                    rollNumber = state.currentRoll,
+                    nextFrameNumber = frame
+                )
+            )
         }
     }
 
     fun finishRoll() {
+        val state = _uiState.value
+        if (!state.hasActiveSession) return
         viewModelScope.launch {
-            val nextRoll = _uiState.value.currentRoll + 1
-            settingsRepository.setCurrentRollAndFrame(nextRoll, 1)
+            repository.updateFilmRollSession(
+                FilmRollSession(
+                    cameraId = state.activeCamera!!.id,
+                    filmId = state.activeFilm!!.id,
+                    rollNumber = state.currentRoll + 1,
+                    nextFrameNumber = 1
+                )
+            )
         }
     }
 
     fun resetRollCount() {
+        val state = _uiState.value
+        if (!state.hasActiveSession) return
         viewModelScope.launch {
-            settingsRepository.setCurrentRollAndFrame(1, 1)
+            repository.updateFilmRollSession(
+                FilmRollSession(
+                    cameraId = state.activeCamera!!.id,
+                    filmId = state.activeFilm!!.id,
+                    rollNumber = 1,
+                    nextFrameNumber = 1
+                )
+            )
         }
     }
 }

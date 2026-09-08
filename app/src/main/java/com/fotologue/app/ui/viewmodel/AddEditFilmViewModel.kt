@@ -17,6 +17,7 @@ import javax.inject.Inject
 
 data class AddEditFilmUiState(
     val name: String = "",
+    val abbreviation: String = "",
     val iso: String = "400",
     val type: String = Film.TYPE_COLOR_NEGATIVE,
     val expectedExposures: String = "36",
@@ -34,6 +35,7 @@ class AddEditFilmViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(AddEditFilmUiState(
         name = savedStateHandle.get<String>("name") ?: "",
+        abbreviation = savedStateHandle.get<String>("abbreviation") ?: "",
         iso = savedStateHandle.get<String>("iso") ?: "400",
         type = savedStateHandle.get<String>("type") ?: Film.TYPE_COLOR_NEGATIVE,
         expectedExposures = savedStateHandle.get<String>("expectedExposures") ?: "36",
@@ -59,6 +61,7 @@ class AddEditFilmViewModel @Inject constructor(
                     _uiState.update { 
                         it.copy(
                             name = savedStateHandle.get<String>("name") ?: filmData.name, 
+                            abbreviation = savedStateHandle.get<String>("abbreviation") ?: filmData.abbreviation,
                             iso = savedStateHandle.get<String>("iso") ?: filmData.iso.toString(), 
                             type = savedStateHandle.get<String>("type") ?: filmData.type,
                             expectedExposures = savedStateHandle.get<String>("expectedExposures") ?: filmData.expectedExposures.toString(),
@@ -80,23 +83,48 @@ class AddEditFilmViewModel @Inject constructor(
         } else {
             emptyList()
         }
-        _uiState.update { it.copy(name = newName, isNameValid = newName.isNotBlank(), filteredPresets = filtered) }
+        
+        // Suggest abbreviation if empty
+        val currentAbbr = _uiState.value.abbreviation
+        val suggestedAbbr = if (currentAbbr.isBlank() && newName.length >= 3) {
+            newName.take(4).uppercase().filter { it.isLetterOrDigit() }
+        } else currentAbbr
+
+        _uiState.update { it.copy(
+            name = newName, 
+            abbreviation = suggestedAbbr,
+            isNameValid = newName.isNotBlank(), 
+            filteredPresets = filtered
+        ) }
+        savedStateHandle["abbreviation"] = suggestedAbbr
+    }
+
+    fun onAbbreviationChange(newAbbr: String) {
+        val filteredAbbr = newAbbr.uppercase().take(6).filter { it.isLetterOrDigit() }
+        savedStateHandle["abbreviation"] = filteredAbbr
+        _uiState.update { it.copy(abbreviation = filteredAbbr) }
     }
 
     fun onPresetSelected(preset: FilmPreset) {
         val newName = preset.displayName
+        val newAbbr = preset.abbreviation
         val newIso = preset.iso.toString()
         val newType = preset.type
+        val newExpected = preset.expectedExposures.toString()
         
         savedStateHandle["name"] = newName
+        savedStateHandle["abbreviation"] = newAbbr
         savedStateHandle["iso"] = newIso
         savedStateHandle["type"] = newType
+        savedStateHandle["expectedExposures"] = newExpected
         
         _uiState.update { 
             it.copy(
                 name = newName,
+                abbreviation = newAbbr,
                 iso = newIso,
                 type = newType,
+                expectedExposures = newExpected,
                 filteredPresets = emptyList(),
                 isNameValid = true,
                 isTypeValid = true
@@ -140,6 +168,7 @@ class AddEditFilmViewModel @Inject constructor(
             val film = Film(
                 id = filmId ?: 0,
                 name = _uiState.value.name.trim(),
+                abbreviation = _uiState.value.abbreviation.trim().ifBlank { _uiState.value.name.take(3).uppercase() },
                 iso = _uiState.value.iso.toIntOrNull() ?: 400,
                 type = _uiState.value.type.trim(),
                 expectedExposures = _uiState.value.expectedExposures.toIntOrNull() ?: 36,

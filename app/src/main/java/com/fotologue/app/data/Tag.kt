@@ -23,7 +23,8 @@ data class Tag(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val category: String = CATEGORY_CONTENT,
-    val parentId: Long? = null
+    val parentId: Long? = null,
+    val position: Int = 0
 ) {
     companion object {
         const val CATEGORY_SUBJECT = "Subject"

@@ -12,7 +12,9 @@ data class Film(
     val iso: Int,
     val type: String,
     val expectedExposures: Int = 36,
-    val format: String = "35mm"
+    val format: String = "35mm",
+    val abbreviation: String = "",
+    val position: Int = 0
 ) {
     companion object {
         val FORMAT_35MM = "35mm"

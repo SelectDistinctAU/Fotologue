@@ -43,6 +43,9 @@
     <string name="onboarding_add_film">添加您的第一卷胶卷</string>
     <string name="how_it_works_help">使用说明 / 帮助</string>
     <string name="restore_from_backup">从备份恢复</string>
+    <string name="welcome_advanced_config_header">高级配置（可选）</string>
+    <string name="onboarding_calibrate_meter">校准测光表</string>
+    <string name="onboarding_calibrate_meter_description">调整手机传感器以达到专业精度。</string>
 
     <!-- Timeline -->
     <string name="timeline_empty">暂无记录。点击添加！</string>

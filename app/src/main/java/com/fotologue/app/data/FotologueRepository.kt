@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -25,6 +26,7 @@ class FotologueRepository(
     private val logEntryDao: LogEntryDao,
     private val cameraKitDao: CameraKitDao,
     private val tagDao: TagDao,
+    private val filmRollSessionDao: FilmRollSessionDao,
     private val locationProvider: LocationProvider,
     private val settingsRepository: SettingsRepository
 ) {
@@ -66,17 +68,40 @@ class FotologueRepository(
     fun getFlashById(id: Long): Flow<Flash?> = flashDao.getFlashById(id)
     fun getCameraKitById(id: Long): Flow<CameraKit?> = cameraKitDao.getCameraKitById(id)
 
-    suspend fun getSuggestedFilmRoll(cameraId: Long?, filmId: Long?): String {
-        if (cameraId == null || filmId == null) {
-            val roll = settingsRepository.currentRoll.first()
-            val frame = settingsRepository.currentFrame.first()
-            return String.format(Locale.US, "%d.%02d", roll, frame)
-        }
+    fun getFilmRollSession(cameraId: Long, filmId: Long): Flow<FilmRollSession?> =
+        filmRollSessionDao.getSession(cameraId, filmId)
+
+    fun getSuggestedFilmRollFlow(cameraId: Long?, filmId: Long?): Flow<String> {
+        if (cameraId == null || filmId == null) return flowOf("1.01")
         
-        // We now prioritize the 'Active' session in SettingsRepository
-        val roll = settingsRepository.currentRoll.first()
-        val frame = settingsRepository.currentFrame.first()
-        return String.format(Locale.US, "%d.%02d", roll, frame)
+        return filmRollSessionDao.getSession(cameraId, filmId).map { session ->
+            if (session != null) {
+                String.format(Locale.US, "%d.%02d", session.rollNumber, session.nextFrameNumber)
+            } else {
+                "1.01"
+            }
+        }
+    }
+
+    suspend fun updateFilmRollSession(session: FilmRollSession) =
+        filmRollSessionDao.insertSession(session)
+
+    suspend fun getSuggestedFilmRoll(cameraId: Long?, filmId: Long?): String {
+        if (cameraId == null || filmId == null) return "1.01"
+        
+        val session = filmRollSessionDao.getSessionOnce(cameraId, filmId)
+        if (session != null) {
+            return String.format(Locale.US, "%d.%02d", session.rollNumber, session.nextFrameNumber)
+        }
+
+        val latest = logEntryDao.getLatestFilmRoll(cameraId, filmId)
+        if (latest == null) return "1.01"
+        
+        val value = latest.toDoubleOrNull() ?: return "1.01"
+        // If we have history but no explicit session, we assume we are at the next frame
+        val roll = latest.split(".").getOrNull(0)?.toIntOrNull() ?: 1
+        val frame = latest.split(".").getOrNull(1)?.toIntOrNull() ?: 0
+        return String.format(Locale.US, "%d.%02d", roll, frame + 1)
     }
 
     suspend fun insertCamera(camera: Camera) = cameraDao.insertCamera(camera)
@@ -168,7 +193,9 @@ class FotologueRepository(
     }
 
     suspend fun updateCamera(camera: Camera) = cameraDao.updateCamera(camera)
+    suspend fun updateCameras(cameras: List<Camera>) = cameraDao.updateCameras(cameras)
     suspend fun updateFilm(film: Film) = filmDao.updateFilm(film)
+    suspend fun updateFilms(films: List<Film>) = filmDao.updateFilms(films)
     suspend fun updateLens(lens: Lens, cameraIds: List<Long> = emptyList()) {
         lensDao.updateLens(lens)
         lensDao.deleteCameraLensCrossRefsForLens(lens.id)
@@ -181,11 +208,17 @@ class FotologueRepository(
             lensDao.insertCameraLensCrossRef(CameraLensCrossRef(cameraId, lens.id))
         }
     }
+    suspend fun updateLenses(lenses: List<Lens>) = lensDao.updateLenses(lenses)
     suspend fun updateTeleconverter(teleconverter: Teleconverter) = teleconverterDao.updateTeleconverter(teleconverter)
+    suspend fun updateTeleconverters(tcs: List<Teleconverter>) = teleconverterDao.updateTeleconverters(tcs)
     suspend fun updateFilter(filter: Filter) = filterDao.updateFilter(filter)
+    suspend fun updateFilters(filters: List<Filter>) = filterDao.updateFilters(filters)
     suspend fun updateFlash(flash: Flash) = flashDao.updateFlash(flash)
+    suspend fun updateFlashes(flashes: List<Flash>) = flashDao.updateFlashes(flashes)
     suspend fun updateCameraKit(cameraKit: CameraKit) = cameraKitDao.updateCameraKit(cameraKit)
+    suspend fun updateCameraKits(kits: List<CameraKit>) = cameraKitDao.updateCameraKits(kits)
     suspend fun updateTag(tag: Tag) = tagDao.updateTag(tag)
+    suspend fun updateTags(tags: List<Tag>) = tagDao.updateTags(tags)
 
     suspend fun deleteCamera(camera: Camera) = cameraDao.deleteCamera(camera)
     suspend fun deleteFilm(film: Film) = filmDao.deleteFilm(film)
@@ -282,9 +315,20 @@ class FotologueRepository(
             isExportedCsv = false,
             isExportedJson = false
         )
-        val logId = logEntryDao.insertLogEntry(entry)
-        tagIds.forEach { tagId ->
-            tagDao.insertLogEntryTagCrossRef(LogEntryTagCrossRef(logId, tagId))
+
+        db.withTransaction {
+            val logId = logEntryDao.insertLogEntry(entry)
+            tagIds.forEach { tagId ->
+                tagDao.insertLogEntryTagCrossRef(LogEntryTagCrossRef(logId, tagId))
+            }
+            
+            // Update the persistent session for this gear combination
+            if (cameraId != null && filmId != null && filmRoll != null && filmRoll.contains(".")) {
+                val parts = filmRoll.split(".")
+                val roll = parts[0].toIntOrNull() ?: 1
+                val frame = parts[1].toIntOrNull() ?: 1
+                filmRollSessionDao.insertSession(FilmRollSession(cameraId, filmId, roll, frame + 1))
+            }
         }
     }
 }

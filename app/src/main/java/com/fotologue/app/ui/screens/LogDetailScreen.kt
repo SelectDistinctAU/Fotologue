@@ -98,7 +98,11 @@ fun LogDetailScreen(
 
                     DetailItem(label = stringResource(R.string.label_camera), value = entryWithGear.camera?.name ?: stringResource(R.string.unknown_deleted))
                     if (!entry.filmRoll.isNullOrBlank()) {
-                        DetailItem(label = stringResource(R.string.label_film_roll), value = entry.filmRoll)
+                        val expected = entryWithGear.film?.expectedExposures
+                        val isHalf = entryWithGear.camera?.isHalfFrame == true
+                        val total = if (isHalf && expected != null) expected * 2 else expected
+                        val value = if (total != null) "${entry.filmRoll}/$total" else entry.filmRoll
+                        DetailItem(label = stringResource(R.string.label_film_roll), value = value)
                     }
                     entryWithGear.lens?.let { lens ->
                         DetailItem(label = stringResource(R.string.label_lens), value = "${lens.make} ${lens.model}")
@@ -115,7 +119,7 @@ fun LogDetailScreen(
                     entryWithGear.flash?.let { flash ->
                         DetailItem(label = stringResource(R.string.label_flash), value = "${flash.make} ${flash.model}")
                     }
-                    DetailItem(label = stringResource(R.string.label_film), value = entryWithGear.film?.let { "${it.name} (ISO ${it.iso})" } ?: stringResource(R.string.unknown_deleted))
+                    DetailItem(label = stringResource(R.string.label_film), value = entryWithGear.film?.let { "${it.name} (ISO ${it.iso}, ${it.expectedExposures} exp)" } ?: stringResource(R.string.unknown_deleted))
                     
                     if (entry.effectiveFocalLength != null || entry.effectiveAperture != null) {
                         Spacer(modifier = Modifier.height(16.dp))

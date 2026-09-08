@@ -59,12 +59,13 @@ object AppModule {
         logEntryDao: LogEntryDao,
         cameraKitDao: CameraKitDao,
         tagDao: TagDao,
+        filmRollSessionDao: FilmRollSessionDao,
         locationProvider: LocationProvider,
         settingsRepository: SettingsRepository
     ): FotologueRepository {
         return FotologueRepository(
             db, cameraDao, filmDao, lensDao, teleconverterDao, filterDao, flashDao,
-            logEntryDao, cameraKitDao, tagDao, locationProvider, settingsRepository
+            logEntryDao, cameraKitDao, tagDao, filmRollSessionDao, locationProvider, settingsRepository
         )
     }
 

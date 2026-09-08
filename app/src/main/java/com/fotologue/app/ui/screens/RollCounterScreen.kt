@@ -48,96 +48,107 @@ fun RollCounterScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Active Session",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "${uiState.activeCamera?.name ?: "No Camera"} • ${uiState.activeFilm?.name ?: "No Film"}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            if (uiState.hasActiveSession) {
+                Text(
+                    text = "Active Session",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "${uiState.activeCamera?.name ?: "No Camera"} • ${uiState.activeFilm?.let { "${it.name} (${it.expectedExposures} exp)" } ?: "No Film"}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
 
-            Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(48.dp))
 
-            // Large Display: Roll.Frame / Max
-            val displayString = String.format(Locale.US, "%d.%02d / %d", uiState.currentRoll, uiState.currentFrame, uiState.expectedExposures)
-            Text(
-                text = displayString,
-                style = MaterialTheme.typography.displayLarge.copy(fontSize = 48.sp),
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.secondary
-            )
-            
-            Text(
-                text = "Roll ${uiState.currentRoll}, Frame ${uiState.currentFrame} of ${uiState.expectedExposures}",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+                // Large Display: Roll.Frame / Max
+                val displayString = String.format(Locale.US, "%d.%02d / %d", uiState.currentRoll, uiState.currentFrame, uiState.expectedExposures)
+                Text(
+                    text = displayString,
+                    style = MaterialTheme.typography.displayLarge.copy(fontSize = 48.sp),
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                
+                Text(
+                    text = "Roll ${uiState.currentRoll}, Frame ${uiState.currentFrame} of ${uiState.expectedExposures}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
 
-            Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(48.dp))
 
-            // Controls
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                OutlinedCard(
-                    onClick = { viewModel.updateFrame((uiState.currentFrame - 1).coerceAtLeast(1)) },
-                    modifier = Modifier.weight(1f)
+                // Controls
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    OutlinedCard(
+                        onClick = { viewModel.updateFrame((uiState.currentFrame - 1).coerceAtLeast(1)) },
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Icon(painterResource(R.drawable.ic_remove), contentDescription = null)
-                        Text("Frame")
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(painterResource(R.drawable.ic_remove), contentDescription = null)
+                            Text("Frame")
+                        }
+                    }
+                    OutlinedCard(
+                        onClick = { viewModel.updateFrame(uiState.currentFrame + 1) },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(painterResource(R.drawable.ic_add), contentDescription = null)
+                            Text("Frame")
+                        }
                     }
                 }
-                OutlinedCard(
-                    onClick = { viewModel.updateFrame(uiState.currentFrame + 1) },
-                    modifier = Modifier.weight(1f)
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = { viewModel.finishRoll() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(painterResource(R.drawable.ic_add), contentDescription = null)
-                        Text("Frame")
-                    }
+                    Icon(painterResource(R.drawable.ic_replay), contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Finish Roll & Start New")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedButton(
+                    onClick = { viewModel.resetRollCount() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Reset to Roll 1, Frame 1")
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+                
+                Text(
+                    text = "Note: Saving a new exposure log will automatically increment the frame count.",
+                    style = MaterialTheme.typography.labelSmall,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "No active gear combination found. Please start a log first to initialize a session.",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { viewModel.finishRoll() },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
-            ) {
-                Icon(painterResource(R.drawable.ic_replay), contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Finish Roll & Start New")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedButton(
-                onClick = { viewModel.resetRollCount() },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Reset to Roll 1, Frame 1")
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            Text(
-                text = "Note: Saving a new exposure log will automatically increment the frame count.",
-                style = MaterialTheme.typography.labelSmall,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
             
             Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding() + 16.dp))
         }

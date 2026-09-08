@@ -11,6 +11,9 @@ import com.fotologue.app.data.PictureExportSize
 import com.fotologue.app.data.Tag
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -25,7 +28,13 @@ object LogEntryZipExporter {
         copyright: String = "",
         contact: String = ""
     ) {
+        val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.US)
+        val usedNames = mutableSetOf<String>()
+        
         ZipOutputStream(outputStream.buffered()).use { zos ->
+            // ...
+            // (Skipping metadata exports as they are fine)
+            // ... (keep metadata.json and metadata.csv logic)
             // 1. metadata.json
             try {
                 val jsonExport = LogEntryJsonExporter.toJson(logs)
@@ -52,7 +61,24 @@ object LogEntryZipExporter {
                 if (!uriString.isNullOrEmpty()) {
                     try {
                         val uri = Uri.parse(uriString)
-                        val fileName = uri.lastPathSegment ?: "thumb_${entry.logEntry.id}.jpg"
+                        
+                        // New Naming Convention: yyyymmdd_FilmAbbr_Roll###_Frame##
+                        val datePrefix = dateFormat.format(Date(entry.logEntry.timestamp))
+                        val filmAbbr = entry.film?.abbreviation?.ifBlank { entry.film?.name?.take(3)?.uppercase() } ?: "UNK"
+                        
+                        val rollParts = (entry.logEntry.filmRoll ?: "0.00").split(".")
+                        val rollNo = rollParts.getOrNull(0)?.toIntOrNull() ?: 0
+                        val frameNo = rollParts.getOrNull(1)?.toIntOrNull() ?: 0
+                        
+                        var baseName = String.format(Locale.US, "%s_%s_R%03d_F%02d", datePrefix, filmAbbr, rollNo, frameNo)
+                        
+                        // Collision avoidance
+                        if (usedNames.contains(baseName)) {
+                            baseName += "_${entry.logEntry.id}"
+                        }
+                        usedNames.add(baseName)
+                        
+                        val fileName = baseName + ".jpg"
                         
                         // Check if file exists and is readable before creating zip entry
                         val isAccessible = try {

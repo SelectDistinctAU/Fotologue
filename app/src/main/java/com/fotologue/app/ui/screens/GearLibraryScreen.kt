@@ -17,20 +17,14 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fotologue.app.data.Camera
-import com.fotologue.app.data.Film
-import com.fotologue.app.data.Teleconverter
-import com.fotologue.app.data.Filter
-import com.fotologue.app.data.Flash
-import com.fotologue.app.data.CameraKitWithGear
-import com.fotologue.app.data.Tag
-import com.fotologue.app.data.LensWithCameras
+import com.fotologue.app.data.*
 import com.fotologue.app.ui.viewmodel.GearLibraryViewModel
 import com.fotologue.app.R
 
@@ -52,7 +46,7 @@ fun GearLibraryScreen(
     onAddFlash: () -> Unit,
     onEditFlash: (Long) -> Unit,
     onAddKit: () -> Unit,
-    onEditKit: (Long) -> Unit
+    onEditKit: (Long) -> Unit,
 ) {
     val adaptiveInfo = currentWindowAdaptiveInfoV2()
     val directive = calculatePaneScaffoldDirective(adaptiveInfo)
@@ -142,37 +136,45 @@ fun GearLibraryScreen(
                         0 -> KitList(
                             kits = kits,
                             selectedIds = uiState.selectedKitIds,
+                            isReorderMode = uiState.isReorderMode,
                             onKitClick = { id -> 
                                 if (uiState.isSelectionMode) viewModel.toggleKitSelection(id) else onEditKit(id)
                             },
                             onKitLongClick = { viewModel.toggleKitSelection(it) },
+                            onMove = viewModel::moveKit,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         1 -> CameraList(
                             cameras = cameras,
                             selectedIds = uiState.selectedCameraIds,
+                            isReorderMode = uiState.isReorderMode,
                             onCameraClick = { id -> 
                                 if (uiState.isSelectionMode) viewModel.toggleCameraSelection(id) else onEditCamera(id)
                             },
                             onCameraLongClick = { viewModel.toggleCameraSelection(it) },
+                            onMove = viewModel::moveCamera,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         2 -> LensList(
                             lenses = lensesWithCameras,
                             selectedIds = uiState.selectedLensIds,
+                            isReorderMode = uiState.isReorderMode,
                             onLensClick = { id -> 
                                 if (uiState.isSelectionMode) viewModel.toggleLensSelection(id) else onEditLens(id)
                             },
                             onLensLongClick = { viewModel.toggleLensSelection(it) },
+                            onMove = viewModel::moveLens,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         3 -> FilmList(
                             films = films,
                             selectedIds = uiState.selectedFilmIds,
+                            isReorderMode = uiState.isReorderMode,
                             onFilmClick = { id -> 
                                 if (uiState.isSelectionMode) viewModel.toggleFilmSelection(id) else onEditFilm(id)
                             },
                             onFilmLongClick = { viewModel.toggleFilmSelection(it) },
+                            onMove = viewModel::moveFilm,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         4 -> AccessoriesGearScreen(
@@ -183,6 +185,7 @@ fun GearLibraryScreen(
                             selectedFilterIds = uiState.selectedFilterIds,
                             selectedFlashIds = uiState.selectedFlashIds,
                             selectedTabIndex = selectedAccessoriesTabIndex,
+                            isReorderMode = uiState.isReorderMode,
                             onTabSelected = { selectedAccessoriesTabIndex = it },
                             onTeleconverterClick = { id -> 
                                 if (uiState.isSelectionMode) viewModel.toggleTeleconverterSelection(id) else onEditTeleconverter(id)
@@ -196,25 +199,32 @@ fun GearLibraryScreen(
                                 if (uiState.isSelectionMode) viewModel.toggleFlashSelection(id) else onEditFlash(id)
                             },
                             onFlashLongClick = { viewModel.toggleFlashSelection(it) },
+                            onMoveTeleconverter = viewModel::moveTeleconverter,
+                            onMoveFilter = viewModel::moveFilter,
+                            onMoveFlash = viewModel::moveFlash,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         5 -> SubjectList(
                             subjects = subjects,
                             selectedIds = uiState.selectedSubjectIds,
+                            isReorderMode = uiState.isReorderMode,
                             onSubjectClick = { sub ->
                                 if (uiState.isSelectionMode) viewModel.toggleSubjectSelection(sub.id) else viewModel.showEditTagDialog(sub)
                             },
                             onSubjectLongClick = { viewModel.toggleSubjectSelection(it) },
+                            onMove = viewModel::moveSubject,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         6 -> ContentList(
                             contentItems = contentTags,
                             subjects = subjects,
                             selectedIds = uiState.selectedContentIds,
+                            isReorderMode = uiState.isReorderMode,
                             onContentClick = { tag ->
                                 if (uiState.isSelectionMode) viewModel.toggleContentSelection(tag.id) else viewModel.showEditTagDialog(tag)
                             },
                             onContentLongClick = { viewModel.toggleContentSelection(it) },
+                            onMove = viewModel::moveContent,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                     }
@@ -235,6 +245,8 @@ fun GearLibraryScreen(
                                                         uiState.selectedSubjectIds.size +
                                                         uiState.selectedContentIds.size
                                     Text(stringResource(R.string.selected_count, totalSelected))
+                                } else if (uiState.isReorderMode) {
+                                    Text("Reorder Items")
                                 } else {
                                     val categoryName = categories[uiState.selectedCategoryIndex].name
                                     val accessoriesName = stringResource(R.string.category_accessories)
@@ -252,16 +264,22 @@ fun GearLibraryScreen(
                                 }
                             },
                             navigationIcon = {
-                                if (uiState.isSelectionMode) {
-                                    IconButton(onClick = viewModel::clearSelection) {
+                                if (uiState.isSelectionMode || uiState.isReorderMode) {
+                                    IconButton(
+                                        onClick = { 
+                                            if (uiState.isReorderMode) viewModel.toggleReorderMode() else viewModel.clearSelection() 
+                                        }
+                                    ) {
                                         Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.action_clear_selection))
                                     }
                                 } else if (navigator.canNavigateBack()) {
-                                    IconButton(onClick = { 
-                                        scope.launch {
-                                            navigator.navigateBack()
+                                    IconButton(
+                                        onClick = { 
+                                            scope.launch {
+                                                navigator.navigateBack()
+                                            }
                                         }
-                                    }) {
+                                    ) {
                                         Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.action_back_to_categories))
                                     }
                                 }
@@ -274,12 +292,16 @@ fun GearLibraryScreen(
                                     IconButton(onClick = { viewModel.deleteSelectedGear() }) {
                                         Icon(painterResource(R.drawable.ic_delete), contentDescription = stringResource(R.string.action_delete))
                                     }
+                                } else if (!uiState.isReorderMode) {
+                                    IconButton(onClick = { viewModel.toggleReorderMode() }) {
+                                        Icon(painterResource(R.drawable.select_check_box_24px), contentDescription = "Toggle Reorder")
+                                    }
                                 }
                             }
                         )
                     },
                     floatingActionButton = {
-                        if (!uiState.isSelectionMode) {
+                        if (!uiState.isSelectionMode && !uiState.isReorderMode) {
                             FloatingActionButton(
                                 onClick = {
                                     when (uiState.selectedCategoryIndex) {
@@ -445,7 +467,7 @@ fun ContentDialog(
         confirmButton = {
             Button(
                 onClick = { onConfirm(name, parentId) },
-                enabled = name.isNotBlank() && parentId != null
+                enabled = (name.isNotBlank() && parentId != null)
             ) {
                 Text(stringResource(R.string.action_save))
             }
@@ -467,6 +489,7 @@ fun AccessoriesGearScreen(
     selectedFilterIds: Set<Long>,
     selectedFlashIds: Set<Long>,
     selectedTabIndex: Int,
+    isReorderMode: Boolean,
     onTabSelected: (Int) -> Unit,
     onTeleconverterClick: (Long) -> Unit,
     onTeleconverterLongClick: (Long) -> Unit,
@@ -474,6 +497,9 @@ fun AccessoriesGearScreen(
     onFilterLongClick: (Long) -> Unit,
     onFlashClick: (Long) -> Unit,
     onFlashLongClick: (Long) -> Unit,
+    onMoveTeleconverter: (Int, Int) -> Unit,
+    onMoveFilter: (Int, Int) -> Unit,
+    onMoveFlash: (Int, Int) -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -502,22 +528,28 @@ fun AccessoriesGearScreen(
             0 -> TeleconverterList(
                 teleconverters = teleconverters,
                 selectedIds = selectedTeleconverterIds,
+                isReorderMode = isReorderMode,
                 onTeleconverterClick = onTeleconverterClick,
                 onTeleconverterLongClick = onTeleconverterLongClick,
+                onMove = onMoveTeleconverter,
                 bottomPadding = bottomPadding
             )
             1 -> FilterList(
                 filters = filters,
                 selectedIds = selectedFilterIds,
+                isReorderMode = isReorderMode,
                 onFilterClick = onFilterClick,
                 onFilterLongClick = onFilterLongClick,
+                onMove = onMoveFilter,
                 bottomPadding = bottomPadding
             )
             2 -> FlashList(
                 flashes = flashes,
                 selectedIds = selectedFlashIds,
+                isReorderMode = isReorderMode,
                 onFlashClick = onFlashClick,
                 onFlashLongClick = onFlashLongClick,
+                onMove = onMoveFlash,
                 bottomPadding = bottomPadding
             )
         }
@@ -529,8 +561,10 @@ fun AccessoriesGearScreen(
 private fun SubjectList(
     subjects: List<Tag>,
     selectedIds: Set<Long>,
+    isReorderMode: Boolean,
     onSubjectClick: (Tag) -> Unit,
     onSubjectLongClick: (Long) -> Unit,
+    onMove: (Int, Int) -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     if (subjects.isEmpty()) {
@@ -542,7 +576,7 @@ private fun SubjectList(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            items(subjects) { sub ->
+            itemsIndexed(subjects) { index, sub ->
                 ListItem(
                     headlineContent = { 
                         Text(
@@ -562,6 +596,9 @@ private fun SubjectList(
                             Icon(painterResource(R.drawable.ic_label), contentDescription = null, modifier = Modifier.size(24.dp))
                         }
                     },
+                    trailingContent = if (isReorderMode) {
+                        { ReorderButtons(index, subjects.size, onMove) }
+                    } else null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
@@ -582,8 +619,10 @@ private fun ContentList(
     contentItems: List<Tag>,
     subjects: List<Tag>,
     selectedIds: Set<Long>,
+    isReorderMode: Boolean,
     onContentClick: (Tag) -> Unit,
     onContentLongClick: (Long) -> Unit,
+    onMove: (Int, Int) -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     if (contentItems.isEmpty()) {
@@ -591,51 +630,103 @@ private fun ContentList(
             Text(stringResource(R.string.empty_content), style = MaterialTheme.typography.bodyLarge)
         }
     } else {
-        val groupedContent = remember(contentItems) {
-            contentItems.groupBy { it.parentId }
-        }
+        // Reordering grouped content is tricky, so we'll just show the full list in reorder mode
+        if (isReorderMode) {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
+            ) {
+                itemsIndexed(contentItems) { index, tag ->
+                    val parent = subjects.find { it.id == tag.parentId }
+                    ListItem(
+                        headlineContent = { Text(tag.name) },
+                        supportingContent = { Text("Parent: ${parent?.name ?: "None"}") },
+                        trailingContent = { ReorderButtons(index, contentItems.size, onMove) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    HorizontalDivider()
+                }
+            }
+        } else {
+            val groupedContent = remember(contentItems) {
+                contentItems.groupBy { it.parentId }
+            }
 
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-            contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
-        ) {
-            subjects.forEach { subject ->
-                val itemsForSubject = (groupedContent[subject.id] ?: emptyList()).sortedBy { it.name.lowercase() }
-                if (itemsForSubject.isNotEmpty()) {
-                    item(key = "subject_${subject.id}") {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
+            ) {
+                subjects.forEach { subject ->
+                    val itemsForSubject = groupedContent[subject.id] ?: emptyList()
+                    if (itemsForSubject.isNotEmpty()) {
+                        item(key = "subject_${subject.id}") {
+                            Surface(
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = subject.name,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                                )
+                            }
+                        }
+
+                        items(itemsForSubject, key = { it.id }) { tag ->
+                            val isSelected = selectedIds.contains(tag.id)
+                            ListItem(
+                                headlineContent = { 
+                                    Text(
+                                        text = tag.name,
+                                        style = MaterialTheme.typography.titleMedium
+                                    ) 
+                                },
+                                leadingContent = {
+                                    if (isSelected) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_check_circle), 
+                                            contentDescription = "Selected", 
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    } else {
+                                        Icon(painterResource(R.drawable.ic_label), contentDescription = null, modifier = Modifier.size(24.dp))
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .combinedClickable(
+                                        onClick = { onContentClick(tag) },
+                                        onLongClick = { onContentLongClick(tag.id) }
+                                    )
+                                    .padding(vertical = 4.dp)
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                        }
+                    }
+                }
+                
+                val orphans = contentItems.filter { it.parentId == null || subjects.none { s -> s.id == it.parentId } }
+                if (orphans.isNotEmpty()) {
+                    item {
                         Surface(
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = subject.name,
+                                text = stringResource(R.string.label_uncategorised),
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             )
                         }
                     }
-
-                    items(itemsForSubject, key = { it.id }) { tag ->
-                        val isSelected = selectedIds.contains(tag.id)
+                    items(orphans) { tag ->
                         ListItem(
-                            headlineContent = { 
-                                Text(
-                                    text = tag.name,
-                                    style = MaterialTheme.typography.titleMedium
-                                ) 
-                            },
+                            headlineContent = { Text(tag.name) },
                             leadingContent = {
-                                if (isSelected) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_check_circle), 
-                                        contentDescription = "Selected", 
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                } else {
-                                    Icon(painterResource(R.drawable.ic_label), contentDescription = null, modifier = Modifier.size(24.dp))
-                                }
+                                Icon(painterResource(R.drawable.ic_label), contentDescription = null, modifier = Modifier.size(24.dp))
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -643,44 +734,9 @@ private fun ContentList(
                                     onClick = { onContentClick(tag) },
                                     onLongClick = { onContentLongClick(tag.id) }
                                 )
-                                .padding(vertical = 4.dp)
                         )
-                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                        HorizontalDivider()
                     }
-                }
-            }
-            
-            // Handle items with no valid parent subject
-            val orphans = contentItems.filter { it.parentId == null || subjects.none { s -> s.id == it.parentId } }
-                .sortedBy { it.name.lowercase() }
-            if (orphans.isNotEmpty()) {
-                item {
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = stringResource(R.string.label_uncategorised),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
-                    }
-                }
-                items(orphans) { tag ->
-                    ListItem(
-                        headlineContent = { Text(tag.name) },
-                        leadingContent = {
-                            Icon(painterResource(R.drawable.ic_label), contentDescription = null, modifier = Modifier.size(24.dp))
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .combinedClickable(
-                                onClick = { onContentClick(tag) },
-                                onLongClick = { onContentLongClick(tag.id) }
-                            )
-                    )
-                    HorizontalDivider()
                 }
             }
         }
@@ -692,8 +748,10 @@ private fun ContentList(
 private fun KitList(
     kits: List<CameraKitWithGear>,
     selectedIds: Set<Long>,
+    isReorderMode: Boolean,
     onKitClick: (Long) -> Unit,
     onKitLongClick: (Long) -> Unit,
+    onMove: (Int, Int) -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     if (kits.isEmpty()) {
@@ -705,7 +763,7 @@ private fun KitList(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            items(kits) { kitWithGear ->
+            itemsIndexed(kits) { index, kitWithGear ->
                 val kit = kitWithGear.cameraKit
                 ListItem(
                     headlineContent = { 
@@ -740,6 +798,9 @@ private fun KitList(
                             )
                         }
                     },
+                    trailingContent = if (isReorderMode) {
+                        { ReorderButtons(index, kits.size, onMove) }
+                    } else null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
@@ -759,8 +820,10 @@ private fun KitList(
 private fun TeleconverterList(
     teleconverters: List<Teleconverter>,
     selectedIds: Set<Long>,
+    isReorderMode: Boolean,
     onTeleconverterClick: (Long) -> Unit,
     onTeleconverterLongClick: (Long) -> Unit,
+    onMove: (Int, Int) -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     if (teleconverters.isEmpty()) {
@@ -772,7 +835,7 @@ private fun TeleconverterList(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            items(teleconverters) { tc ->
+            itemsIndexed(teleconverters) { index, tc ->
                 ListItem(
                     headlineContent = { 
                         Text(
@@ -803,6 +866,9 @@ private fun TeleconverterList(
                             )
                         }
                     },
+                    trailingContent = if (isReorderMode) {
+                        { ReorderButtons(index, teleconverters.size, onMove) }
+                    } else null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
@@ -822,8 +888,10 @@ private fun TeleconverterList(
 private fun FilterList(
     filters: List<Filter>,
     selectedIds: Set<Long>,
+    isReorderMode: Boolean,
     onFilterClick: (Long) -> Unit,
     onFilterLongClick: (Long) -> Unit,
+    onMove: (Int, Int) -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     if (filters.isEmpty()) {
@@ -835,7 +903,7 @@ private fun FilterList(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            items(filters) { filter ->
+            itemsIndexed(filters) { index, filter ->
                 ListItem(
                     headlineContent = { 
                         Text(
@@ -866,6 +934,9 @@ private fun FilterList(
                             )
                         }
                     },
+                    trailingContent = if (isReorderMode) {
+                        { ReorderButtons(index, filters.size, onMove) }
+                    } else null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
@@ -885,8 +956,10 @@ private fun FilterList(
 private fun FlashList(
     flashes: List<Flash>,
     selectedIds: Set<Long>,
+    isReorderMode: Boolean,
     onFlashClick: (Long) -> Unit,
     onFlashLongClick: (Long) -> Unit,
+    onMove: (Int, Int) -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     if (flashes.isEmpty()) {
@@ -898,7 +971,7 @@ private fun FlashList(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            items(flashes) { flash ->
+            itemsIndexed(flashes) { index, flash ->
                 ListItem(
                     headlineContent = { 
                         Text(
@@ -929,6 +1002,9 @@ private fun FlashList(
                             )
                         }
                     },
+                    trailingContent = if (isReorderMode) {
+                        { ReorderButtons(index, flashes.size, onMove) }
+                    } else null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
@@ -948,8 +1024,10 @@ private fun FlashList(
 private fun LensList(
     lenses: List<LensWithCameras>,
     selectedIds: Set<Long>,
+    isReorderMode: Boolean,
     onLensClick: (Long) -> Unit,
     onLensLongClick: (Long) -> Unit,
+    onMove: (Int, Int) -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     if (lenses.isEmpty()) {
@@ -961,7 +1039,7 @@ private fun LensList(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            items(lenses) { lensWithCameras ->
+            itemsIndexed(lenses) { index, lensWithCameras ->
                 val lens = lensWithCameras.lens
                 ListItem(
                     headlineContent = { 
@@ -1012,6 +1090,9 @@ private fun LensList(
                             )
                         }
                     },
+                    trailingContent = if (isReorderMode) {
+                        { ReorderButtons(index, lenses.size, onMove) }
+                    } else null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
@@ -1031,8 +1112,10 @@ private fun LensList(
 private fun CameraList(
     cameras: List<Camera>,
     selectedIds: Set<Long>,
+    isReorderMode: Boolean,
     onCameraClick: (Long) -> Unit,
     onCameraLongClick: (Long) -> Unit,
+    onMove: (Int, Int) -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     if (cameras.isEmpty()) {
@@ -1044,7 +1127,7 @@ private fun CameraList(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            items(cameras) { camera ->
+            itemsIndexed(cameras) { index, camera ->
                 ListItem(
                     headlineContent = { 
                         Text(
@@ -1085,6 +1168,9 @@ private fun CameraList(
                             )
                         }
                     },
+                    trailingContent = if (isReorderMode) {
+                        { ReorderButtons(index, cameras.size, onMove) }
+                    } else null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
@@ -1104,8 +1190,10 @@ private fun CameraList(
 private fun FilmList(
     films: List<Film>,
     selectedIds: Set<Long>,
+    isReorderMode: Boolean,
     onFilmClick: (Long) -> Unit,
     onFilmLongClick: (Long) -> Unit,
+    onMove: (Int, Int) -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     if (films.isEmpty()) {
@@ -1117,7 +1205,7 @@ private fun FilmList(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            items(films) { film ->
+            itemsIndexed(films) { index, film ->
                 ListItem(
                     headlineContent = { 
                         Text(
@@ -1127,7 +1215,7 @@ private fun FilmList(
                     },
                     supportingContent = { 
                         Text(
-                            text = "ISO ${film.iso} • ${film.type}",
+                            text = "Abbr: ${film.abbreviation} • ISO ${film.iso} • ${film.expectedExposures} exp • ${film.type}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.secondary
                         ) 
@@ -1148,6 +1236,9 @@ private fun FilmList(
                             )
                         }
                     },
+                    trailingContent = if (isReorderMode) {
+                        { ReorderButtons(index, films.size, onMove) }
+                    } else null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
@@ -1158,6 +1249,36 @@ private fun FilmList(
                 )
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             }
+        }
+    }
+}
+
+@Composable
+private fun ReorderButtons(
+    index: Int,
+    listSize: Int,
+    onMove: (Int, Int) -> Unit,
+) {
+    Row {
+        IconButton(
+            onClick = { onMove(index, index - 1) },
+            enabled = index > 0
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_back), 
+                contentDescription = "Move Up", 
+                modifier = Modifier.size(20.dp).rotate(90f)
+            )
+        }
+        IconButton(
+            onClick = { onMove(index, index + 1) },
+            enabled = index < listSize - 1
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_back), 
+                contentDescription = "Move Down", 
+                modifier = Modifier.size(20.dp).rotate(-90f)
+            )
         }
     }
 }

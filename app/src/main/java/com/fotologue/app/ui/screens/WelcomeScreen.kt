@@ -35,7 +35,8 @@ fun WelcomeScreen(
     onAddCamera: () -> Unit,
     onAddLens: () -> Unit,
     onAddFilm: () -> Unit,
-    onShowHelp: () -> Unit
+    onCalibrateMeter: () -> Unit,
+    onShowHelp: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -63,6 +64,7 @@ fun WelcomeScreen(
         onAddCamera = onAddCamera,
         onAddLens = onAddLens,
         onAddFilm = onAddFilm,
+        onCalibrateMeter = onCalibrateMeter,
         onShowHelp = onShowHelp,
         onRestoreBackup = { uri -> viewModel.restoreBackup(uri, contentResolver) },
         onToggleThumbnail = { enabled ->
@@ -74,16 +76,16 @@ fun WelcomeScreen(
         onToggleFaceDetection = { enabled ->
             if (enabled) {
                 if (!uiState.faceDetectionDisclosureShown) {
-                    viewModel.toggleFaceDetection(true)
+                    viewModel.toggleFaceDetection(enabled = true)
                     viewModel.setFaceDetectionDisclosureShown()
                 } else {
                     if (!cameraPermissionState.status.isGranted) {
                         cameraPermissionState.launchPermissionRequest()
                     }
-                    viewModel.toggleFaceDetection(true)
+                    viewModel.toggleFaceDetection(enabled = true)
                 }
             } else {
-                viewModel.toggleFaceDetection(false)
+                viewModel.toggleFaceDetection(enabled = false)
             }
         },
         onDismissDisclosure = viewModel::setFaceDetectionDisclosureShown,
@@ -98,6 +100,7 @@ fun WelcomeScreenContent(
     onAddCamera: () -> Unit,
     onAddLens: () -> Unit,
     onAddFilm: () -> Unit,
+    onCalibrateMeter: () -> Unit,
     onShowHelp: () -> Unit,
     onRestoreBackup: (Uri) -> Unit,
     onToggleThumbnail: (Boolean) -> Unit,
@@ -106,11 +109,10 @@ fun WelcomeScreenContent(
     onSetExportSize: (PictureExportSize) -> Unit
 ) {
     val restoreLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
-        onResult = { uri ->
-            uri?.let { onRestoreBackup(it) }
-        }
-    )
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let { onRestoreBackup(it) }
+    }
 
     var showFaceDisclosure by remember { mutableStateOf(false) }
 
@@ -327,6 +329,34 @@ fun WelcomeScreenContent(
                 }
             }
 
+            // Advanced Configuration (Optional)
+            Text(
+                text = stringResource(R.string.welcome_advanced_config_header),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                tonalElevation = 2.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    OnboardingStep(
+                        label = stringResource(R.string.onboarding_calibrate_meter),
+                        description = stringResource(R.string.onboarding_calibrate_meter_description),
+                        isComplete = false, // Never "complete" as it's a tool
+                        iconRes = R.drawable.ic_handyman,
+                        onClick = onCalibrateMeter
+                    )
+                }
+            }
+
             Text(
                 text = stringResource(R.string.welcome_equipment_more_info),
                 style = MaterialTheme.typography.bodyMedium,
@@ -393,9 +423,9 @@ fun OnboardingStep(
                     style = MaterialTheme.typography.titleMedium,
                     color = if (isComplete) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
-                if (description != null) {
+                description?.let {
                     Text(
-                        text = description,
+                        text = it,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

@@ -78,7 +78,7 @@ import java.io.File
 fun LightMeterScreen(
     viewModel: LightMeterViewModel,
     onBack: () -> Unit,
-    onUseSettings: (ExposureSettings) -> Unit,
+    onUseSettings: (ExposureSettings) -> Unit
 ) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -89,6 +89,7 @@ fun LightMeterScreen(
 
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     
+    // NAVIGATION FIX: Return to Settings if we were in Wizard-only mode
     LaunchedEffect(uiState.calibrationFinished, uiState.calibrationCancelled) {
         if (uiState.calibrationFinished) {
             if (uiState.isWizardOnly) {
@@ -137,6 +138,7 @@ fun LightMeterScreen(
                     val imageAnalysisBuilder = ImageAnalysis.Builder()
                         .setTargetRotation(rotation)
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    
                     Camera2Interop.Extender(imageAnalysisBuilder).setSessionCaptureCallback(object : CameraCaptureSession.CaptureCallback() {
                         override fun onCaptureCompleted(
                             session: CameraCaptureSession,

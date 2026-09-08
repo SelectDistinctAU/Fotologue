@@ -368,12 +368,22 @@ fun LogEntryItem(
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = logWithGear.film?.let { "${it.name} (ISO ${it.iso})" } ?: stringResource(R.string.unknown_film),
+                        text = logWithGear.film?.let { "${it.name} (ISO ${it.iso}, ${it.expectedExposures} exp)" } ?: stringResource(R.string.unknown_film),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     if (!log.filmRoll.isNullOrBlank()) {
+                        val expected = logWithGear.film?.expectedExposures
+                        val isHalf = logWithGear.camera?.isHalfFrame == true
+                        val total = if (isHalf && expected != null) expected * 2 else expected
+                        
+                        val displayText = if (total != null) {
+                            "${log.filmRoll}/$total"
+                        } else {
+                            log.filmRoll
+                        }
+                        
                         Text(
-                            text = stringResource(R.string.label_film_roll) + " ${log.filmRoll}",
+                            text = stringResource(R.string.label_film_roll) + " $displayText",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.tertiary
                         )

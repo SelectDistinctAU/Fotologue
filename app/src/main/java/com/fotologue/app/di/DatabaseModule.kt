@@ -48,4 +48,7 @@ object DatabaseModule {
 
     @Provides
     fun provideTagDao(db: AppDatabase): TagDao = db.tagDao()
+
+    @Provides
+    fun provideFilmRollSessionDao(db: AppDatabase): FilmRollSessionDao = db.filmRollSessionDao()
 }

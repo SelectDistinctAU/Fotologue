@@ -41,6 +41,7 @@ class ConfigurationManager(
         val tags = database.tagDao().getAllTagsOnce()
         val logs = database.logEntryDao().getAllLogEntriesOnce()
         val logEntryTags = database.tagDao().getAllLogEntryTagCrossRefsOnce()
+        val filmRollSessions = database.filmRollSessionDao().getAllSessionsOnce()
 
         val settingsMap = context.dataStore.data.first().asMap().mapKeys { it.key.name }.mapValues { it.value.toString() }
 
@@ -56,6 +57,7 @@ class ConfigurationManager(
             tags = tags,
             logs = logs,
             logEntryTags = logEntryTags,
+            filmRollSessions = filmRollSessions,
             settings = settingsMap
         )
 
@@ -81,6 +83,7 @@ class ConfigurationManager(
             database.filterDao().deleteAllFilters()
             database.flashDao().deleteAllFlashes()
             database.tagDao().deleteAllTags()
+            database.filmRollSessionDao().deleteAllSessions()
 
             // Insert new data
             config.cameras.forEach { database.cameraDao().insertCamera(it) }
@@ -94,6 +97,7 @@ class ConfigurationManager(
             config.kits.forEach { database.cameraKitDao().insertCameraKit(it) }
             config.logs.forEach { database.logEntryDao().insertLogEntry(it) }
             config.logEntryTags.forEach { database.tagDao().insertLogEntryTagCrossRef(it) }
+            config.filmRollSessions.forEach { database.filmRollSessionDao().insertSession(it) }
         }
 
         // Restore settings

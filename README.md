@@ -61,11 +61,13 @@ Fotologue is localized for the international photography community, supporting 8
 
 ## 🏗️ Technical Stack
 
-*   **Language**: Kotlin 2.2+ (Targeting SDK 37)
+*   **Language**: Kotlin 2.4.20
+*   **Compile SDK**: 37 (Android 17) — required for latest Material You assets and system fonts
+*   **Target SDK**: 36 (Android 16) — meets Google Play's 31 Aug 2026 requirement; see [Target API Roadmap](docs/target-api-roadmap.md)
 *   **UI Framework**: Jetpack Compose (Material 3 Adaptive V2)
 *   **Architecture**: MVVM Pattern with Hilt Dependency Injection
-*   **Persistence**: Room Database (Version 26+) with DataStore for typed preferences
-*   **Compliance**: Fully optimized for Android 15 Edge-to-Edge and IME (Keyboard) insets.
+*   **Persistence**: Room Database (Schema Version 26) with DataStore for typed preferences
+*   **Compliance**: Optimized for Android 15+ Edge-to-Edge and IME insets.
 
 ---
 
@@ -74,17 +76,18 @@ Fotologue is localized for the international photography community, supporting 8
 Fotologue is built to professional engineering standards.
 *   **Unit Tests**: 44+ core logic tests covering calibration math, session management, and metadata integrity.
 *   **Verification**: Field-tested on Pixel 8a and modern system emulators.
-*   **Test Plan**: See the [Testing Strategy](.artifacts/testing_strategy.artifact.md) for detailed QA scripts and manual verification steps.
+*   **Test Plan**: See the [Testing Strategy](docs/testing_strategy.md) for detailed QA scripts and manual verification steps. 
 
 ---
 
 ## 🚀 Getting Started for Testers
 
 1.  **Clone the Repository**: `git clone https://github.com/[your-repo]/Fotologue.git`
-2.  **Environment**: Open in Android Studio (Ladybug 2026.1.3 or later).
-3.  **Build**: Run `./gradlew :app:assembleDebug`.
+2.  **Environment**: Open in Android Studio (Quail 2026.1.4 or later).
+3.  **Build**: Run `./gradlew :app:assembleDebug`. 
+    *Note: Requires compileSdk 37. Android 16 / API 36 is targeted; see [Target API Roadmap](docs/target-api-roadmap.md).*
 4.  **Initial Setup**: Use the "Pro Calibration Wizard" under Settings before your first shoot for maximum metering accuracy.
 
 ---
 
-*Developed with a 20-year commitment to professional collaboration and high-fidelity photography standards.*
+*Developed with a commitment to professional high-fidelity photography standards and long-term technical collaboration.*
