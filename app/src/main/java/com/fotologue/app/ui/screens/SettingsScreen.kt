@@ -78,12 +78,16 @@ fun SettingsScreen(
         )
     }
 
+    val backupSuccessMsg = stringResource(R.string.backup_success)
+    val restoreSuccessMsg = stringResource(R.string.restore_success)
+    val errorMessageFormat = stringResource(R.string.error_message)
+
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
-                is SettingsEvent.BackupSuccess -> snackbarHostState.showSnackbar(context.getString(R.string.backup_success))
-                is SettingsEvent.RestoreSuccess -> snackbarHostState.showSnackbar(context.getString(R.string.restore_success))
-                is SettingsEvent.Error -> snackbarHostState.showSnackbar(context.getString(R.string.error_message, event.message))
+                is SettingsEvent.BackupSuccess -> snackbarHostState.showSnackbar(backupSuccessMsg)
+                is SettingsEvent.RestoreSuccess -> snackbarHostState.showSnackbar(restoreSuccessMsg)
+                is SettingsEvent.Error -> snackbarHostState.showSnackbar(errorMessageFormat.format(event.message))
             }
         }
     }

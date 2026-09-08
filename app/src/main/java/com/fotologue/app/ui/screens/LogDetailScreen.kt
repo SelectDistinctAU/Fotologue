@@ -9,8 +9,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.painterResource
@@ -82,8 +84,12 @@ fun LogDetailScreen(
                             contentScale = androidx.compose.ui.layout.ContentScale.Crop
                         )
                     }
+                    val configuration = LocalConfiguration.current
+                    val currentLocale = configuration.locales[0]
                     Text(
-                        text = SimpleDateFormat("EEEE, MMMM dd, yyyy HH:mm", Locale.getDefault()).format(Date(entry.timestamp)),
+                        text = remember(entry.timestamp, currentLocale) {
+                            SimpleDateFormat("EEEE, MMMM dd, yyyy HH:mm", currentLocale).format(Date(entry.timestamp))
+                        },
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary
                     )

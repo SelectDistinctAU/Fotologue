@@ -86,24 +86,6 @@ class FotologueRepository(
     suspend fun updateFilmRollSession(session: FilmRollSession) =
         filmRollSessionDao.insertSession(session)
 
-    suspend fun getSuggestedFilmRoll(cameraId: Long?, filmId: Long?): String {
-        if (cameraId == null || filmId == null) return "1.01"
-        
-        val session = filmRollSessionDao.getSessionOnce(cameraId, filmId)
-        if (session != null) {
-            return String.format(Locale.US, "%d.%02d", session.rollNumber, session.nextFrameNumber)
-        }
-
-        val latest = logEntryDao.getLatestFilmRoll(cameraId, filmId)
-        if (latest == null) return "1.01"
-        
-        val value = latest.toDoubleOrNull() ?: return "1.01"
-        // If we have history but no explicit session, we assume we are at the next frame
-        val roll = latest.split(".").getOrNull(0)?.toIntOrNull() ?: 1
-        val frame = latest.split(".").getOrNull(1)?.toIntOrNull() ?: 0
-        return String.format(Locale.US, "%d.%02d", roll, frame + 1)
-    }
-
     suspend fun insertCamera(camera: Camera) = cameraDao.insertCamera(camera)
     suspend fun insertFilm(film: Film) = filmDao.insertFilm(film)
     suspend fun insertLens(lens: Lens, cameraIds: List<Long> = emptyList()) {
@@ -219,15 +201,6 @@ class FotologueRepository(
     suspend fun updateCameraKits(kits: List<CameraKit>) = cameraKitDao.updateCameraKits(kits)
     suspend fun updateTag(tag: Tag) = tagDao.updateTag(tag)
     suspend fun updateTags(tags: List<Tag>) = tagDao.updateTags(tags)
-
-    suspend fun deleteCamera(camera: Camera) = cameraDao.deleteCamera(camera)
-    suspend fun deleteFilm(film: Film) = filmDao.deleteFilm(film)
-    suspend fun deleteLens(lens: Lens) = lensDao.deleteLens(lens)
-    suspend fun deleteTeleconverter(teleconverter: Teleconverter) = teleconverterDao.deleteTeleconverter(teleconverter)
-    suspend fun deleteFilter(filter: Filter) = filterDao.deleteFilter(filter)
-    suspend fun deleteFlash(flash: Flash) = flashDao.deleteFlash(flash)
-    suspend fun deleteCameraKit(cameraKit: CameraKit) = cameraKitDao.deleteCameraKit(cameraKit)
-    suspend fun deleteTag(tag: Tag) = tagDao.deleteTag(tag)
 
     suspend fun deleteCameras(ids: List<Long>) = cameraDao.deleteCameras(ids)
     suspend fun deleteFilms(ids: List<Long>) = filmDao.deleteFilms(ids)

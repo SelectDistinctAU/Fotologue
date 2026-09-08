@@ -36,7 +36,7 @@ data class AddLogUiState(
     val selectedTagIds: Set<Long> = emptySet(),
     val allTags: List<Tag> = emptyList(),
     val availableShutterSpeeds: List<String> = ExposureSuggester.defaultShutterSpeeds,
-    val availableApertures: List<String> = ExposureSuggester.commonApertures.map { "f/${if (it % 1.0 == 0.0) it.toInt() else it}" },
+    val availableApertures: List<String> = ExposureSuggester.commonApertures.map { "f/${if ((it % 1.0) == 0.0) it.toInt() else it}" },
     val selectedSubjectId: Long? = null,
     val isKitVisible: Boolean = false,
     val isTeleconverterVisible: Boolean = false,
@@ -98,7 +98,7 @@ class AddLogViewModel @Inject constructor(
         if (cameraId == null) return@combine lenses
 
         val camera = cameras.find { it.id == cameraId }
-        val associatedLensIds = refs.filter { it.cameraId == cameraId }.map { it.lensId }.toSet()
+        val associatedLensIds = refs.asSequence().filter { it.cameraId == cameraId }.map { it.lensId }.toSet()
 
         lenses.filter { lens ->
             val isDirectlyAssociated = associatedLensIds.contains(lens.id)
@@ -159,7 +159,7 @@ class AddLogViewModel @Inject constructor(
             if (editingLogId == null) {
                 allCameras.collect { cameras ->
                     if (_uiState.value.selectedCameraId == null && cameras.size == 1) {
-                        onCameraSelected(cameras.first().id, true)
+                        onCameraSelected(cameraId = cameras.first().id, updatePersistent = true)
                     }
                 }
             }
@@ -168,9 +168,9 @@ class AddLogViewModel @Inject constructor(
             if (editingLogId == null) {
                 allFilms.collect { films ->
                     if (_uiState.value.selectedFilmId == null && films.size == 1) {
-                        val film = films.first()
-                        onFilmSelected(film.id, film.iso, true)
-                    }
+                    val film = films.first()
+                    onFilmSelected(filmId = film.id, filmIso = film.iso, updatePersistent = true)
+                }
                 }
             }
         }
@@ -178,8 +178,8 @@ class AddLogViewModel @Inject constructor(
             if (editingLogId == null) {
                 filteredLenses.collect { lenses ->
                     if (_uiState.value.selectedLensId == null && lenses.size == 1) {
-                        onLensSelected(lenses.first().id, true)
-                    }
+                    onLensSelected(lensId = lenses.first().id, updatePersistent = true)
+                }
                 }
             }
         }
@@ -256,7 +256,7 @@ class AddLogViewModel @Inject constructor(
                     filmRoll = entry.filmRoll ?: "",
                     thumbnailUri = entry.exposureSettings.thumbnailUri,
                     selectedTagIds = mutableSetOf<Long>().apply { 
-                        gear.tags.forEach { add(it.id) } 
+                        gear.tags.forEach { tag -> add(tag.id) } 
                     }
                 ) }
             }
@@ -527,7 +527,7 @@ class AddLogViewModel @Inject constructor(
             val effectiveAperture = if (tc != null) {
                 val baseAp = state.aperture.replace("f/", "").toDoubleOrNull() ?: 0.0
                 val effectiveAp = baseAp * sqrt(2.0).pow(tc.lightLossStops)
-                "f/${if (effectiveAp % 1.0 == 0.0) effectiveAp.toInt() else String.format("%.1f", effectiveAp)}"
+                "f/${if ((effectiveAp % 1.0) == 0.0) effectiveAp.toInt() else String.format(Locale.US, "%.1f", effectiveAp)}"
             } else {
                 state.aperture
             }

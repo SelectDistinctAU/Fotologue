@@ -556,7 +556,7 @@ private fun CameraKitSelection(
             readOnly = true,
             label = { Text(stringResource(R.string.camera_kit)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true).fillMaxWidth()
+            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -634,7 +634,7 @@ private fun TeleconverterSelection(
             readOnly = true,
             label = { Text(stringResource(R.string.label_teleconverter_optional)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = tcExpanded) },
-            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true).fillMaxWidth()
+            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = tcExpanded,
@@ -679,7 +679,7 @@ private fun FilterSelection(
             readOnly = true,
             label = { Text(stringResource(R.string.label_filter_optional)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = filterExpanded) },
-            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true).fillMaxWidth()
+            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = filterExpanded,
@@ -725,7 +725,7 @@ private fun LensSelection(
             readOnly = true,
             label = { Text(stringResource(R.string.label_lens)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = lensExpanded) },
-            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true).fillMaxWidth()
+            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = lensExpanded,
@@ -778,7 +778,7 @@ private fun CameraSelection(
             readOnly = true,
             label = { Text(stringResource(R.string.label_camera)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = cameraExpanded) },
-            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true).fillMaxWidth()
+            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = cameraExpanded,
@@ -816,7 +816,7 @@ private fun FilmSelection(
             readOnly = true,
             label = { Text(stringResource(R.string.label_film)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = filmExpanded) },
-            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true).fillMaxWidth()
+            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = filmExpanded,
@@ -863,7 +863,7 @@ private fun ExposureSettingsFields(
                     onValueChange = onShutterSpeedChange,
                     label = { Text(stringResource(R.string.label_shutter_speed)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = shutterExpanded) },
-                    modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true).fillMaxWidth()
+                    modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = shutterExpanded,
@@ -891,7 +891,7 @@ private fun ExposureSettingsFields(
                     onValueChange = onApertureChange,
                     label = { Text(stringResource(R.string.label_aperture)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = apertureExpanded) },
-                    modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true).fillMaxWidth()
+                    modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = apertureExpanded,
@@ -931,7 +931,7 @@ private fun FlashSelection(
             readOnly = true,
             label = { Text(stringResource(R.string.label_flash_optional)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = flashExpanded) },
-            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true).fillMaxWidth()
+            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = flashExpanded,
