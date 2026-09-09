@@ -51,6 +51,7 @@ class FotologueRepositoryTest {
         every { cameraDao.hasCameras() } returns flowOf(false)
         every { filmDao.hasFilms() } returns flowOf(false)
         every { lensDao.hasLenses() } returns flowOf(false)
+        every { settingsRepository.isWelcomeDismissed } returns flowOf(false)
 
         repository = FotologueRepository(
             db, cameraDao, filmDao, lensDao, teleconverterDao,

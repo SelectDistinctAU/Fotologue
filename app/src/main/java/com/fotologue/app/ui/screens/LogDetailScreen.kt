@@ -1,41 +1,36 @@
 package com.fotologue.app.ui.screens
 
-import android.content.Intent
-import androidx.core.net.toUri
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.fotologue.app.R
+import com.fotologue.app.data.Film
 import com.fotologue.app.data.LogEntryWithGear
 import com.fotologue.app.ui.viewmodel.LogDetailViewModel
-import com.fotologue.app.R
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogDetailScreen(
     viewModel: LogDetailViewModel,
     onBack: () -> Unit,
-    onEditClick: (Long) -> Unit,
+    onEdit: (Long) -> Unit,
     showBackButton: Boolean = true
 ) {
-    val logWithGear by viewModel.logEntry.collectAsStateWithLifecycle()
-    val context = LocalContext.current
+    val logWithGear by viewModel.entryWithGear.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -49,8 +44,8 @@ fun LogDetailScreen(
                     }
                 },
                 actions = {
-                    logWithGear?.let { entryWithGear ->
-                        IconButton(onClick = { onEditClick(entryWithGear.logEntry.id) }) {
+                    logWithGear?.let { entry ->
+                        IconButton(onClick = { onEdit(entry.logEntry.id) }) {
                             Icon(painterResource(R.drawable.ic_edit), contentDescription = stringResource(R.string.action_edit))
                         }
                     }
@@ -58,185 +53,235 @@ fun LogDetailScreen(
             )
         }
     ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
-                .consumeWindowInsets(innerPadding)
-        ) {
-            logWithGear?.let { entryWithGear ->
-                val entry = entryWithGear.logEntry
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    if (entry.exposureSettings.thumbnailUri != null) {
-                        AsyncImage(
-                            model = entry.exposureSettings.thumbnailUri,
-                            contentDescription = "Thumbnail",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                                .padding(bottom = 16.dp),
-                            contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                        )
-                    }
-                    val configuration = LocalConfiguration.current
-                    val currentLocale = configuration.locales[0]
-                    Text(
-                        text = remember(entry.timestamp, currentLocale) {
-                            SimpleDateFormat("EEEE, MMMM dd, yyyy HH:mm", currentLocale).format(Date(entry.timestamp))
-                        },
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    if (entry.lastUpdated > entry.timestamp + 60000) { // More than 1 min difference
-                        Text(
-                            text = stringResource(R.string.last_updated_at, SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()).format(Date(entry.lastUpdated))),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    DetailItem(label = stringResource(R.string.label_camera), value = entryWithGear.camera?.name ?: stringResource(R.string.unknown_deleted))
-                    if (!entry.filmRoll.isNullOrBlank()) {
-                        val expected = entryWithGear.film?.expectedExposures
-                        val isHalf = entryWithGear.camera?.isHalfFrame == true
-                        val total = if (isHalf && expected != null) expected * 2 else expected
-                        val value = if (total != null) "${entry.filmRoll}/$total" else entry.filmRoll
-                        DetailItem(label = stringResource(R.string.label_film_roll), value = value)
-                    }
-                    entryWithGear.lens?.let { lens ->
-                        DetailItem(label = stringResource(R.string.label_lens), value = "${lens.make} ${lens.model}")
-                    }
-                    entry.focalLength?.let { fl ->
-                        DetailItem(label = stringResource(R.string.label_focal_length), value = "${fl.toInt()}mm")
-                    }
-                    entryWithGear.teleconverter?.let { tc ->
-                        DetailItem(label = stringResource(R.string.label_teleconverter), value = tc.name)
-                    }
-                    entryWithGear.filter?.let { filter ->
-                        DetailItem(label = stringResource(R.string.label_filter), value = filter.name)
-                    }
-                    entryWithGear.flash?.let { flash ->
-                        DetailItem(label = stringResource(R.string.label_flash), value = "${flash.make} ${flash.model}")
-                    }
-                    DetailItem(label = stringResource(R.string.label_film), value = entryWithGear.film?.let { "${it.name} (ISO ${it.iso}, ${it.expectedExposures} exp)" } ?: stringResource(R.string.unknown_deleted))
-                    
-                    if (entry.effectiveFocalLength != null || entry.effectiveAperture != null) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(text = stringResource(R.string.label_effective_specs), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.tertiary)
-                        entry.effectiveFocalLength?.let { efl ->
-                            DetailItem(label = stringResource(R.string.label_effective_focal_length), value = "${efl.toInt()}mm")
-                        }
-                        entry.effectiveAperture?.let { ea ->
-                            DetailItem(label = stringResource(R.string.label_effective_aperture), value = ea)
-                        }
-                    }
-                    
-                    Spacer(modifier = Modifier.height(24.dp))
-                    
-                    Text(text = stringResource(R.string.label_exposure), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.secondary)
-                    DetailItem(label = stringResource(R.string.label_shutter_speed), value = entry.exposureSettings.shutterSpeed)
-                    DetailItem(label = stringResource(R.string.label_aperture), value = entry.exposureSettings.aperture)
-                    DetailItem(label = stringResource(R.string.label_iso), value = entry.exposureSettings.iso.toString())
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    if (entryWithGear.tags.isNotEmpty()) {
-                        Text(text = stringResource(R.string.label_tags), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.secondary)
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
-                        ) {
-                            entryWithGear.tags.forEach { tag ->
-                                SuggestionChip(
-                                    onClick = { },
-                                    label = { Text(tag.name) }
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-
-                    if (entry.environmentalConditions.isNotEmpty()) {
-                        Text(text = stringResource(R.string.label_conditions), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.secondary)
-                        Text(text = entry.environmentalConditions, style = MaterialTheme.typography.bodyLarge)
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-                    
-                    if (entry.notes.isNotEmpty()) {
-                        Text(text = stringResource(R.string.label_notes), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.secondary)
-                        Text(text = entry.notes, style = MaterialTheme.typography.bodyLarge)
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-
-                    if (entry.latitude != null && entry.longitude != null) {
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_location_on),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(R.string.label_location),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                        Card(
-                            onClick = {
-                                val gmmIntentUri = "geo:${entry.latitude},${entry.longitude}?q=${entry.latitude},${entry.longitude}".toUri()
-                                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                                mapIntent.setPackage("com.google.android.apps.maps")
-                                context.startActivity(mapIntent)
-                            },
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-                            modifier = Modifier.padding(top = 8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.location_lat_long, entry.latitude, entry.longitude),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_share), // Or a map icon if available
-                                    contentDescription = "Open in Maps",
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding() + 16.dp))
-                }
-            } ?: run {
-                Text(
-                    stringResource(R.string.loading),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                )
-            }
+        logWithGear?.let { entry ->
+            LogDetailContent(
+                entryWithGearData = entry,
+                modifier = Modifier.padding(innerPadding)
+            )
+        } ?: Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
         }
     }
 }
 
 @Composable
-private fun DetailItem(label: String, value: String) {
-    Column(modifier = Modifier.padding(vertical = 4.dp)) {
-        Text(text = label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
-        Text(text = value, style = MaterialTheme.typography.bodyLarge)
+fun LogDetailContent(
+    entryWithGearData: LogEntryWithGear,
+    modifier: Modifier = Modifier
+) {
+    val log = entryWithGearData.logEntry
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        log.exposureSettings.thumbnailUri?.let { uri ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                AsyncImage(
+                    model = uri,
+                    contentDescription = "Thumbnail",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+
+        val locale = LocalConfiguration.current.locales[0]
+        val dateFormat = remember(locale) { SimpleDateFormat("EEEE, MMMM dd, yyyy 'at' HH:mm", locale) }
+        Text(
+            text = dateFormat.format(Date(log.timestamp)),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        DetailSection(title = stringResource(R.string.label_exposure)) {
+            ExposureRow(
+                label = stringResource(R.string.label_shutter_speed),
+                value = log.exposureSettings.shutterSpeed
+            )
+            ExposureRow(
+                label = stringResource(R.string.label_aperture),
+                value = log.exposureSettings.aperture
+            )
+            ExposureRow(
+                label = stringResource(R.string.label_iso),
+                value = log.exposureSettings.iso.toString()
+            )
+            if (!log.filmRoll.isNullOrBlank()) {
+                val expected = entryWithGearData.film?.expectedExposures
+                val isHalf = entryWithGearData.camera?.format == Film.FORMAT_35MM_HALF || entryWithGearData.camera?.isHalfFrame == true
+                val total = if (isHalf && (expected != null)) expected * 2 else expected
+                
+                val displayText = if (total != null) {
+                    "${log.filmRoll}/$total"
+                } else {
+                    log.filmRoll
+                }
+                ExposureRow(
+                    label = stringResource(R.string.label_film_roll),
+                    value = displayText
+                )
+            }
+        }
+
+        if (log.effectiveFocalLength != null || log.effectiveAperture != null) {
+            DetailSection(title = stringResource(R.string.label_effective_specs)) {
+                log.effectiveFocalLength?.let {
+                    ExposureRow(
+                        label = stringResource(R.string.label_effective_focal_length),
+                        value = "${it.toInt()}mm"
+                    )
+                }
+                log.effectiveAperture?.let {
+                    ExposureRow(
+                        label = stringResource(R.string.label_effective_aperture),
+                        value = it
+                    )
+                }
+            }
+        }
+
+        DetailSection(title = "Equipment") {
+            GearRow(
+                label = stringResource(R.string.label_camera),
+                value = entryWithGearData.camera?.name ?: stringResource(R.string.unknown_camera),
+                iconRes = R.drawable.ic_photo_camera
+            )
+            GearRow(
+                label = stringResource(R.string.label_lens),
+                value = entryWithGearData.lens?.let { "${it.make} ${it.model}" } ?: stringResource(R.string.none),
+                iconRes = R.drawable.lensd
+            )
+            GearRow(
+                label = stringResource(R.string.label_film),
+                value = entryWithGearData.film?.let { "${it.name} (ISO ${it.iso})" } ?: stringResource(R.string.unknown_film),
+                iconRes = R.drawable.ic_camera_roll
+            )
+            entryWithGearData.teleconverter?.let {
+                GearRow(
+                    label = stringResource(R.string.label_teleconverter),
+                    value = it.name,
+                    iconRes = R.drawable.ic_zoom_in
+                )
+            }
+            entryWithGearData.filter?.let {
+                GearRow(
+                    label = stringResource(R.string.label_filter),
+                    value = it.name,
+                    iconRes = R.drawable.filter_24px
+                )
+            }
+            entryWithGearData.flash?.let {
+                GearRow(
+                    label = stringResource(R.string.label_flash),
+                    value = "${it.make} ${it.model}",
+                    iconRes = R.drawable.ic_flash_on
+                )
+            }
+        }
+
+        if (entryWithGearData.tags.isNotEmpty()) {
+            DetailSection(title = stringResource(R.string.label_tags)) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    entryWithGearData.tags.forEach { tag ->
+                        SuggestionChip(
+                            onClick = { },
+                            label = { Text(tag.name) }
+                        )
+                    }
+                }
+            }
+        }
+
+        if (log.notes.isNotBlank()) {
+            DetailSection(title = stringResource(R.string.label_notes)) {
+                Text(text = log.notes, style = MaterialTheme.typography.bodyLarge)
+            }
+        }
+
+        if (log.latitude != null && log.longitude != null) {
+            DetailSection(title = stringResource(R.string.label_location)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_location_on),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.location_lat_long, log.latitude, log.longitude),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+
+        val lastUpdatedFormat = remember(locale) { SimpleDateFormat("MMM dd, yyyy HH:mm", locale) }
+        Text(
+            text = stringResource(R.string.last_updated_at, lastUpdatedFormat.format(Date(log.lastUpdated))),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.align(Alignment.End)
+        )
+        
+        Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+@Composable
+fun DetailSection(title: String, content: @Composable ColumnScope.() -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondary,
+            fontWeight = FontWeight.Bold
+        )
+        content()
+        HorizontalDivider(modifier = Modifier.padding(top = 8.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+    }
+}
+
+@Composable
+fun ExposureRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(text = value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+    }
+}
+
+@Composable
+fun GearRow(label: String, value: String, iconRes: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(iconRes),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(text = label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = value, style = MaterialTheme.typography.bodyLarge)
+        }
     }
 }

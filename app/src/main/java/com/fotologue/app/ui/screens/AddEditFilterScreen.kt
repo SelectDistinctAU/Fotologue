@@ -78,7 +78,7 @@ fun AddEditFilterScreen(
                     readOnly = true,
                     label = { Text(stringResource(R.string.label_filter_type)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
-                    modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true).fillMaxWidth()
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = typeExpanded,

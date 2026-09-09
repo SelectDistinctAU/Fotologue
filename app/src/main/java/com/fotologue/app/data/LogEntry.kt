@@ -86,5 +86,6 @@ data class LogEntry(
     val lastUpdated: Long = 0,
     val isExportedZip: Boolean = false,
     val isExportedCsv: Boolean = false,
-    val isExportedJson: Boolean = false
+    val isExportedJson: Boolean = false,
+    val isExportedXmp: Boolean = false
 )

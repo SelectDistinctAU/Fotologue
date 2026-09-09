@@ -1,22 +1,18 @@
 package com.fotologue.app.data
 
-import com.fotologue.app.location.LocationProvider
+import android.location.Location
 import androidx.room.withTransaction
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import com.fotologue.app.location.LocationProvider
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.Locale
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class FotologueRepository(
-    private val db: AppDatabase,
+@Singleton
+class FotologueRepository @Inject constructor(
+    private val database: AppDatabase,
     private val cameraDao: CameraDao,
     private val filmDao: FilmDao,
     private val lensDao: LensDao,
@@ -28,10 +24,10 @@ class FotologueRepository(
     private val tagDao: TagDao,
     private val filmRollSessionDao: FilmRollSessionDao,
     private val locationProvider: LocationProvider,
-    private val settingsRepository: SettingsRepository
+    @Suppress("unused") private val settingsRepository: SettingsRepository,
 ) {
-    private val _newlyAddedLensId = MutableSharedFlow<Long>(extraBufferCapacity = 1)
-    val newlyAddedLensId = _newlyAddedLensId.asSharedFlow()
+    private val _newlyAddedLensId = MutableSharedFlow<Long>()
+    val newlyAddedLensId: SharedFlow<Long> = _newlyAddedLensId.asSharedFlow()
 
     private val tagMutex = Mutex()
 
@@ -41,7 +37,6 @@ class FotologueRepository(
     val allTeleconverters: Flow<List<Teleconverter>> = teleconverterDao.getAllTeleconverters()
     val allFilters: Flow<List<Filter>> = filterDao.getAllFilters()
     val allFlashes: Flow<List<Flash>> = flashDao.getAllFlashes()
-    val allLogEntries: Flow<List<LogEntry>> = logEntryDao.getAllLogEntries()
     val allLogEntriesWithGear: Flow<List<LogEntryWithGear>> = logEntryDao.getAllLogEntriesWithGear()
     val allCameraKits: Flow<List<CameraKit>> = cameraKitDao.getAllCameraKits()
     val allCameraKitsWithGear: Flow<List<CameraKitWithGear>> = cameraKitDao.getAllCameraKitsWithGear()
@@ -51,9 +46,10 @@ class FotologueRepository(
     val hasCamera: Flow<Boolean> = cameraDao.hasCameras()
     val hasFilm: Flow<Boolean> = filmDao.hasFilms()
     val hasLens: Flow<Boolean> = lensDao.hasLenses()
+    val isWelcomeDismissed: Flow<Boolean> = settingsRepository.isWelcomeDismissed
 
-    val isOnboardingComplete: Flow<Boolean> = combine(hasCamera, hasFilm, hasLens) { camera, film, lens ->
-        camera && film && lens
+    val isOnboardingComplete: Flow<Boolean> = combine(hasCamera, hasFilm, hasLens, isWelcomeDismissed) { camera, film, lens, dismissed ->
+        camera && film && lens && dismissed
     }
 
     fun getLogEntryById(id: Long): Flow<LogEntry?> = logEntryDao.getLogEntryById(id)
@@ -72,7 +68,7 @@ class FotologueRepository(
         filmRollSessionDao.getSession(cameraId, filmId)
 
     fun getSuggestedFilmRollFlow(cameraId: Long?, filmId: Long?): Flow<String> {
-        if (cameraId == null || filmId == null) return flowOf("1.01")
+        if ((cameraId == null) || (filmId == null)) return flowOf("1.01")
         
         return filmRollSessionDao.getSession(cameraId, filmId).map { session ->
             if (session != null) {
@@ -89,7 +85,7 @@ class FotologueRepository(
     suspend fun insertCamera(camera: Camera) = cameraDao.insertCamera(camera)
     suspend fun insertFilm(film: Film) = filmDao.insertFilm(film)
     suspend fun insertLens(lens: Lens, cameraIds: List<Long> = emptyList()) {
-        db.withTransaction {
+        database.withTransaction {
             val lensId = lensDao.insertLens(lens)
             cameraIds.forEach { cameraId ->
                 val camera = cameraDao.getCameraById(cameraId).first()
@@ -108,70 +104,39 @@ class FotologueRepository(
     suspend fun insertCameraKit(cameraKit: CameraKit) = cameraKitDao.insertCameraKit(cameraKit)
     suspend fun insertTag(tag: Tag) = tagDao.insertTag(tag)
 
-    suspend fun insertDefaultTagsIfNeeded() = tagMutex.withLock {
-        val currentTags = tagDao.getAllTags().first()
+    suspend fun insertDefaultTagsIfNeeded() {
+        tagMutex.withLock {
+            val existingTags = tagDao.getAllTagsOnce()
+            if (existingTags.isEmpty()) {
+                val subjects = listOf("Urban/built environment", "Events", "Nature")
+                val contents = mapOf(
+                    "Urban/built environment" to listOf("Architecture", "Street", "Cityscape", "Building", "Bridge", "Interior", "Skyline"),
+                    "Events" to listOf("Wedding", "Concert", "Sport", "Festival", "Protest", "Celebration"),
+                    "Nature" to listOf("Landscape", "Waterways", "Bushland", "Insect", "Beach", "Sunset/sunrise", "Fungi", "Bird", "Flower", "Tree", "Wildlife")
+                )
 
-        // Cleanup duplicates if they already exist from previous buggy runs
-        cleanupDuplicateTags(currentTags)
-        
-        // Refresh tag list after potential cleanup
-        val refreshedTags = if (currentTags.isNotEmpty()) tagDao.getAllTags().first() else currentTags
-
-        // 1. Create or Get Subjects (Parents)
-        val peopleId = getOrCreateSubjectId("People", refreshedTags)
-        val urbanId = getOrCreateSubjectId("Urban/built environment", refreshedTags)
-        val eventsId = getOrCreateSubjectId("Events", refreshedTags)
-        val natureId = getOrCreateSubjectId("Nature", refreshedTags)
-
-        // 2. Create Related Content (Children) if missing
-        val contentNames = refreshedTags.filter { it.category == Tag.CATEGORY_CONTENT }.map { it.name.lowercase() }.toSet()
-
-        // People
-        if (!contentNames.contains("names")) {
-            tagDao.insertTag(Tag(name = "Names", category = Tag.CATEGORY_CONTENT, parentId = peopleId))
-        }
-
-        // Urban
-        listOf("architecture", "street", "cityscape", "building", "bridge", "interior", "skyline").forEach { name ->
-            if (!contentNames.contains(name.lowercase())) {
-                tagDao.insertTag(Tag(name = name, category = Tag.CATEGORY_CONTENT, parentId = urbanId))
-            }
-        }
-        // Events
-        listOf("wedding", "concert", "sport", "festival", "protest", "celebration").forEach { name ->
-            if (!contentNames.contains(name.lowercase())) {
-                tagDao.insertTag(Tag(name = name, category = Tag.CATEGORY_CONTENT, parentId = eventsId))
-            }
-        }
-        // Nature
-        listOf("landscape", "waterways", "bushland", "insect", "beach", "sunset/sunrise", "fungi", "bird", "flower", "tree", "wildlife").forEach { name ->
-            if (!contentNames.contains(name.lowercase())) {
-                tagDao.insertTag(Tag(name = name, category = Tag.CATEGORY_CONTENT, parentId = natureId))
-            }
-        }
-    }
-
-    private suspend fun cleanupDuplicateTags(tags: List<Tag>) {
-        val seen = mutableSetOf<String>()
-        val duplicates = mutableListOf<Tag>()
-        
-        tags.forEach { tag ->
-            val key = "${tag.category}:${tag.parentId}:${tag.name.lowercase()}"
-            if (seen.contains(key)) {
-                duplicates.add(tag)
+                subjects.forEach { sub ->
+                    val subId = tagDao.insertTag(Tag(name = sub, category = Tag.CATEGORY_SUBJECT))
+                    contents[sub]?.forEach { cont ->
+                        tagDao.insertTag(Tag(name = cont, category = Tag.CATEGORY_CONTENT, parentId = subId))
+                    }
+                }
             } else {
-                seen.add(key)
+                // Ensure migration/cleanup for existing users if needed
+                cleanupDuplicateTags(existingTags)
             }
-        }
-        
-        if (duplicates.isNotEmpty()) {
-            tagDao.deleteTags(duplicates.map { it.id })
         }
     }
 
-    private suspend fun getOrCreateSubjectId(name: String, currentTags: List<Tag>): Long {
-        val existing = currentTags.find { it.category == Tag.CATEGORY_SUBJECT && it.name.equals(name, ignoreCase = true) }
-        return existing?.id ?: tagDao.insertTag(Tag(name = name, category = Tag.CATEGORY_SUBJECT))
+    private suspend fun cleanupDuplicateTags(allTags: List<Tag>) {
+        val grouped = allTags.groupBy { it.name.lowercase() + it.category }
+        grouped.forEach { (_, tags) ->
+            if (tags.size > 1) {
+                // Keep the first one, delete others
+                val toDelete = tags.drop(1).map { it.id }
+                tagDao.deleteTags(toDelete)
+            }
+        }
     }
 
     suspend fun updateCamera(camera: Camera) = cameraDao.updateCamera(camera)
@@ -213,10 +178,12 @@ class FotologueRepository(
 
     suspend fun updateLogEntry(logEntry: LogEntry, tagIds: List<Long> = emptyList()) {
         val updatedEntry = logEntry.copy(lastUpdated = System.currentTimeMillis())
-        logEntryDao.updateLogEntry(updatedEntry)
-        tagDao.deleteCrossRefsForLogEntry(logEntry.id)
-        tagIds.forEach { tagId ->
-            tagDao.insertLogEntryTagCrossRef(LogEntryTagCrossRef(logEntry.id, tagId))
+        database.withTransaction {
+            logEntryDao.updateLogEntry(updatedEntry)
+            tagDao.deleteCrossRefsForLogEntry(updatedEntry.id)
+            tagIds.forEach { tagId ->
+                tagDao.insertLogEntryTagCrossRef(LogEntryTagCrossRef(updatedEntry.id, tagId))
+            }
         }
     }
 
@@ -225,19 +192,20 @@ class FotologueRepository(
     suspend fun markAsExportedZip(ids: List<Long>) = logEntryDao.markAsExportedZip(ids)
     suspend fun markAsExportedCsv(ids: List<Long>) = logEntryDao.markAsExportedCsv(ids)
     suspend fun markAsExportedJson(ids: List<Long>) = logEntryDao.markAsExportedJson(ids)
+    suspend fun markAsExportedXmp(ids: List<Long>) = logEntryDao.markAsExportedXmp(ids)
 
     private val _latestMeteringResult = MutableStateFlow<ExposureSettings?>(null)
-    val latestMeteringResult = _latestMeteringResult.asStateFlow()
+    val latestMeteringResult: StateFlow<ExposureSettings?> = _latestMeteringResult.asStateFlow()
 
-    fun setMeteringResult(result: ExposureSettings) {
-        _latestMeteringResult.value = result
+    fun setMeteringResult(settings: ExposureSettings) {
+        _latestMeteringResult.value = settings
     }
 
     fun clearMeteringResult() {
         _latestMeteringResult.value = null
     }
 
-    suspend fun getCurrentLocation() = locationProvider.getCurrentLocation()
+    suspend fun getCurrentLocation(): Location? = locationProvider.getCurrentLocation()
 
     suspend fun logExposure(
         notes: String,
@@ -247,8 +215,8 @@ class FotologueRepository(
         lensId: Long? = null,
         teleconverterId: Long? = null,
         filterId: Long? = null,
-        flashId: Long? = null,
         kitId: Long? = null,
+        flashId: Long? = null,
         focalLength: Float? = null,
         effectiveFocalLength: Float? = null,
         effectiveAperture: String? = null,
@@ -256,47 +224,37 @@ class FotologueRepository(
         tagIds: List<Long> = emptyList(),
         latitude: Double? = null,
         longitude: Double? = null,
-        filmRoll: String? = null
+        filmRoll: String? = null,
     ) {
-        val finalLocation = if (latitude != null && longitude != null) {
-            null // We use the passed ones
-        } else {
-            locationProvider.getCurrentLocation()
-        }
-        
-        val now = System.currentTimeMillis()
         val entry = LogEntry(
-            timestamp = now,
+            timestamp = System.currentTimeMillis(),
             notes = notes,
             environmentalConditions = environmentalConditions,
             cameraId = cameraId,
-            filmId = filmId,
             lensId = lensId,
+            filmId = filmId,
             teleconverterId = teleconverterId,
             filterId = filterId,
-            flashId = flashId,
             kitId = kitId,
+            flashId = flashId,
             focalLength = focalLength,
             effectiveFocalLength = effectiveFocalLength,
             effectiveAperture = effectiveAperture,
             exposureSettings = exposureSettings,
-            latitude = latitude ?: finalLocation?.latitude,
-            longitude = longitude ?: finalLocation?.longitude,
+            latitude = latitude,
+            longitude = longitude,
             filmRoll = filmRoll,
-            lastUpdated = now,
-            isExportedZip = false,
-            isExportedCsv = false,
-            isExportedJson = false
+            lastUpdated = System.currentTimeMillis(),
         )
 
-        db.withTransaction {
-            val logId = logEntryDao.insertLogEntry(entry)
+        database.withTransaction {
+            val entryId = logEntryDao.insertLogEntry(entry)
             tagIds.forEach { tagId ->
-                tagDao.insertLogEntryTagCrossRef(LogEntryTagCrossRef(logId, tagId))
+                tagDao.insertLogEntryTagCrossRef(LogEntryTagCrossRef(entryId, tagId))
             }
             
-            // Update the persistent session for this gear combination
-            if (cameraId != null && filmId != null && filmRoll != null && filmRoll.contains(".")) {
+            // Update film roll session if applicable
+            if (filmRoll != null && filmRoll.contains(".") && cameraId != null && filmId != null) {
                 val parts = filmRoll.split(".")
                 val roll = parts[0].toIntOrNull() ?: 1
                 val frame = parts[1].toIntOrNull() ?: 1

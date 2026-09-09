@@ -123,6 +123,9 @@ interface LogEntryDao {
 
     @Query("UPDATE log_entries SET isExportedJson = 1 WHERE id IN (:ids)")
     suspend fun markAsExportedJson(ids: List<Long>)
+
+    @Query("UPDATE log_entries SET isExportedXmp = 1 WHERE id IN (:ids)")
+    suspend fun markAsExportedXmp(ids: List<Long>)
 }
 
 @Dao

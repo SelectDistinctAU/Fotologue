@@ -18,10 +18,11 @@ data class Film(
 ) {
     companion object {
         val FORMAT_35MM = "35mm"
+        val FORMAT_35MM_HALF = "35mm Half Frame"
         val FORMAT_120 = "120 (Medium Format)"
         val FORMAT_LARGE = "Large Format / Sheet"
 
-        val ALL_FORMATS = listOf(FORMAT_35MM, FORMAT_120, FORMAT_LARGE)
+        val ALL_FORMATS = listOf(FORMAT_35MM, FORMAT_35MM_HALF, FORMAT_120, FORMAT_LARGE)
         val TYPE_COLOR_NEGATIVE = "Colour Negative (C-41)"
         val TYPE_BLACK_AND_WHITE = "Black and White (B&W)"
         val TYPE_SLIDE = "Slide/Reversal (E-6)"

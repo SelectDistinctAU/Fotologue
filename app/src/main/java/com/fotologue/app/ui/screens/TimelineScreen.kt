@@ -35,6 +35,7 @@ import com.fotologue.app.data.CameraType
 import com.fotologue.app.data.ExposureSettings
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import java.text.SimpleDateFormat
@@ -94,7 +95,7 @@ fun TimelineScreenContent(
     onClearSelection: () -> Unit,
     onSelectAll: () -> Unit,
     onDeleteSelected: () -> Unit,
-    onExportLogs: (ExportType, Uri) -> Unit
+    onExportLogs: (ExportType, Uri) -> Unit,
 ) {
     val isSelectionMode = selectedIds.isNotEmpty()
     var showExportOptions by remember { mutableStateOf(value = false) }
@@ -110,6 +111,10 @@ fun TimelineScreenContent(
     val zipExportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/zip")
     ) { uri -> uri?.let { onExportLogs(ExportType.ZIP, it) } }
+
+    val xmpExportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/xml")
+    ) { uri -> uri?.let { onExportLogs(ExportType.XMP, it) } }
 
     if (showExportOptions) {
         ModalBottomSheet(
@@ -151,6 +156,15 @@ fun TimelineScreenContent(
                         showExportOptions = false
                         val fileName = "fotologue_export_${System.currentTimeMillis()}.zip"
                         zipExportLauncher.launch(fileName)
+                    }
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.export_as_xmp)) },
+                    leadingContent = { Icon(painterResource(R.drawable.ic_share), contentDescription = null) },
+                    modifier = Modifier.clickable {
+                        showExportOptions = false
+                        val fileName = "fotologue_export_${System.currentTimeMillis()}.xmp"
+                        xmpExportLauncher.launch(fileName)
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -200,7 +214,7 @@ fun TimelineScreenContent(
                     onClick = onAddLogClick,
                     modifier = Modifier.navigationBarsPadding()
                 ) {
-                    Icon(painterResource(R.drawable.ic_add), contentDescription = stringResource(R.string.add_log))
+                    Icon(painterResource(R.drawable.list_alt_add_24px), contentDescription = stringResource(R.string.add_log))
                 }
             }
         }
@@ -287,7 +301,7 @@ fun TimelineScreenContent(
 @Composable
 fun ExportBadge(text: String) {
     Surface(
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(4.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
         color = Color.Transparent,
         modifier = Modifier.size(20.dp)
@@ -373,8 +387,8 @@ fun LogEntryItem(
                     )
                     if (!log.filmRoll.isNullOrBlank()) {
                         val expected = logWithGear.film?.expectedExposures
-                        val isHalf = logWithGear.camera?.isHalfFrame == true
-                        val total = if (isHalf && expected != null) expected * 2 else expected
+                        val isHalf = logWithGear.camera?.format == Film.FORMAT_35MM_HALF || logWithGear.camera?.isHalfFrame == true
+                        val total = if (isHalf && (expected != null)) expected * 2 else expected
                         
                         val displayText = if (total != null) {
                             "${log.filmRoll}/$total"
@@ -439,7 +453,7 @@ fun LogEntryItem(
                     }
 
                     // Export Status Badges (Bottom Right)
-                    if (log.isExportedZip || log.isExportedCsv || log.isExportedJson) {
+                    if (log.isExportedZip || log.isExportedCsv || log.isExportedJson || log.isExportedXmp) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -455,6 +469,10 @@ fun LogEntryItem(
                             if (log.isExportedJson) {
                                 Spacer(modifier = Modifier.width(4.dp))
                                 ExportBadge("J")
+                            }
+                            if (log.isExportedXmp) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                ExportBadge("X")
                             }
                         }
                     }

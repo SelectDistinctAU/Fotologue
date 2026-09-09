@@ -42,10 +42,8 @@ fun AddEditFilmScreen(
                     }
                 },
                 actions = {
-                    if (viewModel.filmId == null) {
-                        TextButton(onClick = { showPresetsDialog = true }) {
-                            Text(stringResource(R.string.presets))
-                        }
+                    IconButton(onClick = { viewModel.saveFilm(onBack) }) {
+                        Icon(painterResource(R.drawable.ic_check), contentDescription = stringResource(R.string.action_save))
                     }
                 }
             )
@@ -59,8 +57,21 @@ fun AddEditFilmScreen(
                 .imePadding()
                 .verticalScroll(scrollState)
                 .padding(16.dp)
-                .padding(bottom = innerPadding.calculateBottomPadding() + 16.dp)
+                .padding(bottom = innerPadding.calculateBottomPadding() + 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            if (viewModel.filmId == null) {
+                Button(
+                    onClick = { showPresetsDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(painterResource(R.drawable.settings_panorama_24px), contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Select from Presets")
+                }
+                HorizontalDivider()
+            }
+
             var nameExpanded by remember { mutableStateOf(false) }
             
             ExposedDropdownMenuBox(
@@ -75,7 +86,7 @@ fun AddEditFilmScreen(
                         nameExpanded = true
                     },
                     label = { Text(stringResource(R.string.film_name)) },
-                    modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true).fillMaxWidth(),
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth(),
                     isError = !uiState.isNameValid,
                     supportingText = { if (!uiState.isNameValid) Text(stringResource(R.string.error_name_empty)) }
                 )
@@ -97,17 +108,14 @@ fun AddEditFilmScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = uiState.abbreviation,
                 onValueChange = viewModel::onAbbreviationChange,
-                label = { Text("Abbreviation (for file naming, e.g. P400)") },
+                label = { Text("Abbreviation (e.g. TX400, G200)") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                placeholder = { Text("E.g. TX400, G200") }
+                placeholder = { Text("Used for concise display") }
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             val filmFormats = Film.ALL_FORMATS
             var formatExpanded by remember { mutableStateOf(false) }
@@ -124,7 +132,7 @@ fun AddEditFilmScreen(
                     label = { Text("Film Format") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatExpanded) },
                     colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true).fillMaxWidth()
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = formatExpanded,
@@ -143,17 +151,6 @@ fun AddEditFilmScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                value = uiState.abbreviation,
-                onValueChange = viewModel::onAbbreviationChange,
-                label = { Text("Abbreviation (for file naming, e.g. P400)") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                placeholder = { Text("E.g. TX400, G200") }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = uiState.iso,
                 onValueChange = viewModel::onIsoChange,
@@ -162,7 +159,6 @@ fun AddEditFilmScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = uiState.expectedExposures,
                 onValueChange = viewModel::onExpectedExposuresChange,
@@ -171,14 +167,12 @@ fun AddEditFilmScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
             
-            Spacer(modifier = Modifier.height(16.dp))
-            
             val filmTypes = Film.ALL_TYPES
-            var expanded by remember { mutableStateOf(false) }
+            var typeExpanded by remember { mutableStateOf(false) }
 
             ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
+                expanded = typeExpanded,
+                onExpandedChange = { typeExpanded = !typeExpanded },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
@@ -186,11 +180,9 @@ fun AddEditFilmScreen(
                     onValueChange = {},
                     readOnly = true,
                     label = { Text(stringResource(R.string.film_type)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
                     colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier
-                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true)
-                        .fillMaxWidth(),
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
                     isError = !uiState.isTypeValid,
                     supportingText = {
                         if (!uiState.isTypeValid) {
@@ -199,22 +191,23 @@ fun AddEditFilmScreen(
                     }
                 )
                 ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    expanded = typeExpanded,
+                    onDismissRequest = { typeExpanded = false }
                 ) {
                     filmTypes.forEach { type ->
                         DropdownMenuItem(
                             text = { Text(type) },
                             onClick = {
                                 viewModel.onTypeChange(type)
-                                expanded = false
+                                typeExpanded = false
                             },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                         )
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(32.dp))
+
+            Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = { viewModel.saveFilm(onBack) },
                 modifier = Modifier.fillMaxWidth()

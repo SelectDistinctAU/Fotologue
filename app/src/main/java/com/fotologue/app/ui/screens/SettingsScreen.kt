@@ -23,7 +23,6 @@ import com.fotologue.app.R
 import com.fotologue.app.BuildConfig
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -33,9 +32,8 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     onBack: () -> Unit,
     onNavigateToCalibration: () -> Unit,
-    onNavigateToRemoteControl: () -> Unit,
     onNavigateToRollCounter: () -> Unit,
-    onShowHelp: () -> Unit
+    onShowHelp: () -> Unit,
 ) {
     val isThumbnailEnabled by viewModel.isThumbnailEnabled.collectAsStateWithLifecycle()
     val isFaceDetectionEnabled by viewModel.isFaceDetectionEnabled.collectAsStateWithLifecycle()
@@ -64,7 +62,7 @@ fun SettingsScreen(
                     onClick = {
                         showFaceDisclosure = false
                         viewModel.setFaceDetectionDisclosureShown()
-                        viewModel.toggleFaceDetection(true)
+                        viewModel.toggleFaceDetection(enabled = true)
                     }
                 ) {
                     Text(stringResource(R.string.action_enable))
@@ -212,52 +210,10 @@ fun SettingsScreen(
                         )
                     }
                     Icon(
-                        painter = painterResource(R.drawable.ic_camera_roll),
+                        painter = painterResource(R.drawable.settings_panorama_24px),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(R.string.header_export),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.padding(vertical = 4.dp))
-            Box {
-                Surface(
-                    onClick = { showExportSizeMenu = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                        Text(
-                            text = stringResource(R.string.setting_export_size),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Text(
-                            text = pictureExportSize.label,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-                DropdownMenu(
-                    expanded = showExportSizeMenu,
-                    onDismissRequest = { showExportSizeMenu = false }
-                ) {
-                    PictureExportSize.entries.forEach { size ->
-                        DropdownMenuItem(
-                            text = { Text(size.label) },
-                            onClick = {
-                                viewModel.setPictureExportSize(size)
-                                showExportSizeMenu = false
-                            }
-                        )
-                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -320,6 +276,47 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+
+            Text(
+                text = stringResource(R.string.header_export),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+            Box {
+                Surface(
+                    onClick = { showExportSizeMenu = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                        Text(
+                            text = stringResource(R.string.setting_export_size),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Text(
+                            text = pictureExportSize.label,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                DropdownMenu(
+                    expanded = showExportSizeMenu,
+                    onDismissRequest = { showExportSizeMenu = false }
+                ) {
+                    PictureExportSize.entries.forEach { size ->
+                        DropdownMenuItem(
+                            text = { Text(size.label) },
+                            onClick = {
+                                viewModel.setPictureExportSize(size)
+                                showExportSizeMenu = false
+                            }
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider()
 

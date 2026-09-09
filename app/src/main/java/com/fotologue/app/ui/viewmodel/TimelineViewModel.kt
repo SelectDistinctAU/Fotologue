@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 enum class ExportType {
-    CSV, JSON, ZIP
+    CSV, JSON, ZIP, XMP
 }
 
 @HiltViewModel
@@ -103,6 +103,7 @@ class TimelineViewModel @Inject constructor(
                     ExportType.ZIP -> repository.markAsExportedZip(ids)
                     ExportType.CSV -> repository.markAsExportedCsv(ids)
                     ExportType.JSON -> repository.markAsExportedJson(ids)
+                    ExportType.XMP -> repository.markAsExportedXmp(ids)
                 }
             }
             clearSelection()

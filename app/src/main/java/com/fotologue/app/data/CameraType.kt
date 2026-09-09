@@ -9,6 +9,7 @@ enum class CameraType(val displayName: String, val isInterchangeable: Boolean) {
     COMPACT("Compact", false),
     BRIDGE("Bridge", false),
     FILM_SLR("Film SLR", true),
+    RANGEFINDER("Rangefinder", true),
     MEDIUM_FORMAT("Medium Format", false),
     SMARTPHONE("Smartphone", false),
     ACTION("Action", false),

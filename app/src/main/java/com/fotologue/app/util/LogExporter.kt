@@ -56,6 +56,19 @@ class LogExporter @Inject constructor(
                     ExportType.ZIP -> {
                         LogEntryZipExporter.toZip(context, logs, outputStream, exportSize, allTags, creator, copyright, contact)
                     }
+                    ExportType.XMP -> {
+                        if (logs.size == 1) {
+                            val xmp = LogEntryXmpExporter.toXmp(logs[0], allTags, creator, copyright, contact)
+                            outputStream.write(xmp.toByteArray())
+                        } else {
+                            // If multiple, concatenate them (per image sidecar would be better but requires multiple files)
+                            val combined = logs.joinToString("\n\n") { 
+                                LogEntryXmpExporter.toXmp(it, allTags, creator, copyright, contact)
+                            }
+                            outputStream.write(combined.toByteArray())
+                        }
+                        outputStream.flush()
+                    }
                 }
                 true
             } ?: false

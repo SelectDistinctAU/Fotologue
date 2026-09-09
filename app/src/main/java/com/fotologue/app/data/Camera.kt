@@ -15,5 +15,6 @@ data class Camera(
     @ColumnInfo(name = "modelNumber") val modelNumber: String = "",
     val shutterSpeeds: List<String> = emptyList(),
     val isHalfFrame: Boolean = false,
+    val format: String = "35mm",
     val position: Int = 0
 )

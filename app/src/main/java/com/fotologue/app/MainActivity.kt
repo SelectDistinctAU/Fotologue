@@ -13,11 +13,7 @@ import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -27,7 +23,6 @@ import com.fotologue.app.ui.navigation.Route
 import com.fotologue.app.ui.screens.*
 import com.fotologue.app.ui.theme.FotologueTheme
 import com.fotologue.app.ui.viewmodel.*
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -151,7 +146,8 @@ class MainActivity : ComponentActivity() {
                                     viewModel.setKitId(navRoute.kitId)
                                     AddEditCameraKitScreen(
                                         viewModel = viewModel,
-                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
                                     )
                                 }
                                 entry<Route.AddEditTeleconverter> { navRoute ->
@@ -225,7 +221,7 @@ class MainActivity : ComponentActivity() {
                                                 backStack.removeAt(backStack.size - 1)
                                             }
                                         },
-                                        onEditClick = { logId ->
+                                        onEdit = { logId ->
                                             backStack.add(Route.EditLog(logId))
                                         },
                                         showBackButton = !windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(840)
@@ -285,7 +281,6 @@ class MainActivity : ComponentActivity() {
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
                                         onNavigateToCalibration = { backStack.add(Route.Calibration) },
-                                        onNavigateToRemoteControl = { backStack.add(Route.RemoteControl) },
                                         onNavigateToRollCounter = { backStack.add(Route.RollCounter) },
                                         onShowHelp = { backStack.add(Route.Help) }
                                     )

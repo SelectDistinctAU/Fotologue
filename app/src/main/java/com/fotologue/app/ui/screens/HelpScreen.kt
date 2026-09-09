@@ -43,13 +43,13 @@ fun HelpScreen(
             HelpSection(
                 title = "1. Setup Your Gear",
                 iconRes = R.drawable.ic_inventory_2,
-                content = "Before you can log exposures, you need to add your equipment. Go to the Gear Library to add your Cameras, Lenses, and Films. Fotologue includes an 'Online Lookup' to help you fill in specifications quickly."
+                content = "Before you can log exposures, you need to add your equipment. Go to the Gear Library to add your Cameras, Lenses, and Films. Fotologue organizes films by format (35mm, 120, and Large Format).\n\nHint: If you have a modular camera that uses different film backs (e.g. 35mm and 120), add the camera twice—once for each format. For Half-Frame cameras, select the '35mm Half Frame' format to automatically double your exposure counts."
             )
 
             HelpSection(
                 title = "2. Adding a Log Entry",
-                iconRes = R.drawable.ic_add_a_photo,
-                content = "Tap the '+' button on the Timeline. Select your camera, lens, and film. You can also add accessories like filters, teleconverters, and flashes. If you haven't added a lens yet, use the 'Add New Lens...' shortcut right in the selection menu."
+                iconRes = R.drawable.list_alt_add_24px,
+                content = "Tap the '+' button on the Timeline. Select your camera, lens, and film. To speed things up, Fotologue only shows films that match your camera's format. You can also add accessories like filters, teleconverters, and flashes. If you haven't added a lens yet, use the 'Add New Lens...' shortcut right in the selection menu."
             )
 
             HelpSection(
@@ -67,7 +67,7 @@ fun HelpScreen(
             HelpSection(
                 title = "5. Managing Logs",
                 iconRes = R.drawable.ic_timeline,
-                content = "Your logs are displayed in the Timeline. Long-press any entry to enter selection mode, where you can bulk-delete entries or export them to CSV, JSON, or a full ZIP package (including thumbnails)."
+                content = "Your logs are displayed in the Timeline. Long-press any entry to enter selection mode, where you can bulk-delete entries or export them to CSV, JSON, XMP, or a full ZIP package (including thumbnails). XMP sidecars are perfect for importing metadata into Adobe Lightroom or Capture One."
             )
 
             HelpSection(

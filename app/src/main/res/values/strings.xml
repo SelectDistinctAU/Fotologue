@@ -58,6 +58,7 @@
     <string name="export_as_csv">Export as CSV</string>
     <string name="export_as_json">Export as JSON</string>
     <string name="export_as_zip">Export as Full Package (ZIP)</string>
+    <string name="export_as_xmp">Export as XMP (Sidecar)</string>
 
     <!-- Add/Edit Log & Details -->
     <string name="add_exposure_log">Add Exposure Log</string>

@@ -53,7 +53,6 @@ class AddLogViewModelTest {
         every { repository.getLensById(any()) } returns flowOf(null)
         every { repository.getSuggestedFilmRollFlow(any(), any()) } returns flowOf("1.01")
         every { repository.newlyAddedLensId } returns newlyAddedLensIdFlow
-        coEvery { repository.getSuggestedFilmRoll(any(), any()) } returns "1.01"
         coEvery { repository.insertDefaultTagsIfNeeded() } just Runs
         
         every { gearConfigurationManager.currentConfiguration } returns MutableStateFlow(GearConfiguration())
@@ -89,7 +88,44 @@ class AddLogViewModelTest {
     }
 
     @Test
-    fun `onNotesChange updates uiState`() = runTest {
+    fun `onCameraSelected filters films based on format`() = runTest {
+        val camera35 = Camera(id = 1, name = "Leica M3", type = CameraType.FILM_SLR, format = Film.FORMAT_35MM)
+        val film35 = Film(id = 10, name = "HP5", iso = 400, type = "B&W", format = Film.FORMAT_35MM)
+        val film120 = Film(id = 11, name = "HP5 120", iso = 400, type = "B&W", format = Film.FORMAT_120)
+        
+        camerasFlow.value = listOf(camera35)
+        filmsFlow.value = listOf(film35, film120)
+        
+        every { repository.getCameraById(1L) } returns flowOf(camera35)
+        
+        viewModel.onCameraSelected(1L)
+        testDispatcher.scheduler.advanceUntilIdle()
+        
+        val filteredFilms = viewModel.allFilms.value
+        assertEquals(1, filteredFilms.size)
+        assertEquals(Film.FORMAT_35MM, filteredFilms.first().format)
+    }
+
+    @Test
+    fun `half frame camera format doubles expected exposures`() = runTest {
+        val cameraHalf = Camera(id = 1, name = "Olympus Pen", type = CameraType.FILM_SLR, format = Film.FORMAT_35MM_HALF)
+        val film35 = Film(id = 10, name = "HP5", iso = 400, type = "B&W", format = Film.FORMAT_35MM, expectedExposures = 36)
+        
+        camerasFlow.value = listOf(cameraHalf)
+        filmsFlow.value = listOf(film35)
+        
+        every { repository.getCameraById(1L) } returns flowOf(cameraHalf)
+        
+        viewModel.onCameraSelected(1L)
+        testDispatcher.scheduler.advanceUntilIdle()
+        viewModel.onFilmSelected(10L, 400)
+        testDispatcher.scheduler.advanceUntilIdle()
+        
+        assertEquals(72, viewModel.uiState.value.expectedExposures)
+    }
+
+    @Test
+    fun `onNotesChange updates updates uiState`() = runTest {
         viewModel.onNotesChange("Test note")
         assertEquals("Test note", viewModel.uiState.value.notes)
     }

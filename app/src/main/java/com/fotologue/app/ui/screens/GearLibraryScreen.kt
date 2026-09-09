@@ -169,12 +169,10 @@ fun GearLibraryScreen(
                         3 -> FilmList(
                             films = films,
                             selectedIds = uiState.selectedFilmIds,
-                            isReorderMode = uiState.isReorderMode,
                             onFilmClick = { id -> 
                                 if (uiState.isSelectionMode) viewModel.toggleFilmSelection(id) else onEditFilm(id)
                             },
                             onFilmLongClick = { viewModel.toggleFilmSelection(it) },
-                            onMove = viewModel::moveFilm,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         4 -> AccessoriesGearScreen(
@@ -292,7 +290,8 @@ fun GearLibraryScreen(
                                     IconButton(onClick = { viewModel.deleteSelectedGear() }) {
                                         Icon(painterResource(R.drawable.ic_delete), contentDescription = stringResource(R.string.action_delete))
                                     }
-                                } else if (!uiState.isReorderMode) {
+                                } else if (!uiState.isReorderMode && uiState.selectedCategoryIndex != 3 && uiState.selectedCategoryIndex < 5) {
+                                    // Disable reorder for Films (index 3) and Tags (index 5, 6)
                                     IconButton(onClick = { viewModel.toggleReorderMode() }) {
                                         Icon(painterResource(R.drawable.select_check_box_24px), contentDescription = "Toggle Reorder")
                                     }
@@ -438,7 +437,7 @@ fun ContentDialog(
                         readOnly = true,
                         label = { Text(stringResource(R.string.associated_subject)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = parentExpanded) },
-                        modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
                         expanded = parentExpanded,
@@ -467,7 +466,7 @@ fun ContentDialog(
         confirmButton = {
             Button(
                 onClick = { onConfirm(name, parentId) },
-                enabled = (name.isNotBlank() && parentId != null)
+                enabled = (name.isNotBlank() && (parentId != null))
             ) {
                 Text(stringResource(R.string.action_save))
             }
@@ -480,6 +479,7 @@ fun ContentDialog(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccessoriesGearScreen(
     teleconverters: List<Teleconverter>,
@@ -1138,7 +1138,7 @@ private fun CameraList(
                     supportingContent = { 
                         Column {
                             Text(
-                                text = camera.type.displayName,
+                                text = "${camera.type.displayName} • ${camera.format}",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.secondary
                             ) 
@@ -1190,10 +1190,8 @@ private fun CameraList(
 private fun FilmList(
     films: List<Film>,
     selectedIds: Set<Long>,
-    isReorderMode: Boolean,
     onFilmClick: (Long) -> Unit,
     onFilmLongClick: (Long) -> Unit,
-    onMove: (Int, Int) -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     if (films.isEmpty()) {
@@ -1201,53 +1199,81 @@ private fun FilmList(
             Text(stringResource(R.string.empty_films), style = MaterialTheme.typography.bodyLarge)
         }
     } else {
+        val groupedFilms = remember(films) {
+            films.groupBy { film ->
+                when (film.format) {
+                    Film.FORMAT_35MM -> "35mm"
+                    Film.FORMAT_120 -> "120 (Medium Format)"
+                    Film.FORMAT_LARGE -> "Large Format / Sheet"
+                    else -> "Other"
+                }
+            }
+        }
+
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            itemsIndexed(films) { index, film ->
-                ListItem(
-                    headlineContent = { 
-                        Text(
-                            text = film.name,
-                            style = MaterialTheme.typography.titleMedium
-                        ) 
-                    },
-                    supportingContent = { 
-                        Text(
-                            text = "Abbr: ${film.abbreviation} • ISO ${film.iso} • ${film.expectedExposures} exp • ${film.type}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.secondary
-                        ) 
-                    },
-                    leadingContent = {
-                        if (selectedIds.contains(film.id)) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_check_circle), 
-                                contentDescription = "Selected", 
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        } else {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_camera_roll),
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
+            val displayOrder = listOf("35mm", "120 (Medium Format)", "Large Format / Sheet", "Other")
+            displayOrder.forEach { groupKey ->
+                val groupItems = (groupedFilms[groupKey] ?: emptyList()).sortedBy { it.name.lowercase() }
+                if (groupItems.isNotEmpty()) {
+                    item(key = "header_$groupKey") {
+                        Surface(
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = groupKey,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             )
                         }
-                    },
-                    trailingContent = if (isReorderMode) {
-                        { ReorderButtons(index, films.size, onMove) }
-                    } else null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .combinedClickable(
-                            onClick = { onFilmClick(film.id) },
-                            onLongClick = { onFilmLongClick(film.id) }
+                    }
+
+                    items(groupItems, key = { it.id }) { film ->
+                        ListItem(
+                            headlineContent = { 
+                                Text(
+                                    text = film.name,
+                                    style = MaterialTheme.typography.titleMedium
+                                ) 
+                            },
+                            supportingContent = { 
+                                Text(
+                                    text = "Abbr: ${film.abbreviation} • ISO ${film.iso} • ${film.expectedExposures} exp • ${film.type}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.secondary
+                                ) 
+                            },
+                            leadingContent = {
+                                if (selectedIds.contains(film.id)) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_check_circle), 
+                                        contentDescription = "Selected", 
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_camera_roll),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .combinedClickable(
+                                    onClick = { onFilmClick(film.id) },
+                                    onLongClick = { onFilmLongClick(film.id) }
+                                )
+                                .padding(vertical = 4.dp)
                         )
-                        .padding(vertical = 4.dp)
-                )
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    }
+                }
             }
         }
     }

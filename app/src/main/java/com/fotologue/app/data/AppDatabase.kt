@@ -3,8 +3,10 @@ package com.fotologue.app.data
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Camera::class, Film::class, LogEntry::class, Lens::class, Teleconverter::class, Filter::class, CameraKit::class, Tag::class, LogEntryTagCrossRef::class, Flash::class, CameraLensCrossRef::class, FilmRollSession::class], version = 29, exportSchema = false)
+@Database(entities = [Camera::class, Film::class, LogEntry::class, Lens::class, Teleconverter::class, Filter::class, CameraKit::class, Tag::class, LogEntryTagCrossRef::class, Flash::class, CameraLensCrossRef::class, FilmRollSession::class], version = 31, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun cameraDao(): CameraDao
@@ -17,4 +19,17 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun cameraKitDao(): CameraKitDao
     abstract fun tagDao(): TagDao
     abstract fun filmRollSessionDao(): FilmRollSessionDao
+
+    companion object {
+        val MIGRATION_29_30 = object : Migration(29, 30) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE log_entries ADD COLUMN isExportedXmp INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        val MIGRATION_30_31 = object : Migration(30, 31) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE cameras ADD COLUMN format TEXT NOT NULL DEFAULT '35mm'")
+            }
+        }
+    }
 }

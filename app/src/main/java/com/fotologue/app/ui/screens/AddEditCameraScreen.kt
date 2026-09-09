@@ -3,17 +3,18 @@ package com.fotologue.app.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.ui.Alignment
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fotologue.app.data.CameraType
+import com.fotologue.app.data.Film
 import com.fotologue.app.ui.viewmodel.AddEditCameraViewModel
 import com.fotologue.app.R
 
@@ -21,10 +22,10 @@ import com.fotologue.app.R
 @Composable
 fun AddEditCameraScreen(
     viewModel: AddEditCameraViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val scrollState = rememberScrollState()
+    val uriHandler = LocalUriHandler.current
     var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -35,6 +36,11 @@ fun AddEditCameraScreen(
                     IconButton(onClick = onBack) {
                         Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.action_back))
                     }
+                },
+                actions = {
+                    IconButton(onClick = { viewModel.saveCamera(onBack) }) {
+                        Icon(painterResource(R.drawable.ic_check), contentDescription = stringResource(R.string.action_save))
+                    }
                 }
             )
         }
@@ -42,21 +48,60 @@ fun AddEditCameraScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
-                .padding(top = innerPadding.calculateTopPadding())
                 .imePadding()
-                .verticalScroll(scrollState)
-                .padding(16.dp)
-                .padding(bottom = innerPadding.calculateBottomPadding() + 16.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            OutlinedTextField(
-                value = uiState.name,
-                onValueChange = viewModel::onNameChange,
-                label = { Text(stringResource(R.string.camera_name)) },
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                isError = !uiState.isNameValid,
-                supportingText = { if (!uiState.isNameValid) Text(stringResource(R.string.error_name_empty)) }
-            )
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = uiState.name,
+                    onValueChange = viewModel::onNameChange,
+                    label = { Text(stringResource(R.string.camera_name)) },
+                    modifier = Modifier.weight(1f),
+                    isError = !uiState.isNameValid,
+                    supportingText = if (!uiState.isNameValid) {
+                        { Text(stringResource(R.string.error_name_empty)) }
+                    } else null
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                IconButton(
+                    onClick = { 
+                        val query = if (uiState.name.isNotBlank()) uiState.name else uiState.modelNumber
+                        viewModel.searchDatabase(query) 
+                    },
+                    colors = IconButtonDefaults.filledIconButtonColors(),
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Icon(painterResource(R.drawable.ic_search), contentDescription = stringResource(R.string.action_lookup))
+                }
+            }
+
+            if (uiState.isSearching) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
+
+            if (uiState.searchResults.isNotEmpty()) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Text(stringResource(R.string.online_lookup), style = MaterialTheme.typography.labelLarge)
+                        uiState.searchResults.take(3).forEach { spec ->
+                            ListItem(
+                                headlineContent = { Text(spec.name) },
+                                supportingContent = { Text("${spec.type.displayName} • ${spec.mount}") },
+                                modifier = Modifier.clickable { viewModel.applySpec(spec) }
+                            )
+                        }
+                    }
+                }
+            }
 
             OutlinedTextField(
                 value = uiState.modelNumber,
@@ -64,53 +109,15 @@ fun AddEditCameraScreen(
                 label = { Text(stringResource(R.string.label_model_number_optional)) },
                 modifier = Modifier.fillMaxWidth()
             )
-            
-            if (uiState.isSearching) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
-            }
 
-            if (uiState.searchResults.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                ) {
-                    Column(modifier = Modifier.padding(8.dp)) {
-                        Text(
-                            stringResource(R.string.online_lookup),
-                            style = MaterialTheme.typography.labelLarge,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        uiState.searchResults.take(5).forEach { spec ->
-                            ListItem(
-                                headlineContent = { Text(spec.name) },
-                                supportingContent = { Text("${spec.type.displayName} • ${spec.mount}") },
-                                modifier = Modifier.clickable { viewModel.applySpec(spec) },
-                                colors = ListItemDefaults.colors(containerColor = androidx.compose.ui.graphics.Color.Transparent)
-                            )
-                        }
-                    }
-                }
-            } else if (uiState.name.length >= 2 && !uiState.isSearching) {
-                val uriHandler = LocalUriHandler.current
+            if (uiState.name.length >= 2 && !uiState.isSearching && uiState.searchResults.isEmpty()) {
                 TextButton(
-                    onClick = { uriHandler.openUri("https://www.google.com/search?q=${uiState.name}+camera+specs") },
-                    modifier = Modifier.padding(top = 8.dp)
+                    onClick = { uriHandler.openUri("https://www.google.com/search?q=${uiState.name}+camera+specs") }
                 ) {
+                    Icon(painterResource(R.drawable.ic_search), contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(8.dp))
                     Text(stringResource(R.string.search_web_for_specs))
                 }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            if (uiState.type.isInterchangeable) {
-                OutlinedTextField(
-                    value = uiState.mount,
-                    onValueChange = viewModel::onMountChange,
-                    label = { Text(stringResource(R.string.label_lens_mount)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
             }
 
             ExposedDropdownMenuBox(
@@ -125,9 +132,7 @@ fun AddEditCameraScreen(
                     label = { Text(stringResource(R.string.label_camera_type)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier
-                        .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
-                        .fillMaxWidth()
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = expanded,
@@ -144,24 +149,54 @@ fun AddEditCameraScreen(
                     }
                 }
             }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Checkbox(
-                    checked = uiState.isHalfFrame,
-                    onCheckedChange = viewModel::onIsHalfFrameChange
-                )
-                Text(
-                    text = "Is Half-Frame Camera? (Double exposures per roll)",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 8.dp)
+
+            if (uiState.type.isInterchangeable) {
+                OutlinedTextField(
+                    value = uiState.mount,
+                    onValueChange = viewModel::onMountChange,
+                    label = { Text(stringResource(R.string.label_lens_mount)) },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
-            
-            Spacer(modifier = Modifier.height(16.dp))
+
+            var formatExpanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = formatExpanded,
+                onExpandedChange = { formatExpanded = !formatExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = uiState.format,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Film Format") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatExpanded) },
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = formatExpanded,
+                    onDismissRequest = { formatExpanded = false }
+                ) {
+                    Film.ALL_FORMATS.forEach { format ->
+                        DropdownMenuItem(
+                            text = { Text(format) },
+                            onClick = {
+                                viewModel.onFormatChange(format)
+                                formatExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Text(
+                text = "Hint: If your camera uses multiple film formats (e.g. interchangeable backs), add it once for each format.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+
             OutlinedTextField(
                 value = uiState.shutterSpeeds,
                 onValueChange = viewModel::onShutterSpeedsChange,
@@ -170,10 +205,9 @@ fun AddEditCameraScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = { viewModel.saveCamera(onBack) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
             ) {
                 Text(stringResource(R.string.save_camera))
             }

@@ -29,7 +29,8 @@ fun AddEditLensScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
-    var typeExpanded by remember { mutableStateOf(false) }
+    val commonMakes = listOf("Canon", "Nikon", "Sony", "Fujifilm", "Olympus", "Panasonic", "Leica", "Pentax", "Sigma", "Tamron", "Tokina", "Zeiss", "Voigtländer", "Other...")
+    var makeExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -61,7 +62,8 @@ fun AddEditLensScreen(
                 .imePadding()
                 .verticalScroll(scrollState)
                 .padding(16.dp)
-                .padding(bottom = innerPadding.calculateBottomPadding() + 16.dp)
+                .padding(bottom = innerPadding.calculateBottomPadding() + 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
                 stringResource(R.string.associated_cameras),
@@ -110,9 +112,9 @@ fun AddEditLensScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             HorizontalDivider()
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 stringResource(R.string.online_lookup),
@@ -184,82 +186,94 @@ fun AddEditLensScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             HorizontalDivider()
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 stringResource(R.string.manual_entry),
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
+                fontWeight = FontWeight.Bold
             )
 
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            // Make (Dropdown)
+            ExposedDropdownMenuBox(
+                expanded = makeExpanded,
+                onExpandedChange = { makeExpanded = it },
+                modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
                     value = uiState.make,
                     onValueChange = viewModel::onMakeChange,
                     label = { Text(stringResource(R.string.label_make)) },
-                    modifier = Modifier.widthIn(min = 150.dp).weight(1f)
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth(),
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = makeExpanded) },
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                 )
-                OutlinedTextField(
-                    value = uiState.model,
-                    onValueChange = viewModel::onModelChange,
-                    label = { Text(stringResource(R.string.label_model_name)) },
-                    modifier = Modifier.widthIn(min = 150.dp).weight(1f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                ExposedDropdownMenuBox(
-                    expanded = typeExpanded,
-                    onExpandedChange = { typeExpanded = !typeExpanded },
-                    modifier = Modifier.widthIn(min = 150.dp).weight(1f)
+                ExposedDropdownMenu(
+                    expanded = makeExpanded,
+                    onDismissRequest = { makeExpanded = false }
                 ) {
-                    OutlinedTextField(
-                        value = uiState.type,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text(stringResource(R.string.label_type)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                        modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable).fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = typeExpanded,
-                        onDismissRequest = { typeExpanded = false }
-                    ) {
-                        Lens.TYPES.forEach { typeOption ->
-                            DropdownMenuItem(
-                                text = { Text(typeOption) },
-                                onClick = {
-                                    viewModel.onTypeChange(typeOption)
-                                    typeExpanded = false
+                    commonMakes.forEach { make ->
+                        DropdownMenuItem(
+                            text = { Text(make) },
+                            onClick = {
+                                if (make != "Other...") {
+                                    viewModel.onMakeChange(make)
                                 }
-                            )
-                        }
+                                makeExpanded = false
+                            }
+                        )
                     }
                 }
-                if (uiState.isInterchangeable) {
-                    OutlinedTextField(
-                        value = uiState.mount,
-                        onValueChange = viewModel::onMountChange,
-                        label = { Text(stringResource(R.string.label_mount)) },
-                        modifier = Modifier
-                            .widthIn(min = 150.dp)
-                            .weight(1f)
-                    )
-                }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = uiState.model,
+                onValueChange = viewModel::onModelChange,
+                label = { Text(stringResource(R.string.label_model_name)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            var typeExpanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = typeExpanded,
+                onExpandedChange = { typeExpanded = !typeExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = uiState.type,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.label_type)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = typeExpanded,
+                    onDismissRequest = { typeExpanded = false }
+                ) {
+                    Lens.TYPES.forEach { typeOption ->
+                        DropdownMenuItem(
+                            text = { Text(typeOption) },
+                            onClick = {
+                                viewModel.onTypeChange(typeOption)
+                                typeExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+            
+            if (uiState.isInterchangeable) {
+                OutlinedTextField(
+                    value = uiState.mount,
+                    onValueChange = viewModel::onMountChange,
+                    label = { Text(stringResource(R.string.label_mount)) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
             if (uiState.type == "Prime") {
                 OutlinedTextField(
                     value = uiState.minFocalLength,
@@ -269,95 +283,91 @@ fun AddEditLensScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
             } else {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     OutlinedTextField(
                         value = uiState.minFocalLength,
                         onValueChange = viewModel::onMinFocalLengthChange,
-                        label = { Text(stringResource(R.string.label_min_focal_length_mm)) },
+                        label = { Text("Min FL (mm)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.widthIn(min = 150.dp).weight(1f)
+                        modifier = Modifier.weight(1f)
                     )
                     OutlinedTextField(
                         value = uiState.maxFocalLength,
                         onValueChange = viewModel::onMaxFocalLengthChange,
-                        label = { Text(stringResource(R.string.label_max_focal_length_mm)) },
+                        label = { Text("Max FL (mm)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.widthIn(min = 150.dp).weight(1f)
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 OutlinedTextField(
                     value = uiState.minAperture,
-                    onValueChange = viewModel::onMinApertureChange,
-                    label = { Text(stringResource(R.string.label_max_aperture_hint)) },
+                    onValueChange = { newValue ->
+                        if (newValue.matches(Regex("""^\d{0,2}(\.\d{0,2})?$"""))) {
+                            viewModel.onMinApertureChange(newValue)
+                        }
+                    },
+                    label = { Text("Max Ap (e.g. 1.8)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.widthIn(min = 150.dp).weight(1f)
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("1.8") }
                 )
                 OutlinedTextField(
                     value = uiState.maxAperture,
-                    onValueChange = viewModel::onMaxApertureChange,
-                    label = { Text(stringResource(R.string.label_min_aperture_hint)) },
+                    onValueChange = { newValue ->
+                        if (newValue.matches(Regex("""^\d{0,2}(\.\d{0,2})?$"""))) {
+                            viewModel.onMaxApertureChange(newValue)
+                        }
+                    },
+                    label = { Text("Min Ap (e.g. 22)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.widthIn(min = 150.dp).weight(1f)
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("22") }
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.Center
+            OutlinedTextField(
+                value = uiState.filterSize,
+                onValueChange = viewModel::onFilterSizeChange,
+                label = { Text(stringResource(R.string.label_filter_size_mm)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                OutlinedTextField(
-                    value = uiState.filterSize,
-                    onValueChange = viewModel::onFilterSizeChange,
-                    label = { Text(stringResource(R.string.label_filter_size_mm)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.widthIn(min = 100.dp).weight(1f)
+                Checkbox(
+                    checked = uiState.isStabilized,
+                    onCheckedChange = viewModel::onIsStabilizedChange
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Checkbox(
-                        checked = uiState.isStabilized,
-                        onCheckedChange = viewModel::onIsStabilizedChange
-                    )
-                    Text(stringResource(R.string.label_image_stabilized))
-                }
+                Text(stringResource(R.string.label_image_stabilized))
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            FlowRow(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 OutlinedTextField(
                     value = uiState.minFocusDistance,
                     onValueChange = viewModel::onMinFocusDistanceChange,
-                    label = { Text(stringResource(R.string.label_min_focus_m)) },
+                    label = { Text("Min Focus (m)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.widthIn(min = 150.dp).weight(1f)
+                    modifier = Modifier.weight(1f)
                 )
                 OutlinedTextField(
                     value = uiState.maxMagnification,
                     onValueChange = viewModel::onMaxMagnificationChange,
-                    label = { Text(stringResource(R.string.label_max_magnification_x)) },
+                    label = { Text("Max Mag (x)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.widthIn(min = 150.dp).weight(1f)
+                    modifier = Modifier.weight(1f)
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = { viewModel.saveLens(onBack) },
                 modifier = Modifier.fillMaxWidth()

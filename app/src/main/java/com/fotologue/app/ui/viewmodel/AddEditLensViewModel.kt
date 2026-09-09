@@ -166,7 +166,9 @@ class AddEditLensViewModel @Inject constructor(
     }
 
     fun onSelectSpec(spec: LensSpec) {
-        val type = if (spec.type in Lens.TYPES) spec.type else "Prime"
+        val type = Lens.TYPES.find { it.equals(spec.type, ignoreCase = true) } 
+            ?: Lens.TYPES.find { spec.type.contains(it, ignoreCase = true) }
+            ?: "Prime"
         
         savedStateHandle["make"] = spec.make
         savedStateHandle["model"] = spec.model

@@ -49,6 +49,7 @@ class SettingsRepository(private val context: Context) {
     private val LAST_APERTURE = stringPreferencesKey("last_aperture")
     private val CURRENT_ROLL = intPreferencesKey("current_roll")
     private val CURRENT_FRAME = intPreferencesKey("current_frame")
+    private val IS_WELCOME_DISMISSED = booleanPreferencesKey("is_welcome_dismissed")
 
     val isThumbnailEnabled: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
@@ -273,6 +274,7 @@ class SettingsRepository(private val context: Context) {
     val lastAperture: Flow<String?> = context.dataStore.data.map { try { it[LAST_APERTURE] } catch (e: ClassCastException) { null } }
     val currentRoll: Flow<Int> = context.dataStore.data.map { it[CURRENT_ROLL] ?: 1 }
     val currentFrame: Flow<Int> = context.dataStore.data.map { it[CURRENT_FRAME] ?: 1 }
+    val isWelcomeDismissed: Flow<Boolean> = context.dataStore.data.map { it[IS_WELCOME_DISMISSED] ?: false }
 
     suspend fun setLastGear(
         cameraId: Long?,
@@ -314,5 +316,9 @@ class SettingsRepository(private val context: Context) {
             val current = preferences[CURRENT_FRAME] ?: 1
             preferences[CURRENT_FRAME] = current + 1
         }
+    }
+
+    suspend fun setWelcomeDismissed(dismissed: Boolean) {
+        context.dataStore.edit { it[IS_WELCOME_DISMISSED] = dismissed }
     }
 }

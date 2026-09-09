@@ -25,7 +25,8 @@ data class OnboardingUiState(
     val isThumbnailEnabled: Boolean = false,
     val isFaceDetectionEnabled: Boolean = false,
     val faceDetectionDisclosureShown: Boolean = false,
-    val pictureExportSize: PictureExportSize = PictureExportSize.NATURAL
+    val pictureExportSize: PictureExportSize = PictureExportSize.NATURAL,
+    val isReadyToGo: Boolean = false
 )
 
 @HiltViewModel
@@ -59,14 +60,19 @@ class OnboardingViewModel @Inject constructor(
                     isThumbnailEnabled = args[4] as Boolean,
                     isFaceDetectionEnabled = args[5] as Boolean,
                     pictureExportSize = args[6] as PictureExportSize,
-                    faceDetectionDisclosureShown = args[7] as Boolean
+                    faceDetectionDisclosureShown = args[7] as Boolean,
+                    isReadyToGo = (args[0] as Boolean) && (args[1] as Boolean) && (args[2] as Boolean)
                 )
             }.collect { state ->
                 _uiState.value = state
-                if (state.isOnboardingComplete) {
-                    ensureDefaultTags()
-                }
             }
+        }
+    }
+
+    fun completeOnboarding() {
+        viewModelScope.launch {
+            ensureDefaultTags()
+            settingsRepository.setWelcomeDismissed(true)
         }
     }
 

@@ -16,7 +16,6 @@ import kotlin.math.sqrt
 
 data class AddLogUiState(
     val notes: String = "",
-    val environmentalConditions: String = "",
     val selectedCameraId: Long? = null,
     val selectedLensId: Long? = null,
     val selectedFilmId: Long? = null,
@@ -36,7 +35,7 @@ data class AddLogUiState(
     val selectedTagIds: Set<Long> = emptySet(),
     val allTags: List<Tag> = emptyList(),
     val availableShutterSpeeds: List<String> = ExposureSuggester.defaultShutterSpeeds,
-    val availableApertures: List<String> = ExposureSuggester.commonApertures.map { "f/${if ((it % 1.0) == 0.0) it.toInt() else it}" },
+    val availableApertures: List<String> = ExposureSuggester.commonApertures.map { apertureValue -> "f/${if ((apertureValue % 1.0) == 0.0) apertureValue.toInt() else apertureValue}" },
     val selectedSubjectId: Long? = null,
     val isKitVisible: Boolean = false,
     val isTeleconverterVisible: Boolean = false,
@@ -45,7 +44,7 @@ data class AddLogUiState(
     val currentRoll: Int = 1,
     val currentFrame: Int = 1,
     val expectedExposures: Int = 36,
-    val showRollFinishedDialog: Boolean = false
+    val showRollFinishedDialog: Boolean = false,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -53,20 +52,32 @@ data class AddLogUiState(
 class AddLogViewModel @Inject constructor(
     private val repository: FotologueRepository,
     private val gearConfigurationManager: GearConfigurationManager,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(AddLogUiState(
-        notes = savedStateHandle["notes"] ?: "",
-        environmentalConditions = savedStateHandle["environmentalConditions"] ?: ""
-    ))
+    private val _uiState = MutableStateFlow(
+        AddLogUiState(
+            notes = savedStateHandle["notes"] ?: "",
+        )
+    )
     val uiState: StateFlow<AddLogUiState> = _uiState.asStateFlow()
 
     val allCameras: StateFlow<List<Camera>> = repository.allCameras
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val allFilms: StateFlow<List<Film>> = repository.allFilms
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val allFilms: StateFlow<List<Film>> = combine(
+        repository.allFilms,
+        allCameras,
+        _uiState.map { it.selectedCameraId }.distinctUntilChanged()
+    ) { films, cameras, cameraId ->
+        if (cameraId == null) return@combine films
+        
+        val camera = cameras.find { it.id == cameraId } ?: return@combine films
+        films.filter { 
+            it.format == camera.format || 
+            (camera.format == Film.FORMAT_35MM_HALF && it.format == Film.FORMAT_35MM) 
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val allTeleconverters: StateFlow<List<Teleconverter>> = repository.allTeleconverters
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -93,7 +104,7 @@ class AddLogViewModel @Inject constructor(
         allLenses,
         allCameraLensCrossRefs,
         allCameras,
-        _uiState.map { it.selectedCameraId }.distinctUntilChanged()
+        _uiState.map { it.selectedCameraId }.distinctUntilChanged(),
     ) { lenses, refs, cameras, cameraId ->
         if (cameraId == null) return@combine lenses
 
@@ -122,12 +133,12 @@ class AddLogViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(allTeleconverters, allFilters, allFlashes, allCameraKits) { tcs, filters, flashes, kits ->
+            combine(allTeleconverters, allFilters, allFlashes, allCameraKits) { tcs, filterList, flashes, kits ->
                 _uiState.update { it.copy(
                     isTeleconverterVisible = tcs.isNotEmpty(),
-                    isFilterVisible = filters.isNotEmpty(),
+                    isFilterVisible = filterList.isNotEmpty(),
                     isFlashVisible = flashes.isNotEmpty(),
-                    isKitVisible = kits.isNotEmpty()
+                    isKitVisible = kits.isNotEmpty(),
                 ) }
             }.collect {}
         }
@@ -140,7 +151,7 @@ class AddLogViewModel @Inject constructor(
                             aperture = result.aperture,
                             iso = result.iso,
                             thumbnailUri = result.thumbnailUri,
-                            faceDetected = result.faceDetected
+                            faceDetected = result.faceDetected,
                         )
                     }
                     repository.clearMeteringResult()
@@ -168,9 +179,9 @@ class AddLogViewModel @Inject constructor(
             if (editingLogId == null) {
                 allFilms.collect { films ->
                     if (_uiState.value.selectedFilmId == null && films.size == 1) {
-                    val film = films.first()
-                    onFilmSelected(filmId = film.id, filmIso = film.iso, updatePersistent = true)
-                }
+                        val film = films.first()
+                        onFilmSelected(filmId = film.id, filmIso = film.iso, updatePersistent = true)
+                    }
                 }
             }
         }
@@ -178,8 +189,8 @@ class AddLogViewModel @Inject constructor(
             if (editingLogId == null) {
                 filteredLenses.collect { lenses ->
                     if (_uiState.value.selectedLensId == null && lenses.size == 1) {
-                    onLensSelected(lensId = lenses.first().id, updatePersistent = true)
-                }
+                        onLensSelected(lensId = lenses.first().id, updatePersistent = true)
+                    }
                 }
             }
         }
@@ -188,14 +199,14 @@ class AddLogViewModel @Inject constructor(
         viewModelScope.launch {
             if (editingLogId == null) {
                 val config = gearConfigurationManager.currentConfiguration.first()
-                config.cameraId?.let { onCameraSelected(it, false) }
-                config.lensId?.let { onLensSelected(it, false) }
-                config.filmId?.let { onFilmSelected(it, config.iso ?: 400, false) }
+                config.cameraId?.let { onCameraSelected(cameraId = it, updatePersistent = false) }
+                config.lensId?.let { onLensSelected(lensId = it, updatePersistent = false) }
+                config.filmId?.let { onFilmSelected(filmId = it, filmIso = config.iso ?: 400, updatePersistent = false) }
                 _uiState.update { it.copy(
                     selectedTeleconverterId = config.teleconverterId,
                     selectedFilterId = config.filterId,
                     selectedFlashId = config.flashId,
-                    selectedKitId = config.kitId
+                    selectedKitId = config.kitId,
                 ) }
             }
         }
@@ -210,12 +221,12 @@ class AddLogViewModel @Inject constructor(
                             val camera = allCameras.value.find { it.id == cameraId }
                             val film = allFilms.value.find { it.id == filmId }
                             val expected = film?.expectedExposures ?: 36
-                            val isHalf = camera?.isHalfFrame ?: false
+                            val isHalf = camera?.format == Film.FORMAT_35MM_HALF || camera?.isHalfFrame == true
                             val totalExpected = if (isHalf) expected * 2 else expected
                             
                             _uiState.update { it.copy(
                                 expectedExposures = totalExpected,
-                                filmRoll = suggested
+                                filmRoll = suggested,
                             ) }
                         }
                     } else {
@@ -239,7 +250,6 @@ class AddLogViewModel @Inject constructor(
                 val entry = gear.logEntry
                 _uiState.update { it.copy(
                     notes = entry.notes,
-                    environmentalConditions = entry.environmentalConditions,
                     selectedCameraId = entry.cameraId,
                     selectedLensId = entry.lensId,
                     selectedFilmId = entry.filmId,
@@ -257,7 +267,7 @@ class AddLogViewModel @Inject constructor(
                     thumbnailUri = entry.exposureSettings.thumbnailUri,
                     selectedTagIds = mutableSetOf<Long>().apply { 
                         gear.tags.forEach { tag -> add(tag.id) } 
-                    }
+                    },
                 ) }
             }
         }
@@ -267,17 +277,12 @@ class AddLogViewModel @Inject constructor(
         _uiState.update { it.copy(notes = notes) }
         savedStateHandle["notes"] = notes
     }
-
-    fun onEnvironmentalConditionsChange(conditions: String) {
-        _uiState.update { it.copy(environmentalConditions = conditions) }
-        savedStateHandle["environmentalConditions"] = conditions
-    }
     
     fun onTagToggled(tagId: Long) {
         _uiState.update { currentState ->
             val current = currentState.selectedTagIds
             currentState.copy(
-                selectedTagIds = if (current.contains(tagId)) current - tagId else current + tagId
+                selectedTagIds = if (current.contains(tagId)) current - tagId else current + tagId,
             )
         }
     }
@@ -288,7 +293,7 @@ class AddLogViewModel @Inject constructor(
                 it.copy(
                     selectedCameraId = null,
                     selectedKitId = null,
-                    availableShutterSpeeds = ExposureSuggester.defaultShutterSpeeds
+                    availableShutterSpeeds = ExposureSuggester.defaultShutterSpeeds,
                 )
             }
             if (updatePersistent) syncGearToPersistent()
@@ -306,10 +311,10 @@ class AddLogViewModel @Inject constructor(
                         camera.shutterSpeeds
                     },
                     availableApertures = if (it.selectedLensId == null) {
-                        ExposureSuggester.commonApertures.map { "f/${if (it % 1.0 == 0.0) it.toInt() else it}" }
+                        ExposureSuggester.commonApertures.map { apertureValue -> "f/${if ((apertureValue % 1.0) == 0.0) apertureValue.toInt() else apertureValue}" }
                     } else {
                         it.availableApertures
-                    }
+                    },
                 )
             }
             if (updatePersistent) syncGearToPersistent()
@@ -324,8 +329,8 @@ class AddLogViewModel @Inject constructor(
 
             if (lens != null) {
                 apertures = apertures.filter { it in lens.minAperture..lens.maxAperture }
-                if (!apertures.contains(lens.minAperture)) apertures = apertures + lens.minAperture
-                if (!apertures.contains(lens.maxAperture)) apertures = apertures + lens.maxAperture
+                if (!apertures.contains(lens.minAperture)) apertures += lens.minAperture
+                if (!apertures.contains(lens.maxAperture)) apertures += lens.maxAperture
                 apertures = apertures.sorted()
             }
 
@@ -334,7 +339,7 @@ class AddLogViewModel @Inject constructor(
                     selectedLensId = lensId,
                     selectedKitId = null,
                     focalLength = lens?.minFocalLength?.toFloat(),
-                    availableApertures = apertures.map { "f/${if (it % 1.0 == 0.0) it.toInt() else it}" }
+                    availableApertures = apertures.map { apertureValue -> "f/${if ((apertureValue % 1.0) == 0.0) apertureValue.toInt() else apertureValue}" },
                 )
             }
             if (updatePersistent) syncGearToPersistent()
@@ -404,7 +409,7 @@ class AddLogViewModel @Inject constructor(
                         iso = iso,
                         focalLength = lens?.minFocalLength?.toFloat(),
                         availableShutterSpeeds = shutterSpeeds,
-                        availableApertures = apertures.map { "f/${if (it % 1.0 == 0.0) it.toInt() else it}" }
+                        availableApertures = apertures.map { apertureValue -> "f/${if ((apertureValue % 1.0) == 0.0) apertureValue.toInt() else apertureValue}" },
                     )
                 }
                 
@@ -419,7 +424,7 @@ class AddLogViewModel @Inject constructor(
                             filterId = kit.filterId,
                             flashId = kit.flashId,
                             kitId = kitId,
-                            iso = iso
+                            iso = iso,
                         )
                     )
                 }
@@ -440,7 +445,7 @@ class AddLogViewModel @Inject constructor(
                 filterId = state.selectedFilterId,
                 flashId = state.selectedFlashId,
                 kitId = state.selectedKitId,
-                iso = state.iso
+                iso = state.iso,
             )
         )
     }
@@ -474,10 +479,6 @@ class AddLogViewModel @Inject constructor(
         _uiState.update { it.copy(iso = iso) }
     }
 
-    fun onSubjectSelected(subjectId: Long?) {
-        _uiState.update { it.copy(selectedSubjectId = subjectId) }
-    }
-
     fun onShutterSpeedChange(speed: String) {
         _uiState.update { it.copy(shutterSpeed = speed) }
     }
@@ -491,21 +492,8 @@ class AddLogViewModel @Inject constructor(
             val location = repository.getCurrentLocation()
             _uiState.update { it.copy(
                 latitude = location?.latitude,
-                longitude = location?.longitude
+                longitude = location?.longitude,
             ) }
-        }
-    }
-
-    fun finishRollAndStartNew() {
-        val state = _uiState.value
-        if (state.selectedCameraId == null || state.selectedFilmId == null) return
-
-        viewModelScope.launch {
-            val nextRoll = state.currentRoll + 1
-            repository.updateFilmRollSession(
-                FilmRollSession(state.selectedCameraId, state.selectedFilmId, nextRoll, 1)
-            )
-            _uiState.update { it.copy(showRollFinishedDialog = false) }
         }
     }
 
@@ -524,7 +512,7 @@ class AddLogViewModel @Inject constructor(
                 state.focalLength
             }
             
-            val effectiveAperture = if (tc != null) {
+            val effectiveApertureValue = if (tc != null) {
                 val baseAp = state.aperture.replace("f/", "").toDoubleOrNull() ?: 0.0
                 val effectiveAp = baseAp * sqrt(2.0).pow(tc.lightLossStops)
                 "f/${if ((effectiveAp % 1.0) == 0.0) effectiveAp.toInt() else String.format(Locale.US, "%.1f", effectiveAp)}"
@@ -538,7 +526,7 @@ class AddLogViewModel @Inject constructor(
                 existingEntry?.let { entry ->
                     val updatedEntry = entry.copy(
                         notes = state.notes.trim(),
-                        environmentalConditions = state.environmentalConditions.trim(),
+                        environmentalConditions = "",
                         cameraId = state.selectedCameraId,
                         filmId = state.selectedFilmId,
                         lensId = state.selectedLensId,
@@ -548,16 +536,16 @@ class AddLogViewModel @Inject constructor(
                         flashId = state.selectedFlashId,
                         focalLength = state.focalLength,
                         effectiveFocalLength = effectiveFocalLength,
-                        effectiveAperture = effectiveAperture,
+                        effectiveAperture = effectiveApertureValue,
                         exposureSettings = ExposureSettings(
                             state.shutterSpeed.trim(),
                             state.aperture.trim(),
                             state.iso,
-                            state.thumbnailUri ?: entry.exposureSettings.thumbnailUri
+                            state.thumbnailUri ?: entry.exposureSettings.thumbnailUri,
                         ),
                         latitude = state.latitude,
                         longitude = state.longitude,
-                        filmRoll = state.filmRoll.trim()
+                        filmRoll = state.filmRoll.trim(),
                     )
                     repository.updateLogEntry(updatedEntry, state.selectedTagIds.toList())
                 }
@@ -565,7 +553,7 @@ class AddLogViewModel @Inject constructor(
                 // CREATE new entry
                 repository.logExposure(
                     notes = state.notes.trim(),
-                    environmentalConditions = state.environmentalConditions.trim(),
+                    environmentalConditions = "",
                     cameraId = state.selectedCameraId,
                     filmId = state.selectedFilmId,
                     lensId = state.selectedLensId,
@@ -575,12 +563,12 @@ class AddLogViewModel @Inject constructor(
                     flashId = state.selectedFlashId,
                     focalLength = state.focalLength,
                     effectiveFocalLength = effectiveFocalLength,
-                    effectiveAperture = effectiveAperture,
+                    effectiveAperture = effectiveApertureValue,
                     exposureSettings = ExposureSettings(state.shutterSpeed.trim(), state.aperture.trim(), state.iso, state.thumbnailUri),
                     tagIds = state.selectedTagIds.toList(),
                     latitude = state.latitude,
                     longitude = state.longitude,
-                    filmRoll = state.filmRoll.trim()
+                    filmRoll = state.filmRoll.trim(),
                 )
                 
                 // Roll check logic for new entries
