@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId = "com.fotologue.app"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 16
         versionName = "1.0.15"
 
