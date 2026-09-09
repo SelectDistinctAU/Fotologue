@@ -107,14 +107,17 @@ class FotologueRepository @Inject constructor(
     suspend fun insertDefaultTagsIfNeeded() {
         tagMutex.withLock {
             val existingTags = tagDao.getAllTagsOnce()
-            if (existingTags.isEmpty()) {
-                val subjects = listOf("Urban/built environment", "Events", "Nature")
-                val contents = mapOf(
-                    "Urban/built environment" to listOf("Architecture", "Street", "Cityscape", "Building", "Bridge", "Interior", "Skyline"),
-                    "Events" to listOf("Wedding", "Concert", "Sport", "Festival", "Protest", "Celebration"),
-                    "Nature" to listOf("Landscape", "Waterways", "Bushland", "Insect", "Beach", "Sunset/sunrise", "Fungi", "Bird", "Flower", "Tree", "Wildlife")
-                )
+            
+            // Professional categories refresh
+            val subjects = listOf("Urban/built environment", "Events", "Nature", "People")
+            val contents = mapOf(
+                "Urban/built environment" to listOf("Architecture", "Street", "Cityscape", "Building", "Bridge", "Interior", "Skyline"),
+                "Events" to listOf("Wedding", "Concert", "Sport", "Festival", "Protest", "Celebration"),
+                "Nature" to listOf("Landscape", "Waterways", "Bushland", "Insect", "Beach", "Sunset/sunrise", "Fungi", "Bird", "Flower", "Tree", "Wildlife"),
+                "People" to listOf("Portrait", "Candid", "Group", "Family", "Self", "Stranger")
+            )
 
+            if (existingTags.isEmpty()) {
                 subjects.forEach { sub ->
                     val subId = tagDao.insertTag(Tag(name = sub, category = Tag.CATEGORY_SUBJECT))
                     contents[sub]?.forEach { cont ->
@@ -122,8 +125,22 @@ class FotologueRepository @Inject constructor(
                     }
                 }
             } else {
-                // Ensure migration/cleanup for existing users if needed
-                cleanupDuplicateTags(existingTags)
+                // If tags already exist, ensure the new professional set is integrated without duplicates
+                subjects.forEach { subName ->
+                    var subject = existingTags.find { it.name == subName && it.category == Tag.CATEGORY_SUBJECT }
+                    if (subject == null) {
+                        val newId = tagDao.insertTag(Tag(name = subName, category = Tag.CATEGORY_SUBJECT))
+                        subject = Tag(id = newId, name = subName, category = Tag.CATEGORY_SUBJECT)
+                    }
+                    
+                    contents[subName]?.forEach { contName ->
+                        val exists = existingTags.any { it.name == contName && it.category == Tag.CATEGORY_CONTENT && it.parentId == subject.id }
+                        if (!exists) {
+                            tagDao.insertTag(Tag(name = contName, category = Tag.CATEGORY_CONTENT, parentId = subject.id))
+                        }
+                    }
+                }
+                cleanupDuplicateTags(tagDao.getAllTagsOnce())
             }
         }
     }
