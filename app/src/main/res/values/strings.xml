@@ -244,7 +244,7 @@
     <string name="setting_how_to_help">How to Use / Help</string>
     <string name="setting_how_to_help_desc">View the getting started guide and app instructions</string>
     <string name="header_backup_privacy">Backup &amp; Privacy</string>
-    <string name="privacy_note">Your data stays on your device. At no time are your images, locations, equipment, tags, or comments visible to the developers.</string>
+    <string name="privacy_note">Your privacy is our priority. All your data—including thumbnails, GPS locations, gear lists, and notes—stays strictly on your device. Smart features like Face Detection are performed entirely on-device with no data shared.</string>
     <string name="action_backup_library">Backup Library &amp; Settings</string>
     <string name="action_backup_library_desc">Export your gear and settings to a JSON file</string>
     <string name="action_restore_backup">Restore from Backup</string>

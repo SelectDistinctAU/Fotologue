@@ -73,7 +73,7 @@ fun HelpScreen(
             HelpSection(
                 title = "6. Backup & Privacy",
                 iconRes = R.drawable.ic_security,
-                content = "Your data stays on your device. At no time are your images, locations, equipment, tags, or comments visible to the developers. Use the Settings screen to create a backup file if you want to move your data to a new device."
+                content = "Your privacy is our priority. All your data—including thumbnails, GPS locations, gear lists, and notes—stays strictly on your device.\n\n• Local AI: Smart Face-Aware tagging uses on-device machine learning; no biometric data or images are ever uploaded or shared.\n• Private Export: CSV, JSON, and XMP files are generated locally for your personal archival workflow.\n• No Tracking: Fotologue does not use analytics to track your usage or shooting locations."
             )
 
             Spacer(modifier = Modifier.height(32.dp))
