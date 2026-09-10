@@ -1,7 +1,7 @@
 package com.fotologue.app.ui.screens
 
 import android.Manifest
-import android.bluetooth.BluetoothAdapter
+import com.fotologue.core.designsystem.FotologueTheme
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.os.Build
@@ -219,7 +219,7 @@ fun RemoteControlContent(
 @Preview(showBackground = true)
 @Composable
 fun RemoteControlContentPreview() {
-    com.fotologue.app.ui.theme.FotologueTheme {
+    FotologueTheme {
         RemoteControlContent(
             connectionState = BleConnectionState.CONNECTED,
             messageLog = listOf("Connected", "Battery: 90%", "Trigger pressed"),

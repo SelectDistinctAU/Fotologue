@@ -21,7 +21,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.fotologue.app.ui.navigation.Route
 import com.fotologue.app.ui.screens.*
-import com.fotologue.app.ui.theme.FotologueTheme
+import com.fotologue.core.designsystem.FotologueTheme
 import com.fotologue.app.ui.viewmodel.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key

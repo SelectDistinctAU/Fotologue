@@ -3,7 +3,7 @@ package com.fotologue.app.ui.screens
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.fotologue.app.data.*
-import com.fotologue.app.ui.theme.FotologueTheme
+import com.fotologue.core.designsystem.FotologueTheme
 import org.junit.Rule
 import org.junit.Test
 

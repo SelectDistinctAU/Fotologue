@@ -1,7 +1,6 @@
 package com.fotologue.app.ui.screens
 
 import android.Manifest
-import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -22,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fotologue.app.R
 import com.fotologue.app.data.*
-import com.fotologue.app.ui.theme.FotologueTheme
+import com.fotologue.core.designsystem.FotologueTheme
 import com.fotologue.app.ui.viewmodel.AddLogViewModel
 import com.fotologue.app.util.ExposureSuggester
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -38,8 +37,6 @@ fun AddLogScreen(
     onAddLens: (Long?) -> Unit,
     onNavigateToRollCounter: () -> Unit,
 ) {
-    val configuration = LocalConfiguration.current
-
     val locationPermissionState = rememberPermissionState(
         Manifest.permission.ACCESS_FINE_LOCATION,
     )

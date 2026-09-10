@@ -27,7 +27,7 @@ import com.fotologue.app.data.Camera
 import com.fotologue.app.data.Film
 import com.fotologue.app.data.LogEntry
 import com.fotologue.app.data.LogEntryWithGear
-import com.fotologue.app.ui.theme.FotologueTheme
+import com.fotologue.core.designsystem.FotologueTheme
 import com.fotologue.app.ui.viewmodel.TimelineViewModel
 import com.fotologue.app.ui.viewmodel.ExportType
 import com.fotologue.app.R

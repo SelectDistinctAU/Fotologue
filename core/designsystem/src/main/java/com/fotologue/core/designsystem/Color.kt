@@ -1,4 +1,4 @@
-package com.fotologue.app.ui.theme
+package com.fotologue.core.designsystem
 
 import androidx.compose.ui.graphics.Color
 

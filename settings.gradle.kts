@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Fotologue"
 include(":app")
+include(":core:designsystem")
