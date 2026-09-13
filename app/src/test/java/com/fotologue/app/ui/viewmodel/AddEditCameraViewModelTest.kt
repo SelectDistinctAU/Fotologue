@@ -25,6 +25,7 @@ class AddEditCameraViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        every { repository.getAllCameras() } returns flowOf<List<Camera>>(emptyList())
         viewModel = AddEditCameraViewModel(repository, savedStateHandle)
     }
 

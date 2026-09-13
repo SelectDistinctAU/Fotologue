@@ -49,6 +49,7 @@ class AddLogViewModelTest {
         every { repository.allCameraKitsWithGear } returns cameraKitsWithGearFlow
         every { repository.latestMeteringResult } returns meteringResultFlow
         every { repository.clearMeteringResult() } just Runs
+        every { repository.allViewfinders } returns flowOf(emptyList())
         every { repository.getCameraById(any()) } returns flowOf(null)
         every { repository.getLensById(any()) } returns flowOf(null)
         every { repository.getSuggestedFilmRollFlow(any(), any()) } returns flowOf("1.01")

@@ -24,6 +24,9 @@ class FotologueRepositoryTest {
     private val cameraKitDao: CameraKitDao = mockk()
     private val tagDao: TagDao = mockk()
     private val filmRollSessionDao: FilmRollSessionDao = mockk()
+    private val viewfinderDao: ViewfinderDao = mockk<ViewfinderDao>().apply {
+        every { getAllViewfinders() } returns flowOf(emptyList())
+    }
     private val locationProvider: LocationProvider = mockk()
     private val settingsRepository: SettingsRepository = mockk()
 
@@ -56,7 +59,7 @@ class FotologueRepositoryTest {
         repository = FotologueRepository(
             db, cameraDao, filmDao, lensDao, teleconverterDao,
             filterDao, flashDao, logEntryDao, cameraKitDao,
-            tagDao, filmRollSessionDao, locationProvider, settingsRepository
+            tagDao, filmRollSessionDao, viewfinderDao, locationProvider, settingsRepository
         )
     }
 
