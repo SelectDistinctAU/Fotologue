@@ -12,9 +12,11 @@ This document provides ready-to-use recruitment templates tailored for film phot
 *Built a privacy-first exposure log & light meter app for film photographers — looking for beta testers! 📸🎞️*
 
 **Post Body**:  
-> Hi everyone! Like many of you, I've had the experience of receiving developed film scans weeks after a shoot, holding great negatives—and zero record of what aperture, shutter speed, lens, or location I used. Paper notebooks get wet or lost in the field, generic notes apps lack film roll structure, and cloud apps compromise privacy.
+> Hi everyone! Years ago, I had the best intentions of keeping a paper notebook log while shooting film—recording the Who, What, When, Where, Why, and How of every frame. But fumbling with a pen, paper, and gear in the field was cumbersome, so like many photographers, I abandoned it.
 > 
-> So I built **Fotologue**—a specialized, **100% local-first** mobile app designed by a film photographer for film photographers.
+> I realized that if a field logging tool wasn't convenient, fast, accurate, and above all **easy**, I simply wouldn't use it.
+> 
+> So I built **Fotologue**—a specialized, **100% local-first** mobile app designed by an analog photographer for analog photographers to capture a shot's complete story in seconds:
 > 
 > **Key Features Built for Analog Workflows:**
 > * 🎞️ **Film Roll & Frame Counter**: Tracks `Roll.Frame` (e.g. 3.12) matching film margin rebate numbers.
@@ -65,7 +67,11 @@ This document provides ready-to-use recruitment templates tailored for film phot
 > 
 > I wanted to share a project I've been developing to solve the field logging challenge for analog photography.
 > 
-> **Fotologue** is a dedicated Android companion designed to replace paper shot lists while keeping your data 100% local on your phone (no cloud accounts, no telemetry).
+> Years ago, I started out with the best intentions of keeping a paper notebook log while shooting film—recording the Who, What, When, Where, Why, and How of every frame. But in the field, fumbling with a pen and notebook while holding camera gear was frustrating, so I stopped doing it.
+> 
+> I realized that if a logging tool wasn't convenient, accurate, and above all **easy**, I wouldn't use it.
+> 
+> **Fotologue** is an Android companion designed to replace paper shot lists while keeping your data 100% local on your phone (no cloud accounts, no telemetry).
 > 
 > It includes a 2-stage calibrated light meter (*The Void* & *The Balance*), film roll counter tracking, TLR/fixed-lens gear cross-referencing, a 3-axis tag taxonomy (*Subject • Content • Intent*), digital contact sheet grid gap adjustment, camera macro copy XMP sidecar matching for Lightroom/Capture One, and printable A4 PDF proof sheet exports.
 > 

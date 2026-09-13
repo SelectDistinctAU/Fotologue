@@ -10,12 +10,17 @@ Fotologue is a high-precision, privacy-first mobile application designed to brid
 
 ## 📜 The Backstory: Why Fotologue Was Created
 
-> *"Every film photographer knows the feeling: you receive a developed roll of negatives weeks after a shoot, holding incredible frames—and zero memory of what aperture, shutter speed, lens, or location you used. Paper notebooks get wet, crumpled, or take too long in the field. Generic notes apps lack film structure. Cloud services compromise privacy."*
+> *"Years ago, I had the best intentions of keeping a paper notepad log while shooting film—recording the Who, What, When, Where, Why, and How of every frame. But in the field, fumbling with a pen, notebook, and camera gear was cumbersome, so like many photographers, I stopped doing it.*  
+> 
+> *I realized that if a logging tool wasn't convenient, fast, accurate, and above all **easy**, I simply wouldn't use it. So I built Fotologue: a tool designed to capture the complete story of a shot in seconds."*
 
-Fotologue was built out of a real-world field need by an analogue photographer. The mission was simple:
-1. **Never Lose a Shot's Context**: Capture precise technical settings, GPS location, and scene thumbnails in seconds without slowing down your shooting rhythm.
-2. **Bridge Film to Desktop Archiving**: Automatically output ISO 16684 XMP sidecars so digitized film scans seamlessly inherit exposure metadata, GPS maps, and fine-art project taxonomy (*Study*, *Series*) in Adobe Lightroom or Capture One.
-3. **100% Privacy & Ownership**: Your shooting locations, notes, and photos belong solely to you. No cloud accounts, no subscriptions, no tracking.
+Fotologue solves the 5 W's + H of analogue photography in the field:
+* **What**: Camera, Lens, Film Stock, Shutter Speed, Aperture, ISO, Focal Length.
+* **When**: Timestamp, Roll & Frame counter (`Roll 03, Frame 12`).
+* **Where**: Exact GPS coordinates and interactive location mapping.
+* **Who**: On-device face detection and custom People tags (*Portrait*, *Family*).
+* **Why**: 3-Axis Taxonomy for fine-art projects (*Study*, *Series*, *Book Projects*).
+* **How**: Calibrated spot/centre-weighted light metering with live C-41, E-6, and B&W previews.
 
 ---
 
