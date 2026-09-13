@@ -8,6 +8,17 @@ Fotologue is a high-precision, privacy-first mobile application designed to brid
 
 ---
 
+## 📜 The Backstory: Why Fotologue Was Created
+
+> *"Every film photographer knows the feeling: you receive a developed roll of negatives weeks after a shoot, holding incredible frames—and zero memory of what aperture, shutter speed, lens, or location you used. Paper notebooks get wet, crumpled, or take too long in the field. Generic notes apps lack film structure. Cloud services compromise privacy."*
+
+Fotologue was built out of a real-world field need by an analogue photographer. The mission was simple:
+1. **Never Lose a Shot's Context**: Capture precise technical settings, GPS location, and scene thumbnails in seconds without slowing down your shooting rhythm.
+2. **Bridge Film to Desktop Archiving**: Automatically output ISO 16684 XMP sidecars so digitized film scans seamlessly inherit exposure metadata, GPS maps, and fine-art project taxonomy (*Study*, *Series*) in Adobe Lightroom or Capture One.
+3. **100% Privacy & Ownership**: Your shooting locations, notes, and photos belong solely to you. No cloud accounts, no subscriptions, no tracking.
+
+---
+
 ## ✨ Key Features
 
 ### 🛠️ The Wizard's Calibration
