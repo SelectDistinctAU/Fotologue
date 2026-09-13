@@ -1,0 +1,4 @@
+- [/] Modify TimelineScreen to hide filter row and use FlowRow for chips
+- [ ] Add Viewfinders tab to Gear Library Accessory Screen
+- [ ] Review Light Meter calibration control placement
+- [ ] Update documentation (README, store descriptions)

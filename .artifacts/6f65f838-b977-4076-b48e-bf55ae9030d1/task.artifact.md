@@ -1,0 +1,5 @@
+- [/] Create Viewfinder entity, DAO, and database integration
+- [ ] Add viewfinderId to LogEntry and update relations
+- [ ] Implement Viewfinder ViewModel and Screen for Gear Library
+- [ ] Add Viewfinder selector to AddLogScreen
+- [ ] Verify build and tests
