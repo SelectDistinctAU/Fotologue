@@ -1,6 +1,6 @@
 # Google Play Store Data Safety Guide: Fotologue
 
-**Version:** 1.0.17 (Build 18) | **Release Date:** September 2024 | **Audience:** Developers & Play Store Compliance Reviewers
+**Version:** 1.0.17 (Build 18) | **Last Updated:** September 2026 | **Audience:** Developers & Play Store Compliance Reviewers
 
 To ensure a smooth approval process and compliance with Google Play policies regarding "On-device Face Tagging," follow this guide when filling out the **Data Safety** section in the Google Play Console.
 

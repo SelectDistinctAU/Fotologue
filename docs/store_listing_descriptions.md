@@ -1,6 +1,6 @@
 # Fotologue Store Listing Descriptions
 
-**Version:** 1.0.17 (Build 18) | **Release Date:** September 2024 | **Audience:** Play Console Marketing, Localisation & Reviewers
+**Version:** 1.0.17 (Build 18) | **Last Updated:** September 2026 | **Audience:** Play Console Marketing, Localisation & Reviewers
 
 ## English (Primary)
 **Fotologue: Professional Exposure Log & Light Meter**

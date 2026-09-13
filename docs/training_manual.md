@@ -1,6 +1,6 @@
 # Fotologue Master Training Manual 📖📸
 
-**Version:** 1.0.17 (Build 18) | **Release Date:** September 2024 | **Audience:** Analog Photographers, Workshop Instructors & Beta Testers
+**Version:** 1.0.17 (Build 18) | **Last Updated:** September 2026 | **Audience:** Analog Photographers, Workshop Instructors & Beta Testers
 
 **A Comprehensive Field & Archival Guide for Analog Photographers**
 

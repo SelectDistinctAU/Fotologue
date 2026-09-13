@@ -1,6 +1,6 @@
 # Fotologue: Professional QA Test Plan & Strategy
 
-**Version:** 1.0.17 (Build 18) | **Release Date:** September 2024 | **Audience:** Testers, QA Engineers & Reviewers | **Test Suite:** 58 Automated Unit Tests Passing
+**Version:** 1.0.17 (Build 18) | **Last Updated:** September 2026 | **Audience:** Testers, QA Engineers & Reviewers | **Test Suite:** 58 Automated Unit Tests Passing
 
 ---
 

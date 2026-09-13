@@ -1,6 +1,7 @@
 # Privacy Policy for Fotologue 🔒
 
-**Version:** 1.0.17 (Build 18) | **Effective Date:** September 20, 2024 | **Audience:** End Users, App Store Reviewers & Public  
+**Version:** 1.0.17 (Build 18) | **Last Updated:** September 2026 | **Audience:** End Users, App Store Reviewers & Public  
+**Effective Date:** May 20, 2024  
 **Website:** [https://www.fotologue.au](https://www.fotologue.au) | **Online Policy:** [https://www.fotologue.au/privacy-policy](https://www.fotologue.au/privacy-policy)
 
 Fotologue is built from the ground up with a **local-first, privacy-by-design** architecture. We believe your photography, equipment records, location history, and personal notes belong solely to you. Fotologue operates entirely on your device and does not collect, store, transmit, or monetise any user data.

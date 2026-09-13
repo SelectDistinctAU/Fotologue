@@ -1,6 +1,6 @@
 # Fotologue 📸🎞️
 
-**Version:** 1.0.17 (Build 18) | **Release Date:** September 2024 | **Audience:** Developers, Beta Reviewers & Testers
+**Version:** 1.0.17 (Build 18) | **Last Updated:** September 2026 | **Audience:** Developers, Beta Reviewers & Testers
 
 **Professional Exposure Log & Light Meter companion for Analog Photographers.**
 

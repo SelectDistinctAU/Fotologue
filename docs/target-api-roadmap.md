@@ -1,6 +1,6 @@
 # Fotologue: Target API Roadmap
 
-**Version:** 1.0.17 (Build 18) | **Release Date:** September 2024 | **Audience:** Core Engineering Team
+**Version:** 1.0.17 (Build 18) | **Last Updated:** September 2026 | **Audience:** Core Engineering Team
 
 This document outlines the strategy for targeting Android SDK versions to ensure compliance with Google Play requirements while maintaining application stability.
 
