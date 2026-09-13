@@ -11,12 +11,13 @@
 1. [Core Philosophy & Onboarding](#1-core-philosophy--onboarding)
 2. [Gear Library & Equipment Pairing](#2-gear-library--equipment-pairing)
 3. [The 3-Axis Tag Taxonomy (Subject • Content • Intent)](#3-the-3-axis-tag-taxonomy-subject--content--intent)
-4. [Smart Camera Kits](#4-smart-camera-kits)
-5. [Field Workflow & Metering Calibration](#5-field-workflow--metering-calibration)
-6. [Digital Contact Sheet & In-Grid Gap Adjuster](#6-digital-contact-sheet--in-grid-gap-adjuster)
-7. [Camera Macro Copying & Scanner Matching](#7-camera-macro-copying--scanner-matching)
-8. [Printable PDF Proof Sheets & Archiving](#8-printable-pdf-proof-sheets--archiving)
-9. [Privacy, Backups & Portability](#9-privacy-backups--portability)
+4. [Smart Face-Aware Detection vs. Named People Tags](#4-smart-face-aware-detection-vs-named-people-tags)
+5. [Smart Camera Kits](#5-smart-camera-kits)
+6. [Field Workflow & Metering Calibration](#6-field-workflow--metering-calibration)
+7. [Digital Contact Sheet & In-Grid Gap Adjuster](#7-digital-contact-sheet--in-grid-gap-adjuster)
+8. [Camera Macro Copying & Scanner Matching](#8-camera-macro-copying--scanner-matching)
+9. [Printable PDF Proof Sheets & Archiving](#9-printable-pdf-proof-sheets--archiving)
+10. [Privacy, Backups & Portability](#10-privacy-backups--portability)
 
 ---
 
@@ -69,14 +70,33 @@ Fotologue uses a 3-axis taxonomy to classify exposures:
 
 ---
 
-## 4. Smart Camera Kits
+## 4. Smart Face-Aware Detection vs. Named People Tags
+
+Understanding how Fotologue handles human subjects:
+
+### Face-Aware Detection (On-Device ML)
+* **What It Does**: Scans live camera viewfinder frames in real-time using Google ML Kit to detect whether a **human face is present** in the shot.
+* **How It Helps**: When a face is detected:
+  1. The light meter adjusts exposure suggestions to favor skin tones.
+  2. The log creation screen automatically highlights **People** category tags.
+* **Privacy & Biometrics**: Face detection is **100% ephemeral and local**. Fotologue stores **no biometric face hashes, templates, or facial recognition profiles**.
+
+### Named People Tags
+* **How to Tag Specific Individuals**:
+  1. In the **Gear Library**, navigate to **Subjects > People** (or **Taxonomy & Tags**).
+  2. Add custom sub-tags for specific individuals (e.g. `People > John`, `People > Sarah`).
+  3. When logging a shot detected with a human, select your custom name chip (*John* or *Sarah*) in one tap.
+
+---
+
+## 5. Smart Camera Kits
 
 * **One-Tap Quick Fill**: Pre-configure favourite equipment combinations (e.g. *Leica M6 + 35mm Summicron + Tri-X 400*).
 * **Field Speed**: Selecting a Kit on the **Add Log Screen** fills Camera, Lens, Film, ISO, and accessories in a single tap.
 
 ---
 
-## 5. Field Workflow & Metering Calibration
+## 6. Field Workflow & Metering Calibration
 
 ### The Pro Calibration Wizard
 Transform your phone into a precision light meter via **Settings > EV Calibration**:
@@ -90,7 +110,7 @@ Transform your phone into a precision light meter via **Settings > EV Calibratio
 
 ---
 
-## 6. Digital Contact Sheet & In-Grid Gap Adjuster
+## 7. Digital Contact Sheet & In-Grid Gap Adjuster
 
 Open the **Digital Contact Sheet** via the top bar icon on the Timeline.
 
@@ -112,7 +132,7 @@ If a frame was skipped on film or unlogged:
 
 ---
 
-## 7. Camera Macro Copying & Scanner Matching
+## 8. Camera Macro Copying & Scanner Matching
 
 When photographing negatives with a DSLR/mirrorless macro setup or flatbed scanner:
 
@@ -131,7 +151,7 @@ In the Export Sheet or Settings:
 
 ---
 
-## 8. Printable PDF Proof Sheets & Archiving
+## 9. Printable PDF Proof Sheets & Archiving
 
 * **Export as Printable PDF Proof Sheet**:
   Generates an A4 PDF contact proof sheet complete with:
@@ -142,7 +162,7 @@ In the Export Sheet or Settings:
 
 ---
 
-## 9. Privacy, Backups & Portability
+## 10. Privacy, Backups & Portability
 
 * **100% On-Device Storage**: No telemetry, analytics, or external trackers.
 * **On-Device Face Detection**: Biometric data is processed in-memory via Google ML Kit and never saved or transmitted.
