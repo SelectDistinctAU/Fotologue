@@ -50,28 +50,16 @@ Export your data directly into your professional post-processing workflow (Light
 
 ---
 
-## 🌍 Global Presence
-Fotologue is localised for the international photography community, supporting 8 languages:
-*   English (Australia / Primary)
-*   German (Deutsch)
-*   Spanish (Español)
-*   French (Français)
-*   Italian (Italiano)
-*   Japanese (日本語)
-*   Portuguese (Português - Brasil)
-*   Chinese (Simplified - 简体中文)
+## 🛰️ Release Focus & Future Roadmap (v2.0)
 
----
+### Current Major Release Focus (v1.0.x)
+The feature set for this major release is **finalized and feature-frozen**. The current priority is comprehensive QA testing, community verification, and validating that all metering, cataloguing, cross-referencing, and XMP export features operate with 100% precision.
 
-## 🏗️ Technical Stack
-
-*   **Language**: Kotlin 2.4.20
-*   **Compile SDK**: 37 (Android 17) — required for latest Material You assets and system fonts
-*   **Target SDK**: 36 (Android 16) — meets Google Play's requirement; see [Target API Roadmap](docs/target-api-roadmap.md)
-*   **UI Framework**: Jetpack Compose (Material 3 Adaptive V2)
-*   **Architecture**: MVVM Pattern with Hilt Dependency Injection
-*   **Persistence**: Room Database (Schema Version 36) with DataStore for typed preferences
-*   **Compliance**: Optimised for Android 15+ Edge-to-Edge and IME insets.
+### Next Major Release Roadmap (v2.0)
+* **Bluetooth Hotshoe Flash Trigger Hardware (`Fotologue Trigger`)**:
+  Developing a physical camera-top device that connects via Bluetooth Low Energy (BLE). Mounts to a camera's hotshoe or PC-sync port to capture flash signals upon exposure, triggering an automated baseline log with millisecond GPS coordinates and multi-camera timeline support in the field.
+* **Digital Camera Cataloguing & Fine-Art Taxonomy Integration**:
+  Extending cataloguing to digital cameras (DSLRs/mirrorless) to bridge digital shooting workflows with Fotologue's 3-Axis Tag Taxonomy (*Series*, *Study*, *Book Projects*) and location history.
 
 ---
 

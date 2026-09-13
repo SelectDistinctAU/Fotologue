@@ -17,6 +17,7 @@ Welcome to the **Fotologue User Guide**. This guide covers day-to-day operations
 7. [Camera Macro Copying & Scanner Matching](#7-camera-macro-copying--scanner-matching)
 8. [Printable PDF Proof Sheets](#8-printable-pdf-proof-sheets)
 9. [Backups & Privacy](#9-backups--privacy)
+10. [Release Focus & Future Roadmap (v2.0)](#10-release-focus--future-roadmap-v20)
 
 ---
 
@@ -124,3 +125,23 @@ Export styled A4 PDF contact proof sheets complete with:
 
 * **100% Local Storage**: No accounts, analytics, or remote telemetry.
 * **Full SAF Backup & Restore**: Create full JSON backups or restore databases via standard Android Storage Access Framework (SAF) in **Settings**.
+
+---
+
+## 10. Release Focus & Future Roadmap (v2.0)
+
+### Current Release Focus (v1.0.x)
+The feature set for this major release is **finalized and feature-frozen**. The primary focus for v1.0.x is comprehensive QA testing, community verification, and validating that all metering, cataloguing, cross-referencing, and XMP export features operate with 100% precision.
+
+### Next Major Release Roadmap (v2.0)
+
+#### 1. Bluetooth Hotshoe Flash Trigger Hardware (`Fotologue Trigger`)
+We are actively developing a custom camera-top hardware device that connects to your Android phone via Bluetooth Low Energy (BLE):
+* **Hotshoe Flash Signal Capture**: Mounts to your camera's hotshoe or PC-sync port. When a photo is taken, the flash signal triggers an instant baseline log in Fotologue.
+* **Instant GPS Precision**: Captures exact GPS location coordinates at the precise millisecond of exposure.
+* **Smart Auto-Increment**: Automatically increments the roll frame counter using your last log setup as a baseline.
+* **Multi-Camera Field Timelines**: When operating multiple cameras in the field, each physical trigger device broadcasts its own unique camera ID, maintaining independent, parallel log timelines for each camera body in real-time.
+
+#### 2. Digital Camera Cataloguing & Taxonomy Integration
+While modern digital cameras automatically capture EXIF exposure settings (aperture, shutter speed, ISO), they lack Fotologue's rich **3-Axis Tag Taxonomy (Subject • Content • Intent)** and field notes.
+* **Digital Camera Integration**: v2.0 will extend cataloguing and Bluetooth hotshoe triggering to digital cameras, bridging digital shooting workflows with Fotologue's fine-art taxonomy (*Series*, *Study*, *Book Projects*) and location history.
