@@ -68,16 +68,16 @@ Export your data directly into your professional post-processing workflow (Light
 
 ---
 
-## 🛰️ Release Focus & Future Roadmap (v2.0)
+## 🛰️ Release Focus & Future Roadmap (v2.0 & v3.0)
 
 ### Current Major Release Focus (v1.0.x)
 The feature set for this major release is **finalized and feature-frozen**. The current priority is comprehensive QA testing, community verification, and validating that all metering, cataloguing, cross-referencing, and XMP export features operate with 100% precision.
 
-### Next Major Release Roadmap (v2.0)
-* **Bluetooth Hotshoe / PC-Sync Flash Trigger Hardware (`Fotologue Trigger`)**:
-  Developing a physical camera device that connects via Bluetooth Low Energy (BLE). Connects to a camera's hotshoe or PC-sync flash port to capture trigger signals upon exposure, creating an automated baseline log with millisecond GPS coordinates and multi-camera timeline support in the field.
-* **Digital Camera Cataloguing & Fine-Art Taxonomy Integration**:
-  Extending cataloguing to digital cameras (DSLRs/mirrorless) to bridge digital shooting workflows with Fotologue's 3-Axis Tag Taxonomy (*Series*, *Study*, *Book Projects*) and location history.
+### Future Roadmap
+* **v2.0: Bluetooth Hotshoe / PC-Sync Flash Trigger Hardware (`Fotologue Trigger`)**:
+  Connects via Bluetooth Low Energy (BLE) to capture flash sync signals upon exposure, logging millisecond GPS coordinates, auto-incrementing film frame counters, and managing multi-camera field timelines.
+* **v3.0: Full End-to-End Imaging & Darkroom Suite (`Fotologue Lab`)**:
+  Extends Fotologue from field logging to the full physical image lifecycle—tracking physical film roll stock (*Fridge $\to$ Camera $\to$ Lab $\to$ Negative Sleeve*), darkroom printing paper, processing chemistry capacity/exhaustion, enlarger split-grade print recipes, and fine-art print edition custodianship (*Gallery Exhibitions, Sales, Provenance*).
 
 ---
 
