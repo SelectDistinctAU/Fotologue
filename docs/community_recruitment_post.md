@@ -16,13 +16,13 @@ This document provides ready-to-use recruitment templates tailored for film phot
 > 
 > I realized that if a field logging tool wasn't convenient, fast, accurate, and above all **easy**, I simply wouldn't use it.
 > 
-> So I built **Fotologue**—a specialized, **100% local-first** mobile app designed by an analog photographer for analog photographers to capture a shot's complete story in seconds:
+> From that simple idea, **Fotologue** grew into a complete creative companion. Logging with Fotologue is as easy as you want it to be: take a 1-tap quick log during fast street shooting, or use live B&W previews to study scene composition, tonal contrast, and depth of field before tripping the film shutter.
 > 
 > **Key Features Built for Analog Workflows:**
 > * 🎞️ **Film Roll & Frame Counter**: Tracks `Roll.Frame` (e.g. 3.12) matching film margin rebate numbers.
 > * 📐 **Relational Gear Library**: Manage 35mm, 120 (Medium Format), Half-Frame, Large Format, and TLRs (*Yashica Mat-124G*, *Rolleiflex 2.8F* fixed lenses auto-create!).
 > * 🏷️ **3-Axis Taxonomy (Subject • Content • Intent)**: Classify shots for photo books and exhibitions (`Intent > Series > Urban Decay`).
-> * 🛠️ **Pro Light Meter Calibration**: 2-stage hardware tuning (*The Void* & *The Balance*) with B&W, C-41, and E-6 live-view previews.
+> * 🛠️ **Pro Light Meter Calibration**: 2-stage hardware tuning (*The Void* & *The Balance*) with B&W, C-41, and E-6 live-view previews for evaluating composition, contrast, and depth of field.
 > * 🖼️ **Digital Contact Sheets & In-Grid Gap Adjuster**: Visual scene thumbnails let you match scans to logs, with $+1 / -1$ offset gap insertion to fix skipped frames.
 > * 📑 **Printable A4 PDF Proof Sheets**: Export darkroom contact proof sheets ready for printing or storage sleeves.
 > * 💻 **Scanner / Camera Macro Copy Matching**: Auto-names `.xmp` sidecar files (`_DSF1024.xmp`) to match RAW camera scan sequences for instant import into Lightroom or Capture One.
@@ -70,6 +70,8 @@ This document provides ready-to-use recruitment templates tailored for film phot
 > Years ago, I started out with the best intentions of keeping a paper notebook log while shooting film—recording the Who, What, When, Where, Why, and How of every frame. But in the field, fumbling with a pen and notebook while holding camera gear was frustrating, so I stopped doing it.
 > 
 > I realized that if a logging tool wasn't convenient, accurate, and above all **easy**, I wouldn't use it.
+> 
+> From that initial need, **Fotologue** grew into a complete creative tool. Logging is as easy as you want it to be: from 1-tap quick logs during fast shooting, to live B&W scene previews for evaluating composition, tonal contrast, and depth of field before firing the shutter.
 > 
 > **Fotologue** is an Android companion designed to replace paper shot lists while keeping your data 100% local on your phone (no cloud accounts, no telemetry).
 > 

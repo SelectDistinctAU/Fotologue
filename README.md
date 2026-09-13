@@ -8,18 +8,20 @@ Fotologue is a high-precision, privacy-first mobile application designed to brid
 
 ---
 
-## 📜 The Backstory: Why Fotologue Was Created
+## 📜 The Backstory & Creative Philosophy
 
-> *"Years ago, I had the best intentions of keeping a paper notepad log while shooting film—recording the Who, What, When, Where, Why, and How of every frame. But in the field, fumbling with a pen, notebook, and camera gear was cumbersome, so like many photographers, I stopped doing it.*  
+> *"Years ago, I had the best intentions of keeping a paper notebook log while shooting film—recording the Who, What, When, Where, Why, and How of every frame. But in the field, fumbling with a pen, notebook, and camera gear was cumbersome, so like many photographers, I abandoned it.*  
 > 
-> *I realized that if a logging tool wasn't convenient, fast, accurate, and above all **easy**, I simply wouldn't use it. So I built Fotologue: a tool designed to capture the complete story of a shot in seconds."*
+> *I realized that if a logging tool wasn't convenient, fast, accurate, and above all **easy**, I simply wouldn't use it. From that simple idea, Fotologue grew into an indispensable creative companion.*  
+> 
+> *Logging with Fotologue is as easy as you want it to be: take a 1-tap quick log during fast street shooting, or use live B&W previews to study scene composition, tonal contrast, and depth of field before tripping the film shutter."*
 
 Fotologue solves the 5 W's + H of analogue photography in the field:
 * **What**: Camera, Lens, Film Stock, Shutter Speed, Aperture, ISO, Focal Length.
 * **When**: Timestamp, Roll & Frame counter (`Roll 03, Frame 12`).
 * **Where**: Exact GPS coordinates and interactive location mapping.
 * **Who**: On-device face detection and custom People tags (*Portrait*, *Family*).
-* **Why**: 3-Axis Taxonomy for fine-art projects (*Study*, *Series*, *Book Projects*).
+* **Why**: 3-Axis Tag Taxonomy (*Subject • Content • Intent*) for fine-art projects (*Study*, *Series*, *Book Projects*).
 * **How**: Calibrated spot/centre-weighted light metering with live C-41, E-6, and B&W previews.
 
 ---
