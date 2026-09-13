@@ -267,6 +267,14 @@ fun LightMeterScreenContent(
                         Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.action_back))
                     }
                 },
+                actions = {
+                    IconButton(onClick = onStartCalibration) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_handyman),
+                            contentDescription = "Pro Calibration Wizard"
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Black.copy(alpha = 0.5f),
                     titleContentColor = Color.White,
@@ -310,7 +318,6 @@ fun LightMeterScreenContent(
                     onToggleFilmSimulation = onToggleFilmSimulation,
                     onFocalLengthChanged = onFocalLengthChanged,
                     onTakeThumbnail = onTakeThumbnail,
-                    onStartCalibration = onStartCalibration,
                     onUseSettings = onUseSettings,
                     targetIso = targetIso,
                     bottomPadding = innerPadding.calculateBottomPadding()
@@ -350,7 +357,6 @@ fun LightMeterScreenContent(
                     onToggleFilmSimulation = onToggleFilmSimulation,
                     onFocalLengthChanged = onFocalLengthChanged,
                     onTakeThumbnail = onTakeThumbnail,
-                    onStartCalibration = onStartCalibration,
                     onUseSettings = onUseSettings,
                     targetIso = targetIso,
                     bottomPadding = innerPadding.calculateBottomPadding()
@@ -451,7 +457,6 @@ private fun InputSettingsColumn(
     onToggleFilmSimulation: () -> Unit,
     onFocalLengthChanged: (Int) -> Unit,
     onTakeThumbnail: ((String?) -> Unit) -> Unit,
-    onStartCalibration: () -> Unit,
     onUseSettings: (ExposureSettings) -> Unit,
     targetIso: Int,
     bottomPadding: Dp = 0.dp
@@ -475,14 +480,6 @@ private fun InputSettingsColumn(
                                else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     )
                 }
-            }
-
-            IconButton(onClick = onStartCalibration) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_handyman),
-                    contentDescription = "Pro Calibration Wizard",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
 
             Spacer(modifier = Modifier.weight(1f))

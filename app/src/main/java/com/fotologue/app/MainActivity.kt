@@ -128,6 +128,8 @@ class MainActivity : ComponentActivity() {
                                         onEditFilter = { id -> backStack.add(Route.AddEditFilter(id)) },
                                         onAddFlash = { backStack.add(Route.AddEditFlash()) },
                                         onEditFlash = { id -> backStack.add(Route.AddEditFlash(id)) },
+                                        onAddViewfinder = { backStack.add(Route.AddEditViewfinder()) },
+                                        onEditViewfinder = { id -> backStack.add(Route.AddEditViewfinder(id)) },
                                         onAddKit = { backStack.add(Route.AddEditCameraKit()) },
                                         onEditKit = { id -> backStack.add(Route.AddEditCameraKit(id)) }
                                     )
@@ -136,6 +138,15 @@ class MainActivity : ComponentActivity() {
                                     val viewModel: AddEditFlashViewModel = hiltViewModel(key = "AddEditFlash_${navRoute.flashId}")
                                     viewModel.setFlashId(navRoute.flashId)
                                     AddEditFlashScreen(
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                    )
+                                }
+                                entry<Route.AddEditViewfinder> { navRoute ->
+                                    val viewModel: AddEditViewfinderViewModel = hiltViewModel(key = "AddEditViewfinder_${navRoute.viewfinderId}")
+                                    viewModel.setViewfinderId(navRoute.viewfinderId)
+                                    AddEditViewfinderScreen(
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
                                         onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }

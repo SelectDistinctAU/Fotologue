@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import java.text.SimpleDateFormat
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun TimelineScreen(
     viewModel: TimelineViewModel,
@@ -52,15 +51,19 @@ fun TimelineScreen(
     selectedLogId: Long? = null,
 ) {
     val logs by viewModel.logEntries.collectAsStateWithLifecycle()
+    val allLogs by viewModel.allLogEntries.collectAsStateWithLifecycle()
     val cameras by viewModel.allCameras.collectAsStateWithLifecycle()
     val selectedCameraId by viewModel.selectedCameraId.collectAsStateWithLifecycle()
+    val showOnlyUnexported by viewModel.showOnlyUnexported.collectAsStateWithLifecycle()
     val isOnboardingComplete by viewModel.isOnboardingComplete.collectAsStateWithLifecycle()
     val selectedIds by viewModel.selectedIds.collectAsStateWithLifecycle()
 
     TimelineScreenContent(
         logs = logs,
+        allLogsCount = allLogs.size,
         cameras = cameras,
         selectedCameraId = selectedCameraId,
+        showOnlyUnexported = showOnlyUnexported,
         isOnboardingComplete = isOnboardingComplete,
         selectedIds = selectedIds,
         selectedLogId = selectedLogId,
@@ -69,6 +72,7 @@ fun TimelineScreen(
         onGearLibraryClick = onGearLibraryClick,
         onSettingsClick = onSettingsClick,
         onCameraFilterClick = viewModel::setCameraFilter,
+        onToggleUnexportedFilter = viewModel::toggleUnexportedFilter,
         onToggleSelection = viewModel::toggleSelection,
         onClearSelection = viewModel::clearSelection,
         onSelectAll = viewModel::selectAll,
@@ -77,12 +81,14 @@ fun TimelineScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun TimelineScreenContent(
     logs: List<LogEntryWithGear>,
+    allLogsCount: Int,
     cameras: List<Camera>,
     selectedCameraId: Long?,
+    showOnlyUnexported: Boolean,
     isOnboardingComplete: Boolean,
     selectedIds: Set<Long>,
     selectedLogId: Long?,
@@ -91,6 +97,7 @@ fun TimelineScreenContent(
     onGearLibraryClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onCameraFilterClick: (Long?) -> Unit,
+    onToggleUnexportedFilter: () -> Unit,
     onToggleSelection: (Long) -> Unit,
     onClearSelection: () -> Unit,
     onSelectAll: () -> Unit,
@@ -225,30 +232,31 @@ fun TimelineScreenContent(
                 .padding(top = innerPadding.calculateTopPadding())
                 .consumeWindowInsets(innerPadding)
         ) {
-            if (cameras.isNotEmpty()) {
+            if (allLogsCount > 0) {
                 Text(
                     text = stringResource(R.string.label_filter_by_camera),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
-                LazyRow(
-                    contentPadding = PaddingValues(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 8.dp,
-                        bottom = 8.dp
-                    ),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
-                    item {
-                        FilterChip(
-                            selected = selectedCameraId == null,
-                            onClick = { onCameraFilterClick(null) },
-                            label = { Text(stringResource(R.string.filter_all_cameras)) }
-                        )
-                    }
-                    items(cameras) { camera ->
+                    FilterChip(
+                        selected = selectedCameraId == null,
+                        onClick = { onCameraFilterClick(null) },
+                        label = { Text(stringResource(R.string.filter_all_cameras)) }
+                    )
+                    FilterChip(
+                        selected = showOnlyUnexported,
+                        onClick = onToggleUnexportedFilter,
+                        label = { Text("To Do (Unexported)") }
+                    )
+                    cameras.forEach { camera ->
                         FilterChip(
                             selected = selectedCameraId == camera.id,
                             onClick = { onCameraFilterClick(camera.id) },
@@ -259,8 +267,13 @@ fun TimelineScreenContent(
             }
 
             if (logs.isEmpty()) {
+                val emptyMessage = if (allLogsCount > 0) {
+                    "No new logs exist yet."
+                } else {
+                    stringResource(R.string.timeline_empty)
+                }
                 Text(
-                    stringResource(R.string.timeline_empty),
+                    emptyMessage,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp)
@@ -491,7 +504,7 @@ fun LogEntryItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Preview(showBackground = true)
 @Composable
 fun TimelineScreenPreview() {
@@ -518,8 +531,10 @@ fun TimelineScreenPreview() {
         )
         TimelineScreenContent(
             logs = listOf(logWithGear),
+            allLogsCount = 1,
             cameras = listOf(Camera(1, "Leica M3", CameraType.FILM_SLR)),
             selectedCameraId = null,
+            showOnlyUnexported = false,
             isOnboardingComplete = true,
             selectedIds = emptySet(),
             selectedLogId = null,
@@ -528,6 +543,7 @@ fun TimelineScreenPreview() {
             onGearLibraryClick = {},
             onSettingsClick = {},
             onCameraFilterClick = {},
+            onToggleUnexportedFilter = {},
             onToggleSelection = {},
             onClearSelection = {},
             onSelectAll = {},

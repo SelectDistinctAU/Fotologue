@@ -9,9 +9,10 @@
     <string name="category_cameras">Câmeras</string>
     <string name="category_lenses">Lentes</string>
     <string name="category_accessories">Acessórios</string>
-    <string name="category_accessories_tcs">TCs</string>
+    <string name="category_accessories_tcs">Teleconversores</string>
     <string name="category_accessories_filters">Filtros</string>
     <string name="category_accessories_flashes">Flashes</string>
+    <string name="category_accessories_viewfinders">Visores</string>
     <string name="category_films">Filmes</string>
     <string name="category_subjects">Assuntos</string>
     <string name="category_content">Conteúdo</string>

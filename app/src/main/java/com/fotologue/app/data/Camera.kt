@@ -16,5 +16,6 @@ data class Camera(
     val shutterSpeeds: List<String> = emptyList(),
     val isHalfFrame: Boolean = false,
     val format: String = "35mm",
+    val triggerDeviceId: String? = null,
     val position: Int = 0
 )

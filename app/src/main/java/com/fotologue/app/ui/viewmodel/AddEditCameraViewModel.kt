@@ -27,6 +27,7 @@ data class AddEditCameraUiState(
     val shutterSpeeds: String = "",
     val isHalfFrame: Boolean = false,
     val format: String = Film.FORMAT_35MM,
+    val triggerDeviceId: String = "",
     val fixedLens: LensSpec? = null,
     val isNameValid: Boolean = true,
     val searchResults: List<CameraSpec> = emptyList(),
@@ -70,7 +71,8 @@ class AddEditCameraViewModel @Inject constructor(
                         mount = c.mount,
                         shutterSpeeds = c.shutterSpeeds.joinToString(", "),
                         isHalfFrame = c.isHalfFrame,
-                        format = c.format
+                        format = c.format,
+                        triggerDeviceId = c.triggerDeviceId ?: ""
                     )
                 }
             }
@@ -114,6 +116,11 @@ class AddEditCameraViewModel @Inject constructor(
         _uiState.update { it.copy(format = format) }
     }
 
+    fun onTriggerDeviceIdChange(id: String) {
+        _uiState.update { it.copy(triggerDeviceId = id) }
+        savedStateHandle["triggerDeviceId"] = id
+    }
+
     fun searchDatabase(query: String) {
         if (query.length < 2) {
             _uiState.update { it.copy(searchResults = emptyList(), isSearching = false) }
@@ -150,6 +157,31 @@ class AddEditCameraViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            val existingCameras = repository.allCameras.first()
+            val baseName = currentState.name.trim()
+            
+            val nameExists = existingCameras.any { c -> c.id != cameraId && c.name.equals(baseName, ignoreCase = true) }
+            
+            val finalName = if (nameExists && cameraId == null) {
+                val matchingNames: List<String> = existingCameras
+                    .map { c -> c.name }
+                    .filter { n -> n.equals(baseName, ignoreCase = true) || n.startsWith("$baseName (", ignoreCase = true) }
+                
+                var maxCount = 1
+                for (name in matchingNames) {
+                    if (name.equals(baseName, ignoreCase = true)) {
+                        continue
+                    }
+                    val suffix = name.substringAfterLast("(", "").substringBefore(")", "").toIntOrNull()
+                    if (suffix != null && suffix >= maxCount) {
+                        maxCount = suffix + 1
+                    }
+                }
+                "$baseName ($maxCount)"
+            } else {
+                baseName
+            }
+
             val shutterSpeedList = currentState.shutterSpeeds
                 .split(",")
                 .map { it.trim() }
@@ -157,13 +189,14 @@ class AddEditCameraViewModel @Inject constructor(
 
             val camera = Camera(
                 id = cameraId ?: 0,
-                name = currentState.name.trim(),
+                name = finalName,
                 modelNumber = currentState.modelNumber.trim(),
                 type = currentState.type,
                 mount = currentState.mount.trim(),
                 shutterSpeeds = shutterSpeedList,
                 isHalfFrame = currentState.isHalfFrame,
-                format = currentState.format
+                format = currentState.format,
+                triggerDeviceId = currentState.triggerDeviceId.ifBlank { null }
             )
 
             if (cameraId == null) {

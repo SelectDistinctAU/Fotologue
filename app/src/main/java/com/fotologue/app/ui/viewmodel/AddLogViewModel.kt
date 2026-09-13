@@ -22,6 +22,7 @@ data class AddLogUiState(
     val selectedTeleconverterId: Long? = null,
     val selectedFilterId: Long? = null,
     val selectedFlashId: Long? = null,
+    val selectedViewfinderId: Long? = null,
     val selectedKitId: Long? = null,
     val focalLength: Float? = null,
     val iso: Int = 400,
@@ -41,6 +42,7 @@ data class AddLogUiState(
     val isTeleconverterVisible: Boolean = false,
     val isFilterVisible: Boolean = false,
     val isFlashVisible: Boolean = false,
+    val isViewfinderVisible: Boolean = false,
     val currentRoll: Int = 1,
     val currentFrame: Int = 1,
     val expectedExposures: Int = 36,
@@ -86,6 +88,9 @@ class AddLogViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val allFlashes: StateFlow<List<Flash>> = repository.allFlashes
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allViewfinders: StateFlow<List<Viewfinder>> = repository.allViewfinders
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
         
     val allCameraKits: StateFlow<List<CameraKit>> = repository.allCameraKits
@@ -206,6 +211,7 @@ class AddLogViewModel @Inject constructor(
                     selectedTeleconverterId = config.teleconverterId,
                     selectedFilterId = config.filterId,
                     selectedFlashId = config.flashId,
+                    selectedViewfinderId = config.viewfinderId,
                     selectedKitId = config.kitId,
                 ) }
             }

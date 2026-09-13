@@ -18,7 +18,12 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, "fotologue_database")
-            .addMigrations(AppDatabase.MIGRATION_29_30, AppDatabase.MIGRATION_30_31)
+            .addMigrations(
+                AppDatabase.MIGRATION_29_30,
+                AppDatabase.MIGRATION_30_31,
+                AppDatabase.MIGRATION_31_32,
+                AppDatabase.MIGRATION_32_33
+            )
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }
@@ -52,4 +57,7 @@ object DatabaseModule {
 
     @Provides
     fun provideFilmRollSessionDao(db: AppDatabase): FilmRollSessionDao = db.filmRollSessionDao()
+
+    @Provides
+    fun provideViewfinderDao(db: AppDatabase): ViewfinderDao = db.viewfinderDao()
 }

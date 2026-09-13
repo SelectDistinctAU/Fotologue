@@ -36,14 +36,31 @@ class TimelineViewModel @Inject constructor(
     private val _selectedCameraId = MutableStateFlow<Long?>(null)
     val selectedCameraId: StateFlow<Long?> = _selectedCameraId.asStateFlow()
 
+    private val _showOnlyUnexported = MutableStateFlow(false)
+    val showOnlyUnexported: StateFlow<Boolean> = _showOnlyUnexported.asStateFlow()
+
+    val allLogEntries: StateFlow<List<LogEntryWithGear>> = repository.allLogEntriesWithGear
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     val allCameras: StateFlow<List<Camera>> = repository.allCameras
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val logEntries: StateFlow<List<LogEntryWithGear>> = combine(
         repository.allLogEntriesWithGear,
-        _selectedCameraId
-    ) { logs, cameraId ->
-        if (cameraId == null) logs else logs.filter { it.logEntry.cameraId == cameraId }
+        _selectedCameraId,
+        _showOnlyUnexported
+    ) { logs, cameraId, unexportedOnly ->
+        var filtered = logs
+        if (cameraId != null) {
+            filtered = filtered.filter { it.logEntry.cameraId == cameraId }
+        }
+        if (unexportedOnly) {
+            filtered = filtered.filter { logWithGear ->
+                val log = logWithGear.logEntry
+                !log.isExportedZip && !log.isExportedCsv && !log.isExportedJson && !log.isExportedXmp
+            }
+        }
+        filtered
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val isOnboardingComplete: StateFlow<Boolean> = repository.isOnboardingComplete
@@ -60,6 +77,10 @@ class TimelineViewModel @Inject constructor(
 
     fun setCameraFilter(cameraId: Long?) {
         _selectedCameraId.value = cameraId
+    }
+
+    fun toggleUnexportedFilter() {
+        _showOnlyUnexported.value = !_showOnlyUnexported.value
     }
 
     fun toggleSelection(id: Long) {

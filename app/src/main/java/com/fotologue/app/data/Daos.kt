@@ -79,6 +79,33 @@ interface FilmDao {
 }
 
 @Dao
+interface ViewfinderDao {
+    @Query("SELECT * FROM viewfinders ORDER BY position ASC, id ASC")
+    fun getAllViewfinders(): Flow<List<Viewfinder>>
+
+    @Insert
+    suspend fun insertViewfinder(viewfinder: Viewfinder): Long
+
+    @Update
+    suspend fun updateViewfinder(viewfinder: Viewfinder)
+
+    @Update
+    suspend fun updateViewfinders(viewfinders: List<Viewfinder>)
+
+    @Delete
+    suspend fun deleteViewfinder(viewfinder: Viewfinder)
+
+    @Query("SELECT * FROM viewfinders WHERE id = :id")
+    fun getViewfinderById(id: Long): Flow<Viewfinder?>
+
+    @Query("DELETE FROM viewfinders WHERE id IN (:ids)")
+    suspend fun deleteViewfinders(ids: List<Long>)
+
+    @Query("DELETE FROM viewfinders")
+    suspend fun deleteAllViewfinders()
+}
+
+@Dao
 interface LogEntryDao {
     @Query("SELECT * FROM log_entries ORDER BY timestamp DESC")
     fun getAllLogEntries(): Flow<List<LogEntry>>

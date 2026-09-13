@@ -48,6 +48,9 @@ sealed class Route : NavKey {
     data class AddEditFlash(val flashId: Long? = null) : Route()
 
     @Serializable
+    data class AddEditViewfinder(val viewfinderId: Long? = null) : Route()
+
+    @Serializable
     data class AddEditCameraKit(val kitId: Long? = null) : Route()
 
     @Serializable

@@ -51,6 +51,12 @@ import kotlinx.serialization.Serializable
             parentColumns = ["id"],
             childColumns = ["flashId"],
             onDelete = ForeignKey.SET_NULL
+        ),
+        ForeignKey(
+            entity = Viewfinder::class,
+            parentColumns = ["id"],
+            childColumns = ["viewfinderId"],
+            onDelete = ForeignKey.SET_NULL
         )
     ],
     indices = [
@@ -60,7 +66,8 @@ import kotlinx.serialization.Serializable
         Index("teleconverterId"),
         Index("filterId"),
         Index("kitId"),
-        Index("flashId")
+        Index("flashId"),
+        Index("viewfinderId")
     ]
 )
 @Serializable
@@ -76,6 +83,7 @@ data class LogEntry(
     val filterId: Long? = null,
     val kitId: Long? = null,
     val flashId: Long? = null,
+    val viewfinderId: Long? = null,
     val focalLength: Float? = null,
     val effectiveFocalLength: Float? = null,
     val effectiveAperture: String? = null,

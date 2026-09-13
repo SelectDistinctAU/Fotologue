@@ -23,6 +23,7 @@ class FotologueRepository @Inject constructor(
     private val cameraKitDao: CameraKitDao,
     private val tagDao: TagDao,
     private val filmRollSessionDao: FilmRollSessionDao,
+    private val viewfinderDao: ViewfinderDao,
     private val locationProvider: LocationProvider,
     @Suppress("unused") private val settingsRepository: SettingsRepository,
 ) {
@@ -37,6 +38,7 @@ class FotologueRepository @Inject constructor(
     val allTeleconverters: Flow<List<Teleconverter>> = teleconverterDao.getAllTeleconverters()
     val allFilters: Flow<List<Filter>> = filterDao.getAllFilters()
     val allFlashes: Flow<List<Flash>> = flashDao.getAllFlashes()
+    val allViewfinders: Flow<List<Viewfinder>> = viewfinderDao.getAllViewfinders()
     val allLogEntriesWithGear: Flow<List<LogEntryWithGear>> = logEntryDao.getAllLogEntriesWithGear()
     val allCameraKits: Flow<List<CameraKit>> = cameraKitDao.getAllCameraKits()
     val allCameraKitsWithGear: Flow<List<CameraKitWithGear>> = cameraKitDao.getAllCameraKitsWithGear()
@@ -62,6 +64,7 @@ class FotologueRepository @Inject constructor(
     fun getTeleconverterById(id: Long): Flow<Teleconverter?> = teleconverterDao.getTeleconverterById(id)
     fun getFilterById(id: Long): Flow<Filter?> = filterDao.getFilterById(id)
     fun getFlashById(id: Long): Flow<Flash?> = flashDao.getFlashById(id)
+    fun getViewfinderById(id: Long): Flow<Viewfinder?> = viewfinderDao.getViewfinderById(id)
     fun getCameraKitById(id: Long): Flow<CameraKit?> = cameraKitDao.getCameraKitById(id)
 
     fun getFilmRollSession(cameraId: Long, filmId: Long): Flow<FilmRollSession?> =
@@ -101,6 +104,7 @@ class FotologueRepository @Inject constructor(
     suspend fun insertTeleconverter(teleconverter: Teleconverter) = teleconverterDao.insertTeleconverter(teleconverter)
     suspend fun insertFilter(filter: Filter) = filterDao.insertFilter(filter)
     suspend fun insertFlash(flash: Flash) = flashDao.insertFlash(flash)
+    suspend fun insertViewfinder(viewfinder: Viewfinder) = viewfinderDao.insertViewfinder(viewfinder)
     suspend fun insertCameraKit(cameraKit: CameraKit) = cameraKitDao.insertCameraKit(cameraKit)
     suspend fun insertTag(tag: Tag) = tagDao.insertTag(tag)
 
@@ -179,6 +183,8 @@ class FotologueRepository @Inject constructor(
     suspend fun updateFilters(filters: List<Filter>) = filterDao.updateFilters(filters)
     suspend fun updateFlash(flash: Flash) = flashDao.updateFlash(flash)
     suspend fun updateFlashes(flashes: List<Flash>) = flashDao.updateFlashes(flashes)
+    suspend fun updateViewfinder(viewfinder: Viewfinder) = viewfinderDao.updateViewfinder(viewfinder)
+    suspend fun updateViewfinders(viewfinders: List<Viewfinder>) = viewfinderDao.updateViewfinders(viewfinders)
     suspend fun updateCameraKit(cameraKit: CameraKit) = cameraKitDao.updateCameraKit(cameraKit)
     suspend fun updateCameraKits(kits: List<CameraKit>) = cameraKitDao.updateCameraKits(kits)
     suspend fun updateTag(tag: Tag) = tagDao.updateTag(tag)
@@ -190,11 +196,18 @@ class FotologueRepository @Inject constructor(
     suspend fun deleteTeleconverters(ids: List<Long>) = teleconverterDao.deleteTeleconverters(ids)
     suspend fun deleteFilters(ids: List<Long>) = filterDao.deleteFilters(ids)
     suspend fun deleteFlashes(ids: List<Long>) = flashDao.deleteFlashes(ids)
+    suspend fun deleteViewfinders(ids: List<Long>) = viewfinderDao.deleteViewfinders(ids)
     suspend fun deleteCameraKits(ids: List<Long>) = cameraKitDao.deleteCameraKits(ids)
     suspend fun deleteTags(ids: List<Long>) = tagDao.deleteTags(ids)
 
     suspend fun updateLogEntry(logEntry: LogEntry, tagIds: List<Long> = emptyList()) {
-        val updatedEntry = logEntry.copy(lastUpdated = System.currentTimeMillis())
+        val updatedEntry = logEntry.copy(
+            lastUpdated = System.currentTimeMillis(),
+            isExportedZip = false,
+            isExportedCsv = false,
+            isExportedJson = false,
+            isExportedXmp = false
+        )
         database.withTransaction {
             logEntryDao.updateLogEntry(updatedEntry)
             tagDao.deleteCrossRefsForLogEntry(updatedEntry.id)

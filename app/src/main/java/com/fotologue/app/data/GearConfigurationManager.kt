@@ -13,6 +13,7 @@ data class GearConfiguration(
     val teleconverterId: Long? = null,
     val filterId: Long? = null,
     val flashId: Long? = null,
+    val viewfinderId: Long? = null,
     val kitId: Long? = null,
     val iso: Int? = null,
     val focalLength: Float? = null,
@@ -33,6 +34,7 @@ class GearConfigurationManager(
             settingsRepository.lastTcId,
             settingsRepository.lastFilterId,
             settingsRepository.lastFlashId,
+            settingsRepository.lastViewfinderId,
             settingsRepository.lastKitId,
             settingsRepository.lastIso,
             settingsRepository.lastFocalLength,
@@ -47,11 +49,12 @@ class GearConfigurationManager(
             teleconverterId = args[3] as Long?,
             filterId = args[4] as Long?,
             flashId = args[5] as Long?,
-            kitId = args[6] as Long?,
-            iso = args[7] as Int?,
-            focalLength = args[8] as Float?,
-            shutterSpeed = args[9] as String?,
-            aperture = args[10] as String?
+            viewfinderId = args[6] as Long?,
+            kitId = args[7] as Long?,
+            iso = args[8] as Int?,
+            focalLength = args[9] as Float?,
+            shutterSpeed = args[10] as String?,
+            aperture = args[11] as String?
         )
     }.stateIn(scope, SharingStarted.Eagerly, GearConfiguration())
 
@@ -64,6 +67,7 @@ class GearConfigurationManager(
                 tcId = config.teleconverterId,
                 filterId = config.filterId,
                 flashId = config.flashId,
+                viewfinderId = config.viewfinderId,
                 kitId = config.kitId,
                 iso = config.iso,
                 focalLength = config.focalLength,

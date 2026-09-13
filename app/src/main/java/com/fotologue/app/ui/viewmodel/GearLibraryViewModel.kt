@@ -15,6 +15,7 @@ data class GearLibraryUiState(
     val selectedTeleconverterIds: Set<Long> = emptySet(),
     val selectedFilterIds: Set<Long> = emptySet(),
     val selectedFlashIds: Set<Long> = emptySet(),
+    val selectedViewfinderIds: Set<Long> = emptySet(),
     val selectedKitIds: Set<Long> = emptySet(),
     val selectedSubjectIds: Set<Long> = emptySet(),
     val selectedContentIds: Set<Long> = emptySet(),
@@ -52,6 +53,8 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
     val allFilters: StateFlow<List<Filter>> = repository.allFilters
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val allFlashes: StateFlow<List<Flash>> = repository.allFlashes
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val allViewfinders: StateFlow<List<Viewfinder>> = repository.allViewfinders
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val allCameraKits: StateFlow<List<CameraKitWithGear>> = repository.allCameraKitsWithGear
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -161,6 +164,20 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
         }
     }
 
+    fun moveViewfinder(fromIndex: Int, toIndex: Int) {
+        val list = allViewfinders.value.toMutableList()
+        if (fromIndex !in list.indices || toIndex !in list.indices) return
+        val item = list.removeAt(fromIndex)
+        list.add(toIndex, item)
+        updateViewfinderPositions(list)
+    }
+
+    private fun updateViewfinderPositions(list: List<Viewfinder>) {
+        viewModelScope.launch {
+            repository.updateViewfinders(list.mapIndexed { index, v -> v.copy(position = index) })
+        }
+    }
+
     fun moveKit(fromIndex: Int, toIndex: Int) {
         val list = allCameraKits.value.map { it.cameraKit }.toMutableList()
         if (fromIndex !in list.indices || toIndex !in list.indices) return
@@ -263,6 +280,17 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
         }
     }
 
+    fun toggleViewfinderSelection(viewfinderId: Long) {
+        _uiState.update { currentState ->
+            val newSelection = if (currentState.selectedViewfinderIds.contains(viewfinderId)) {
+                currentState.selectedViewfinderIds - viewfinderId
+            } else {
+                currentState.selectedViewfinderIds + viewfinderId
+            }
+            currentState.updateSelectionMode(selectedViewfinderIds = newSelection)
+        }
+    }
+
     fun toggleKitSelection(kitId: Long) {
         _uiState.update { currentState ->
             val newSelection = if (currentState.selectedKitIds.contains(kitId)) {
@@ -303,6 +331,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
         selectedTeleconverterIds: Set<Long> = this.selectedTeleconverterIds,
         selectedFilterIds: Set<Long> = this.selectedFilterIds,
         selectedFlashIds: Set<Long> = this.selectedFlashIds,
+        selectedViewfinderIds: Set<Long> = this.selectedViewfinderIds,
         selectedKitIds: Set<Long> = this.selectedKitIds,
         selectedSubjectIds: Set<Long> = this.selectedSubjectIds,
         selectedContentIds: Set<Long> = this.selectedContentIds
@@ -313,6 +342,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
                            selectedTeleconverterIds.isNotEmpty() || 
                            selectedFilterIds.isNotEmpty() ||
                            selectedFlashIds.isNotEmpty() ||
+                           selectedViewfinderIds.isNotEmpty() ||
                            selectedKitIds.isNotEmpty() ||
                            selectedSubjectIds.isNotEmpty() ||
                            selectedContentIds.isNotEmpty()
@@ -323,6 +353,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
             selectedTeleconverterIds = selectedTeleconverterIds,
             selectedFilterIds = selectedFilterIds,
             selectedFlashIds = selectedFlashIds,
+            selectedViewfinderIds = selectedViewfinderIds,
             selectedKitIds = selectedKitIds,
             selectedSubjectIds = selectedSubjectIds,
             selectedContentIds = selectedContentIds,
@@ -340,6 +371,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
                 selectedTeleconverterIds = emptySet(),
                 selectedFilterIds = emptySet(),
                 selectedFlashIds = emptySet(),
+                selectedViewfinderIds = emptySet(),
                 selectedKitIds = emptySet(),
                 selectedSubjectIds = emptySet(),
                 selectedContentIds = emptySet(),
@@ -356,6 +388,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
             val teleconverterIds = uiState.value.selectedTeleconverterIds.toList()
             val filterIds = uiState.value.selectedFilterIds.toList()
             val flashIds = uiState.value.selectedFlashIds.toList()
+            val viewfinderIds = uiState.value.selectedViewfinderIds.toList()
             val kitIds = uiState.value.selectedKitIds.toList()
             val subjectIds = uiState.value.selectedSubjectIds.toList()
             val contentIds = uiState.value.selectedContentIds.toList()
@@ -366,6 +399,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
             if (teleconverterIds.isNotEmpty()) repository.deleteTeleconverters(teleconverterIds)
             if (filterIds.isNotEmpty()) repository.deleteFilters(filterIds)
             if (flashIds.isNotEmpty()) repository.deleteFlashes(flashIds)
+            if (viewfinderIds.isNotEmpty()) repository.deleteViewfinders(viewfinderIds)
             if (kitIds.isNotEmpty()) repository.deleteCameraKits(kitIds)
             if (subjectIds.isNotEmpty()) repository.deleteTags(subjectIds)
             if (contentIds.isNotEmpty()) repository.deleteTags(contentIds)
@@ -419,15 +453,12 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
                 1 -> currentState.updateSelectionMode(selectedCameraIds = allCameras.value.map { it.id }.toSet())
                 2 -> currentState.updateSelectionMode(selectedLensIds = allLenses.value.map { it.id }.toSet())
                 3 -> currentState.updateSelectionMode(selectedFilmIds = allFilms.value.map { it.id }.toSet())
-                4 -> {
-                    currentState.updateSelectionMode(
-                        selectedTeleconverterIds = allTeleconverters.value.map { it.id }.toSet(),
-                        selectedFilterIds = allFilters.value.map { it.id }.toSet(),
-                        selectedFlashIds = allFlashes.value.map { it.id }.toSet()
-                    )
-                }
-                5 -> currentState.updateSelectionMode(selectedSubjectIds = allSubjects.value.map { it.id }.toSet())
-                6 -> currentState.updateSelectionMode(selectedContentIds = allContent.value.map { it.id }.toSet())
+                4 -> currentState.updateSelectionMode(selectedTeleconverterIds = allTeleconverters.value.map { it.id }.toSet())
+                5 -> currentState.updateSelectionMode(selectedFilterIds = allFilters.value.map { it.id }.toSet())
+                6 -> currentState.updateSelectionMode(selectedFlashIds = allFlashes.value.map { it.id }.toSet())
+                7 -> currentState.updateSelectionMode(selectedViewfinderIds = allViewfinders.value.map { it.id }.toSet())
+                8 -> currentState.updateSelectionMode(selectedSubjectIds = allSubjects.value.map { it.id }.toSet())
+                9 -> currentState.updateSelectionMode(selectedContentIds = allContent.value.map { it.id }.toSet())
                 else -> currentState
             }
         }

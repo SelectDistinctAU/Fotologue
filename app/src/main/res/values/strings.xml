@@ -9,9 +9,10 @@
     <string name="category_cameras">Cameras</string>
     <string name="category_lenses">Lenses</string>
     <string name="category_accessories">Accessories</string>
-    <string name="category_accessories_tcs">TCs</string>
+    <string name="category_accessories_tcs">Teleconverters</string>
     <string name="category_accessories_filters">Filters</string>
     <string name="category_accessories_flashes">Flashes</string>
+    <string name="category_accessories_viewfinders">Viewfinders</string>
     <string name="category_films">Films</string>
     <string name="category_subjects">Subjects</string>
     <string name="category_content">Content</string>
@@ -48,7 +49,7 @@
     <string name="onboarding_calibrate_meter_description">Tune your phone\'s sensor for professional accuracy.</string>
 
     <!-- Timeline -->
-    <string name="timeline_empty">No logs yet. Start by adding one!</string>
+    <string name="timeline_empty">No new logs yet. Start by adding one!</string>
     <string name="select_log_detail_placeholder">Select a log to see details</string>
     <string name="filter_all_cameras">All Cameras</string>
     <string name="label_filter_by_camera">Filter by Camera</string>

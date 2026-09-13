@@ -12,7 +12,7 @@ Elevate your film photography workflow with Fotologue, the ultimate companion fo
 *   **Integrated Light Meter:** Turn your phone into a high-precision light meter. Choose between Spot metering for specific details or Centre-weighted metering for general scenes. Calibrate the meter to match your camera’s unique behaviour.
 *   **Smart Face-Aware Tagging:** Fast, on-device detection that suggests "People" tags while keeping your privacy intact.
 *   **Hierarchical Tagging System:** Organise your work with a structured Subject > Content system (e.g., Nature > Landscape) for professional-grade library management.
-*   **Gear Library Management:** Keep track of your entire arsenal. Manage a detailed database of your Cameras, Lenses, and Film stocks. Create "Kits" for your favorite combinations to speed up logging in the field.
+*   **Gear Library Management:** Keep track of your entire arsenal. Manage a detailed database of your Cameras, Lenses, Film stocks, and accessories like Viewfinders, Teleconverters, Filters, and Flashes. Create "Kits" for your favorite combinations to speed up logging in the field.
 *   **Professional Metadata & XMP Sidecars:** Store Creator, Copyright, and Contact information directly in Settings. Automatically generate ISO 16684 (XMP) sidecar files for seamless metadata embedding in Lightroom or Capture One.
 *   **Advanced Export Options:** Your data, your way. Export your logs as CSV or JSON for deep analysis, or generate a full ZIP package that includes thumbnails and location data for archiving.
 *   **Privacy-First Design:** Your photography is personal. Fotologue stores all data locally on your device. No accounts, no cloud syncing, and no tracking. You are in full control of your information.

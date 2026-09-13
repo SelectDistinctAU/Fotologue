@@ -41,6 +41,11 @@ data class LogEntryWithGear(
     )
     var flash: Flash? = null,
     @Relation(
+        parentColumn = "viewfinderId",
+        entityColumn = "id"
+    )
+    var viewfinder: Viewfinder? = null,
+    @Relation(
         parentColumn = "id",
         entityColumn = "id",
         associateBy = androidx.room.Junction(

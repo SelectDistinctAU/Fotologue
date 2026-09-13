@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -42,6 +43,7 @@ class SettingsRepository(private val context: Context) {
     private val LAST_TC_ID = androidx.datastore.preferences.core.longPreferencesKey("last_tc_id")
     private val LAST_FILTER_ID = androidx.datastore.preferences.core.longPreferencesKey("last_filter_id")
     private val LAST_FLASH_ID = androidx.datastore.preferences.core.longPreferencesKey("last_flash_id")
+    private val LAST_VIEWFINDER_ID = longPreferencesKey("last_viewfinder_id")
     private val LAST_KIT_ID = androidx.datastore.preferences.core.longPreferencesKey("last_kit_id")
     private val LAST_ISO = androidx.datastore.preferences.core.intPreferencesKey("last_iso")
     private val LAST_FOCAL_LENGTH = androidx.datastore.preferences.core.floatPreferencesKey("last_focal_length")
@@ -267,6 +269,7 @@ class SettingsRepository(private val context: Context) {
     val lastTcId: Flow<Long?> = context.dataStore.data.map { try { it[LAST_TC_ID] } catch (e: ClassCastException) { null } }
     val lastFilterId: Flow<Long?> = context.dataStore.data.map { try { it[LAST_FILTER_ID] } catch (e: ClassCastException) { null } }
     val lastFlashId: Flow<Long?> = context.dataStore.data.map { try { it[LAST_FLASH_ID] } catch (e: ClassCastException) { null } }
+    val lastViewfinderId: Flow<Long?> = context.dataStore.data.map { try { it[LAST_VIEWFINDER_ID] } catch (e: ClassCastException) { null } }
     val lastKitId: Flow<Long?> = context.dataStore.data.map { try { it[LAST_KIT_ID] } catch (e: ClassCastException) { null } }
     val lastIso: Flow<Int?> = context.dataStore.data.map { try { it[LAST_ISO] } catch (e: ClassCastException) { null } }
     val lastFocalLength: Flow<Float?> = context.dataStore.data.map { try { it[LAST_FOCAL_LENGTH] } catch (e: ClassCastException) { null } }
@@ -283,6 +286,7 @@ class SettingsRepository(private val context: Context) {
         tcId: Long?,
         filterId: Long?,
         flashId: Long?,
+        viewfinderId: Long?,
         kitId: Long?,
         iso: Int?,
         focalLength: Float?,
@@ -296,6 +300,7 @@ class SettingsRepository(private val context: Context) {
             if (tcId != null) preferences[LAST_TC_ID] = tcId else preferences.remove(LAST_TC_ID)
             if (filterId != null) preferences[LAST_FILTER_ID] = filterId else preferences.remove(LAST_FILTER_ID)
             if (flashId != null) preferences[LAST_FLASH_ID] = flashId else preferences.remove(LAST_FLASH_ID)
+            if (viewfinderId != null) preferences[LAST_VIEWFINDER_ID] = viewfinderId else preferences.remove(LAST_VIEWFINDER_ID)
             if (kitId != null) preferences[LAST_KIT_ID] = kitId else preferences.remove(LAST_KIT_ID)
             if (iso != null) preferences[LAST_ISO] = iso else preferences.remove(LAST_ISO)
             if (focalLength != null) preferences[LAST_FOCAL_LENGTH] = focalLength else preferences.remove(LAST_FOCAL_LENGTH)

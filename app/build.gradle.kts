@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -10,6 +12,31 @@ android {
     namespace = "com.fotologue.app"
     compileSdk = 37
     ndkVersion = "30.0.16138531"
+
+    val keystoreProperties = Properties()
+    val keystorePropertiesFile = rootProject.file("local.properties")
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use {
+            keystoreProperties.load(it)
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            val alias: String? = keystoreProperties.getProperty("signing.keyAlias")
+            val keyPass: String? = keystoreProperties.getProperty("signing.keyPassword")
+            val storePass: String? = keystoreProperties.getProperty("signing.storePassword")
+            val storePath: String? = keystoreProperties.getProperty("signing.storeFile")
+
+            if (!alias.isNullOrBlank() && !keyPass.isNullOrBlank() &&
+                !storePass.isNullOrBlank() && !storePath.isNullOrBlank()) {
+                keyAlias = alias
+                keyPassword = keyPass
+                storePassword = storePass
+                storeFile = file(storePath)
+            }
+        }
+    }
 
     defaultConfig {
         applicationId = "com.fotologue.app"
@@ -32,7 +59,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             ndk {
                 debugSymbolLevel = "SYMBOL_TABLE"
             }

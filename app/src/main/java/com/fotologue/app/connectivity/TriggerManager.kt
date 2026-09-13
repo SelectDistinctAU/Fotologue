@@ -13,11 +13,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.util.Locale
 
 @Serializable
 data class TriggerEvent(
     val event: String,
-    val count: Int
+    val id: String? = null, // Optional unique ID of the trigger device
+    val count: Int = 0
 )
 
 class TriggerManager(
@@ -36,7 +38,7 @@ class TriggerManager(
                 try {
                     val trigger = json.decodeFromString<TriggerEvent>(data)
                     if (trigger.event == "shot") {
-                        handleShotTrigger()
+                        handleShotTrigger(trigger.id)
                     }
                 } catch (e: Exception) {
                     // Ignore invalid JSON
@@ -45,16 +47,26 @@ class TriggerManager(
         }
     }
 
-    private suspend fun handleShotTrigger() {
+    private suspend fun handleShotTrigger(deviceId: String?) {
         val location = locationProvider.getCurrentLocation()
-        val config = gearConfigurationManager.currentConfiguration.value
+        val currentConfig = gearConfigurationManager.currentConfiguration.value
+        
+        // Phase 2 Routing: Try to find a camera linked to this specific Bluetooth device ID
+        val targetCamera = if (deviceId != null) {
+            repository.allCameras.first().find { it.triggerDeviceId == deviceId }
+        } else null
+
+        // If a specific camera is found, we use its ID. 
+        // For now, we fall back to the primary UI configuration for Lens/Film/Settings.
+        // In a future update, we can track "active sessions" per camera.
+        val cameraId = targetCamera?.id ?: currentConfig.cameraId
         
         // Fetch gear details to calculate effective focal length and aperture
-        val tc = config.teleconverterId?.let { repository.getTeleconverterById(it).first() }
+        val tc = currentConfig.teleconverterId?.let { repository.getTeleconverterById(it).first() }
         
-        val effectiveFocalLength = config.focalLength?.let { fl ->
+        val effectiveFocalLength = currentConfig.focalLength?.let { fl ->
             if (tc != null) (fl * tc.magnification).toFloat() else fl
-        } ?: config.lensId?.let { lensId ->
+        } ?: currentConfig.lensId?.let { lensId ->
             val lens = repository.getLensById(lensId).first()
             lens?.minFocalLength?.let { fl ->
                 if (tc != null) (fl * tc.magnification).toFloat() else fl.toFloat()
@@ -62,39 +74,51 @@ class TriggerManager(
         }
         
         val effectiveAperture = if (tc != null) {
-            val baseAperture = config.aperture?.removePrefix("f/")?.toDoubleOrNull() ?: 0.0
+            val baseAperture = currentConfig.aperture?.removePrefix("f/")?.toDoubleOrNull() ?: 0.0
             val effectiveVal = baseAperture * tc.magnification
-            "f/${if (effectiveVal % 1.0 == 0.0) effectiveVal.toInt() else String.format(java.util.Locale.US, "%.1f", effectiveVal)}"
+            "f/${if (effectiveVal % 1.0 == 0.0) effectiveVal.toInt() else String.format(Locale.US, "%.1f", effectiveVal)}"
         } else {
-            config.aperture ?: "f/8"
+            currentConfig.aperture ?: "f/8"
         }
 
+        // Generate a descriptive note based on routing
+        val logNote = if (targetCamera != null) {
+            "Auto-logged via ${targetCamera.name} trigger"
+        } else {
+            "Auto-logged via primary BLE trigger"
+        }
+
+        // We use the Repository's suggested film roll flow logic to ensure frame counts are correct
+        val suggestedRoll = repository.getSuggestedFilmRollFlow(cameraId, currentConfig.filmId).first()
+
         repository.logExposure(
-            notes = "Auto-logged via BLE",
+            notes = logNote,
             environmentalConditions = "",
-            cameraId = config.cameraId,
-            filmId = config.filmId,
-            lensId = config.lensId,
-            teleconverterId = config.teleconverterId,
-            filterId = config.filterId,
-            flashId = config.flashId,
-            kitId = config.kitId,
-            focalLength = config.focalLength ?: (repository.getLensById(config.lensId ?: -1).first()?.minFocalLength?.toFloat()),
+            cameraId = cameraId,
+            filmId = currentConfig.filmId,
+            lensId = currentConfig.lensId,
+            teleconverterId = currentConfig.teleconverterId,
+            filterId = currentConfig.filterId,
+            flashId = currentConfig.flashId,
+            kitId = currentConfig.kitId,
+            focalLength = currentConfig.focalLength ?: (currentConfig.lensId?.let { repository.getLensById(it).first()?.minFocalLength?.toFloat() }),
             effectiveFocalLength = effectiveFocalLength,
             effectiveAperture = effectiveAperture,
             exposureSettings = ExposureSettings(
-                shutterSpeed = config.shutterSpeed ?: "1/125",
-                aperture = config.aperture ?: "f/8",
-                iso = config.iso ?: 400,
+                shutterSpeed = currentConfig.shutterSpeed ?: "1/125",
+                aperture = currentConfig.aperture ?: "f/8",
+                iso = currentConfig.iso ?: 400,
                 thumbnailUri = null
             ),
             tagIds = emptyList(),
             latitude = location?.latitude,
-            longitude = location?.longitude
+            longitude = location?.longitude,
+            filmRoll = suggestedRoll
         )
 
         withContext(Dispatchers.Main) {
-            Toast.makeText(context, "Shot auto-logged via BLE", Toast.LENGTH_SHORT).show()
+            val cameraLabel = targetCamera?.name ?: "Active Camera"
+            Toast.makeText(context, "Shot logged for $cameraLabel", Toast.LENGTH_SHORT).show()
         }
     }
 }

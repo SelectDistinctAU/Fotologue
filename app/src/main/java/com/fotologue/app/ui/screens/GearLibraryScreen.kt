@@ -45,6 +45,8 @@ fun GearLibraryScreen(
     onEditFilter: (Long) -> Unit,
     onAddFlash: () -> Unit,
     onEditFlash: (Long) -> Unit,
+    onAddViewfinder: () -> Unit,
+    onEditViewfinder: (Long) -> Unit,
     onAddKit: () -> Unit,
     onEditKit: (Long) -> Unit,
 ) {
@@ -55,15 +57,17 @@ fun GearLibraryScreen(
     )
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var selectedAccessoriesTabIndex by remember { mutableIntStateOf(0) }
     
-    // Requested order: Kits, Cameras, Lenses, Films, Accessories, Subjects, Content
+    // Requested order: Kits, Cameras, Lenses, Films, TCs, Filters, Flashes, Viewfinders, Subjects, Content
     val categories = listOf(
         GearCategory(stringResource(R.string.category_kits), iconRes = R.drawable.ic_inventory_2),
         GearCategory(stringResource(R.string.category_cameras), iconRes = R.drawable.ic_photo_camera),
         GearCategory(stringResource(R.string.category_lenses), iconRes = R.drawable.lensd),
         GearCategory(stringResource(R.string.category_films), iconRes = R.drawable.ic_camera_roll),
-        GearCategory(stringResource(R.string.category_accessories), iconRes = R.drawable.extension_24px),
+        GearCategory(stringResource(R.string.category_accessories_tcs), iconRes = R.drawable.frame_inspect_24px),
+        GearCategory(stringResource(R.string.category_accessories_filters), iconRes = R.drawable.filter_24px),
+        GearCategory(stringResource(R.string.category_accessories_flashes), iconRes = R.drawable.ic_flash_on),
+        GearCategory(stringResource(R.string.category_accessories_viewfinders), iconRes = R.drawable.wallpaper_slideshow_24px),
         GearCategory(stringResource(R.string.category_subjects), iconRes = R.drawable.ic_label),
         GearCategory(stringResource(R.string.category_content), iconRes = R.drawable.ic_label)
     )
@@ -73,6 +77,7 @@ fun GearLibraryScreen(
     val teleconverters by viewModel.allTeleconverters.collectAsStateWithLifecycle()
     val filters by viewModel.allFilters.collectAsStateWithLifecycle()
     val flashes by viewModel.allFlashes.collectAsStateWithLifecycle()
+    val viewfinders by viewModel.allViewfinders.collectAsStateWithLifecycle()
     val films by viewModel.allFilms.collectAsStateWithLifecycle()
     val kits by viewModel.allCameraKits.collectAsStateWithLifecycle()
     val subjects by viewModel.allSubjects.collectAsStateWithLifecycle()
@@ -175,34 +180,51 @@ fun GearLibraryScreen(
                             onFilmLongClick = { viewModel.toggleFilmSelection(it) },
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
-                        4 -> AccessoriesGearScreen(
+                        4 -> TeleconverterList(
                             teleconverters = teleconverters,
-                            filters = filters,
-                            flashes = flashes,
-                            selectedTeleconverterIds = uiState.selectedTeleconverterIds,
-                            selectedFilterIds = uiState.selectedFilterIds,
-                            selectedFlashIds = uiState.selectedFlashIds,
-                            selectedTabIndex = selectedAccessoriesTabIndex,
+                            selectedIds = uiState.selectedTeleconverterIds,
                             isReorderMode = uiState.isReorderMode,
-                            onTabSelected = { selectedAccessoriesTabIndex = it },
                             onTeleconverterClick = { id -> 
                                 if (uiState.isSelectionMode) viewModel.toggleTeleconverterSelection(id) else onEditTeleconverter(id)
                             },
                             onTeleconverterLongClick = { viewModel.toggleTeleconverterSelection(it) },
+                            onMove = viewModel::moveTeleconverter,
+                            bottomPadding = paddingValues.calculateBottomPadding()
+                        )
+                        5 -> FilterList(
+                            filters = filters,
+                            selectedIds = uiState.selectedFilterIds,
+                            isReorderMode = uiState.isReorderMode,
                             onFilterClick = { id -> 
                                 if (uiState.isSelectionMode) viewModel.toggleFilterSelection(id) else onEditFilter(id)
                             },
                             onFilterLongClick = { viewModel.toggleFilterSelection(it) },
+                            onMove = viewModel::moveFilter,
+                            bottomPadding = paddingValues.calculateBottomPadding()
+                        )
+                        6 -> FlashList(
+                            flashes = flashes,
+                            selectedIds = uiState.selectedFlashIds,
+                            isReorderMode = uiState.isReorderMode,
                             onFlashClick = { id -> 
                                 if (uiState.isSelectionMode) viewModel.toggleFlashSelection(id) else onEditFlash(id)
                             },
                             onFlashLongClick = { viewModel.toggleFlashSelection(it) },
-                            onMoveTeleconverter = viewModel::moveTeleconverter,
-                            onMoveFilter = viewModel::moveFilter,
-                            onMoveFlash = viewModel::moveFlash,
+                            onMove = viewModel::moveFlash,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
-                        5 -> SubjectList(
+                        7 -> ViewfinderList(
+                            viewfinders = viewfinders,
+                            selectedIds = uiState.selectedViewfinderIds,
+                            isReorderMode = uiState.isReorderMode,
+                            onViewfinderClick = { id -> 
+                                if (uiState.isSelectionMode) viewModel.toggleViewfinderSelection(id) else onEditViewfinder(id)
+                            },
+                            onViewfinderLongClick = { viewModel.toggleViewfinderSelection(it) },
+                            onMove = viewModel::moveViewfinder,
+                            bottomPadding = paddingValues.calculateBottomPadding()
+                        )
+                        8 -> SubjectList(
                             subjects = subjects,
                             selectedIds = uiState.selectedSubjectIds,
                             isReorderMode = uiState.isReorderMode,
@@ -213,7 +235,7 @@ fun GearLibraryScreen(
                             onMove = viewModel::moveSubject,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
-                        6 -> ContentList(
+                        9 -> ContentList(
                             contentItems = contentTags,
                             subjects = subjects,
                             selectedIds = uiState.selectedContentIds,
@@ -239,6 +261,7 @@ fun GearLibraryScreen(
                                                         uiState.selectedTeleconverterIds.size +
                                                         uiState.selectedFilterIds.size +
                                                         uiState.selectedFlashIds.size +
+                                                        uiState.selectedViewfinderIds.size +
                                                         uiState.selectedKitIds.size +
                                                         uiState.selectedSubjectIds.size +
                                                         uiState.selectedContentIds.size
@@ -246,19 +269,7 @@ fun GearLibraryScreen(
                                 } else if (uiState.isReorderMode) {
                                     Text("Reorder Items")
                                 } else {
-                                    val categoryName = categories[uiState.selectedCategoryIndex].name
-                                    val accessoriesName = stringResource(R.string.category_accessories)
-                                    val title = if (categoryName == accessoriesName) {
-                                        when (selectedAccessoriesTabIndex) {
-                                            0 -> stringResource(R.string.category_accessories_tcs)
-                                            1 -> stringResource(R.string.category_accessories_filters)
-                                            2 -> stringResource(R.string.category_accessories_flashes)
-                                            else -> accessoriesName
-                                        }
-                                    } else {
-                                        categoryName
-                                    }
-                                    Text(title)
+                                    Text(categories[uiState.selectedCategoryIndex].name)
                                 }
                             },
                             navigationIcon = {
@@ -290,8 +301,8 @@ fun GearLibraryScreen(
                                     IconButton(onClick = { viewModel.deleteSelectedGear() }) {
                                         Icon(painterResource(R.drawable.ic_delete), contentDescription = stringResource(R.string.action_delete))
                                     }
-                                } else if (!uiState.isReorderMode && uiState.selectedCategoryIndex != 3 && uiState.selectedCategoryIndex < 5) {
-                                    // Disable reorder for Films (index 3) and Tags (index 5, 6)
+                                } else if (!uiState.isReorderMode && uiState.selectedCategoryIndex != 3 && uiState.selectedCategoryIndex < 8) {
+                                    // Disable reorder for Films (index 3) and Tags (index 8, 9)
                                     IconButton(onClick = { viewModel.toggleReorderMode() }) {
                                         Icon(painterResource(R.drawable.select_check_box_24px), contentDescription = "Toggle Reorder")
                                     }
@@ -308,15 +319,12 @@ fun GearLibraryScreen(
                                         1 -> onAddCamera()
                                         2 -> onAddLens()
                                         3 -> onAddFilm()
-                                        4 -> {
-                                            when (selectedAccessoriesTabIndex) {
-                                                0 -> onAddTeleconverter()
-                                                1 -> onAddFilter()
-                                                2 -> onAddFlash()
-                                            }
-                                        }
-                                        5 -> viewModel.showAddTagDialog()
-                                        6 -> viewModel.showAddContentDialog()
+                                        4 -> onAddTeleconverter()
+                                        5 -> onAddFilter()
+                                        6 -> onAddFlash()
+                                        7 -> onAddViewfinder()
+                                        8 -> viewModel.showAddTagDialog()
+                                        9 -> viewModel.showAddContentDialog()
                                     }
                                 },
                                 modifier = Modifier.navigationBarsPadding()
@@ -477,83 +485,6 @@ fun ContentDialog(
             }
         }
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AccessoriesGearScreen(
-    teleconverters: List<Teleconverter>,
-    filters: List<Filter>,
-    flashes: List<Flash>,
-    selectedTeleconverterIds: Set<Long>,
-    selectedFilterIds: Set<Long>,
-    selectedFlashIds: Set<Long>,
-    selectedTabIndex: Int,
-    isReorderMode: Boolean,
-    onTabSelected: (Int) -> Unit,
-    onTeleconverterClick: (Long) -> Unit,
-    onTeleconverterLongClick: (Long) -> Unit,
-    onFilterClick: (Long) -> Unit,
-    onFilterLongClick: (Long) -> Unit,
-    onFlashClick: (Long) -> Unit,
-    onFlashLongClick: (Long) -> Unit,
-    onMoveTeleconverter: (Int, Int) -> Unit,
-    onMoveFilter: (Int, Int) -> Unit,
-    onMoveFlash: (Int, Int) -> Unit,
-    bottomPadding: Dp = 0.dp
-) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        PrimaryTabRow(selectedTabIndex = selectedTabIndex) {
-            Tab(
-                selected = selectedTabIndex == 0,
-                onClick = { onTabSelected(0) },
-                text = { Text(stringResource(R.string.category_accessories_tcs)) },
-                icon = { Icon(painterResource(R.drawable.ic_zoom_in), contentDescription = null) }
-            )
-            Tab(
-                selected = selectedTabIndex == 1,
-                onClick = { onTabSelected(1) },
-                text = { Text(stringResource(R.string.category_accessories_filters)) },
-                icon = { Icon(painterResource(R.drawable.filter_24px), contentDescription = null) }
-            )
-            Tab(
-                selected = selectedTabIndex == 2,
-                onClick = { onTabSelected(2) },
-                text = { Text(stringResource(R.string.category_accessories_flashes)) },
-                icon = { Icon(painterResource(R.drawable.ic_flash_on), contentDescription = null) }
-            )
-        }
-        
-        when (selectedTabIndex) {
-            0 -> TeleconverterList(
-                teleconverters = teleconverters,
-                selectedIds = selectedTeleconverterIds,
-                isReorderMode = isReorderMode,
-                onTeleconverterClick = onTeleconverterClick,
-                onTeleconverterLongClick = onTeleconverterLongClick,
-                onMove = onMoveTeleconverter,
-                bottomPadding = bottomPadding
-            )
-            1 -> FilterList(
-                filters = filters,
-                selectedIds = selectedFilterIds,
-                isReorderMode = isReorderMode,
-                onFilterClick = onFilterClick,
-                onFilterLongClick = onFilterLongClick,
-                onMove = onMoveFilter,
-                bottomPadding = bottomPadding
-            )
-            2 -> FlashList(
-                flashes = flashes,
-                selectedIds = selectedFlashIds,
-                isReorderMode = isReorderMode,
-                onFlashClick = onFlashClick,
-                onFlashLongClick = onFlashLongClick,
-                onMove = onMoveFlash,
-                bottomPadding = bottomPadding
-            )
-        }
-    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -1010,6 +941,70 @@ private fun FlashList(
                         .combinedClickable(
                             onClick = { onFlashClick(flash.id) },
                             onLongClick = { onFlashLongClick(flash.id) }
+                        )
+                        .padding(vertical = 4.dp)
+                )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ViewfinderList(
+    viewfinders: List<Viewfinder>,
+    selectedIds: Set<Long>,
+    isReorderMode: Boolean,
+    onViewfinderClick: (Long) -> Unit,
+    onViewfinderLongClick: (Long) -> Unit,
+    onMove: (Int, Int) -> Unit,
+    bottomPadding: Dp = 0.dp
+) {
+    if (viewfinders.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("No viewfinders found", style = MaterialTheme.typography.bodyLarge)
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+            contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
+        ) {
+            itemsIndexed(viewfinders) { index, vf ->
+                ListItem(
+                    headlineContent = { 
+                        Text(
+                            text = vf.name,
+                            style = MaterialTheme.typography.titleMedium
+                        ) 
+                    },
+                    supportingContent = if (vf.modelNumber.isNotEmpty()) { 
+                        { Text(text = vf.modelNumber) }
+                    } else null,
+                    leadingContent = {
+                        if (selectedIds.contains(vf.id)) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_check_circle), 
+                                contentDescription = "Selected", 
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(R.drawable.extension_24px),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    },
+                    trailingContent = if (isReorderMode) {
+                        { ReorderButtons(index, viewfinders.size, onMove) }
+                    } else null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .combinedClickable(
+                            onClick = { onViewfinderClick(vf.id) },
+                            onLongClick = { onViewfinderLongClick(vf.id) }
                         )
                         .padding(vertical = 4.dp)
                 )

@@ -16,7 +16,7 @@ A specialized 2-stage hardware tuning tool designed to transform your smartphone
 
 ### 📐 Relational Gear Library
 Maintain a professional database of your entire arsenal with intelligent automation.
-*   **Cameras**: Full support for 35mm, 120 (Medium Format), and Half-Frame (e.g., Pentax 17) formats.
+*   **Cameras**: Full support for 35mm, 120 (Medium Format), and Half-Frame (e.g., Pentax 17) formats, plus modular gear accessories like interchangeable Viewfinders.
 *   **Lenses**: Automated association between mounts and bodies; support for Prime and Zoom optics with focal length tracking.
 *   **Film Stocks**: Manage ISO and expected exposures (12, 24, 36) per stock.
 *   **Smart Kits**: One-tap selection for your favorite camera/lens/film combinations to speed up fieldwork.

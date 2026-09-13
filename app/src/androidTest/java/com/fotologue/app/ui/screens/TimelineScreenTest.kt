@@ -37,7 +37,7 @@ class TimelineScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("No logs yet", substring = true).assertExists()
+        composeTestRule.onNodeWithText("No new logs yet", substring = true).assertExists()
     }
 
     @Test
