@@ -48,6 +48,7 @@ fun TimelineScreen(
     onLogClick: (Long) -> Unit,
     onGearLibraryClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onContactSheetClick: () -> Unit = {},
     selectedLogId: Long? = null,
 ) {
     val logs by viewModel.logEntries.collectAsStateWithLifecycle()
@@ -71,6 +72,7 @@ fun TimelineScreen(
         onLogClick = onLogClick,
         onGearLibraryClick = onGearLibraryClick,
         onSettingsClick = onSettingsClick,
+        onContactSheetClick = onContactSheetClick,
         onCameraFilterClick = viewModel::setCameraFilter,
         onToggleUnexportedFilter = viewModel::toggleUnexportedFilter,
         onToggleSelection = viewModel::toggleSelection,
@@ -96,6 +98,7 @@ fun TimelineScreenContent(
     onLogClick: (Long) -> Unit,
     onGearLibraryClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onContactSheetClick: () -> Unit = {},
     onCameraFilterClick: (Long?) -> Unit,
     onToggleUnexportedFilter: () -> Unit,
     onToggleSelection: (Long) -> Unit,
@@ -122,6 +125,10 @@ fun TimelineScreenContent(
     val xmpExportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/xml")
     ) { uri -> uri?.let { onExportLogs(ExportType.XMP, it) } }
+
+    val pdfExportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/pdf")
+    ) { uri -> uri?.let { onExportLogs(ExportType.PDF, it) } }
 
     if (showExportOptions) {
         ModalBottomSheet(
@@ -174,6 +181,15 @@ fun TimelineScreenContent(
                         xmpExportLauncher.launch(fileName)
                     }
                 )
+                ListItem(
+                    headlineContent = { Text("Export as Printable PDF Proof Sheet") },
+                    leadingContent = { Icon(painterResource(R.drawable.ic_share), contentDescription = null) },
+                    modifier = Modifier.clickable {
+                        showExportOptions = false
+                        val fileName = "proof_sheet_${System.currentTimeMillis()}.pdf"
+                        pdfExportLauncher.launch(fileName)
+                    }
+                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -205,6 +221,20 @@ fun TimelineScreenContent(
                 TopAppBar(
                     title = { Text(stringResource(R.string.app_name)) },
                     actions = {
+                        if (logs.isNotEmpty()) {
+                            IconButton(onClick = onContactSheetClick) {
+                                Icon(
+                                    painter = painterResource(R.drawable.gallery_thumbnail_24px), 
+                                    contentDescription = "Digital Contact Sheet"
+                                )
+                            }
+                            IconButton(onClick = onSelectAll) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_select_all), 
+                                    contentDescription = stringResource(R.string.action_select_all)
+                                )
+                            }
+                        }
                         IconButton(onClick = onGearLibraryClick) {
                             Icon(painterResource(R.drawable.ic_handyman), contentDescription = stringResource(R.string.gear_library_title))
                         }

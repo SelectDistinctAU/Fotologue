@@ -82,7 +82,8 @@ class MainActivity : ComponentActivity() {
                                         onAddLens = { backStack.add(Route.AddEditLens()) },
                                         onAddFilm = { backStack.add(Route.AddFilm) },
                                         onCalibrateMeter = { backStack.add(Route.LightMeter(targetIso = 400, autoStartCalibration = true)) },
-                                        onShowHelp = { backStack.add(Route.Help) }
+                                        onShowHelp = { backStack.add(Route.Help) },
+                                        onSettingsClick = { backStack.add(Route.Settings) }
                                     )
                                 }
                                 entry<Route.Timeline>(
@@ -108,6 +109,7 @@ class MainActivity : ComponentActivity() {
                                         },
                                         onGearLibraryClick = { backStack.add(Route.GearLibrary) },
                                         onSettingsClick = { backStack.add(Route.Settings) },
+                                        onContactSheetClick = { backStack.add(Route.ContactSheet()) },
                                         selectedLogId = selectedLogId
                                     )
                                 }
@@ -248,6 +250,7 @@ class MainActivity : ComponentActivity() {
                                             backStack.add(Route.LightMeter(iso, cameraId, lensId, tcId, filterId, filmId))
                                         },
                                         onAddLens = { cameraId -> backStack.add(Route.AddEditLens(cameraId = cameraId)) },
+                                        onAddFilm = { backStack.add(Route.AddFilm) },
                                         onNavigateToRollCounter = { backStack.add(Route.RollCounter) }
                                     )
                                 }
@@ -261,6 +264,7 @@ class MainActivity : ComponentActivity() {
                                             backStack.add(Route.LightMeter(iso, cameraId, lensId, tcId, filterId, filmId))
                                         },
                                         onAddLens = { cameraId -> backStack.add(Route.AddEditLens(cameraId = cameraId)) },
+                                        onAddFilm = { backStack.add(Route.AddFilm) },
                                         onNavigateToRollCounter = { backStack.add(Route.RollCounter) }
                                     )
                                 }
@@ -316,6 +320,19 @@ class MainActivity : ComponentActivity() {
                                     RollCounterScreen(
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                    )
+                                }
+                                entry<Route.ContactSheet> {
+                                    val viewModel: ContactSheetViewModel = hiltViewModel()
+                                    ContactSheetScreen(
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onLogClick = { logId ->
+                                            backStack.add(Route.LogDetail(logId))
+                                        },
+                                        onAddLogForFrame = { _ ->
+                                            backStack.add(Route.AddLog)
+                                        }
                                     )
                                 }
                                 entry<Route.Help> {

@@ -13,3 +13,8 @@ data class Teleconverter(
     val lightLossStops: Double, // e.g. 1.0, 2.0
     val position: Int = 0
 )
+
+data class TeleconverterWithCameras(
+    val teleconverter: Teleconverter,
+    val cameras: List<Camera> = emptyList()
+)

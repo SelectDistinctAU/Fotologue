@@ -14,7 +14,8 @@ import kotlinx.serialization.Serializable
         Index("filmId"),
         Index("teleconverterId"),
         Index("filterId"),
-        Index("flashId")
+        Index("flashId"),
+        Index("viewfinderId")
     ],
     foreignKeys = [
         ForeignKey(
@@ -52,6 +53,12 @@ import kotlinx.serialization.Serializable
             parentColumns = ["id"],
             childColumns = ["flashId"],
             onDelete = ForeignKey.SET_NULL
+        ),
+        ForeignKey(
+            entity = Viewfinder::class,
+            parentColumns = ["id"],
+            childColumns = ["viewfinderId"],
+            onDelete = ForeignKey.SET_NULL
         )
     ]
 )
@@ -65,5 +72,6 @@ data class CameraKit(
     val teleconverterId: Long? = null,
     val filterId: Long? = null,
     val flashId: Long? = null,
+    val viewfinderId: Long? = null,
     val position: Int = 0
 )

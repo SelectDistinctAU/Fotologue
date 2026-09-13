@@ -3,6 +3,7 @@ package com.fotologue.app.ui.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fotologue.app.data.Camera
 import com.fotologue.app.data.FotologueRepository
 import com.fotologue.app.data.Filter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,9 @@ data class AddEditFilterUiState(
     val name: String = "",
     val type: String = "ND",
     val compensationStops: String = "0.0",
-    val filterTypes: List<String> = listOf("ND", "Polarizer", "UV", "Color", "Graduated ND", "Other")
+    val filterTypes: List<String> = listOf("ND", "Polarizer", "UV", "Color", "Graduated ND", "Other"),
+    val cameras: List<Camera> = emptyList(),
+    val selectedCameraIds: Set<Long> = emptySet()
 )
 
 @HiltViewModel
@@ -37,6 +40,15 @@ class AddEditFilterViewModel @Inject constructor(
     var filterId: Long? = savedStateHandle.get<Long>("filterId")
         private set
 
+    init {
+        viewModelScope.launch {
+            repository.allCameras.collect { cameras ->
+                _uiState.update { it.copy(cameras = cameras) }
+            }
+        }
+        loadFilter()
+    }
+
     fun setFilterId(id: Long?) {
         if (filterId == id) return
         filterId = id
@@ -48,12 +60,15 @@ class AddEditFilterViewModel @Inject constructor(
         val id = filterId ?: return
         viewModelScope.launch {
             val filter = repository.getFilterById(id).firstOrNull()
-            filter?.let {
+            filter?.let { item ->
+                val crossRefs = repository.allCameraFilterCrossRefs.firstOrNull() ?: emptyList()
+                val associatedCameraIds = crossRefs.filter { it.filterId == item.id }.map { it.cameraId }.toSet()
                 _uiState.update { state ->
                     state.copy(
-                        name = savedStateHandle.get<String>("name") ?: it.name,
-                        type = savedStateHandle.get<String>("type") ?: it.type,
-                        compensationStops = savedStateHandle.get<String>("compensationStops") ?: it.compensationStops.toString()
+                        name = savedStateHandle.get<String>("name") ?: item.name,
+                        type = savedStateHandle.get<String>("type") ?: item.type,
+                        compensationStops = savedStateHandle.get<String>("compensationStops") ?: item.compensationStops.toString(),
+                        selectedCameraIds = associatedCameraIds
                     )
                 }
             }
@@ -75,6 +90,14 @@ class AddEditFilterViewModel @Inject constructor(
         _uiState.update { it.copy(compensationStops = value) }
     }
 
+    fun onCameraToggled(cameraId: Long) {
+        _uiState.update { state ->
+            val current = state.selectedCameraIds
+            val updated = if (current.contains(cameraId)) current - cameraId else current + cameraId
+            state.copy(selectedCameraIds = updated)
+        }
+    }
+
     fun saveFilter(onSuccess: () -> Unit) {
         val state = _uiState.value
         viewModelScope.launch {
@@ -86,9 +109,9 @@ class AddEditFilterViewModel @Inject constructor(
             )
 
             if (filterId == null) {
-                repository.insertFilter(filter)
+                repository.insertFilter(filter, state.selectedCameraIds.toList())
             } else {
-                repository.updateFilter(filter)
+                repository.updateFilter(filter, state.selectedCameraIds.toList())
             }
             onSuccess()
         }

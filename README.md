@@ -14,34 +14,36 @@ A specialized 2-stage hardware tuning tool designed to transform your smartphone
 *   **Stage 2: The Balance**: Calibrates signal gain against an 18% gray card for industrial-grade accuracy.
 *   **Hardware Baseline**: Transparent monitoring of "Noise Floor" units and "Signal Gain" multipliers.
 
-### 📐 Relational Gear Library
-Maintain a professional database of your entire arsenal with intelligent automation.
-*   **Cameras**: Full support for 35mm, 120 (Medium Format), and Half-Frame (e.g., Pentax 17) formats, plus modular gear accessories like interchangeable Viewfinders.
-*   **Lenses**: Automated association between mounts and bodies; support for Prime and Zoom optics with focal length tracking.
-*   **Film Stocks**: Manage ISO and expected exposures (12, 24, 36) per stock.
-*   **Smart Kits**: One-tap selection for your favorite camera/lens/film combinations to speed up fieldwork.
+### 📐 Relational Gear Library & 3-Axis Taxonomy
+Maintain a professional database of your entire arsenal with intelligent camera cross-referencing and live category badges.
+*   **Cameras**: Full support for 35mm, 120 (Medium Format), Half-Frame (e.g., Pentax 17), Large Format, and TLR (e.g. Yashica Mat-124G) bodies.
+*   **Fixed & Interchangeable Lenses**: Automatic fixed-lens auto-creation and cross-referencing for TLR and compact cameras. Full camera cross-referencing for Lenses, Viewfinders, Teleconverters, Filters, and Flashes.
+*   **Film Stocks**: Manage ISO and expected exposures (12, 24, 36) per stock with 35mm half-frame doubling.
+*   **3-Axis Tag Taxonomy (Subject • Content • Intent)**: Classify shots by domain (*Subject*), detail (*Content*), and creative purpose (*Intent*: *Study*, *Series*, *Documentation*, *Commission*).
+*   **Smart Kits**: Pre-configure favorite camera/lens/film/accessory combinations for one-tap quick fill during fieldwork.
 
-### 🎞️ Live Session Tracking
-Intelligent "Film Roll.Frame" management that mirrors your physical workflow.
-*   **Sequential Suggestions**: Automatically predicts your next frame (e.g., 1.01 → 1.02).
-*   **Active Roll Counter**: Dedicated management screen to increment/decrement frames or reset roll counts without editing history.
-*   **End-of-Roll Alerts**: Proactively offers to start a new roll once you reach the physical limit (with buffer support).
+### 🎞️ Live Session Tracking & Digital Contact Sheet
+Intelligent "Film Roll.Frame" management and visual scene-matching for your cataloguing pipeline.
+*   **Digital Contact Sheet View**: Interactive grid view of all frame thumbnails organized by film roll (6 columns for 35mm, 3 for 120 format).
+*   **In-Grid Frame Gap Adjuster**: Interactively insert or remove frame gaps (+1 / -1 offset) to keep the contact sheet 1-to-1 aligned with physical film rebate numbers.
+*   **Printable PDF Proof Sheet Exporter**: Generates styled A4 PDF contact proof sheets ready for printing or digital archival binders.
+*   **Active Roll Counter**: Dedicated management screen to increment/decrement frames, set active frame numbers, or reset roll counts.
 *   **Visual Simulations**: Pre-visualize your shots with B&W, C-41 (Color Negative), and E-6 (Slide) film look previews in the meter.
 
-### 📊 Professional Meta-Integrity & Export
+### 📊 Professional Meta-Integrity & Camera Copy Exporter
 Export your data directly into your professional post-processing workflow (Lightroom/Capture One).
-*   **ISO 16684 (XMP)**: Generates industry-standard sidecar files with Creator, Copyright, and Contact metadata.
-*   **Hierarchical Tagging**: Professional Subject > Content system (e.g., Nature > Wildlife) designed for desktop software organization.
-*   **Export Awareness**: Visual tracking in the Timeline (`[Z]`, `[C]`, `[J]`) to show exactly which logs have been archived.
+*   **ISO 16684 (XMP)**: Generates industry-standard sidecar files with Creator, Copyright, Contact metadata, and `Intent|Study` / `Intent|Series` tag hierarchies.
+*   **Camera Macro Copy Presets & Scanner Matching**: Auto-names exported `.xmp` sidecar files (e.g. `_DSF1024.xmp`) to match RAW scan file sequences from Fujifilm, Canon, Nikon, Sony, Leica, or flatbed scanners. Save custom presets in Settings for one-tap loading.
+*   **Export Awareness**: Visual tracking in the Timeline (`[Z]`, `[C]`, `[J]`, `[X]`) to show exactly which logs have been archived.
 *   **Interactive Maps**: One-tap navigation to your shoot locations via Google Maps integration.
 
 ---
 
 ## 🔒 Privacy & Security
 
-**Privacy is the core of Fotologue's architecture.**
+**Privacy is the core of Fotologue's architecture.** See our full [Privacy Policy](PRIVACY_POLICY.md) for complete details.
 *   **100% Local-First**: No accounts, no cloud syncing, and no external tracking. Your data never leaves your device.
-*   **On-Device Intelligence**: Smart Face-Aware Tagging uses on-device ML; biometric data is processed transiently and never stored.
+*   **On-Device Intelligence**: Smart Face-Aware Tagging uses on-device ML; biometric data is processed transiently and never stored or transmitted.
 *   **User Sovereignty**: All shooting data, locations, and notes belong to the user. System access is handled via standard Android Storage Access Framework (SAF).
 
 ---
@@ -63,10 +65,10 @@ Fotologue is localized for the international photography community, supporting 8
 
 *   **Language**: Kotlin 2.4.20
 *   **Compile SDK**: 37 (Android 17) — required for latest Material You assets and system fonts
-*   **Target SDK**: 36 (Android 16) — meets Google Play's 31 Aug 2026 requirement; see [Target API Roadmap](docs/target-api-roadmap.md)
+*   **Target SDK**: 36 (Android 16) — meets Google Play's requirement; see [Target API Roadmap](docs/target-api-roadmap.md)
 *   **UI Framework**: Jetpack Compose (Material 3 Adaptive V2)
 *   **Architecture**: MVVM Pattern with Hilt Dependency Injection
-*   **Persistence**: Room Database (Schema Version 26) with DataStore for typed preferences
+*   **Persistence**: Room Database (Schema Version 36) with DataStore for typed preferences
 *   **Compliance**: Optimized for Android 15+ Edge-to-Edge and IME insets.
 
 ---
@@ -74,8 +76,8 @@ Fotologue is localized for the international photography community, supporting 8
 ## 🧪 Quality Assurance
 
 Fotologue is built to professional engineering standards.
-*   **Unit Tests**: 44+ core logic tests covering calibration math, session management, and metadata integrity.
-*   **Verification**: Field-tested on Pixel 8a and modern system emulators.
+*   **Unit Tests**: 58 core logic unit tests covering calibration math, session management, camera-gear cross-referencing, macro copy preset formatting, PDF proof sheet generation, and metadata integrity.
+*   **Verification**: Field-tested on Pixel devices and modern system emulators.
 *   **Test Plan**: See the [Testing Strategy](docs/testing_strategy.md) for detailed QA scripts and manual verification steps. 
 
 ---

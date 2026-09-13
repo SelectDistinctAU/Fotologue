@@ -170,7 +170,7 @@ fun LogDetailContent(
                 GearRow(
                     label = stringResource(R.string.label_teleconverter),
                     value = it.name,
-                    iconRes = R.drawable.ic_zoom_in
+                    iconRes = R.drawable.frame_inspect_24px
                 )
             }
             entryWithGearData.filter?.let {
@@ -187,7 +187,16 @@ fun LogDetailContent(
                     iconRes = R.drawable.ic_flash_on
                 )
             }
+            entryWithGearData.viewfinder?.let {
+                GearRow(
+                    label = "Viewfinder",
+                    value = it.name,
+                    iconRes = R.drawable.viewfinders_24px
+                )
+            }
         }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), thickness = 1.dp, color = MaterialTheme.colorScheme.outline)
 
         if (entryWithGearData.tags.isNotEmpty()) {
             DetailSection(title = stringResource(R.string.label_tags)) {

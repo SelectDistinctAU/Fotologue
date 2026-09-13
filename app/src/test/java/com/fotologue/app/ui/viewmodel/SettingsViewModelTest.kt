@@ -1,6 +1,8 @@
 package com.fotologue.app.ui.viewmodel
 
 import com.fotologue.app.data.ConfigurationManager
+import com.fotologue.app.data.MacroCopyNamingOptions
+import com.fotologue.app.data.MacroCopyPreset
 import com.fotologue.app.data.PictureExportSize
 import com.fotologue.app.data.SettingsRepository
 import io.mockk.*
@@ -35,6 +37,7 @@ class SettingsViewModelTest {
         every { repository.isAutoCopyrightEnabled } returns flowOf(false)
         every { repository.copyrightNotice } returns flowOf("")
         every { repository.contactInfo } returns flowOf("")
+        every { repository.macroCopyPresets } returns flowOf(MacroCopyPreset.DEFAULT_PRESETS)
         
         viewModel = SettingsViewModel(repository, configurationManager)
     }
@@ -82,5 +85,26 @@ class SettingsViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
         
         coVerify { repository.setEvCalibration(1.0f) }
+    }
+
+    @Test
+    fun `saveMacroCopyPreset calls repository`() = runTest {
+        coEvery { repository.saveMacroCopyPreset(any()) } just Runs
+
+        val preset = MacroCopyPreset(name = "Test Setup", options = MacroCopyNamingOptions())
+        viewModel.saveMacroCopyPreset(preset)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { repository.saveMacroCopyPreset(preset) }
+    }
+
+    @Test
+    fun `deleteMacroCopyPreset calls repository`() = runTest {
+        coEvery { repository.deleteMacroCopyPreset(any()) } just Runs
+
+        viewModel.deleteMacroCopyPreset("default_fujifilm")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { repository.deleteMacroCopyPreset("default_fujifilm") }
     }
 }

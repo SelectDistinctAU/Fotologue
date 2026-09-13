@@ -6,6 +6,7 @@ import android.net.Uri
 import com.fotologue.app.data.Camera
 import com.fotologue.app.data.FotologueRepository
 import com.fotologue.app.data.LogEntryWithGear
+import com.fotologue.app.data.MacroCopyNamingOptions
 import com.fotologue.app.data.SettingsRepository
 
 import com.fotologue.app.util.LogExporter
@@ -22,7 +23,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 enum class ExportType {
-    CSV, JSON, ZIP, XMP
+    CSV, JSON, ZIP, XMP, PDF
 }
 
 @HiltViewModel
@@ -110,11 +111,15 @@ class TimelineViewModel @Inject constructor(
         return logEntries.value.filter { it.logEntry.id in selected }
     }
 
-    fun exportLogs(type: ExportType, uri: Uri) {
+    fun exportLogs(
+        type: ExportType, 
+        uri: Uri, 
+        macroCopyOptions: MacroCopyNamingOptions = MacroCopyNamingOptions()
+    ) {
         viewModelScope.launch {
             val logs = getSelectedLogs()
             val exportSize = settingsRepository.pictureExportSize.first()
-            val success = logExporter.export(logs, type, uri, exportSize)
+            val success = logExporter.export(logs, type, uri, exportSize, macroCopyOptions)
             
             if (success) {
                 val ids = logs.map { it.logEntry.id }
@@ -122,7 +127,7 @@ class TimelineViewModel @Inject constructor(
                     ExportType.ZIP -> repository.markAsExportedZip(ids)
                     ExportType.CSV -> repository.markAsExportedCsv(ids)
                     ExportType.JSON -> repository.markAsExportedJson(ids)
-                    ExportType.XMP -> repository.markAsExportedXmp(ids)
+                    ExportType.XMP, ExportType.PDF -> repository.markAsExportedXmp(ids)
                 }
             }
             clearSelection()

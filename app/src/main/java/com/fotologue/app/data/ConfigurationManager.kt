@@ -17,8 +17,6 @@ import kotlinx.serialization.json.encodeToStream
 import java.io.InputStream
 import java.io.OutputStream
 
-
-
 class ConfigurationManager(
     private val context: Context,
     private val database: AppDatabase
@@ -33,11 +31,16 @@ class ConfigurationManager(
         val cameras = database.cameraDao().getAllCamerasOnce()
         val lenses = database.lensDao().getAllLensesOnce()
         val cameraLensCrossRefs = database.lensDao().getAllCameraLensCrossRefsOnce()
+        val viewfinders = database.viewfinderDao().getAllViewfindersOnce()
+        val cameraViewfinderCrossRefs = database.viewfinderDao().getAllCameraViewfinderCrossRefsOnce()
+        val teleconverters = database.teleconverterDao().getAllTeleconvertersOnce()
+        val cameraTeleconverterCrossRefs = database.teleconverterDao().getAllCameraTeleconverterCrossRefsOnce()
+        val filters = database.filterDao().getAllFiltersOnce()
+        val cameraFilterCrossRefs = database.filterDao().getAllCameraFilterCrossRefsOnce()
+        val flashes = database.flashDao().getAllFlashesOnce()
+        val cameraFlashCrossRefs = database.flashDao().getAllCameraFlashCrossRefsOnce()
         val films = database.filmDao().getAllFilmsOnce()
         val kits = database.cameraKitDao().getAllCameraKitsOnce()
-        val teleconverters = database.teleconverterDao().getAllTeleconvertersOnce()
-        val filters = database.filterDao().getAllFiltersOnce()
-        val flashes = database.flashDao().getAllFlashesOnce()
         val tags = database.tagDao().getAllTagsOnce()
         val logs = database.logEntryDao().getAllLogEntriesOnce()
         val logEntryTags = database.tagDao().getAllLogEntryTagCrossRefsOnce()
@@ -49,11 +52,16 @@ class ConfigurationManager(
             cameras = cameras,
             lenses = lenses,
             cameraLensCrossRefs = cameraLensCrossRefs,
+            viewfinders = viewfinders,
+            cameraViewfinderCrossRefs = cameraViewfinderCrossRefs,
+            teleconverters = teleconverters,
+            cameraTeleconverterCrossRefs = cameraTeleconverterCrossRefs,
+            filters = filters,
+            cameraFilterCrossRefs = cameraFilterCrossRefs,
+            flashes = flashes,
+            cameraFlashCrossRefs = cameraFlashCrossRefs,
             films = films,
             kits = kits,
-            teleconverters = teleconverters,
-            filters = filters,
-            flashes = flashes,
             tags = tags,
             logs = logs,
             logEntryTags = logEntryTags,
@@ -75,13 +83,18 @@ class ConfigurationManager(
             database.tagDao().deleteAllLogEntryTagCrossRefs()
             database.logEntryDao().deleteAllLogEntries()
             database.cameraKitDao().deleteAllCameraKits()
+            database.viewfinderDao().deleteAllCameraViewfinderCrossRefs()
+            database.viewfinderDao().deleteAllViewfinders()
+            database.teleconverterDao().deleteAllCameraTeleconverterCrossRefs()
+            database.teleconverterDao().deleteAllTeleconverters()
+            database.filterDao().deleteAllCameraFilterCrossRefs()
+            database.filterDao().deleteAllFilters()
+            database.flashDao().deleteAllCameraFlashCrossRefs()
+            database.flashDao().deleteAllFlashes()
             database.lensDao().deleteAllCameraLensCrossRefs()
             database.cameraDao().deleteAllCameras()
             database.lensDao().deleteAllLenses()
             database.filmDao().deleteAllFilms()
-            database.teleconverterDao().deleteAllTeleconverters()
-            database.filterDao().deleteAllFilters()
-            database.flashDao().deleteAllFlashes()
             database.tagDao().deleteAllTags()
             database.filmRollSessionDao().deleteAllSessions()
 
@@ -89,10 +102,15 @@ class ConfigurationManager(
             config.cameras.forEach { database.cameraDao().insertCamera(it) }
             config.lenses.forEach { database.lensDao().insertLens(it) }
             config.cameraLensCrossRefs.forEach { database.lensDao().insertCameraLensCrossRef(it) }
-            config.films.forEach { database.filmDao().insertFilm(it) }
+            config.viewfinders.forEach { database.viewfinderDao().insertViewfinder(it) }
+            config.cameraViewfinderCrossRefs.forEach { database.viewfinderDao().insertCameraViewfinderCrossRef(it) }
             config.teleconverters.forEach { database.teleconverterDao().insertTeleconverter(it) }
+            config.cameraTeleconverterCrossRefs.forEach { database.teleconverterDao().insertCameraTeleconverterCrossRef(it) }
             config.filters.forEach { database.filterDao().insertFilter(it) }
+            config.cameraFilterCrossRefs.forEach { database.filterDao().insertCameraFilterCrossRef(it) }
             config.flashes.forEach { database.flashDao().insertFlash(it) }
+            config.cameraFlashCrossRefs.forEach { database.flashDao().insertCameraFlashCrossRef(it) }
+            config.films.forEach { database.filmDao().insertFilm(it) }
             config.tags.forEach { database.tagDao().insertTag(it) }
             config.kits.forEach { database.cameraKitDao().insertCameraKit(it) }
             config.logs.forEach { database.logEntryDao().insertLogEntry(it) }
@@ -103,9 +121,6 @@ class ConfigurationManager(
         // Restore settings
         context.dataStore.edit { prefs ->
             config.settings.forEach { (keyName, value) ->
-                // We attempt to restore based on known keys or just store as strings if unknown
-                // But DataStore is typed, so we need to be careful.
-                // For this implementation, we'll focus on the keys defined in SettingsRepository.
                 when (keyName) {
                     "is_thumbnail_enabled",
                     "is_face_detection_enabled",
@@ -123,6 +138,7 @@ class ConfigurationManager(
                     "last_tc_id",
                     "last_filter_id",
                     "last_flash_id",
+                    "last_viewfinder_id",
                     "last_kit_id" -> prefs[longPreferencesKey(keyName)] = value.toLongOrNull() ?: 0L
                     
                     "picture_export_size",

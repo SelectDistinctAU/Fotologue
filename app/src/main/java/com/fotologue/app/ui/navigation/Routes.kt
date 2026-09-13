@@ -78,4 +78,11 @@ sealed class Route : NavKey {
 
     @Serializable
     data object RollCounter : Route()
+
+    @Serializable
+    data class ContactSheet(
+        val cameraId: Long? = null,
+        val filmId: Long? = null,
+        val rollNumber: Int? = null
+    ) : Route()
 }

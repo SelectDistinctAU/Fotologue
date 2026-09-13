@@ -24,6 +24,8 @@ class AddEditTeleconverterViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        every { repository.allCameras } returns flowOf(emptyList())
+        every { repository.allCameraTeleconverterCrossRefs } returns flowOf(emptyList())
         viewModel = AddEditTeleconverterViewModel(repository, savedStateHandle)
     }
 
@@ -34,7 +36,7 @@ class AddEditTeleconverterViewModelTest {
 
     @Test
     fun `saveTeleconverter calls repository with correct data`() = runTest {
-        coEvery { repository.insertTeleconverter(any()) } returns 1L
+        coEvery { repository.insertTeleconverter(any(), any()) } just Runs
         
         viewModel.onNameChange("Nikon TC-14E")
         viewModel.onMagnificationChange("1.4")
@@ -46,7 +48,8 @@ class AddEditTeleconverterViewModelTest {
 
         coVerify { 
             repository.insertTeleconverter(
-                match { it.name == "Nikon TC-14E" && it.magnification == 1.4 && it.lightLossStops == 1.0 }
+                match { it.name == "Nikon TC-14E" && it.magnification == 1.4 && it.lightLossStops == 1.0 },
+                any()
             ) 
         }
         assertEquals(true, success)

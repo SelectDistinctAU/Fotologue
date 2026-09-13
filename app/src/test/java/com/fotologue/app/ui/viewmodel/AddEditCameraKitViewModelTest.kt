@@ -32,6 +32,11 @@ class AddEditCameraKitViewModelTest {
         every { repository.allTeleconverters } returns flowOf(emptyList())
         every { repository.allFilters } returns flowOf(emptyList())
         every { repository.allFlashes } returns flowOf(emptyList())
+        every { repository.allViewfinders } returns flowOf(emptyList())
+        every { repository.allCameraViewfinderCrossRefs } returns flowOf(emptyList())
+        every { repository.allCameraTeleconverterCrossRefs } returns flowOf(emptyList())
+        every { repository.allCameraFilterCrossRefs } returns flowOf(emptyList())
+        every { repository.allCameraFlashCrossRefs } returns flowOf(emptyList())
         
         viewModel = AddEditCameraKitViewModel(repository, savedStateHandle)
     }

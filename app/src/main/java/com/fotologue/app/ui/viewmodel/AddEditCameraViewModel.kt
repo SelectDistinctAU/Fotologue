@@ -9,6 +9,7 @@ import com.fotologue.app.data.CameraType
 import com.fotologue.app.data.Film
 import com.fotologue.app.data.FotologueRepository
 import com.fotologue.app.data.GearDatabase
+import com.fotologue.app.data.Lens
 import com.fotologue.app.data.LensSpec
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -91,7 +92,7 @@ class AddEditCameraViewModel @Inject constructor(
 
     fun onTypeChange(type: CameraType) {
         _uiState.update { state ->
-            val newFormat = if (type == CameraType.MEDIUM_FORMAT) Film.FORMAT_120 else state.format
+            val newFormat = if (type == CameraType.MEDIUM_FORMAT || type == CameraType.TLR) Film.FORMAT_120 else state.format
             state.copy(
                 type = type,
                 format = newFormat,
@@ -135,7 +136,7 @@ class AddEditCameraViewModel @Inject constructor(
 
     fun applySpec(spec: CameraSpec) {
         _uiState.update { 
-            val format = if (spec.type == CameraType.MEDIUM_FORMAT) Film.FORMAT_120 else it.format
+            val format = if (spec.type == CameraType.MEDIUM_FORMAT || spec.type == CameraType.TLR) Film.FORMAT_120 else it.format
             it.copy(
                 name = spec.name,
                 type = spec.type,
@@ -143,6 +144,7 @@ class AddEditCameraViewModel @Inject constructor(
                 modelNumber = spec.modelNumber,
                 shutterSpeeds = spec.shutterSpeeds.joinToString(", "),
                 format = format,
+                fixedLens = spec.fixedLens,
                 searchResults = emptyList(),
                 isNameValid = true
             )
@@ -199,11 +201,34 @@ class AddEditCameraViewModel @Inject constructor(
                 triggerDeviceId = currentState.triggerDeviceId.ifBlank { null }
             )
 
-            if (cameraId == null) {
+            val newCamId = if (cameraId == null) {
                 repository.insertCamera(camera)
             } else {
                 repository.updateCamera(camera)
+                cameraId!!
             }
+
+            // Auto-populate fixed lens entry if camera has a fixedLens spec
+            val fixedSpec = currentState.fixedLens
+            if (fixedSpec != null) {
+                val fixedLensObj = Lens(
+                    make = fixedSpec.make,
+                    model = fixedSpec.model,
+                    modelNumber = fixedSpec.modelNumber,
+                    type = fixedSpec.type,
+                    mount = "Fixed",
+                    filterSize = fixedSpec.filterSize,
+                    isStabilized = fixedSpec.isStabilized,
+                    minFocusDistance = fixedSpec.minFocusDistance,
+                    maxMagnification = fixedSpec.maxMagnification,
+                    minAperture = fixedSpec.minAperture,
+                    maxAperture = fixedSpec.maxAperture,
+                    minFocalLength = fixedSpec.minFocalLength,
+                    maxFocalLength = fixedSpec.maxFocalLength
+                )
+                repository.insertLens(fixedLensObj, listOf(newCamId))
+            }
+
             onSuccess()
         }
     }

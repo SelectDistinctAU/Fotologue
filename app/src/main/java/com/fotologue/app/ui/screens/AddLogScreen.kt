@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,7 @@ fun AddLogScreen(
     onBack: () -> Unit,
     onMeasureExposure: (Int, Long?, Long?, Long?, Long?, Long?) -> Unit,
     onAddLens: (Long?) -> Unit,
+    onAddFilm: () -> Unit = {},
     onNavigateToRollCounter: () -> Unit,
 ) {
     val locationPermissionState = rememberPermissionState(
@@ -42,9 +44,10 @@ fun AddLogScreen(
     )
     val cameras by viewModel.allCameras.collectAsStateWithLifecycle()
     val lenses by viewModel.filteredLenses.collectAsStateWithLifecycle()
-    val teleconverters by viewModel.allTeleconverters.collectAsStateWithLifecycle()
-    val filters by viewModel.allFilters.collectAsStateWithLifecycle()
-    val flashes by viewModel.allFlashes.collectAsStateWithLifecycle()
+    val teleconverters by viewModel.filteredTeleconverters.collectAsStateWithLifecycle()
+    val filters by viewModel.filteredFilters.collectAsStateWithLifecycle()
+    val flashes by viewModel.filteredFlashes.collectAsStateWithLifecycle()
+    val viewfinders by viewModel.filteredViewfinders.collectAsStateWithLifecycle()
     val films by viewModel.allFilms.collectAsStateWithLifecycle()
     val kits by viewModel.allCameraKitsWithGear.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -103,39 +106,63 @@ fun AddLogScreen(
             FilmSelection(
                 films = films,
                 selectedFilmId = uiState.selectedFilmId,
-                onFilmSelected = { id, iso -> viewModel.onFilmSelected(id, iso) }
+                onFilmSelected = { id, iso -> viewModel.onFilmSelected(id, iso) },
+                onAddFilm = onAddFilm
             )
 
-            if (uiState.isTeleconverterVisible || uiState.isFilterVisible || uiState.isFlashVisible) {
-                Row(
+            if (uiState.isTeleconverterVisible || uiState.isFilterVisible || uiState.isFlashVisible || uiState.isViewfinderVisible) {
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    if (uiState.isTeleconverterVisible) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            TeleconverterSelection(
-                                teleconverters = teleconverters,
-                                selectedTeleconverterId = uiState.selectedTeleconverterId,
-                                onTeleconverterSelected = { viewModel.onTeleconverterSelected(it) }
-                            )
+                    if (uiState.isTeleconverterVisible || uiState.isFilterVisible) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            if (uiState.isTeleconverterVisible) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    TeleconverterSelection(
+                                        teleconverters = teleconverters,
+                                        selectedTeleconverterId = uiState.selectedTeleconverterId,
+                                        onTeleconverterSelected = { viewModel.onTeleconverterSelected(it) }
+                                    )
+                                }
+                            }
+                            if (uiState.isFilterVisible) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    FilterSelection(
+                                        filters = filters,
+                                        selectedFilterId = uiState.selectedFilterId,
+                                        onFilterSelected = { viewModel.onFilterSelected(it) }
+                                    )
+                                }
+                            }
                         }
                     }
-                    if (uiState.isFilterVisible) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            FilterSelection(
-                                filters = filters,
-                                selectedFilterId = uiState.selectedFilterId,
-                                onFilterSelected = { viewModel.onFilterSelected(it) }
-                            )
-                        }
-                    }
-                    if (uiState.isFlashVisible) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            FlashSelection(
-                                flashes = flashes,
-                                selectedFlashId = uiState.selectedFlashId,
-                                onFlashSelected = { viewModel.onFlashSelected(it) }
-                            )
+                    if (uiState.isFlashVisible || uiState.isViewfinderVisible) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            if (uiState.isFlashVisible) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    FlashSelection(
+                                        flashes = flashes,
+                                        selectedFlashId = uiState.selectedFlashId,
+                                        onFlashSelected = { viewModel.onFlashSelected(it) }
+                                    )
+                                }
+                            }
+                            if (uiState.isViewfinderVisible) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    ViewfinderSelection(
+                                        viewfinders = viewfinders,
+                                        selectedViewfinderId = uiState.selectedViewfinderId,
+                                        onViewfinderSelected = { viewModel.onViewfinderSelected(it) }
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -232,6 +259,8 @@ fun AddLogScreen(
                     }
                 }
             }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
 
             // Tag Section
             TagSelection(
@@ -363,34 +392,81 @@ private fun FilmSelection(
     films: List<Film>,
     selectedFilmId: Long?,
     onFilmSelected: (Long, Int) -> Unit,
+    onAddFilm: () -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
     val selectedFilm = films.find { it.id == selectedFilmId }
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        OutlinedTextField(
-            value = selectedFilm?.name ?: stringResource(R.string.select_film),
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(stringResource(R.string.label_film)) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-        )
-        ExposedDropdownMenu(
+    Column(modifier = Modifier.fillMaxWidth()) {
+        ExposedDropdownMenuBox(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onExpandedChange = { expanded = !expanded }
         ) {
-            films.forEach { film ->
-                DropdownMenuItem(
-                    text = { Text(film.name) },
-                    onClick = {
-                        onFilmSelected(film.id, film.iso)
-                        expanded = false
+            OutlinedTextField(
+                value = selectedFilm?.name ?: if (films.isEmpty()) "No matching film in library" else stringResource(R.string.select_film),
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(stringResource(R.string.label_film)) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                if (films.isEmpty()) {
+                    DropdownMenuItem(
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(painterResource(R.drawable.ic_add), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Add a New Film Stock...", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                            }
+                        },
+                        onClick = {
+                            expanded = false
+                            onAddFilm()
+                        }
+                    )
+                } else {
+                    films.forEach { film ->
+                        DropdownMenuItem(
+                            text = { Text(film.name) },
+                            onClick = {
+                                onFilmSelected(film.id, film.iso)
+                                expanded = false
+                            }
+                        )
                     }
-                )
+                }
+            }
+        }
+
+        if (films.isEmpty()) {
+            OutlinedCard(
+                onClick = onAddFilm,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+                colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f))
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_add),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "No film stock matching this camera format in your library. Tap here to add a film.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
             }
         }
     }
@@ -582,6 +658,52 @@ private fun FlashSelection(
                     text = { Text("${flash.make} ${flash.model}") },
                     onClick = {
                         onFlashSelected(flash.id)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ViewfinderSelection(
+    viewfinders: List<Viewfinder>,
+    selectedViewfinderId: Long?,
+    onViewfinderSelected: (Long?) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val selectedVf = viewfinders.find { it.id == selectedViewfinderId }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        OutlinedTextField(
+            value = selectedVf?.name ?: stringResource(R.string.none),
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Viewfinder") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.none)) },
+                onClick = {
+                    onViewfinderSelected(null)
+                    expanded = false
+                }
+            )
+            viewfinders.forEach { vf ->
+                DropdownMenuItem(
+                    text = { Text(vf.name) },
+                    onClick = {
+                        onViewfinderSelected(vf.id)
                         expanded = false
                     }
                 )
@@ -896,10 +1018,86 @@ private fun TagSelection(
                 }
             }
         }
+
+        // Intent Section - Dropdown & Sub-chips for uncluttered UI
+        val topIntents = remember(allTags) { allTags.filter { it.category == Tag.CATEGORY_INTENT && it.parentId == null }.sortedBy { it.name.lowercase() } }
+        val childIntentsMap = remember(allTags) { allTags.filter { it.category == Tag.CATEGORY_INTENT }.groupBy { it.parentId } }
+
+        var selectedIntentParentId by remember { mutableStateOf<Long?>(null) }
+        var intentExpanded by remember { mutableStateOf(false) }
+
+        if (topIntents.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            ExposedDropdownMenuBox(
+                expanded = intentExpanded,
+                onExpandedChange = { intentExpanded = !intentExpanded }
+            ) {
+                val selectedParent = topIntents.find { it.id == selectedIntentParentId }
+                OutlinedTextField(
+                    value = selectedParent?.name ?: "None",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.category_intent)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = intentExpanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = intentExpanded,
+                    onDismissRequest = { intentExpanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("None") },
+                        onClick = {
+                            selectedIntentParentId = null
+                            intentExpanded = false
+                        }
+                    )
+                    topIntents.forEach { parent ->
+                        DropdownMenuItem(
+                            text = { Text(parent.name) },
+                            onClick = {
+                                selectedIntentParentId = parent.id
+                                onTagToggled(parent.id)
+                                intentExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            if (selectedIntentParentId != null) {
+                val children = childIntentsMap[selectedIntentParentId] ?: emptyList()
+                if (children.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "${topIntents.find { it.id == selectedIntentParentId }?.name ?: "Intent"} Sub-Tags",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        children.forEach { child ->
+                            val isChildSelected = selectedTagIds.contains(child.id)
+                            FilterChip(
+                                selected = isChildSelected,
+                                onClick = { onTagToggled(child.id) },
+                                label = { Text(child.name) },
+                                leadingIcon = if (isChildSelected) {
+                                    { Icon(painterResource(R.drawable.ic_check), contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) }
+                                } else null
+                            )
+                        }
+                    }
+                }
+            }
+        }
         
         // Show other selected tags
         val currentSubjectContentIds = contents[selectedSubjectId]?.map { it.id }?.toSet() ?: emptySet()
-        val otherSelectedTags = allTags.filter { selectedTagIds.contains(it.id) && !currentSubjectContentIds.contains(it.id) && it.id != selectedSubjectId }
+        val intentTagIds = allTags.filter { it.category == Tag.CATEGORY_INTENT }.map { it.id }.toSet()
+        val otherSelectedTags = allTags.filter { selectedTagIds.contains(it.id) && !currentSubjectContentIds.contains(it.id) && !intentTagIds.contains(it.id) && it.id != selectedSubjectId }
         
         if (otherSelectedTags.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))

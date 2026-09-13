@@ -13,3 +13,8 @@ data class Filter(
     val compensationStops: Double, // e.g. 1.0, 2.0, 3.0
     val position: Int = 0
 )
+
+data class FilterWithCameras(
+    val filter: Filter,
+    val cameras: List<Camera> = emptyList()
+)

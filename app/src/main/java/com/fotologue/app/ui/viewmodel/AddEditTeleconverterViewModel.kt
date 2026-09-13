@@ -3,6 +3,7 @@ package com.fotologue.app.ui.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fotologue.app.data.Camera
 import com.fotologue.app.data.FotologueRepository
 import com.fotologue.app.data.Teleconverter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,9 @@ import javax.inject.Inject
 data class AddEditTeleconverterUiState(
     val name: String = "",
     val magnification: String = "1.4",
-    val lightLossStops: String = "1.0"
+    val lightLossStops: String = "1.0",
+    val cameras: List<Camera> = emptyList(),
+    val selectedCameraIds: Set<Long> = emptySet()
 )
 
 @HiltViewModel
@@ -36,6 +39,15 @@ class AddEditTeleconverterViewModel @Inject constructor(
     var teleconverterId: Long? = savedStateHandle.get<Long>("teleconverterId")
         private set
 
+    init {
+        viewModelScope.launch {
+            repository.allCameras.collect { cameras ->
+                _uiState.update { it.copy(cameras = cameras) }
+            }
+        }
+        loadTeleconverter()
+    }
+
     fun setTeleconverterId(id: Long?) {
         if (teleconverterId == id) return
         teleconverterId = id
@@ -47,12 +59,15 @@ class AddEditTeleconverterViewModel @Inject constructor(
         val id = teleconverterId ?: return
         viewModelScope.launch {
             val tc = repository.getTeleconverterById(id).firstOrNull()
-            tc?.let {
+            tc?.let { item ->
+                val crossRefs = repository.allCameraTeleconverterCrossRefs.firstOrNull() ?: emptyList()
+                val associatedCameraIds = crossRefs.filter { it.teleconverterId == item.id }.map { it.cameraId }.toSet()
                 _uiState.update { state ->
                     state.copy(
-                        name = savedStateHandle.get<String>("name") ?: it.name,
-                        magnification = savedStateHandle.get<String>("magnification") ?: it.magnification.toString(),
-                        lightLossStops = savedStateHandle.get<String>("lightLossStops") ?: it.lightLossStops.toString()
+                        name = savedStateHandle.get<String>("name") ?: item.name,
+                        magnification = savedStateHandle.get<String>("magnification") ?: item.magnification.toString(),
+                        lightLossStops = savedStateHandle.get<String>("lightLossStops") ?: item.lightLossStops.toString(),
+                        selectedCameraIds = associatedCameraIds
                     )
                 }
             }
@@ -74,6 +89,14 @@ class AddEditTeleconverterViewModel @Inject constructor(
         _uiState.update { it.copy(lightLossStops = value) }
     }
 
+    fun onCameraToggled(cameraId: Long) {
+        _uiState.update { state ->
+            val current = state.selectedCameraIds
+            val updated = if (current.contains(cameraId)) current - cameraId else current + cameraId
+            state.copy(selectedCameraIds = updated)
+        }
+    }
+
     fun saveTeleconverter(onSuccess: () -> Unit) {
         val state = _uiState.value
         viewModelScope.launch {
@@ -85,9 +108,9 @@ class AddEditTeleconverterViewModel @Inject constructor(
             )
 
             if (teleconverterId == null) {
-                repository.insertTeleconverter(tc)
+                repository.insertTeleconverter(tc, state.selectedCameraIds.toList())
             } else {
-                repository.updateTeleconverter(tc)
+                repository.updateTeleconverter(tc, state.selectedCameraIds.toList())
             }
             onSuccess()
         }

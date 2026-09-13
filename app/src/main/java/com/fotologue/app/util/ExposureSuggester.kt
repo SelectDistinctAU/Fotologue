@@ -1,7 +1,12 @@
 package com.fotologue.app.util
 
+import com.fotologue.app.data.Camera
 import com.fotologue.app.data.ExposureSettings
+import com.fotologue.app.data.Filter
 import com.fotologue.app.data.Lens
+import com.fotologue.app.data.Teleconverter
+import java.util.Locale
+import kotlin.math.abs
 import kotlin.math.log2
 import kotlin.math.pow
 
@@ -13,13 +18,22 @@ object ExposureSuggester {
     )
     val commonShutterSpeeds = defaultShutterSpeeds
 
+    fun formatAperture(aperture: Double): String {
+        val formatted = if (aperture % 1.0 == 0.0) {
+            aperture.toInt().toString()
+        } else {
+            String.format(Locale.US, "%.1f", aperture)
+        }
+        return "f/$formatted"
+    }
+
     fun generateExposureSuggestions(
         ev100: Double, 
         targetIso: Int, 
-        camera: com.fotologue.app.data.Camera? = null,
+        camera: Camera? = null,
         lens: Lens? = null,
-        teleconverter: com.fotologue.app.data.Teleconverter? = null,
-        filter: com.fotologue.app.data.Filter? = null
+        teleconverter: Teleconverter? = null,
+        filter: Filter? = null
     ): List<ExposureSettings> {
         val suggestions = mutableListOf<ExposureSettings>()
         
@@ -53,7 +67,7 @@ object ExposureSuggester {
                 suggestions.add(
                     ExposureSettings(
                         shutterSpeed = shutterSpeedStr,
-                        aperture = "f/${if (aperture % 1.0 == 0.0) aperture.toInt() else aperture}",
+                        aperture = formatAperture(aperture),
                         iso = targetIso
                     )
                 )
@@ -70,7 +84,7 @@ object ExposureSuggester {
 
         return speedsToUse.minByOrNull { speed ->
             val speedSeconds = parseShutterSpeed(speed)
-            kotlin.math.abs(speedSeconds - seconds)
+            abs(speedSeconds - seconds)
         }
     }
 

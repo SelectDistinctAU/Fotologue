@@ -35,6 +35,7 @@ fun WelcomeScreen(
     onAddFilm: () -> Unit,
     onCalibrateMeter: () -> Unit,
     onShowHelp: () -> Unit,
+    onSettingsClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -63,6 +64,7 @@ fun WelcomeScreen(
         onAddFilm = onAddFilm,
         onCalibrateMeter = onCalibrateMeter,
         onShowHelp = onShowHelp,
+        onSettingsClick = onSettingsClick,
         onComplete = viewModel::completeOnboarding,
         onRestoreBackup = { uri -> viewModel.restoreBackup(uri, contentResolver) },
         onToggleThumbnail = { enabled ->
@@ -100,6 +102,7 @@ fun WelcomeScreenContent(
     onAddFilm: () -> Unit,
     onCalibrateMeter: () -> Unit,
     onShowHelp: () -> Unit,
+    onSettingsClick: () -> Unit = {},
     onComplete: () -> Unit,
     onRestoreBackup: (Uri) -> Unit,
     onToggleThumbnail: (Boolean) -> Unit,
@@ -142,7 +145,15 @@ fun WelcomeScreenContent(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(stringResource(R.string.app_name)) }
+                title = { Text(stringResource(R.string.app_name)) },
+                actions = {
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_settings),
+                            contentDescription = stringResource(R.string.settings)
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -324,6 +335,17 @@ fun WelcomeScreenContent(
                                 )
                             }
                         }
+                    }
+
+                    HorizontalDivider()
+
+                    TextButton(
+                        onClick = onSettingsClick,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(painter = painterResource(R.drawable.ic_settings), contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("View All Settings")
                     }
                 }
             }

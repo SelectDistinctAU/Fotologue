@@ -50,6 +50,10 @@ class AddLogViewModelTest {
         every { repository.latestMeteringResult } returns meteringResultFlow
         every { repository.clearMeteringResult() } just Runs
         every { repository.allViewfinders } returns flowOf(emptyList())
+        every { repository.allCameraViewfinderCrossRefs } returns flowOf(emptyList())
+        every { repository.allCameraTeleconverterCrossRefs } returns flowOf(emptyList())
+        every { repository.allCameraFilterCrossRefs } returns flowOf(emptyList())
+        every { repository.allCameraFlashCrossRefs } returns flowOf(emptyList())
         every { repository.getCameraById(any()) } returns flowOf(null)
         every { repository.getLensById(any()) } returns flowOf(null)
         every { repository.getSuggestedFilmRollFlow(any(), any()) } returns flowOf("1.01")
@@ -133,7 +137,7 @@ class AddLogViewModelTest {
 
     @Test
     fun `saveLog calls repository with correct data`() = runTest {
-        coEvery { repository.logExposure(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } just Runs
+        coEvery { repository.logExposure(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } just Runs
         val camera = Camera(id = 1, name = "Nikon F3", type = CameraType.FILM_SLR)
         every { repository.getCameraById(1L) } returns flowOf(camera)
         

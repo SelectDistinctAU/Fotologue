@@ -26,6 +26,7 @@ class FotologueRepositoryTest {
     private val filmRollSessionDao: FilmRollSessionDao = mockk()
     private val viewfinderDao: ViewfinderDao = mockk<ViewfinderDao>().apply {
         every { getAllViewfinders() } returns flowOf(emptyList())
+        every { getAllCameraViewfinderCrossRefs() } returns flowOf(emptyList())
     }
     private val locationProvider: LocationProvider = mockk()
     private val settingsRepository: SettingsRepository = mockk()
@@ -43,8 +44,11 @@ class FotologueRepositoryTest {
         every { filmDao.getAllFilms() } returns flowOf(emptyList())
         every { lensDao.getAllLenses() } returns flowOf(emptyList())
         every { teleconverterDao.getAllTeleconverters() } returns flowOf(emptyList())
+        every { teleconverterDao.getAllCameraTeleconverterCrossRefs() } returns flowOf(emptyList())
         every { filterDao.getAllFilters() } returns flowOf(emptyList())
+        every { filterDao.getAllCameraFilterCrossRefs() } returns flowOf(emptyList())
         every { flashDao.getAllFlashes() } returns flowOf(emptyList())
+        every { flashDao.getAllCameraFlashCrossRefs() } returns flowOf(emptyList())
         every { logEntryDao.getAllLogEntries() } returns flowOf(emptyList())
         every { logEntryDao.getAllLogEntriesWithGear() } returns flowOf(emptyList())
         every { cameraKitDao.getAllCameraKits() } returns flowOf(emptyList())

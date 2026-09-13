@@ -83,6 +83,9 @@ interface ViewfinderDao {
     @Query("SELECT * FROM viewfinders ORDER BY position ASC, id ASC")
     fun getAllViewfinders(): Flow<List<Viewfinder>>
 
+    @Query("SELECT * FROM viewfinders ORDER BY position ASC, id ASC")
+    suspend fun getAllViewfindersOnce(): List<Viewfinder>
+
     @Insert
     suspend fun insertViewfinder(viewfinder: Viewfinder): Long
 
@@ -97,6 +100,36 @@ interface ViewfinderDao {
 
     @Query("SELECT * FROM viewfinders WHERE id = :id")
     fun getViewfinderById(id: Long): Flow<Viewfinder?>
+
+    @Query("SELECT viewfinders.* FROM viewfinders INNER JOIN camera_viewfinder_cross_ref ON viewfinders.id = camera_viewfinder_cross_ref.viewfinderId WHERE camera_viewfinder_cross_ref.cameraId = :cameraId ORDER BY position ASC, id ASC")
+    fun getViewfindersForCamera(cameraId: Long): Flow<List<Viewfinder>>
+
+    @Query("SELECT viewfinders.* FROM viewfinders INNER JOIN camera_viewfinder_cross_ref ON viewfinders.id = camera_viewfinder_cross_ref.viewfinderId WHERE camera_viewfinder_cross_ref.cameraId = :cameraId ORDER BY position ASC, id ASC")
+    suspend fun getViewfindersForCameraOnce(cameraId: Long): List<Viewfinder>
+
+    @Query("SELECT cameras.* FROM cameras INNER JOIN camera_viewfinder_cross_ref ON cameras.id = camera_viewfinder_cross_ref.cameraId WHERE camera_viewfinder_cross_ref.viewfinderId = :viewfinderId ORDER BY position ASC, id ASC")
+    fun getCamerasForViewfinder(viewfinderId: Long): Flow<List<Camera>>
+
+    @Query("SELECT cameras.* FROM cameras INNER JOIN camera_viewfinder_cross_ref ON cameras.id = camera_viewfinder_cross_ref.cameraId WHERE camera_viewfinder_cross_ref.viewfinderId = :viewfinderId ORDER BY position ASC, id ASC")
+    suspend fun getCamerasForViewfinderOnce(viewfinderId: Long): List<Camera>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCameraViewfinderCrossRef(crossRef: CameraViewfinderCrossRef)
+
+    @Query("SELECT * FROM camera_viewfinder_cross_ref")
+    fun getAllCameraViewfinderCrossRefs(): Flow<List<CameraViewfinderCrossRef>>
+
+    @Query("SELECT * FROM camera_viewfinder_cross_ref")
+    suspend fun getAllCameraViewfinderCrossRefsOnce(): List<CameraViewfinderCrossRef>
+
+    @Query("DELETE FROM camera_viewfinder_cross_ref WHERE viewfinderId = :viewfinderId")
+    suspend fun deleteCameraViewfinderCrossRefsForViewfinder(viewfinderId: Long)
+
+    @Query("DELETE FROM camera_viewfinder_cross_ref WHERE cameraId = :cameraId")
+    suspend fun deleteCameraViewfinderCrossRefsForCamera(cameraId: Long)
+
+    @Query("DELETE FROM camera_viewfinder_cross_ref")
+    suspend fun deleteAllCameraViewfinderCrossRefs()
 
     @Query("DELETE FROM viewfinders WHERE id IN (:ids)")
     suspend fun deleteViewfinders(ids: List<Long>)
@@ -241,6 +274,24 @@ interface TeleconverterDao {
     @Query("SELECT * FROM teleconverters WHERE id = :id")
     fun getTeleconverterById(id: Long): Flow<Teleconverter?>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCameraTeleconverterCrossRef(crossRef: CameraTeleconverterCrossRef)
+
+    @Query("SELECT * FROM camera_teleconverter_cross_ref")
+    fun getAllCameraTeleconverterCrossRefs(): Flow<List<CameraTeleconverterCrossRef>>
+
+    @Query("SELECT * FROM camera_teleconverter_cross_ref")
+    suspend fun getAllCameraTeleconverterCrossRefsOnce(): List<CameraTeleconverterCrossRef>
+
+    @Query("DELETE FROM camera_teleconverter_cross_ref WHERE teleconverterId = :teleconverterId")
+    suspend fun deleteCameraTeleconverterCrossRefsForTeleconverter(teleconverterId: Long)
+
+    @Query("DELETE FROM camera_teleconverter_cross_ref WHERE cameraId = :cameraId")
+    suspend fun deleteCameraTeleconverterCrossRefsForCamera(cameraId: Long)
+
+    @Query("DELETE FROM camera_teleconverter_cross_ref")
+    suspend fun deleteAllCameraTeleconverterCrossRefs()
+
     @Query("DELETE FROM teleconverters WHERE id IN (:ids)")
     suspend fun deleteTeleconverters(ids: List<Long>)
 
@@ -271,6 +322,24 @@ interface FilterDao {
     @Query("SELECT * FROM filters WHERE id = :id")
     fun getFilterById(id: Long): Flow<Filter?>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCameraFilterCrossRef(crossRef: CameraFilterCrossRef)
+
+    @Query("SELECT * FROM camera_filter_cross_ref")
+    fun getAllCameraFilterCrossRefs(): Flow<List<CameraFilterCrossRef>>
+
+    @Query("SELECT * FROM camera_filter_cross_ref")
+    suspend fun getAllCameraFilterCrossRefsOnce(): List<CameraFilterCrossRef>
+
+    @Query("DELETE FROM camera_filter_cross_ref WHERE filterId = :filterId")
+    suspend fun deleteCameraFilterCrossRefsForFilter(filterId: Long)
+
+    @Query("DELETE FROM camera_filter_cross_ref WHERE cameraId = :cameraId")
+    suspend fun deleteCameraFilterCrossRefsForCamera(cameraId: Long)
+
+    @Query("DELETE FROM camera_filter_cross_ref")
+    suspend fun deleteAllCameraFilterCrossRefs()
+
     @Query("DELETE FROM filters WHERE id IN (:ids)")
     suspend fun deleteFilters(ids: List<Long>)
 
@@ -300,6 +369,24 @@ interface FlashDao {
 
     @Query("SELECT * FROM flashes WHERE id = :id")
     fun getFlashById(id: Long): Flow<Flash?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCameraFlashCrossRef(crossRef: CameraFlashCrossRef)
+
+    @Query("SELECT * FROM camera_flash_cross_ref")
+    fun getAllCameraFlashCrossRefs(): Flow<List<CameraFlashCrossRef>>
+
+    @Query("SELECT * FROM camera_flash_cross_ref")
+    suspend fun getAllCameraFlashCrossRefsOnce(): List<CameraFlashCrossRef>
+
+    @Query("DELETE FROM camera_flash_cross_ref WHERE flashId = :flashId")
+    suspend fun deleteCameraFlashCrossRefsForFlash(flashId: Long)
+
+    @Query("DELETE FROM camera_flash_cross_ref WHERE cameraId = :cameraId")
+    suspend fun deleteCameraFlashCrossRefsForCamera(cameraId: Long)
+
+    @Query("DELETE FROM camera_flash_cross_ref")
+    suspend fun deleteAllCameraFlashCrossRefs()
 
     @Query("DELETE FROM flashes WHERE id IN (:ids)")
     suspend fun deleteFlashes(ids: List<Long>)

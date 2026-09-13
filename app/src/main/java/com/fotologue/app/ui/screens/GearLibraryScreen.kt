@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.rotate
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,30 +59,32 @@ fun GearLibraryScreen(
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     
-    // Requested order: Kits, Cameras, Lenses, Films, TCs, Filters, Flashes, Viewfinders, Subjects, Content
-    val categories = listOf(
-        GearCategory(stringResource(R.string.category_kits), iconRes = R.drawable.ic_inventory_2),
-        GearCategory(stringResource(R.string.category_cameras), iconRes = R.drawable.ic_photo_camera),
-        GearCategory(stringResource(R.string.category_lenses), iconRes = R.drawable.lensd),
-        GearCategory(stringResource(R.string.category_films), iconRes = R.drawable.ic_camera_roll),
-        GearCategory(stringResource(R.string.category_accessories_tcs), iconRes = R.drawable.frame_inspect_24px),
-        GearCategory(stringResource(R.string.category_accessories_filters), iconRes = R.drawable.filter_24px),
-        GearCategory(stringResource(R.string.category_accessories_flashes), iconRes = R.drawable.ic_flash_on),
-        GearCategory(stringResource(R.string.category_accessories_viewfinders), iconRes = R.drawable.wallpaper_slideshow_24px),
-        GearCategory(stringResource(R.string.category_subjects), iconRes = R.drawable.ic_label),
-        GearCategory(stringResource(R.string.category_content), iconRes = R.drawable.ic_label)
-    )
-    
     val cameras by viewModel.allCameras.collectAsStateWithLifecycle()
     val lensesWithCameras by viewModel.allLensesWithCameras.collectAsStateWithLifecycle()
-    val teleconverters by viewModel.allTeleconverters.collectAsStateWithLifecycle()
-    val filters by viewModel.allFilters.collectAsStateWithLifecycle()
-    val flashes by viewModel.allFlashes.collectAsStateWithLifecycle()
-    val viewfinders by viewModel.allViewfinders.collectAsStateWithLifecycle()
+    val teleconverters by viewModel.allTeleconvertersWithCameras.collectAsStateWithLifecycle()
+    val filters by viewModel.allFiltersWithCameras.collectAsStateWithLifecycle()
+    val flashes by viewModel.allFlashesWithCameras.collectAsStateWithLifecycle()
+    val viewfinders by viewModel.allViewfindersWithCameras.collectAsStateWithLifecycle()
     val films by viewModel.allFilms.collectAsStateWithLifecycle()
     val kits by viewModel.allCameraKits.collectAsStateWithLifecycle()
     val subjects by viewModel.allSubjects.collectAsStateWithLifecycle()
     val contentTags by viewModel.allContent.collectAsStateWithLifecycle()
+    val intents by viewModel.allIntents.collectAsStateWithLifecycle()
+
+    // Requested order: Kits, Cameras, Lenses, Films, TCs, Filters, Flashes, Viewfinders, Subjects, Content, Intent
+    val categories = listOf(
+        GearCategory(stringResource(R.string.category_kits), iconRes = R.drawable.ic_inventory_2, count = kits.size),
+        GearCategory(stringResource(R.string.category_cameras), iconRes = R.drawable.ic_photo_camera, count = cameras.size),
+        GearCategory(stringResource(R.string.category_lenses), iconRes = R.drawable.lensd, count = lensesWithCameras.size),
+        GearCategory(stringResource(R.string.category_films), iconRes = R.drawable.ic_camera_roll, count = films.size),
+        GearCategory(stringResource(R.string.category_accessories_tcs), iconRes = R.drawable.frame_inspect_24px, count = teleconverters.size),
+        GearCategory(stringResource(R.string.category_accessories_filters), iconRes = R.drawable.filter_24px, count = filters.size),
+        GearCategory(stringResource(R.string.category_accessories_flashes), iconRes = R.drawable.ic_flash_on, count = flashes.size),
+        GearCategory(stringResource(R.string.category_accessories_viewfinders), iconRes = R.drawable.viewfinders_24px, count = viewfinders.size),
+        GearCategory(stringResource(R.string.category_subjects), iconRes = R.drawable.ic_label, count = subjects.size),
+        GearCategory(stringResource(R.string.category_content), iconRes = R.drawable.ic_label, count = contentTags.size),
+        GearCategory(stringResource(R.string.category_intent), iconRes = R.drawable.ic_label, count = intents.size)
+    )
 
     ListDetailPaneScaffold(
         directive = navigator.scaffoldDirective,
@@ -112,6 +115,24 @@ fun GearLibraryScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         itemsIndexed(categories) { index, category ->
+                            if (index == 0) {
+                                Text(
+                                    text = "EQUIPMENT & KITS",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(start = 12.dp, top = 8.dp, bottom = 4.dp)
+                                )
+                            } else if (index == 8) {
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                Text(
+                                    text = "TAXONOMY & TAGS",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(start = 12.dp, top = 4.dp, bottom = 4.dp)
+                                )
+                            }
                             NavigationDrawerItem(
                                 label = { Text(category.name) },
                                 selected = uiState.selectedCategoryIndex == index,
@@ -127,6 +148,20 @@ fun GearLibraryScreen(
                                         contentDescription = null,
                                         modifier = Modifier.size(24.dp)
                                     )
+                                },
+                                badge = {
+                                    Badge(
+                                        containerColor = if (uiState.selectedCategoryIndex == index) 
+                                            MaterialTheme.colorScheme.primary 
+                                        else 
+                                            MaterialTheme.colorScheme.surfaceContainerHighest,
+                                        contentColor = if (uiState.selectedCategoryIndex == index) 
+                                            MaterialTheme.colorScheme.onPrimary 
+                                        else 
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                    ) {
+                                        Text("${category.count}")
+                                    }
                                 }
                             )
                         }
@@ -247,6 +282,19 @@ fun GearLibraryScreen(
                             onMove = viewModel::moveContent,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
+                        10 -> ContentList(
+                            contentItems = intents,
+                            subjects = intents.filter { it.parentId == null },
+                            selectedIds = uiState.selectedIntentIds,
+                            isReorderMode = uiState.isReorderMode,
+                            onContentClick = { tag ->
+                                if (uiState.isSelectionMode) viewModel.toggleIntentSelection(tag.id) else viewModel.showEditTagDialog(tag)
+                            },
+                            onContentLongClick = { viewModel.toggleIntentSelection(it) },
+                            onMove = viewModel::moveIntent,
+                            bottomPadding = paddingValues.calculateBottomPadding(),
+                            orphanHeaderTitle = "Intent Groups"
+                        )
                     }
                 }
 
@@ -325,6 +373,7 @@ fun GearLibraryScreen(
                                         7 -> onAddViewfinder()
                                         8 -> viewModel.showAddTagDialog()
                                         9 -> viewModel.showAddContentDialog()
+                                        10 -> viewModel.showAddIntentDialog()
                                     }
                                 },
                                 modifier = Modifier.navigationBarsPadding()
@@ -376,11 +425,27 @@ fun GearLibraryScreen(
             }
         )
     }
+
+    if (uiState.showIntentDialog) {
+        IntentDialog(
+            tag = editingTag,
+            intents = intents,
+            onDismiss = viewModel::dismissTagDialog,
+            onConfirm = { name, parentId ->
+                if (editingTag == null) {
+                    viewModel.addTag(name, Tag.CATEGORY_INTENT, parentId)
+                } else {
+                    viewModel.updateTag(editingTag.copy(name = name, parentId = parentId))
+                }
+            }
+        )
+    }
 }
 
 data class GearCategory(
     val name: String, 
-    val iconRes: Int
+    val iconRes: Int,
+    val count: Int = 0
 )
 
 @Composable
@@ -487,6 +552,86 @@ fun ContentDialog(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun IntentDialog(
+    tag: Tag?,
+    intents: List<Tag>,
+    onDismiss: () -> Unit,
+    onConfirm: (String, Long?) -> Unit
+) {
+    var name by remember { mutableStateOf(tag?.name ?: "") }
+    var parentId by remember { mutableStateOf(tag?.parentId) }
+    var parentExpanded by remember { mutableStateOf(false) }
+
+    val topIntents = remember(intents) { intents.filter { it.parentId == null && it.id != tag?.id } }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(if (tag == null) "Add Intent Tag" else "Edit Intent Tag") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                ExposedDropdownMenuBox(
+                    expanded = parentExpanded,
+                    onExpandedChange = { parentExpanded = !parentExpanded }
+                ) {
+                    val currentParent = topIntents.find { it.id == parentId }
+                    OutlinedTextField(
+                        value = currentParent?.name ?: "None (Top-Level Intent Group)",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Parent Intent Group (e.g. Series)") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = parentExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = parentExpanded,
+                        onDismissRequest = { parentExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("None (Top-Level Intent Group)") },
+                            onClick = {
+                                parentId = null
+                                parentExpanded = false
+                            }
+                        )
+                        topIntents.forEach { parent ->
+                            DropdownMenuItem(
+                                text = { Text(parent.name) },
+                                onClick = {
+                                    parentId = parent.id
+                                    parentExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Project / Intent Tag Name (e.g. Urban Decay)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(name, parentId) },
+                enabled = name.isNotBlank()
+            ) {
+                Text(stringResource(R.string.action_save))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_cancel))
+            }
+        }
+    )
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SubjectList(
@@ -554,7 +699,8 @@ private fun ContentList(
     onContentClick: (Tag) -> Unit,
     onContentLongClick: (Long) -> Unit,
     onMove: (Int, Int) -> Unit,
-    bottomPadding: Dp = 0.dp
+    bottomPadding: Dp = 0.dp,
+    orphanHeaderTitle: String = stringResource(R.string.label_uncategorised)
 ) {
     if (contentItems.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -646,7 +792,7 @@ private fun ContentList(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = stringResource(R.string.label_uncategorised),
+                                text = orphanHeaderTitle,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -707,8 +853,9 @@ private fun KitList(
                         val cameraName = kitWithGear.camera?.name ?: stringResource(R.string.unknown_camera)
                         val lensName = kitWithGear.lens?.let { "${it.make} ${it.model}" } ?: stringResource(R.string.unknown_lens)
                         val filterName = kitWithGear.filter?.let { " + ${it.name}" } ?: ""
+                        val viewfinderName = kitWithGear.viewfinder?.let { " + ${it.name}" } ?: ""
                         Text(
-                            text = "$cameraName + $lensName$filterName",
+                            text = "$cameraName + $lensName$filterName$viewfinderName",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.secondary
                         ) 
@@ -749,7 +896,7 @@ private fun KitList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TeleconverterList(
-    teleconverters: List<Teleconverter>,
+    teleconverters: List<TeleconverterWithCameras>,
     selectedIds: Set<Long>,
     isReorderMode: Boolean,
     onTeleconverterClick: (Long) -> Unit,
@@ -766,7 +913,8 @@ private fun TeleconverterList(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            itemsIndexed(teleconverters) { index, tc ->
+            itemsIndexed(teleconverters) { index, tcWithCameras ->
+                val tc = tcWithCameras.teleconverter
                 ListItem(
                     headlineContent = { 
                         Text(
@@ -775,11 +923,20 @@ private fun TeleconverterList(
                         ) 
                     },
                     supportingContent = { 
-                        Text(
-                            text = "${tc.magnification}x • ${tc.lightLossStops} stop(s) loss",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.secondary
-                        ) 
+                        Column {
+                            Text(
+                                text = "${tc.magnification}x • ${tc.lightLossStops} stop(s) loss",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.secondary
+                            ) 
+                            if (tcWithCameras.cameras.isNotEmpty()) {
+                                Text(
+                                    text = "Used with: ${tcWithCameras.cameras.joinToString { it.name }}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     },
                     leadingContent = {
                         if (selectedIds.contains(tc.id)) {
@@ -791,7 +948,7 @@ private fun TeleconverterList(
                             )
                         } else {
                             Icon(
-                                painter = painterResource(R.drawable.ic_zoom_in),
+                                painter = painterResource(R.drawable.frame_inspect_24px),
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp)
                             )
@@ -817,7 +974,7 @@ private fun TeleconverterList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FilterList(
-    filters: List<Filter>,
+    filters: List<FilterWithCameras>,
     selectedIds: Set<Long>,
     isReorderMode: Boolean,
     onFilterClick: (Long) -> Unit,
@@ -834,7 +991,8 @@ private fun FilterList(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            itemsIndexed(filters) { index, filter ->
+            itemsIndexed(filters) { index, filterWithCameras ->
+                val filter = filterWithCameras.filter
                 ListItem(
                     headlineContent = { 
                         Text(
@@ -843,11 +1001,20 @@ private fun FilterList(
                         ) 
                     },
                     supportingContent = { 
-                        Text(
-                            text = "${filter.type} • ${filter.compensationStops} stop(s) comp",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.secondary
-                        ) 
+                        Column {
+                            Text(
+                                text = "${filter.type} • ${filter.compensationStops} stop(s) comp",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.secondary
+                            ) 
+                            if (filterWithCameras.cameras.isNotEmpty()) {
+                                Text(
+                                    text = "Used with: ${filterWithCameras.cameras.joinToString { it.name }}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     },
                     leadingContent = {
                         if (selectedIds.contains(filter.id)) {
@@ -885,7 +1052,7 @@ private fun FilterList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FlashList(
-    flashes: List<Flash>,
+    flashes: List<FlashWithCameras>,
     selectedIds: Set<Long>,
     isReorderMode: Boolean,
     onFlashClick: (Long) -> Unit,
@@ -902,7 +1069,8 @@ private fun FlashList(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            itemsIndexed(flashes) { index, flash ->
+            itemsIndexed(flashes) { index, flashWithCameras ->
+                val flash = flashWithCameras.flash
                 ListItem(
                     headlineContent = { 
                         Text(
@@ -911,11 +1079,20 @@ private fun FlashList(
                         ) 
                     },
                     supportingContent = { 
-                        Text(
-                            text = "GN: ${flash.guideNumber}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.secondary
-                        ) 
+                        Column {
+                            Text(
+                                text = "GN: ${flash.guideNumber}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.secondary
+                            ) 
+                            if (flashWithCameras.cameras.isNotEmpty()) {
+                                Text(
+                                    text = "Used with: ${flashWithCameras.cameras.joinToString { it.name }}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     },
                     leadingContent = {
                         if (selectedIds.contains(flash.id)) {
@@ -953,7 +1130,7 @@ private fun FlashList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ViewfinderList(
-    viewfinders: List<Viewfinder>,
+    viewfinders: List<ViewfinderWithCameras>,
     selectedIds: Set<Long>,
     isReorderMode: Boolean,
     onViewfinderClick: (Long) -> Unit,
@@ -970,7 +1147,8 @@ private fun ViewfinderList(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
-            itemsIndexed(viewfinders) { index, vf ->
+            itemsIndexed(viewfinders) { index, vfWithCameras ->
+                val vf = vfWithCameras.viewfinder
                 ListItem(
                     headlineContent = { 
                         Text(
@@ -978,8 +1156,25 @@ private fun ViewfinderList(
                             style = MaterialTheme.typography.titleMedium
                         ) 
                     },
-                    supportingContent = if (vf.modelNumber.isNotEmpty()) { 
-                        { Text(text = vf.modelNumber) }
+                    supportingContent = if (vf.modelNumber.isNotEmpty() || vfWithCameras.cameras.isNotEmpty()) { 
+                        {
+                            Column {
+                                if (vf.modelNumber.isNotEmpty()) {
+                                    Text(
+                                        text = vf.modelNumber,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+                                if (vfWithCameras.cameras.isNotEmpty()) {
+                                    Text(
+                                        text = "Used with: ${vfWithCameras.cameras.joinToString { it.name }}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
                     } else null,
                     leadingContent = {
                         if (selectedIds.contains(vf.id)) {
@@ -991,7 +1186,7 @@ private fun ViewfinderList(
                             )
                         } else {
                             Icon(
-                                painter = painterResource(R.drawable.extension_24px),
+                                painter = painterResource(R.drawable.viewfinders_24px),
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp)
                             )

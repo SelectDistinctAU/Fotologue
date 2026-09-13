@@ -41,39 +41,45 @@ fun HelpScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             HelpSection(
-                title = "1. Setup Your Gear",
+                title = "1. Setup Your Gear & Taxonomy",
                 iconRes = R.drawable.ic_inventory_2,
-                content = "Before you can log exposures, you need to add your equipment. Go to the Gear Library to add your Cameras, Lenses, and Films. Fotologue organizes films by format (35mm, 120, and Large Format).\n\nHint: If you have a modular camera that uses different film backs (e.g. 35mm and 120), add the camera twice—once for each format. For Half-Frame cameras, select the '35mm Half Frame' format to automatically double your exposure counts."
+                content = "Add your equipment in the Gear Library (Cameras, Lenses, Films, Teleconverters, Filters, Flashes, Viewfinders, Subjects, Content, Intent). Live badges on category tabs show your item counts.\n\n• Camera Association: Link lenses and accessories to specific camera bodies. TLR and compact cameras automatically create and link fixed lenses.\n• 3-Axis Tag Taxonomy (Subject • Content • Intent): Categorize exposures by domain (*Subjects*), detail (*Content*), and purpose (*Intent*: *Study*, *Series*, *Documentation*, *Commission*).\n• Camera Kits: Combine camera, lens, film, and accessories for one-tap setup during shoots."
             )
 
             HelpSection(
                 title = "2. Adding a Log Entry",
                 iconRes = R.drawable.list_alt_add_24px,
-                content = "Tap the '+' button on the Timeline. Select your camera, lens, and film. To speed things up, Fotologue only shows films that match your camera's format. You can also add accessories like filters, teleconverters, and flashes. If you haven't added a lens yet, use the 'Add New Lens...' shortcut right in the selection menu."
+                content = "Tap the '+' button on the Timeline. Pick a Camera Kit for instant quick fill or select gear manually. Fotologue dynamically filters lenses, film formats, and accessories based on your chosen camera—providing direct prompts to add matching film if none exists in your library."
             )
 
             HelpSection(
                 title = "3. Using the Light Meter",
                 iconRes = R.drawable.ic_exposure,
-                content = "Tap 'Measure Exposure' on the Add Log screen. Use the camera viewfinder to meter your scene. You can toggle between Spot and Center-weighted metering. Tap an exposure suggestion to apply it to your log and capture an optional thumbnail."
+                content = "Tap 'Measure Exposure' on the Add Log screen. Use the live viewfinder to meter your scene with Spot or Center-weighted modes. Pre-visualize with B&W, C-41, or E-6 film look simulations. Tap an exposure suggestion to apply it to your log and capture an optional thumbnail."
             )
 
             HelpSection(
                 title = "4. Meter Calibration",
                 iconRes = R.drawable.ic_handyman,
-                content = "To ensure professional accuracy, use the Pro Calibration Wizard. You can find it in Settings > EV Calibration. Use 'The Void' stage to zero sensor noise with a covered lens, and 'The Balance' stage to match a grey card or neutral wall."
+                content = "To ensure professional accuracy, use the Pro Calibration Wizard (Settings > EV Calibration). Stage 1 'The Void' zeros sensor noise floor with a covered lens, while Stage 2 'The Balance' matches an 18% grey card or neutral surface."
             )
 
             HelpSection(
-                title = "5. Managing Logs",
+                title = "5. Digital Contact Sheet & Proof Sheets",
+                iconRes = R.drawable.gallery_thumbnail_24px,
+                content = "Tap the Contact Sheet icon on the Timeline to open the Digital Contact Sheet.\n\n• Visual Fingerprints: Compare digital scans against scene thumbnails to easily match scan files to field logs.\n• In-Grid Gap Adjuster: Tap any skipped/blank card to insert or remove frame gaps (+1 / -1 offset), keeping your digital contact sheet 1-to-1 aligned with physical film rebate numbers.\n• Printable PDF Proof Sheets: Export styled A4 PDF contact proof sheets complete with headers, thumbnails, rebate numbers, and exposure details for printing or digital archival binders."
+            )
+
+            HelpSection(
+                title = "6. Managing Logs, Exports & Macro Presets",
                 iconRes = R.drawable.ic_timeline,
-                content = "Your logs are displayed in the Timeline. Long-press any entry to enter selection mode, where you can bulk-delete entries or export them to CSV, JSON, XMP, or a full ZIP package (including thumbnails). XMP sidecars are perfect for importing metadata into Adobe Lightroom or Capture One."
+                content = "Your logs appear in the Timeline with visual export badges ([Z], [C], [J], [X]).\n\n• Camera Macro Copy Presets: When exporting XMP sidecars, select or save camera presets (Fujifilm `_DSF`, Canon `IMG_`, Nikon `DSC_`, Sony `_DSC`) to automatically match RAW scan file sequences.\n• Full XMP Hierarchy: Exports `Subject`, `Content`, and `Intent` (`Intent|Study`, `Intent|Series`) hierarchies directly into Adobe Lightroom and Capture One catalogs."
             )
 
             HelpSection(
-                title = "6. Backup & Privacy",
+                title = "7. Backup & Privacy",
                 iconRes = R.drawable.ic_security,
-                content = "Your privacy is our priority. All your data—including thumbnails, GPS locations, gear lists, and notes—stays strictly on your device.\n\n• Local AI: Smart Face-Aware tagging uses on-device machine learning; no biometric data or images are ever uploaded or shared.\n• Private Export: CSV, JSON, and XMP files are generated locally for your personal archival workflow.\n• No Tracking: Fotologue does not use analytics to track your usage or shooting locations."
+                content = "Your privacy is our highest priority. All data—including thumbnails, GPS coordinates, gear lists, and notes—remains 100% local on your device.\n\n• On-Device ML: Smart Face-Aware tagging operates entirely on-device; no biometric data or images are ever uploaded or transmitted.\n• SAF Backups: Export and restore complete backups using standard Android Storage Access Framework.\n• Zero Tracking: Fotologue contains no analytics or tracking."
             )
 
             Spacer(modifier = Modifier.height(32.dp))

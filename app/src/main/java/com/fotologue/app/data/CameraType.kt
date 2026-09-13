@@ -7,6 +7,7 @@ enum class CameraType(val displayName: String, val isInterchangeable: Boolean) {
     DSLR("DSLR", true),
     MIRRORLESS("Mirrorless", true),
     COMPACT("Compact", false),
+    TLR("TLR (Twin Lens Reflex)", false),
     BRIDGE("Bridge", false),
     FILM_SLR("Film SLR", true),
     RANGEFINDER("Rangefinder", true),
@@ -21,7 +22,10 @@ enum class CameraType(val displayName: String, val isInterchangeable: Boolean) {
 
     companion object {
         fun fromString(value: String): CameraType {
-            return entries.find { it.displayName.equals(value, ignoreCase = true) } ?: COMPACT
+            return entries.find { 
+                it.displayName.equals(value, ignoreCase = true) || 
+                it.name.equals(value, ignoreCase = true) 
+            } ?: COMPACT
         }
     }
 }

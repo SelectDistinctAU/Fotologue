@@ -12,6 +12,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 enum class PictureExportSize(val label: String) {
     SPACE_SAVER("Space saver (1280 x 720)"),
@@ -36,6 +38,7 @@ class SettingsRepository(private val context: Context) {
     private val IS_AUTO_COPYRIGHT_ENABLED = booleanPreferencesKey("is_auto_copyright_enabled")
     private val COPYRIGHT_NOTICE = stringPreferencesKey("copyright_notice")
     private val CONTACT_INFO = stringPreferencesKey("contact_info")
+    private val MACRO_COPY_PRESETS = stringPreferencesKey("macro_copy_presets_json")
 
     private val LAST_CAMERA_ID = androidx.datastore.preferences.core.longPreferencesKey("last_camera_id")
     private val LAST_FILM_ID = androidx.datastore.preferences.core.longPreferencesKey("last_film_id")
@@ -183,6 +186,57 @@ class SettingsRepository(private val context: Context) {
                 ""
             }
         }
+
+    private val json = Json { ignoreUnknownKeys = true; isLenient = true }
+
+    val macroCopyPresets: Flow<List<MacroCopyPreset>> = context.dataStore.data
+        .map { preferences ->
+            val jsonString = preferences[MACRO_COPY_PRESETS]
+            if (jsonString.isNullOrBlank()) {
+                MacroCopyPreset.DEFAULT_PRESETS
+            } else {
+                try {
+                    json.decodeFromString<List<MacroCopyPreset>>(jsonString)
+                } catch (e: Exception) {
+                    MacroCopyPreset.DEFAULT_PRESETS
+                }
+            }
+        }
+
+    suspend fun saveMacroCopyPreset(preset: MacroCopyPreset) {
+        context.dataStore.edit { preferences ->
+            val jsonString = preferences[MACRO_COPY_PRESETS]
+            val currentList = if (jsonString.isNullOrBlank()) {
+                MacroCopyPreset.DEFAULT_PRESETS.toMutableList()
+            } else {
+                try {
+                    json.decodeFromString<List<MacroCopyPreset>>(jsonString).toMutableList()
+                } catch (e: Exception) {
+                    MacroCopyPreset.DEFAULT_PRESETS.toMutableList()
+                }
+            }
+            val existingIndex = currentList.indexOfFirst { it.id == preset.id }
+            if (existingIndex >= 0) {
+                currentList[existingIndex] = preset
+            } else {
+                currentList.add(preset)
+            }
+            preferences[MACRO_COPY_PRESETS] = Json.encodeToString(currentList)
+        }
+    }
+
+    suspend fun deleteMacroCopyPreset(id: String) {
+        context.dataStore.edit { preferences ->
+            val jsonString = preferences[MACRO_COPY_PRESETS] ?: return@edit
+            val currentList = try {
+                json.decodeFromString<List<MacroCopyPreset>>(jsonString).toMutableList()
+            } catch (e: Exception) {
+                return@edit
+            }
+            currentList.removeAll { it.id == id }
+            preferences[MACRO_COPY_PRESETS] = Json.encodeToString(currentList)
+        }
+    }
 
     suspend fun setThumbnailEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->

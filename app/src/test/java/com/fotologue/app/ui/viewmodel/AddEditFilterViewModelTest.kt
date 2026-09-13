@@ -5,6 +5,7 @@ import com.fotologue.app.data.*
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -23,6 +24,8 @@ class AddEditFilterViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        every { repository.allCameras } returns flowOf(emptyList())
+        every { repository.allCameraFilterCrossRefs } returns flowOf(emptyList())
         viewModel = AddEditFilterViewModel(repository, savedStateHandle)
     }
 
@@ -33,7 +36,7 @@ class AddEditFilterViewModelTest {
 
     @Test
     fun `saveFilter calls repository with correct data`() = runTest {
-        coEvery { repository.insertFilter(any()) } returns 1L
+        coEvery { repository.insertFilter(any(), any()) } just Runs
         
         viewModel.onNameChange("Hoya ND8")
         viewModel.onTypeChange("ND")
@@ -45,7 +48,8 @@ class AddEditFilterViewModelTest {
 
         coVerify { 
             repository.insertFilter(
-                match { it.name == "Hoya ND8" && it.type == "ND" && it.compensationStops == 3.0 }
+                match { it.name == "Hoya ND8" && it.type == "ND" && it.compensationStops == 3.0 },
+                any()
             ) 
         }
         assertEquals(true, success)

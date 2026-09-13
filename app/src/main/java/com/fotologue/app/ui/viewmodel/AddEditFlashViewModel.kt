@@ -3,6 +3,7 @@ package com.fotologue.app.ui.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fotologue.app.data.Camera
 import com.fotologue.app.data.FotologueRepository
 import com.fotologue.app.data.Flash
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,9 @@ import javax.inject.Inject
 data class AddEditFlashUiState(
     val make: String = "",
     val model: String = "",
-    val guideNumber: String = ""
+    val guideNumber: String = "",
+    val cameras: List<Camera> = emptyList(),
+    val selectedCameraIds: Set<Long> = emptySet()
 )
 
 @HiltViewModel
@@ -36,6 +39,15 @@ class AddEditFlashViewModel @Inject constructor(
     var flashId: Long? = savedStateHandle.get<Long>("flashId")
         private set
 
+    init {
+        viewModelScope.launch {
+            repository.allCameras.collect { cameras ->
+                _uiState.update { it.copy(cameras = cameras) }
+            }
+        }
+        loadFlash()
+    }
+
     fun setFlashId(id: Long?) {
         if (flashId == id) return
         flashId = id
@@ -47,12 +59,15 @@ class AddEditFlashViewModel @Inject constructor(
         val id = flashId ?: return
         viewModelScope.launch {
             val flash = repository.getFlashById(id).firstOrNull()
-            flash?.let {
+            flash?.let { item ->
+                val crossRefs = repository.allCameraFlashCrossRefs.firstOrNull() ?: emptyList()
+                val associatedCameraIds = crossRefs.filter { it.flashId == item.id }.map { it.cameraId }.toSet()
                 _uiState.update { state ->
                     state.copy(
-                        make = savedStateHandle.get<String>("make") ?: it.make,
-                        model = savedStateHandle.get<String>("model") ?: it.model,
-                        guideNumber = savedStateHandle.get<String>("guideNumber") ?: it.guideNumber.toString()
+                        make = savedStateHandle.get<String>("make") ?: item.make,
+                        model = savedStateHandle.get<String>("model") ?: item.model,
+                        guideNumber = savedStateHandle.get<String>("guideNumber") ?: item.guideNumber.toString(),
+                        selectedCameraIds = associatedCameraIds
                     )
                 }
             }
@@ -74,6 +89,14 @@ class AddEditFlashViewModel @Inject constructor(
         _uiState.update { it.copy(guideNumber = value) }
     }
 
+    fun onCameraToggled(cameraId: Long) {
+        _uiState.update { state ->
+            val current = state.selectedCameraIds
+            val updated = if (current.contains(cameraId)) current - cameraId else current + cameraId
+            state.copy(selectedCameraIds = updated)
+        }
+    }
+
     fun saveFlash(onSuccess: () -> Unit) {
         val state = _uiState.value
         viewModelScope.launch {
@@ -85,9 +108,9 @@ class AddEditFlashViewModel @Inject constructor(
             )
 
             if (flashId == null) {
-                repository.insertFlash(flash)
+                repository.insertFlash(flash, state.selectedCameraIds.toList())
             } else {
-                repository.updateFlash(flash)
+                repository.updateFlash(flash, state.selectedCameraIds.toList())
             }
             onSuccess()
         }

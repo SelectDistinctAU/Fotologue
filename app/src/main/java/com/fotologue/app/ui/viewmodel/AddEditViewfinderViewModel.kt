@@ -3,6 +3,7 @@ package com.fotologue.app.ui.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fotologue.app.data.Camera
 import com.fotologue.app.data.FotologueRepository
 import com.fotologue.app.data.Viewfinder
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,9 @@ import javax.inject.Inject
 
 data class AddEditViewfinderUiState(
     val name: String = "",
-    val modelNumber: String = ""
+    val modelNumber: String = "",
+    val cameras: List<Camera> = emptyList(),
+    val selectedCameraIds: Set<Long> = emptySet()
 )
 
 @HiltViewModel
@@ -34,6 +37,15 @@ class AddEditViewfinderViewModel @Inject constructor(
     var viewfinderId: Long? = savedStateHandle.get<Long>("viewfinderId")
         private set
 
+    init {
+        viewModelScope.launch {
+            repository.allCameras.collect { cameras ->
+                _uiState.update { it.copy(cameras = cameras) }
+            }
+        }
+        loadViewfinder()
+    }
+
     fun setViewfinderId(id: Long?) {
         if (viewfinderId == id) return
         viewfinderId = id
@@ -45,11 +57,14 @@ class AddEditViewfinderViewModel @Inject constructor(
         val id = viewfinderId ?: return
         viewModelScope.launch {
             val viewfinder = repository.getViewfinderById(id).firstOrNull()
-            viewfinder?.let {
+            viewfinder?.let { vf ->
+                val crossRefs = repository.allCameraViewfinderCrossRefs.firstOrNull() ?: emptyList()
+                val associatedCameraIds = crossRefs.filter { it.viewfinderId == vf.id }.map { it.cameraId }.toSet()
                 _uiState.update { state ->
                     state.copy(
-                        name = savedStateHandle.get<String>("name") ?: it.name,
-                        modelNumber = savedStateHandle.get<String>("modelNumber") ?: it.modelNumber
+                        name = savedStateHandle.get<String>("name") ?: vf.name,
+                        modelNumber = savedStateHandle.get<String>("modelNumber") ?: vf.modelNumber,
+                        selectedCameraIds = associatedCameraIds
                     )
                 }
             }
@@ -66,6 +81,14 @@ class AddEditViewfinderViewModel @Inject constructor(
         _uiState.update { it.copy(modelNumber = value) }
     }
 
+    fun onCameraToggled(cameraId: Long) {
+        _uiState.update { state ->
+            val current = state.selectedCameraIds
+            val updated = if (current.contains(cameraId)) current - cameraId else current + cameraId
+            state.copy(selectedCameraIds = updated)
+        }
+    }
+
     fun saveViewfinder(onSuccess: () -> Unit) {
         val state = _uiState.value
         viewModelScope.launch {
@@ -76,9 +99,9 @@ class AddEditViewfinderViewModel @Inject constructor(
             )
 
             if (viewfinderId == null) {
-                repository.insertViewfinder(viewfinder)
+                repository.insertViewfinder(viewfinder, state.selectedCameraIds.toList())
             } else {
-                repository.updateViewfinder(viewfinder)
+                repository.updateViewfinder(viewfinder, state.selectedCameraIds.toList())
             }
             onSuccess()
         }

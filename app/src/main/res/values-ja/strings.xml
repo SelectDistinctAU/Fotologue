@@ -16,6 +16,7 @@
     <string name="category_films">フィルム</string>
     <string name="category_subjects">被写体</string>
     <string name="category_content">コンテンツ</string>
+    <string name="category_intent">意図</string>
     <string name="category_tags">タグ</string>
     <string name="settings">設定</string>
     <string name="help">ヘルプ</string>

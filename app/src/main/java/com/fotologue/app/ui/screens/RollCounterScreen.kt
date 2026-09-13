@@ -2,6 +2,7 @@ package com.fotologue.app.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -10,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,6 +28,44 @@ fun RollCounterScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
+
+    var showSetFrameDialog by remember { mutableStateOf(false) }
+    var customFrameInput by remember { mutableStateOf(uiState.currentFrame.toString()) }
+
+    if (showSetFrameDialog) {
+        AlertDialog(
+            onDismissRequest = { showSetFrameDialog = false },
+            title = { Text("Jump / Adjust Frame Counter") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Set active frame counter to match physical film edge numbers:", style = MaterialTheme.typography.bodySmall)
+                    OutlinedTextField(
+                        value = customFrameInput,
+                        onValueChange = { if (it.all { c -> c.isDigit() }) customFrameInput = it },
+                        label = { Text("Frame Number") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val frameVal = customFrameInput.toIntOrNull() ?: uiState.currentFrame
+                        viewModel.updateFrame(frameVal.coerceAtLeast(1))
+                        showSetFrameDialog = false
+                    }
+                ) {
+                    Text(stringResource(R.string.action_save))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSetFrameDialog = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -112,6 +152,20 @@ fun RollCounterScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+                OutlinedButton(
+                    onClick = {
+                        customFrameInput = uiState.currentFrame.toString()
+                        showSetFrameDialog = true
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(painterResource(R.drawable.ic_edit), contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Jump / Adjust Frame Counter")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
                 Button(
                     onClick = { viewModel.finishRoll() },
                     modifier = Modifier.fillMaxWidth(),
@@ -122,7 +176,7 @@ fun RollCounterScreen(
                     Text("Finish Roll & Start New")
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedButton(
                     onClick = { viewModel.resetRollCount() },

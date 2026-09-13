@@ -5,6 +5,7 @@ import com.fotologue.app.data.*
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -23,6 +24,8 @@ class AddEditFlashViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        every { repository.allCameras } returns flowOf(emptyList())
+        every { repository.allCameraFlashCrossRefs } returns flowOf(emptyList())
         viewModel = AddEditFlashViewModel(repository, savedStateHandle)
     }
 
@@ -33,7 +36,7 @@ class AddEditFlashViewModelTest {
 
     @Test
     fun `saveFlash calls repository with correct data`() = runTest {
-        coEvery { repository.insertFlash(any()) } returns 1L
+        coEvery { repository.insertFlash(any(), any()) } just Runs
         
         viewModel.onMakeChange("Nikon")
         viewModel.onModelChange("SB-700")
@@ -45,7 +48,8 @@ class AddEditFlashViewModelTest {
 
         coVerify { 
             repository.insertFlash(
-                match { it.make == "Nikon" && it.model == "SB-700" && it.guideNumber == 28 }
+                match { it.make == "Nikon" && it.model == "SB-700" && it.guideNumber == 28 },
+                any()
             ) 
         }
         assertEquals(true, success)

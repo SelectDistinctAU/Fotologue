@@ -16,6 +16,7 @@
     <string name="category_films">胶卷</string>
     <string name="category_subjects">主体</string>
     <string name="category_content">内容</string>
+    <string name="category_intent">意图</string>
     <string name="category_tags">标签</string>
     <string name="settings">设置</string>
     <string name="help">帮助</string>

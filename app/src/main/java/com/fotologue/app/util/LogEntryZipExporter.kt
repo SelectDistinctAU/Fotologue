@@ -7,6 +7,7 @@ import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
 import com.fotologue.app.data.LogEntryWithGear
+import com.fotologue.app.data.MacroCopyNamingOptions
 import com.fotologue.app.data.PictureExportSize
 import com.fotologue.app.data.Tag
 import java.io.ByteArrayOutputStream
@@ -26,15 +27,13 @@ object LogEntryZipExporter {
         allTags: List<Tag> = emptyList(),
         creator: String = "",
         copyright: String = "",
-        contact: String = ""
+        contact: String = "",
+        macroCopyOptions: MacroCopyNamingOptions = MacroCopyNamingOptions()
     ) {
         val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.US)
         val usedNames = mutableSetOf<String>()
         
         ZipOutputStream(outputStream.buffered()).use { zos ->
-            // ...
-            // (Skipping metadata exports as they are fine)
-            // ... (keep metadata.json and metadata.csv logic)
             // 1. metadata.json
             try {
                 val jsonExport = LogEntryJsonExporter.toJson(logs)
@@ -55,32 +54,45 @@ object LogEntryZipExporter {
                 e.printStackTrace()
             }
 
-            // 3. thumbnails/
-            logs.forEach { entry ->
+            // 3. sidecars/ & thumbnails/
+            logs.forEachIndexed { index, entry ->
                 val uriString = entry.logEntry.exposureSettings.thumbnailUri
+                
+                var baseName = if (macroCopyOptions.enabled) {
+                    macroCopyOptions.formatFileName(index, logs.size)
+                } else {
+                    val datePrefix = dateFormat.format(Date(entry.logEntry.timestamp))
+                    val filmAbbr = entry.film?.abbreviation?.ifBlank { entry.film?.name?.take(3)?.uppercase() } ?: "UNK"
+                    
+                    val rollParts = (entry.logEntry.filmRoll ?: "0.00").split(".")
+                    val rollNo = rollParts.getOrNull(0)?.toIntOrNull() ?: 0
+                    val frameNo = rollParts.getOrNull(1)?.toIntOrNull() ?: 0
+                    
+                    String.format(Locale.US, "%s_%s_R%03d_F%02d", datePrefix, filmAbbr, rollNo, frameNo)
+                }
+
+                if (usedNames.contains(baseName)) {
+                    baseName += "_${entry.logEntry.id}"
+                }
+                usedNames.add(baseName)
+
+                // 3a. Sidecar XMP file
+                try {
+                    val xmpFileName = "sidecars/$baseName.xmp"
+                    val xmpContent = LogEntryXmpExporter.toXmp(entry, allTags, creator, copyright, contact)
+                    zos.putNextEntry(ZipEntry(xmpFileName))
+                    zos.write(xmpContent.toByteArray())
+                    zos.closeEntry()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                // 3b. Thumbnail image
                 if (!uriString.isNullOrEmpty()) {
                     try {
                         val uri = Uri.parse(uriString)
+                        val fileName = "$baseName.jpg"
                         
-                        // New Naming Convention: yyyymmdd_FilmAbbr_Roll###_Frame##
-                        val datePrefix = dateFormat.format(Date(entry.logEntry.timestamp))
-                        val filmAbbr = entry.film?.abbreviation?.ifBlank { entry.film?.name?.take(3)?.uppercase() } ?: "UNK"
-                        
-                        val rollParts = (entry.logEntry.filmRoll ?: "0.00").split(".")
-                        val rollNo = rollParts.getOrNull(0)?.toIntOrNull() ?: 0
-                        val frameNo = rollParts.getOrNull(1)?.toIntOrNull() ?: 0
-                        
-                        var baseName = String.format(Locale.US, "%s_%s_R%03d_F%02d", datePrefix, filmAbbr, rollNo, frameNo)
-                        
-                        // Collision avoidance
-                        if (usedNames.contains(baseName)) {
-                            baseName += "_${entry.logEntry.id}"
-                        }
-                        usedNames.add(baseName)
-                        
-                        val fileName = baseName + ".jpg"
-                        
-                        // Check if file exists and is readable before creating zip entry
                         val isAccessible = try {
                             context.contentResolver.openInputStream(uri)?.use { true } ?: false
                         } catch (e: Exception) {
@@ -88,7 +100,6 @@ object LogEntryZipExporter {
                         }
 
                         if (isAccessible) {
-                            // 3a. image.jpg
                             zos.putNextEntry(ZipEntry("thumbnails/$fileName"))
                             try {
                                 if (exportSize == PictureExportSize.SPACE_SAVER) {
@@ -100,17 +111,6 @@ object LogEntryZipExporter {
                                 }
                             } finally {
                                 zos.closeEntry()
-                            }
-
-                            // 3b. image.xmp (ISO 16684 sidecar)
-                            try {
-                                val xmpFileName = fileName.substringBeforeLast(".") + ".xmp"
-                                val xmpContent = LogEntryXmpExporter.toXmp(entry, allTags, creator, copyright, contact)
-                                zos.putNextEntry(ZipEntry("thumbnails/$xmpFileName"))
-                                zos.write(xmpContent.toByteArray())
-                                zos.closeEntry()
-                            } catch (e: Exception) {
-                                e.printStackTrace()
                             }
                         }
                     } catch (e: Exception) {
@@ -126,7 +126,6 @@ object LogEntryZipExporter {
         val baseTargetWidth = 1280
         val baseTargetHeight = 720
 
-        // 1. Get EXIF Orientation
         val orientation = try {
             context.contentResolver.openInputStream(uri)?.use { input ->
                 ExifInterface(input).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
@@ -137,7 +136,6 @@ object LogEntryZipExporter {
 
         val isSwapped = orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270
 
-        // 2. First decode with inJustDecodeBounds=true to check dimensions
         val options = BitmapFactory.Options().apply {
             inJustDecodeBounds = true
         }
@@ -151,7 +149,6 @@ object LogEntryZipExporter {
 
         if (options.outWidth <= 0 || options.outHeight <= 0) return
 
-        // Adjusted dimensions for scene orientation
         val sceneWidth = if (isSwapped) options.outHeight else options.outWidth
         val sceneHeight = if (isSwapped) options.outWidth else options.outHeight
         
@@ -168,7 +165,6 @@ object LogEntryZipExporter {
             }
         }
 
-        // 3. Decode bitmap with inSampleSize set
         val decodeOptions = BitmapFactory.Options().apply {
             this.inSampleSize = inSampleSize
         }
@@ -181,7 +177,6 @@ object LogEntryZipExporter {
         } ?: return
 
         try {
-            // 4. Rotate bitmap if needed
             if (orientation != ExifInterface.ORIENTATION_NORMAL) {
                 val matrix = Matrix()
                 when (orientation) {
@@ -198,7 +193,6 @@ object LogEntryZipExporter {
                 }
             }
 
-            // 5. Scale to fit target dimensions
             val scaledBitmap = if (bitmap.width > targetWidth || bitmap.height > targetHeight) {
                 val ratio = Math.min(targetWidth.toFloat() / bitmap.width, targetHeight.toFloat() / bitmap.height)
                 val destWidth = Math.max(1, (bitmap.width * ratio).toInt())

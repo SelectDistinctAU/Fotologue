@@ -19,11 +19,13 @@ data class GearLibraryUiState(
     val selectedKitIds: Set<Long> = emptySet(),
     val selectedSubjectIds: Set<Long> = emptySet(),
     val selectedContentIds: Set<Long> = emptySet(),
+    val selectedIntentIds: Set<Long> = emptySet(),
     val selectedCategoryIndex: Int = 0,
     val isSelectionMode: Boolean = false,
     val isReorderMode: Boolean = false,
     val showTagDialog: Boolean = false,
     val showContentDialog: Boolean = false,
+    val showIntentDialog: Boolean = false,
     val editingTag: Tag? = null,
 )
 
@@ -38,16 +40,64 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
     
     val allLensesWithCameras: StateFlow<List<LensWithCameras>> = combine(
         repository.allLenses,
-        repository.allCameras,
-        repository.allCameraLensCrossRefs
-    ) { lenses, cameras, crossRefs ->
+        repository.allCameraLensCrossRefs,
+        allCameras
+    ) { lenses, refs, cameras ->
         lenses.map { lens ->
-            val associatedCameraIds = crossRefs.asSequence().filter { it.lensId == lens.id }.map { it.cameraId }.toSet()
-            val associatedCameras = cameras.filter { associatedCameraIds.contains(it.id) }
+            val associatedCameraIds = refs.filter { it.lensId == lens.id }.map { it.cameraId }.toSet()
+            val associatedCameras = cameras.filter { it.id in associatedCameraIds }
             LensWithCameras(lens, associatedCameras)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-    
+
+    val allTeleconvertersWithCameras: StateFlow<List<TeleconverterWithCameras>> = combine(
+        repository.allTeleconverters,
+        repository.allCameraTeleconverterCrossRefs,
+        allCameras
+    ) { tcs, refs, cameras ->
+        tcs.map { tc ->
+            val associatedCameraIds = refs.filter { it.teleconverterId == tc.id }.map { it.cameraId }.toSet()
+            val associatedCameras = cameras.filter { it.id in associatedCameraIds }
+            TeleconverterWithCameras(tc, associatedCameras)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allFiltersWithCameras: StateFlow<List<FilterWithCameras>> = combine(
+        repository.allFilters,
+        repository.allCameraFilterCrossRefs,
+        allCameras
+    ) { filters, refs, cameras ->
+        filters.map { filter ->
+            val associatedCameraIds = refs.filter { it.filterId == filter.id }.map { it.cameraId }.toSet()
+            val associatedCameras = cameras.filter { it.id in associatedCameraIds }
+            FilterWithCameras(filter, associatedCameras)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allFlashesWithCameras: StateFlow<List<FlashWithCameras>> = combine(
+        repository.allFlashes,
+        repository.allCameraFlashCrossRefs,
+        allCameras
+    ) { flashes, refs, cameras ->
+        flashes.map { flash ->
+            val associatedCameraIds = refs.filter { it.flashId == flash.id }.map { it.cameraId }.toSet()
+            val associatedCameras = cameras.filter { it.id in associatedCameraIds }
+            FlashWithCameras(flash, associatedCameras)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allViewfindersWithCameras: StateFlow<List<ViewfinderWithCameras>> = combine(
+        repository.allViewfinders,
+        repository.allCameraViewfinderCrossRefs,
+        allCameras
+    ) { viewfinders, refs, cameras ->
+        viewfinders.map { viewfinder ->
+            val associatedCameraIds = refs.filter { it.viewfinderId == viewfinder.id }.map { it.cameraId }.toSet()
+            val associatedCameras = cameras.filter { it.id in associatedCameraIds }
+            ViewfinderWithCameras(viewfinder, associatedCameras)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     val allTeleconverters: StateFlow<List<Teleconverter>> = repository.allTeleconverters
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val allFilters: StateFlow<List<Filter>> = repository.allFilters
@@ -56,6 +106,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val allViewfinders: StateFlow<List<Viewfinder>> = repository.allViewfinders
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    
     val allCameraKits: StateFlow<List<CameraKitWithGear>> = repository.allCameraKitsWithGear
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     
@@ -65,6 +116,10 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
 
     val allContent: StateFlow<List<Tag>> = repository.allTags
         .map { tags -> tags.filter { it.category == Tag.CATEGORY_CONTENT } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allIntents: StateFlow<List<Tag>> = repository.allTags
+        .map { tags -> tags.filter { it.category == Tag.CATEGORY_INTENT } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _uiState = MutableStateFlow(GearLibraryUiState())
@@ -78,6 +133,13 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
 
     fun toggleReorderMode() {
         _uiState.update { it.copy(isReorderMode = !it.isReorderMode, isSelectionMode = false) }
+    }
+
+    fun moveKit(fromIndex: Int, toIndex: Int) {
+        val list = allCameraKits.value.toMutableList()
+        if (fromIndex !in list.indices || toIndex !in list.indices) return
+        val item = list.removeAt(fromIndex)
+        list.add(toIndex, item)
     }
 
     fun moveCamera(fromIndex: Int, toIndex: Int) {
@@ -146,7 +208,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
 
     private fun updateFilterPositions(list: List<Filter>) {
         viewModelScope.launch {
-            repository.updateFilters(list.mapIndexed { index, f -> f.copy(position = index) })
+            repository.updateFilters(list.mapIndexed { index, filter -> filter.copy(position = index) })
         }
     }
 
@@ -160,7 +222,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
 
     private fun updateFlashPositions(list: List<Flash>) {
         viewModelScope.launch {
-            repository.updateFlashes(list.mapIndexed { index, f -> f.copy(position = index) })
+            repository.updateFlashes(list.mapIndexed { index, flash -> flash.copy(position = index) })
         }
     }
 
@@ -174,21 +236,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
 
     private fun updateViewfinderPositions(list: List<Viewfinder>) {
         viewModelScope.launch {
-            repository.updateViewfinders(list.mapIndexed { index, v -> v.copy(position = index) })
-        }
-    }
-
-    fun moveKit(fromIndex: Int, toIndex: Int) {
-        val list = allCameraKits.value.map { it.cameraKit }.toMutableList()
-        if (fromIndex !in list.indices || toIndex !in list.indices) return
-        val item = list.removeAt(fromIndex)
-        list.add(toIndex, item)
-        updateKitPositions(list)
-    }
-
-    private fun updateKitPositions(list: List<CameraKit>) {
-        viewModelScope.launch {
-            repository.updateCameraKits(list.mapIndexed { index, k -> k.copy(position = index) })
+            repository.updateViewfinders(list.mapIndexed { index, viewfinder -> viewfinder.copy(position = index) })
         }
     }
 
@@ -208,84 +256,92 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
         updateTagPositions(list)
     }
 
+    fun moveIntent(fromIndex: Int, toIndex: Int) {
+        val list = allIntents.value.toMutableList()
+        if (fromIndex !in list.indices || toIndex !in list.indices) return
+        val item = list.removeAt(fromIndex)
+        list.add(toIndex, item)
+        updateTagPositions(list)
+    }
+
     private fun updateTagPositions(list: List<Tag>) {
         viewModelScope.launch {
-            repository.updateTags(list.mapIndexed { index, t -> t.copy(position = index) })
+            repository.updateTags(list.mapIndexed { index, tag -> tag.copy(position = index) })
         }
     }
 
-    fun toggleCameraSelection(cameraId: Long) {
+    fun toggleCameraSelection(id: Long) {
         _uiState.update { currentState ->
-            val newSelection = if (currentState.selectedCameraIds.contains(cameraId)) {
-                currentState.selectedCameraIds - cameraId
+            val newSelection = if (currentState.selectedCameraIds.contains(id)) {
+                currentState.selectedCameraIds - id
             } else {
-                currentState.selectedCameraIds + cameraId
+                currentState.selectedCameraIds + id
             }
             currentState.updateSelectionMode(selectedCameraIds = newSelection)
         }
     }
 
-    fun toggleFilmSelection(filmId: Long) {
+    fun toggleFilmSelection(id: Long) {
         _uiState.update { currentState ->
-            val newSelection = if (currentState.selectedFilmIds.contains(filmId)) {
-                currentState.selectedFilmIds - filmId
+            val newSelection = if (currentState.selectedFilmIds.contains(id)) {
+                currentState.selectedFilmIds - id
             } else {
-                currentState.selectedFilmIds + filmId
+                currentState.selectedFilmIds + id
             }
             currentState.updateSelectionMode(selectedFilmIds = newSelection)
         }
     }
 
-    fun toggleLensSelection(lensId: Long) {
+    fun toggleLensSelection(id: Long) {
         _uiState.update { currentState ->
-            val newSelection = if (currentState.selectedLensIds.contains(lensId)) {
-                currentState.selectedLensIds - lensId
+            val newSelection = if (currentState.selectedLensIds.contains(id)) {
+                currentState.selectedLensIds - id
             } else {
-                currentState.selectedLensIds + lensId
+                currentState.selectedLensIds + id
             }
             currentState.updateSelectionMode(selectedLensIds = newSelection)
         }
     }
 
-    fun toggleTeleconverterSelection(teleconverterId: Long) {
+    fun toggleTeleconverterSelection(id: Long) {
         _uiState.update { currentState ->
-            val newSelection = if (currentState.selectedTeleconverterIds.contains(teleconverterId)) {
-                currentState.selectedTeleconverterIds - teleconverterId
+            val newSelection = if (currentState.selectedTeleconverterIds.contains(id)) {
+                currentState.selectedTeleconverterIds - id
             } else {
-                currentState.selectedTeleconverterIds + teleconverterId
+                currentState.selectedTeleconverterIds + id
             }
             currentState.updateSelectionMode(selectedTeleconverterIds = newSelection)
         }
     }
 
-    fun toggleFilterSelection(filterId: Long) {
+    fun toggleFilterSelection(id: Long) {
         _uiState.update { currentState ->
-            val newSelection = if (currentState.selectedFilterIds.contains(filterId)) {
-                currentState.selectedFilterIds - filterId
+            val newSelection = if (currentState.selectedFilterIds.contains(id)) {
+                currentState.selectedFilterIds - id
             } else {
-                currentState.selectedFilterIds + filterId
+                currentState.selectedFilterIds + id
             }
             currentState.updateSelectionMode(selectedFilterIds = newSelection)
         }
     }
 
-    fun toggleFlashSelection(flashId: Long) {
+    fun toggleFlashSelection(id: Long) {
         _uiState.update { currentState ->
-            val newSelection = if (currentState.selectedFlashIds.contains(flashId)) {
-                currentState.selectedFlashIds - flashId
+            val newSelection = if (currentState.selectedFlashIds.contains(id)) {
+                currentState.selectedFlashIds - id
             } else {
-                currentState.selectedFlashIds + flashId
+                currentState.selectedFlashIds + id
             }
             currentState.updateSelectionMode(selectedFlashIds = newSelection)
         }
     }
 
-    fun toggleViewfinderSelection(viewfinderId: Long) {
+    fun toggleViewfinderSelection(id: Long) {
         _uiState.update { currentState ->
-            val newSelection = if (currentState.selectedViewfinderIds.contains(viewfinderId)) {
-                currentState.selectedViewfinderIds - viewfinderId
+            val newSelection = if (currentState.selectedViewfinderIds.contains(id)) {
+                currentState.selectedViewfinderIds - id
             } else {
-                currentState.selectedViewfinderIds + viewfinderId
+                currentState.selectedViewfinderIds + id
             }
             currentState.updateSelectionMode(selectedViewfinderIds = newSelection)
         }
@@ -324,6 +380,17 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
         }
     }
 
+    fun toggleIntentSelection(id: Long) {
+        _uiState.update { currentState ->
+            val newSelection = if (currentState.selectedIntentIds.contains(id)) {
+                currentState.selectedIntentIds - id
+            } else {
+                currentState.selectedIntentIds + id
+            }
+            currentState.updateSelectionMode(selectedIntentIds = newSelection)
+        }
+    }
+
     private fun GearLibraryUiState.updateSelectionMode(
         selectedCameraIds: Set<Long> = this.selectedCameraIds,
         selectedFilmIds: Set<Long> = this.selectedFilmIds,
@@ -334,7 +401,8 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
         selectedViewfinderIds: Set<Long> = this.selectedViewfinderIds,
         selectedKitIds: Set<Long> = this.selectedKitIds,
         selectedSubjectIds: Set<Long> = this.selectedSubjectIds,
-        selectedContentIds: Set<Long> = this.selectedContentIds
+        selectedContentIds: Set<Long> = this.selectedContentIds,
+        selectedIntentIds: Set<Long> = this.selectedIntentIds
     ): GearLibraryUiState {
         val hasSelection = selectedCameraIds.isNotEmpty() || 
                            selectedFilmIds.isNotEmpty() || 
@@ -345,7 +413,8 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
                            selectedViewfinderIds.isNotEmpty() ||
                            selectedKitIds.isNotEmpty() ||
                            selectedSubjectIds.isNotEmpty() ||
-                           selectedContentIds.isNotEmpty()
+                           selectedContentIds.isNotEmpty() ||
+                           selectedIntentIds.isNotEmpty()
         return copy(
             selectedCameraIds = selectedCameraIds,
             selectedFilmIds = selectedFilmIds,
@@ -357,6 +426,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
             selectedKitIds = selectedKitIds,
             selectedSubjectIds = selectedSubjectIds,
             selectedContentIds = selectedContentIds,
+            selectedIntentIds = selectedIntentIds,
             isSelectionMode = hasSelection,
             isReorderMode = if (hasSelection) false else this.isReorderMode
         )
@@ -375,6 +445,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
                 selectedKitIds = emptySet(),
                 selectedSubjectIds = emptySet(),
                 selectedContentIds = emptySet(),
+                selectedIntentIds = emptySet(),
                 isSelectionMode = false
             ) 
         }
@@ -392,6 +463,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
             val kitIds = uiState.value.selectedKitIds.toList()
             val subjectIds = uiState.value.selectedSubjectIds.toList()
             val contentIds = uiState.value.selectedContentIds.toList()
+            val intentIds = uiState.value.selectedIntentIds.toList()
             
             if (cameraIds.isNotEmpty()) repository.deleteCameras(cameraIds)
             if (filmIds.isNotEmpty()) repository.deleteFilms(filmIds)
@@ -403,6 +475,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
             if (kitIds.isNotEmpty()) repository.deleteCameraKits(kitIds)
             if (subjectIds.isNotEmpty()) repository.deleteTags(subjectIds)
             if (contentIds.isNotEmpty()) repository.deleteTags(contentIds)
+            if (intentIds.isNotEmpty()) repository.deleteTags(intentIds)
             
             clearSelection()
         }
@@ -416,16 +489,20 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
         _uiState.update { it.copy(showContentDialog = true, editingTag = null) }
     }
 
+    fun showAddIntentDialog() {
+        _uiState.update { it.copy(showIntentDialog = true, editingTag = null) }
+    }
+
     fun showEditTagDialog(tag: Tag) {
-        if (tag.category == Tag.CATEGORY_SUBJECT) {
-            _uiState.update { it.copy(showTagDialog = true, editingTag = tag) }
-        } else {
-            _uiState.update { it.copy(showContentDialog = true, editingTag = tag) }
+        when (tag.category) {
+            Tag.CATEGORY_SUBJECT -> _uiState.update { it.copy(showTagDialog = true, editingTag = tag) }
+            Tag.CATEGORY_INTENT -> _uiState.update { it.copy(showIntentDialog = true, editingTag = tag) }
+            else -> _uiState.update { it.copy(showContentDialog = true, editingTag = tag) }
         }
     }
 
     fun dismissTagDialog() {
-        _uiState.update { it.copy(showTagDialog = false, showContentDialog = false, editingTag = null) }
+        _uiState.update { it.copy(showTagDialog = false, showContentDialog = false, showIntentDialog = false, editingTag = null) }
     }
 
     fun addTag(name: String, category: String, parentId: Long?) {
@@ -459,6 +536,7 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
                 7 -> currentState.updateSelectionMode(selectedViewfinderIds = allViewfinders.value.map { it.id }.toSet())
                 8 -> currentState.updateSelectionMode(selectedSubjectIds = allSubjects.value.map { it.id }.toSet())
                 9 -> currentState.updateSelectionMode(selectedContentIds = allContent.value.map { it.id }.toSet())
+                10 -> currentState.updateSelectionMode(selectedIntentIds = allIntents.value.map { it.id }.toSet())
                 else -> currentState
             }
         }

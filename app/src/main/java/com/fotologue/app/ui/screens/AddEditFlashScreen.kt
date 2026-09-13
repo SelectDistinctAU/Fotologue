@@ -6,8 +6,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
@@ -15,7 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fotologue.app.ui.viewmodel.AddEditFlashViewModel
 import com.fotologue.app.R
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddEditFlashScreen(
     viewModel: AddEditFlashViewModel,
@@ -28,12 +30,20 @@ fun AddEditFlashScreen(
         topBar = {
             TopAppBar(
                 title = { 
-                    Text(
-                        if (viewModel.flashId == null) 
-                            stringResource(R.string.add_flash) 
-                        else 
-                            stringResource(R.string.edit_flash)
-                    ) 
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_flash_on),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            if (viewModel.flashId == null) 
+                                stringResource(R.string.add_flash) 
+                            else 
+                                stringResource(R.string.edit_flash)
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -59,6 +69,49 @@ fun AddEditFlashScreen(
                 .padding(bottom = innerPadding.calculateBottomPadding() + 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Text(
+                stringResource(R.string.associated_cameras),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            if (uiState.cameras.isEmpty()) {
+                Text(
+                    stringResource(R.string.error_no_cameras),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    uiState.cameras.forEach { camera ->
+                        val isSelected = uiState.selectedCameraIds.contains(camera.id)
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { viewModel.onCameraToggled(camera.id) },
+                            label = { Text(camera.name) },
+                            leadingIcon = if (isSelected) {
+                                {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_check),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                    )
+                                }
+                            } else null
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(8.dp))
+
             OutlinedTextField(
                 value = uiState.make,
                 onValueChange = viewModel::onMakeChange,

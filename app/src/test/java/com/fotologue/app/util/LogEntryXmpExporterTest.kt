@@ -36,8 +36,33 @@ class LogEntryXmpExporterTest {
         assertTrue(xmp.contains("exif:ISOSpeedRatings=\"400\""))
         assertTrue(xmp.contains("exif:ExposureTime=\"0.004\""))
         assertTrue(xmp.contains("tiff:Make=\"Leica M6\""))
-        assertTrue(xmp.contains("Nature|Landscape"))
+        assertTrue(xmp.contains("Subject|Nature|Landscape"))
         assertTrue(xmp.contains("Golden Hour shot"))
         assertTrue(xmp.contains("-33.8688"))
+    }
+
+    @Test
+    fun `toXmp generates Intent category tag hierarchy`() {
+        val parentIntent = Tag(10, "Study", category = Tag.CATEGORY_INTENT)
+        val childIntent = Tag(11, "Light & Shadow Study", category = Tag.CATEGORY_INTENT, parentId = 10)
+
+        val entry = LogEntryWithGear(
+            logEntry = LogEntry(
+                id = 2,
+                timestamp = 1672531200000,
+                notes = "Contrast test",
+                environmentalConditions = "",
+                cameraId = 1,
+                filmId = 1,
+                exposureSettings = ExposureSettings("1/125", "f/8", 100)
+            ),
+            camera = Camera(1, "Leica M6", CameraType.FILM_SLR),
+            film = Film(1, "Kodak Tri-X", 400, Film.TYPE_BLACK_AND_WHITE),
+            tags = listOf(childIntent)
+        )
+
+        val xmp = LogEntryXmpExporter.toXmp(entry, listOf(parentIntent, childIntent))
+
+        assertTrue(xmp.contains("Intent|Study|Light &amp; Shadow Study"))
     }
 }

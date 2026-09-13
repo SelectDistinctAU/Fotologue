@@ -127,6 +127,61 @@ class AddLogViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    private val allCameraViewfinderCrossRefs = repository.allCameraViewfinderCrossRefs
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val filteredViewfinders: StateFlow<List<Viewfinder>> = combine(
+        allViewfinders,
+        allCameraViewfinderCrossRefs,
+        _uiState.map { it.selectedCameraId }.distinctUntilChanged(),
+    ) { viewfinders, refs, cameraId ->
+        if (cameraId == null) return@combine viewfinders
+
+        val associatedViewfinderIds = refs.asSequence().filter { it.cameraId == cameraId }.map { it.viewfinderId }.toSet()
+        viewfinders.filter { vf ->
+            associatedViewfinderIds.contains(vf.id) || refs.none { it.viewfinderId == vf.id }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val allCameraTeleconverterCrossRefs = repository.allCameraTeleconverterCrossRefs
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val filteredTeleconverters: StateFlow<List<Teleconverter>> = combine(
+        allTeleconverters,
+        allCameraTeleconverterCrossRefs,
+        _uiState.map { it.selectedCameraId }.distinctUntilChanged(),
+    ) { tcs, refs, cameraId ->
+        if (cameraId == null) return@combine tcs
+        val associatedIds = refs.asSequence().filter { it.cameraId == cameraId }.map { it.teleconverterId }.toSet()
+        tcs.filter { tc -> associatedIds.contains(tc.id) || refs.none { it.teleconverterId == tc.id } }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val allCameraFilterCrossRefs = repository.allCameraFilterCrossRefs
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val filteredFilters: StateFlow<List<Filter>> = combine(
+        allFilters,
+        allCameraFilterCrossRefs,
+        _uiState.map { it.selectedCameraId }.distinctUntilChanged(),
+    ) { filters, refs, cameraId ->
+        if (cameraId == null) return@combine filters
+        val associatedIds = refs.asSequence().filter { it.cameraId == cameraId }.map { it.filterId }.toSet()
+        filters.filter { f -> associatedIds.contains(f.id) || refs.none { it.filterId == f.id } }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val allCameraFlashCrossRefs = repository.allCameraFlashCrossRefs
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val filteredFlashes: StateFlow<List<Flash>> = combine(
+        allFlashes,
+        allCameraFlashCrossRefs,
+        _uiState.map { it.selectedCameraId }.distinctUntilChanged(),
+    ) { flashes, refs, cameraId ->
+        if (cameraId == null) return@combine flashes
+        val associatedIds = refs.asSequence().filter { it.cameraId == cameraId }.map { it.flashId }.toSet()
+        flashes.filter { fl -> associatedIds.contains(fl.id) || refs.none { it.flashId == fl.id } }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     var editingLogId: Long? = null
         private set
 
@@ -138,13 +193,26 @@ class AddLogViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(allTeleconverters, allFilters, allFlashes, allCameraKits) { tcs, filterList, flashes, kits ->
-                _uiState.update { it.copy(
-                    isTeleconverterVisible = tcs.isNotEmpty(),
-                    isFilterVisible = filterList.isNotEmpty(),
-                    isFlashVisible = flashes.isNotEmpty(),
-                    isKitVisible = kits.isNotEmpty(),
-                ) }
+            combine(
+                filteredTeleconverters,
+                filteredFilters,
+                filteredFlashes,
+                filteredViewfinders,
+                allCameraKits
+            ) { tcs, filterList, flashes, vfs, kits ->
+                _uiState.update { state ->
+                    state.copy(
+                        isTeleconverterVisible = tcs.isNotEmpty(),
+                        isFilterVisible = filterList.isNotEmpty(),
+                        isFlashVisible = flashes.isNotEmpty(),
+                        isViewfinderVisible = vfs.isNotEmpty(),
+                        isKitVisible = kits.isNotEmpty(),
+                        selectedTeleconverterId = if (tcs.any { it.id == state.selectedTeleconverterId }) state.selectedTeleconverterId else null,
+                        selectedFilterId = if (filterList.any { it.id == state.selectedFilterId }) state.selectedFilterId else null,
+                        selectedFlashId = if (flashes.any { it.id == state.selectedFlashId }) state.selectedFlashId else null,
+                        selectedViewfinderId = if (vfs.any { it.id == state.selectedViewfinderId }) state.selectedViewfinderId else null
+                    )
+                }
             }.collect {}
         }
         viewModelScope.launch {
@@ -262,6 +330,7 @@ class AddLogViewModel @Inject constructor(
                     selectedTeleconverterId = entry.teleconverterId,
                     selectedFilterId = entry.filterId,
                     selectedFlashId = entry.flashId,
+                    selectedViewfinderId = entry.viewfinderId,
                     selectedKitId = entry.kitId,
                     focalLength = entry.focalLength,
                     iso = entry.exposureSettings.iso,
@@ -367,6 +436,11 @@ class AddLogViewModel @Inject constructor(
         syncGearToPersistent()
     }
 
+    fun onViewfinderSelected(vfId: Long?, updatePersistent: Boolean = true) {
+        _uiState.update { it.copy(selectedViewfinderId = vfId, selectedKitId = null) }
+        if (updatePersistent) syncGearToPersistent()
+    }
+
     fun onFilmSelected(filmId: Long?, filmIso: Int, updatePersistent: Boolean = true) {
         _uiState.update { it.copy(selectedFilmId = filmId, iso = filmIso) }
         if (updatePersistent) syncGearToPersistent()
@@ -412,6 +486,7 @@ class AddLogViewModel @Inject constructor(
                         selectedTeleconverterId = kit.teleconverterId,
                         selectedFilterId = kit.filterId,
                         selectedFlashId = kit.flashId,
+                        selectedViewfinderId = kit.viewfinderId,
                         iso = iso,
                         focalLength = lens?.minFocalLength?.toFloat(),
                         availableShutterSpeeds = shutterSpeeds,
@@ -429,6 +504,7 @@ class AddLogViewModel @Inject constructor(
                             teleconverterId = kit.teleconverterId,
                             filterId = kit.filterId,
                             flashId = kit.flashId,
+                            viewfinderId = kit.viewfinderId,
                             kitId = kitId,
                             iso = iso,
                         )
@@ -450,6 +526,7 @@ class AddLogViewModel @Inject constructor(
                 teleconverterId = state.selectedTeleconverterId,
                 filterId = state.selectedFilterId,
                 flashId = state.selectedFlashId,
+                viewfinderId = state.selectedViewfinderId,
                 kitId = state.selectedKitId,
                 iso = state.iso,
             )
@@ -540,6 +617,7 @@ class AddLogViewModel @Inject constructor(
                         filterId = state.selectedFilterId,
                         kitId = state.selectedKitId,
                         flashId = state.selectedFlashId,
+                        viewfinderId = state.selectedViewfinderId,
                         focalLength = state.focalLength,
                         effectiveFocalLength = effectiveFocalLength,
                         effectiveAperture = effectiveApertureValue,
@@ -567,6 +645,7 @@ class AddLogViewModel @Inject constructor(
                     filterId = state.selectedFilterId,
                     kitId = state.selectedKitId,
                     flashId = state.selectedFlashId,
+                    viewfinderId = state.selectedViewfinderId,
                     focalLength = state.focalLength,
                     effectiveFocalLength = effectiveFocalLength,
                     effectiveAperture = effectiveApertureValue,

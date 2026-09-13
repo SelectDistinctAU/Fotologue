@@ -34,5 +34,10 @@ data class CameraKitWithGear(
         parentColumn = "flashId",
         entityColumn = "id"
     )
-    var flash: Flash? = null
+    var flash: Flash? = null,
+    @Relation(
+        parentColumn = "viewfinderId",
+        entityColumn = "id"
+    )
+    var viewfinder: Viewfinder? = null
 )

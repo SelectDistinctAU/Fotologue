@@ -44,6 +44,10 @@ class FotologueRepository @Inject constructor(
     val allCameraKitsWithGear: Flow<List<CameraKitWithGear>> = cameraKitDao.getAllCameraKitsWithGear()
     val allTags: Flow<List<Tag>> = tagDao.getAllTags()
     val allCameraLensCrossRefs: Flow<List<CameraLensCrossRef>> = lensDao.getAllCameraLensCrossRefs()
+    val allCameraViewfinderCrossRefs: Flow<List<CameraViewfinderCrossRef>> = viewfinderDao.getAllCameraViewfinderCrossRefs()
+    val allCameraTeleconverterCrossRefs: Flow<List<CameraTeleconverterCrossRef>> = teleconverterDao.getAllCameraTeleconverterCrossRefs()
+    val allCameraFilterCrossRefs: Flow<List<CameraFilterCrossRef>> = filterDao.getAllCameraFilterCrossRefs()
+    val allCameraFlashCrossRefs: Flow<List<CameraFlashCrossRef>> = flashDao.getAllCameraFlashCrossRefs()
 
     val hasCamera: Flow<Boolean> = cameraDao.hasCameras()
     val hasFilm: Flow<Boolean> = filmDao.hasFilms()
@@ -101,10 +105,38 @@ class FotologueRepository @Inject constructor(
             _newlyAddedLensId.emit(lensId)
         }
     }
-    suspend fun insertTeleconverter(teleconverter: Teleconverter) = teleconverterDao.insertTeleconverter(teleconverter)
-    suspend fun insertFilter(filter: Filter) = filterDao.insertFilter(filter)
-    suspend fun insertFlash(flash: Flash) = flashDao.insertFlash(flash)
-    suspend fun insertViewfinder(viewfinder: Viewfinder) = viewfinderDao.insertViewfinder(viewfinder)
+    suspend fun insertTeleconverter(teleconverter: Teleconverter, cameraIds: List<Long> = emptyList()) {
+        database.withTransaction {
+            val tcId = teleconverterDao.insertTeleconverter(teleconverter)
+            cameraIds.forEach { cameraId ->
+                teleconverterDao.insertCameraTeleconverterCrossRef(CameraTeleconverterCrossRef(cameraId, tcId))
+            }
+        }
+    }
+    suspend fun insertFilter(filter: Filter, cameraIds: List<Long> = emptyList()) {
+        database.withTransaction {
+            val filterId = filterDao.insertFilter(filter)
+            cameraIds.forEach { cameraId ->
+                filterDao.insertCameraFilterCrossRef(CameraFilterCrossRef(cameraId, filterId))
+            }
+        }
+    }
+    suspend fun insertFlash(flash: Flash, cameraIds: List<Long> = emptyList()) {
+        database.withTransaction {
+            val flashId = flashDao.insertFlash(flash)
+            cameraIds.forEach { cameraId ->
+                flashDao.insertCameraFlashCrossRef(CameraFlashCrossRef(cameraId, flashId))
+            }
+        }
+    }
+    suspend fun insertViewfinder(viewfinder: Viewfinder, cameraIds: List<Long> = emptyList()) {
+        database.withTransaction {
+            val viewfinderId = viewfinderDao.insertViewfinder(viewfinder)
+            cameraIds.forEach { cameraId ->
+                viewfinderDao.insertCameraViewfinderCrossRef(CameraViewfinderCrossRef(cameraId, viewfinderId))
+            }
+        }
+    }
     suspend fun insertCameraKit(cameraKit: CameraKit) = cameraKitDao.insertCameraKit(cameraKit)
     suspend fun insertTag(tag: Tag) = tagDao.insertTag(tag)
 
@@ -121,11 +153,25 @@ class FotologueRepository @Inject constructor(
                 "People" to listOf("Portrait", "Candid", "Group", "Family", "Self", "Stranger")
             )
 
+            val intents = listOf("Study", "Series", "Documentation", "Commission")
+            val intentContents = mapOf(
+                "Study" to listOf("Light & Shadow Study", "Material & Film Test", "Composition Study"),
+                "Series" to listOf("Visual Essay / Story", "Typology / Grid", "Portfolio Selection"),
+                "Documentation" to listOf("Travel & Journal", "Event / Historical Record"),
+                "Commission" to listOf("Client Assignment", "Published Work")
+            )
+
             if (existingTags.isEmpty()) {
                 subjects.forEach { sub ->
                     val subId = tagDao.insertTag(Tag(name = sub, category = Tag.CATEGORY_SUBJECT))
                     contents[sub]?.forEach { cont ->
                         tagDao.insertTag(Tag(name = cont, category = Tag.CATEGORY_CONTENT, parentId = subId))
+                    }
+                }
+                intents.forEach { intent ->
+                    val intentId = tagDao.insertTag(Tag(name = intent, category = Tag.CATEGORY_INTENT))
+                    intentContents[intent]?.forEach { subIntent ->
+                        tagDao.insertTag(Tag(name = subIntent, category = Tag.CATEGORY_INTENT, parentId = intentId))
                     }
                 }
             } else {
@@ -141,6 +187,20 @@ class FotologueRepository @Inject constructor(
                         val exists = existingTags.any { it.name == contName && it.category == Tag.CATEGORY_CONTENT && it.parentId == subject.id }
                         if (!exists) {
                             tagDao.insertTag(Tag(name = contName, category = Tag.CATEGORY_CONTENT, parentId = subject.id))
+                        }
+                    }
+                }
+                intents.forEach { intentName ->
+                    var intent = existingTags.find { it.name == intentName && it.category == Tag.CATEGORY_INTENT }
+                    if (intent == null) {
+                        val newId = tagDao.insertTag(Tag(name = intentName, category = Tag.CATEGORY_INTENT))
+                        intent = Tag(id = newId, name = intentName, category = Tag.CATEGORY_INTENT)
+                    }
+
+                    intentContents[intentName]?.forEach { subIntentName ->
+                        val exists = existingTags.any { it.name == subIntentName && it.category == Tag.CATEGORY_INTENT && it.parentId == intent.id }
+                        if (!exists) {
+                            tagDao.insertTag(Tag(name = subIntentName, category = Tag.CATEGORY_INTENT, parentId = intent.id))
                         }
                     }
                 }
@@ -177,13 +237,45 @@ class FotologueRepository @Inject constructor(
         }
     }
     suspend fun updateLenses(lenses: List<Lens>) = lensDao.updateLenses(lenses)
-    suspend fun updateTeleconverter(teleconverter: Teleconverter) = teleconverterDao.updateTeleconverter(teleconverter)
+    suspend fun updateTeleconverter(teleconverter: Teleconverter, cameraIds: List<Long> = emptyList()) {
+        database.withTransaction {
+            teleconverterDao.updateTeleconverter(teleconverter)
+            teleconverterDao.deleteCameraTeleconverterCrossRefsForTeleconverter(teleconverter.id)
+            cameraIds.forEach { cameraId ->
+                teleconverterDao.insertCameraTeleconverterCrossRef(CameraTeleconverterCrossRef(cameraId, teleconverter.id))
+            }
+        }
+    }
     suspend fun updateTeleconverters(tcs: List<Teleconverter>) = teleconverterDao.updateTeleconverters(tcs)
-    suspend fun updateFilter(filter: Filter) = filterDao.updateFilter(filter)
+    suspend fun updateFilter(filter: Filter, cameraIds: List<Long> = emptyList()) {
+        database.withTransaction {
+            filterDao.updateFilter(filter)
+            filterDao.deleteCameraFilterCrossRefsForFilter(filter.id)
+            cameraIds.forEach { cameraId ->
+                filterDao.insertCameraFilterCrossRef(CameraFilterCrossRef(cameraId, filter.id))
+            }
+        }
+    }
     suspend fun updateFilters(filters: List<Filter>) = filterDao.updateFilters(filters)
-    suspend fun updateFlash(flash: Flash) = flashDao.updateFlash(flash)
+    suspend fun updateFlash(flash: Flash, cameraIds: List<Long> = emptyList()) {
+        database.withTransaction {
+            flashDao.updateFlash(flash)
+            flashDao.deleteCameraFlashCrossRefsForFlash(flash.id)
+            cameraIds.forEach { cameraId ->
+                flashDao.insertCameraFlashCrossRef(CameraFlashCrossRef(cameraId, flash.id))
+            }
+        }
+    }
     suspend fun updateFlashes(flashes: List<Flash>) = flashDao.updateFlashes(flashes)
-    suspend fun updateViewfinder(viewfinder: Viewfinder) = viewfinderDao.updateViewfinder(viewfinder)
+    suspend fun updateViewfinder(viewfinder: Viewfinder, cameraIds: List<Long> = emptyList()) {
+        database.withTransaction {
+            viewfinderDao.updateViewfinder(viewfinder)
+            viewfinderDao.deleteCameraViewfinderCrossRefsForViewfinder(viewfinder.id)
+            cameraIds.forEach { cameraId ->
+                viewfinderDao.insertCameraViewfinderCrossRef(CameraViewfinderCrossRef(cameraId, viewfinder.id))
+            }
+        }
+    }
     suspend fun updateViewfinders(viewfinders: List<Viewfinder>) = viewfinderDao.updateViewfinders(viewfinders)
     suspend fun updateCameraKit(cameraKit: CameraKit) = cameraKitDao.updateCameraKit(cameraKit)
     suspend fun updateCameraKits(kits: List<CameraKit>) = cameraKitDao.updateCameraKits(kits)
@@ -219,6 +311,44 @@ class FotologueRepository @Inject constructor(
 
     suspend fun deleteLogEntries(ids: List<Long>) = logEntryDao.deleteLogEntries(ids)
 
+    suspend fun shiftRollFrameNumbers(
+        cameraId: Long?,
+        filmId: Long?,
+        rollNumber: Int,
+        startingFrameNumber: Int,
+        delta: Int
+    ) {
+        database.withTransaction {
+            val allEntries = logEntryDao.getAllLogEntriesOnce()
+            allEntries.forEach { entry ->
+                if ((cameraId == null || entry.cameraId == cameraId) &&
+                    (filmId == null || entry.filmId == filmId) &&
+                    !entry.filmRoll.isNullOrBlank()
+                ) {
+                    val (rollNo, frameNo) = parseRollAndFrameHelper(entry.filmRoll)
+                    if (rollNo == rollNumber && frameNo >= startingFrameNumber) {
+                        val newFrameNo = (frameNo + delta).coerceAtLeast(1)
+                        val newFilmRoll = String.format(Locale.US, "%d.%02d", rollNo, newFrameNo)
+                        logEntryDao.updateLogEntry(entry.copy(filmRoll = newFilmRoll, lastUpdated = System.currentTimeMillis()))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun parseRollAndFrameHelper(filmRollStr: String): Pair<Int, Int> {
+        if (filmRollStr.contains(".")) {
+            val parts = filmRollStr.split(".")
+            val roll = parts.getOrNull(0)?.toIntOrNull() ?: 1
+            val frame = parts.getOrNull(1)?.toIntOrNull() ?: 1
+            return Pair(roll, frame)
+        }
+        val numbers = Regex("""\d+""").findAll(filmRollStr).map { it.value.toInt() }.toList()
+        val roll = numbers.getOrNull(0) ?: 1
+        val frame = numbers.getOrNull(1) ?: 1
+        return Pair(roll, frame)
+    }
+
     suspend fun markAsExportedZip(ids: List<Long>) = logEntryDao.markAsExportedZip(ids)
     suspend fun markAsExportedCsv(ids: List<Long>) = logEntryDao.markAsExportedCsv(ids)
     suspend fun markAsExportedJson(ids: List<Long>) = logEntryDao.markAsExportedJson(ids)
@@ -247,6 +377,7 @@ class FotologueRepository @Inject constructor(
         filterId: Long? = null,
         kitId: Long? = null,
         flashId: Long? = null,
+        viewfinderId: Long? = null,
         focalLength: Float? = null,
         effectiveFocalLength: Float? = null,
         effectiveAperture: String? = null,
@@ -267,6 +398,7 @@ class FotologueRepository @Inject constructor(
             filterId = filterId,
             kitId = kitId,
             flashId = flashId,
+            viewfinderId = viewfinderId,
             focalLength = focalLength,
             effectiveFocalLength = effectiveFocalLength,
             effectiveAperture = effectiveAperture,

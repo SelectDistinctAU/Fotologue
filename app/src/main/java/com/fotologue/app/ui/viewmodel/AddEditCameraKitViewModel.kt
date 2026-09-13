@@ -11,6 +11,7 @@ import com.fotologue.app.data.Teleconverter
 import com.fotologue.app.data.Filter
 import com.fotologue.app.data.FotologueRepository
 import com.fotologue.app.data.Lens
+import com.fotologue.app.data.Viewfinder
 import com.fotologue.app.data.CameraLensCrossRef
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -25,19 +26,22 @@ data class AddEditCameraKitUiState(
     val teleconverterId: Long? = null,
     val filterId: Long? = null,
     val flashId: Long? = null,
+    val viewfinderId: Long? = null,
     val isNameValid: Boolean = true,
     val isCameraValid: Boolean = true,
     val isLensValid: Boolean = true,
     val isFilmValid: Boolean = true,
     val allCameras: List<Camera> = emptyList(),
     val filteredLenses: List<Lens> = emptyList(),
+    val filteredViewfinders: List<Viewfinder> = emptyList(),
+    val filteredTeleconverters: List<Teleconverter> = emptyList(),
+    val filteredFilters: List<Filter> = emptyList(),
+    val filteredFlashes: List<Flash> = emptyList(),
     val allFilms: List<Film> = emptyList(),
-    val allTeleconverters: List<Teleconverter> = emptyList(),
-    val allFilters: List<Filter> = emptyList(),
-    val allFlashes: List<Flash> = emptyList(),
     val isTeleconverterVisible: Boolean = false,
     val isFilterVisible: Boolean = false,
-    val isFlashVisible: Boolean = false
+    val isFlashVisible: Boolean = false,
+    val isViewfinderVisible: Boolean = false
 )
 
 @HiltViewModel
@@ -53,7 +57,8 @@ class AddEditCameraKitViewModel @Inject constructor(
         filmId = savedStateHandle.get<Long>("filmId"),
         teleconverterId = savedStateHandle.get<Long>("teleconverterId"),
         filterId = savedStateHandle.get<Long>("filterId"),
-        flashId = savedStateHandle.get<Long>("flashId")
+        flashId = savedStateHandle.get<Long>("flashId"),
+        viewfinderId = savedStateHandle.get<Long>("viewfinderId")
     ))
     val uiState: StateFlow<AddEditCameraKitUiState> = _uiState.asStateFlow()
 
@@ -90,31 +95,81 @@ class AddEditCameraKitViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            repository.allFilms.collect { films -> _uiState.update { it.copy(allFilms = films) } }
+            combine(
+                repository.allViewfinders,
+                repository.allCameraViewfinderCrossRefs,
+                _uiState.map { it.cameraId }.distinctUntilChanged()
+            ) { viewfinders, refs, cameraId ->
+                val filtered = if (cameraId == null) {
+                    viewfinders
+                } else {
+                    val associatedViewfinderIds = refs.filter { it.cameraId == cameraId }.map { it.viewfinderId }.toSet()
+                    viewfinders.filter { vf ->
+                        associatedViewfinderIds.contains(vf.id) || refs.none { it.viewfinderId == vf.id }
+                    }
+                }
+                _uiState.update { it.copy(
+                    filteredViewfinders = filtered,
+                    isViewfinderVisible = viewfinders.isNotEmpty()
+                ) }
+            }.collect {}
         }
         viewModelScope.launch {
-            repository.allTeleconverters.collect { tcs -> 
+            combine(
+                repository.allTeleconverters,
+                repository.allCameraTeleconverterCrossRefs,
+                _uiState.map { it.cameraId }.distinctUntilChanged()
+            ) { tcs, refs, cameraId ->
+                val filtered = if (cameraId == null) {
+                    tcs
+                } else {
+                    val associatedIds = refs.filter { it.cameraId == cameraId }.map { it.teleconverterId }.toSet()
+                    tcs.filter { tc -> associatedIds.contains(tc.id) || refs.none { it.teleconverterId == tc.id } }
+                }
                 _uiState.update { it.copy(
-                    allTeleconverters = tcs,
+                    filteredTeleconverters = filtered,
                     isTeleconverterVisible = tcs.isNotEmpty()
                 ) }
-            }
+            }.collect {}
         }
         viewModelScope.launch {
-            repository.allFilters.collect { filters -> 
+            combine(
+                repository.allFilters,
+                repository.allCameraFilterCrossRefs,
+                _uiState.map { it.cameraId }.distinctUntilChanged()
+            ) { filterList, refs, cameraId ->
+                val filtered = if (cameraId == null) {
+                    filterList
+                } else {
+                    val associatedIds = refs.filter { it.cameraId == cameraId }.map { it.filterId }.toSet()
+                    filterList.filter { f -> associatedIds.contains(f.id) || refs.none { it.filterId == f.id } }
+                }
                 _uiState.update { it.copy(
-                    allFilters = filters,
-                    isFilterVisible = filters.isNotEmpty()
+                    filteredFilters = filtered,
+                    isFilterVisible = filterList.isNotEmpty()
                 ) }
-            }
+            }.collect {}
         }
         viewModelScope.launch {
-            repository.allFlashes.collect { flashes -> 
+            combine(
+                repository.allFlashes,
+                repository.allCameraFlashCrossRefs,
+                _uiState.map { it.cameraId }.distinctUntilChanged()
+            ) { flashes, refs, cameraId ->
+                val filtered = if (cameraId == null) {
+                    flashes
+                } else {
+                    val associatedIds = refs.filter { it.cameraId == cameraId }.map { it.flashId }.toSet()
+                    flashes.filter { fl -> associatedIds.contains(fl.id) || refs.none { it.flashId == fl.id } }
+                }
                 _uiState.update { it.copy(
-                    allFlashes = flashes,
+                    filteredFlashes = filtered,
                     isFlashVisible = flashes.isNotEmpty()
                 ) }
-            }
+            }.collect {}
+        }
+        viewModelScope.launch {
+            repository.allFilms.collect { films -> _uiState.update { it.copy(allFilms = films) } }
         }
         loadKit()
     }
@@ -131,7 +186,8 @@ class AddEditCameraKitViewModel @Inject constructor(
                         filmId = savedStateHandle.get<Long>("filmId") ?: kit.filmId,
                         teleconverterId = savedStateHandle.get<Long>("teleconverterId") ?: kit.teleconverterId,
                         filterId = savedStateHandle.get<Long>("filterId") ?: kit.filterId,
-                        flashId = savedStateHandle.get<Long>("flashId") ?: kit.flashId
+                        flashId = savedStateHandle.get<Long>("flashId") ?: kit.flashId,
+                        viewfinderId = savedStateHandle.get<Long>("viewfinderId") ?: kit.viewfinderId
                     ) }
                     updateFilteredLenses()
                 }
@@ -201,6 +257,11 @@ class AddEditCameraKitViewModel @Inject constructor(
         _uiState.update { it.copy(flashId = flashId) }
     }
 
+    fun onViewfinderSelected(vfId: Long?) {
+        savedStateHandle["viewfinderId"] = vfId
+        _uiState.update { it.copy(viewfinderId = vfId) }
+    }
+
     fun saveKit(onComplete: () -> Unit) {
         val currentState = _uiState.value
         val isNameValid = currentState.name.isNotBlank()
@@ -227,7 +288,8 @@ class AddEditCameraKitViewModel @Inject constructor(
                 filmId = currentState.filmId,
                 teleconverterId = currentState.teleconverterId,
                 filterId = currentState.filterId,
-                flashId = currentState.flashId
+                flashId = currentState.flashId,
+                viewfinderId = currentState.viewfinderId
             )
             if (kitId == null) {
                 repository.insertCameraKit(kit)

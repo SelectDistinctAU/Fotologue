@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -133,33 +134,62 @@ fun AddEditCameraKitScreen(
 
             // Film Selection
             var filmExpanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
-                expanded = filmExpanded,
-                onExpandedChange = { filmExpanded = it },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                val selectedFilm = uiState.allFilms.find { it.id == uiState.filmId }
-                OutlinedTextField(
-                    value = selectedFilm?.let { "${it.name} (ISO ${it.iso})" } ?: stringResource(R.string.select_film),
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.label_film)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = filmExpanded) },
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
-                    isError = !uiState.isFilmValid
-                )
-                ExposedDropdownMenu(
+            Column(modifier = Modifier.fillMaxWidth()) {
+                ExposedDropdownMenuBox(
                     expanded = filmExpanded,
-                    onDismissRequest = { filmExpanded = false }
+                    onExpandedChange = { filmExpanded = it },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    uiState.allFilms.forEach { film ->
-                        DropdownMenuItem(
-                            text = { Text("${film.name} (ISO ${film.iso})") },
-                            onClick = {
-                                viewModel.onFilmSelected(film.id)
-                                filmExpanded = false
-                            }
-                        )
+                    val selectedFilm = uiState.allFilms.find { it.id == uiState.filmId }
+                    OutlinedTextField(
+                        value = selectedFilm?.let { "${it.name} (ISO ${it.iso})" } ?: if (uiState.allFilms.isEmpty()) "No matching film in library" else stringResource(R.string.select_film),
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.label_film)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = filmExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
+                        isError = !uiState.isFilmValid
+                    )
+                    ExposedDropdownMenu(
+                        expanded = filmExpanded,
+                        onDismissRequest = { filmExpanded = false }
+                    ) {
+                        uiState.allFilms.forEach { film ->
+                            DropdownMenuItem(
+                                text = { Text("${film.name} (ISO ${film.iso})") },
+                                onClick = {
+                                    viewModel.onFilmSelected(film.id)
+                                    filmExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                if (uiState.allFilms.isEmpty()) {
+                    OutlinedCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 6.dp),
+                        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_add),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "No film stock matching this camera format in your library.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
                     }
                 }
             }
@@ -172,7 +202,7 @@ fun AddEditCameraKitScreen(
                     onExpandedChange = { tcExpanded = it },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    val selectedTc = uiState.allTeleconverters.find { it.id == uiState.teleconverterId }
+                    val selectedTc = uiState.filteredTeleconverters.find { it.id == uiState.teleconverterId }
                     OutlinedTextField(
                         value = selectedTc?.name ?: stringResource(R.string.none),
                         onValueChange = {},
@@ -186,7 +216,7 @@ fun AddEditCameraKitScreen(
                         onDismissRequest = { tcExpanded = false }
                     ) {
                         DropdownMenuItem(text = { Text(stringResource(R.string.none)) }, onClick = { viewModel.onTeleconverterSelected(null); tcExpanded = false })
-                        uiState.allTeleconverters.forEach { tc ->
+                        uiState.filteredTeleconverters.forEach { tc ->
                             DropdownMenuItem(text = { Text(tc.name) }, onClick = { viewModel.onTeleconverterSelected(tc.id); tcExpanded = false })
                         }
                     }
@@ -200,7 +230,7 @@ fun AddEditCameraKitScreen(
                     onExpandedChange = { filterExpanded = it },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    val selectedFilter = uiState.allFilters.find { it.id == uiState.filterId }
+                    val selectedFilter = uiState.filteredFilters.find { it.id == uiState.filterId }
                     OutlinedTextField(
                         value = selectedFilter?.name ?: stringResource(R.string.none),
                         onValueChange = {},
@@ -214,7 +244,7 @@ fun AddEditCameraKitScreen(
                         onDismissRequest = { filterExpanded = false }
                     ) {
                         DropdownMenuItem(text = { Text(stringResource(R.string.none)) }, onClick = { viewModel.onFilterSelected(null); filterExpanded = false })
-                        uiState.allFilters.forEach { filter ->
+                        uiState.filteredFilters.forEach { filter ->
                             DropdownMenuItem(text = { Text(filter.name) }, onClick = { viewModel.onFilterSelected(filter.id); filterExpanded = false })
                         }
                     }
@@ -228,7 +258,7 @@ fun AddEditCameraKitScreen(
                     onExpandedChange = { flashExpanded = it },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    val selectedFlash = uiState.allFlashes.find { it.id == uiState.flashId }
+                    val selectedFlash = uiState.filteredFlashes.find { it.id == uiState.flashId }
                     OutlinedTextField(
                         value = selectedFlash?.let { "${it.make} ${it.model}" } ?: stringResource(R.string.none),
                         onValueChange = {},
@@ -242,8 +272,42 @@ fun AddEditCameraKitScreen(
                         onDismissRequest = { flashExpanded = false }
                     ) {
                         DropdownMenuItem(text = { Text(stringResource(R.string.none)) }, onClick = { viewModel.onFlashSelected(null); flashExpanded = false })
-                        uiState.allFlashes.forEach { flash ->
+                        uiState.filteredFlashes.forEach { flash ->
                             DropdownMenuItem(text = { Text("${flash.make} ${flash.model}") }, onClick = { viewModel.onFlashSelected(flash.id); flashExpanded = false })
+                        }
+                    }
+                }
+            }
+
+            if (uiState.isViewfinderVisible) {
+                var viewfinderExpanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = viewfinderExpanded,
+                    onExpandedChange = { viewfinderExpanded = it },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val selectedViewfinder = uiState.filteredViewfinders.find { it.id == uiState.viewfinderId }
+                    OutlinedTextField(
+                        value = selectedViewfinder?.name ?: stringResource(R.string.none),
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Viewfinder") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = viewfinderExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = viewfinderExpanded,
+                        onDismissRequest = { viewfinderExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.none)) },
+                            onClick = { viewModel.onViewfinderSelected(null); viewfinderExpanded = false }
+                        )
+                        uiState.filteredViewfinders.forEach { viewfinder ->
+                            DropdownMenuItem(
+                                text = { Text(viewfinder.name) },
+                                onClick = { viewModel.onViewfinderSelected(viewfinder.id); viewfinderExpanded = false }
+                            )
                         }
                     }
                 }

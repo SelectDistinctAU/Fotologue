@@ -109,6 +109,9 @@ object LogEntryXmpExporter {
         var current: Tag? = tag
         while (current != null) {
             path.add(0, current.name)
+            if (current.parentId == null) {
+                path.add(0, current.category)
+            }
             current = current.parentId?.let { tagMap[it] }
         }
         return path.joinToString("|")

@@ -16,6 +16,7 @@
     <string name="category_films">Pellicole</string>
     <string name="category_subjects">Soggetti</string>
     <string name="category_content">Contenuto</string>
+    <string name="category_intent">Intento</string>
     <string name="category_tags">Tag</string>
     <string name="settings">Impostazioni</string>
     <string name="help">Aiuto</string>

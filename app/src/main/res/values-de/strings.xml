@@ -16,6 +16,7 @@
     <string name="category_films">Filme</string>
     <string name="category_subjects">Themen</string>
     <string name="category_content">Inhalt</string>
+    <string name="category_intent">Absicht</string>
     <string name="category_tags">Tags</string>
     <string name="settings">Einstellungen</string>
     <string name="help">Hilfe</string>

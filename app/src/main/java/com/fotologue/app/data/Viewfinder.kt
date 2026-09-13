@@ -12,3 +12,8 @@ data class Viewfinder(
     val modelNumber: String = "",
     val position: Int = 0
 )
+
+data class ViewfinderWithCameras(
+    val viewfinder: Viewfinder,
+    val cameras: List<Camera> = emptyList()
+)

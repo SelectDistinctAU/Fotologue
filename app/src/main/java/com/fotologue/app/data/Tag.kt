@@ -29,10 +29,12 @@ data class Tag(
     companion object {
         const val CATEGORY_SUBJECT = "Subject"
         const val CATEGORY_CONTENT = "Content"
+        const val CATEGORY_INTENT = "Intent"
 
         val ALL_CATEGORIES = listOf(
             CATEGORY_SUBJECT,
-            CATEGORY_CONTENT
+            CATEGORY_CONTENT,
+            CATEGORY_INTENT
         )
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.fotologue.app.data.FotologueRepository
 import com.fotologue.app.data.LogEntryWithGear
+import com.fotologue.app.data.MacroCopyNamingOptions
 import com.fotologue.app.data.PictureExportSize
 import com.fotologue.app.data.SettingsRepository
 import com.fotologue.app.ui.viewmodel.ExportType
@@ -25,7 +26,8 @@ class LogExporter @Inject constructor(
         logs: List<LogEntryWithGear>,
         type: ExportType,
         uri: Uri,
-        exportSize: PictureExportSize = PictureExportSize.NATURAL
+        exportSize: PictureExportSize = PictureExportSize.NATURAL,
+        macroCopyOptions: MacroCopyNamingOptions = MacroCopyNamingOptions()
     ) : Boolean {
         try {
             val creator = runBlocking { settingsRepository.creatorName.first() }
@@ -54,20 +56,45 @@ class LogExporter @Inject constructor(
                         outputStream.flush()
                     }
                     ExportType.ZIP -> {
-                        LogEntryZipExporter.toZip(context, logs, outputStream, exportSize, allTags, creator, copyright, contact)
+                        LogEntryZipExporter.toZip(
+                            context = context,
+                            logs = logs,
+                            outputStream = outputStream,
+                            exportSize = exportSize,
+                            allTags = allTags,
+                            creator = creator,
+                            copyright = copyright,
+                            contact = contact,
+                            macroCopyOptions = macroCopyOptions
+                        )
                     }
                     ExportType.XMP -> {
                         if (logs.size == 1) {
                             val xmp = LogEntryXmpExporter.toXmp(logs[0], allTags, creator, copyright, contact)
                             outputStream.write(xmp.toByteArray())
                         } else {
-                            // If multiple, concatenate them (per image sidecar would be better but requires multiple files)
-                            val combined = logs.joinToString("\n\n") { 
-                                LogEntryXmpExporter.toXmp(it, allTags, creator, copyright, contact)
-                            }
-                            outputStream.write(combined.toByteArray())
+                            LogEntryZipExporter.toZip(
+                                context = context,
+                                logs = logs,
+                                outputStream = outputStream,
+                                exportSize = exportSize,
+                                allTags = allTags,
+                                creator = creator,
+                                copyright = copyright,
+                                contact = contact,
+                                macroCopyOptions = macroCopyOptions
+                            )
                         }
                         outputStream.flush()
+                    }
+                    ExportType.PDF -> {
+                        ContactSheetPdfExporter.generatePdf(
+                            context = context,
+                            logs = logs,
+                            outputStream = outputStream,
+                            creator = creator,
+                            copyright = copyright
+                        )
                     }
                 }
                 true

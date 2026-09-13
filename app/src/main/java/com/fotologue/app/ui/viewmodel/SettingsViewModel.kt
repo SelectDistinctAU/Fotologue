@@ -3,6 +3,7 @@ package com.fotologue.app.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fotologue.app.data.ConfigurationManager
+import com.fotologue.app.data.MacroCopyPreset
 import com.fotologue.app.data.PictureExportSize
 import com.fotologue.app.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,6 +48,9 @@ class SettingsViewModel @Inject constructor(
 
     val pictureExportSize: StateFlow<PictureExportSize> = repository.pictureExportSize
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PictureExportSize.NATURAL)
+
+    val macroCopyPresets: StateFlow<List<MacroCopyPreset>> = repository.macroCopyPresets
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MacroCopyPreset.DEFAULT_PRESETS)
 
     private val _creatorName = MutableStateFlow("")
     val creatorName: StateFlow<String> = _creatorName.asStateFlow()
@@ -136,6 +140,18 @@ class SettingsViewModel @Inject constructor(
         _contactInfo.value = info
         viewModelScope.launch {
             repository.setContactInfo(info.trim())
+        }
+    }
+
+    fun saveMacroCopyPreset(preset: MacroCopyPreset) {
+        viewModelScope.launch {
+            repository.saveMacroCopyPreset(preset)
+        }
+    }
+
+    fun deleteMacroCopyPreset(id: String) {
+        viewModelScope.launch {
+            repository.deleteMacroCopyPreset(id)
         }
     }
 

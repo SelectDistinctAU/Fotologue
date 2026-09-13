@@ -13,3 +13,8 @@ data class Flash(
     val guideNumber: Int,
     val position: Int = 0
 )
+
+data class FlashWithCameras(
+    val flash: Flash,
+    val cameras: List<Camera> = emptyList()
+)

@@ -4,6 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,8 +15,12 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fotologue.app.data.MacroCopyNamingOptions
+import com.fotologue.app.data.MacroCopyPreset
 import com.fotologue.app.data.PictureExportSize
 import com.fotologue.app.ui.viewmodel.SettingsEvent
 import com.fotologue.app.ui.viewmodel.SettingsViewModel
@@ -317,6 +322,139 @@ fun SettingsScreen(
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+
+            // Camera Macro Copying Presets Section
+            val macroCopyPresets by viewModel.macroCopyPresets.collectAsStateWithLifecycle()
+            var showAddPresetDialog by remember { mutableStateOf(false) }
+            var presetNameInput by remember { mutableStateOf("") }
+            var presetPrefixInput by remember { mutableStateOf("_DSF") }
+            var presetStartNumInput by remember { mutableStateOf("1001") }
+            var presetDigitCountInput by remember { mutableStateOf("4") }
+            var presetIsReverseInput by remember { mutableStateOf(false) }
+
+            if (showAddPresetDialog) {
+                AlertDialog(
+                    onDismissRequest = { showAddPresetDialog = false },
+                    title = { Text("Add Camera Macro Copy Preset") },
+                    text = {
+                        Column(
+                            modifier = Modifier.verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = presetNameInput,
+                                onValueChange = { presetNameInput = it },
+                                label = { Text("Preset Name (e.g. Fujifilm X-T5)") },
+                                singleLine = true
+                            )
+                            OutlinedTextField(
+                                value = presetPrefixInput,
+                                onValueChange = { presetPrefixInput = it },
+                                label = { Text("Prefix (e.g. _DSF, IMG_)") },
+                                singleLine = true
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = presetStartNumInput,
+                                    onValueChange = { if (it.all { c -> c.isDigit() }) presetStartNumInput = it },
+                                    label = { Text("Start No.") },
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    modifier = Modifier.weight(1f),
+                                    singleLine = true
+                                )
+                                OutlinedTextField(
+                                    value = presetDigitCountInput,
+                                    onValueChange = { if (it.all { c -> c.isDigit() } && it.length <= 1) presetDigitCountInput = it },
+                                    label = { Text("Digits") },
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    modifier = Modifier.weight(1f),
+                                    singleLine = true
+                                )
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Switch(
+                                    checked = presetIsReverseInput,
+                                    onCheckedChange = { presetIsReverseInput = it }
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Reverse Frame Sequence")
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                if (presetNameInput.isNotBlank()) {
+                                    viewModel.saveMacroCopyPreset(
+                                        MacroCopyPreset(
+                                            name = presetNameInput.trim(),
+                                            options = MacroCopyNamingOptions(
+                                                enabled = true,
+                                                prefix = presetPrefixInput.trim(),
+                                                startNumber = presetStartNumInput.toIntOrNull() ?: 1001,
+                                                digitCount = presetDigitCountInput.toIntOrNull() ?: 4,
+                                                isReverse = presetIsReverseInput
+                                            )
+                                        )
+                                    )
+                                    showAddPresetDialog = false
+                                }
+                            }
+                        ) {
+                            Text(stringResource(R.string.action_save))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showAddPresetDialog = false }) {
+                            Text(stringResource(R.string.action_cancel))
+                        }
+                    }
+                )
+            }
+
+            Text(
+                text = "Camera Macro Copying Presets",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Pre-configured camera prefixes and file digit formatting for matching RAW scan files during XMP sidecar export.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            macroCopyPresets.forEach { preset ->
+                ListItem(
+                    headlineContent = { Text(preset.name, fontWeight = FontWeight.Bold) },
+                    supportingContent = { Text("Prefix: '${preset.options.prefix}' | Digits: ${preset.options.digitCount} | Start: ${preset.options.startNumber} ${if (preset.options.isReverse) "| Reverse" else ""}") },
+                    trailingContent = {
+                        IconButton(onClick = { viewModel.deleteMacroCopyPreset(preset.id) }) {
+                            Icon(painterResource(R.drawable.ic_delete), contentDescription = "Delete preset")
+                        }
+                    }
+                )
+            }
+
+            OutlinedButton(
+                onClick = {
+                    presetNameInput = ""
+                    presetPrefixInput = "_DSF"
+                    presetStartNumInput = "1001"
+                    presetDigitCountInput = "4"
+                    presetIsReverseInput = false
+                    showAddPresetDialog = true
+                },
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            ) {
+                Icon(painterResource(R.drawable.ic_add), contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Add Macro Copy Preset")
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider()
 
