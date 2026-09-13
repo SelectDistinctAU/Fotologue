@@ -135,9 +135,9 @@ The feature set for this major release is **finalized and feature-frozen**. The 
 
 ### Next Major Release Roadmap (v2.0)
 
-#### 1. Bluetooth Hotshoe Flash Trigger Hardware (`Fotologue Trigger`)
-We are actively developing a custom camera-top hardware device that connects to your Android phone via Bluetooth Low Energy (BLE):
-* **Hotshoe Flash Signal Capture**: Mounts to your camera's hotshoe or PC-sync port. When a photo is taken, the flash signal triggers an instant baseline log in Fotologue.
+#### 1. Bluetooth Hotshoe / PC-Sync Flash Trigger Hardware (`Fotologue Trigger`)
+We are actively developing a custom camera hardware device that connects to your Android phone via Bluetooth Low Energy (BLE):
+* **Hotshoe / PC-Sync Flash Signal Capture**: Connects to your camera's hotshoe or PC-sync flash port. When a photo is taken, the flash signal triggers an instant baseline log in Fotologue.
 * **Instant GPS Precision**: Captures exact GPS location coordinates at the precise millisecond of exposure.
 * **Smart Auto-Increment**: Automatically increments the roll frame counter using your last log setup as a baseline.
 * **Multi-Camera Field Timelines**: When operating multiple cameras in the field, each physical trigger device broadcasts its own unique camera ID, maintaining independent, parallel log timelines for each camera body in real-time.

@@ -56,8 +56,8 @@ Export your data directly into your professional post-processing workflow (Light
 The feature set for this major release is **finalized and feature-frozen**. The current priority is comprehensive QA testing, community verification, and validating that all metering, cataloguing, cross-referencing, and XMP export features operate with 100% precision.
 
 ### Next Major Release Roadmap (v2.0)
-* **Bluetooth Hotshoe Flash Trigger Hardware (`Fotologue Trigger`)**:
-  Developing a physical camera-top device that connects via Bluetooth Low Energy (BLE). Mounts to a camera's hotshoe or PC-sync port to capture flash signals upon exposure, triggering an automated baseline log with millisecond GPS coordinates and multi-camera timeline support in the field.
+* **Bluetooth Hotshoe / PC-Sync Flash Trigger Hardware (`Fotologue Trigger`)**:
+  Developing a physical camera device that connects via Bluetooth Low Energy (BLE). Connects to a camera's hotshoe or PC-sync flash port to capture trigger signals upon exposure, creating an automated baseline log with millisecond GPS coordinates and multi-camera timeline support in the field.
 * **Digital Camera Cataloguing & Fine-Art Taxonomy Integration**:
   Extending cataloguing to digital cameras (DSLRs/mirrorless) to bridge digital shooting workflows with Fotologue's 3-Axis Tag Taxonomy (*Series*, *Study*, *Book Projects*) and location history.
 
