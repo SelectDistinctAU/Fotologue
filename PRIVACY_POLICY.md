@@ -1,11 +1,9 @@
 # Privacy Policy for Fotologue 🔒
 
-**Effective Date:** May 20, 2024  
-**Application Name:** Fotologue  
-**Website:** [https://www.fotologue.au](https://www.fotologue.au)  
-**Online Privacy Policy:** [https://www.fotologue.au/privacy-policy](https://www.fotologue.au/privacy-policy)
+**Version:** 1.0.17 (Build 18) | **Effective Date:** September 20, 2024 | **Audience:** End Users, App Store Reviewers & Public  
+**Website:** [https://www.fotologue.au](https://www.fotologue.au) | **Online Policy:** [https://www.fotologue.au/privacy-policy](https://www.fotologue.au/privacy-policy)
 
-Fotologue is built from the ground up with a **local-first, privacy-by-design** architecture. We believe your photography, equipment records, location history, and personal notes belong solely to you. Fotologue operates entirely on your device and does not collect, store, transmit, or monetize any user data.
+Fotologue is built from the ground up with a **local-first, privacy-by-design** architecture. We believe your photography, equipment records, location history, and personal notes belong solely to you. Fotologue operates entirely on your device and does not collect, store, transmit, or monetise any user data.
 
 ---
 
@@ -26,7 +24,7 @@ Fotologue requests Android system permissions strictly to provide local photogra
 * **Scope:** Location data is processed locally and stored exclusively inside your on-device database. It is never transmitted to the developer or any third parties. Location data is only included in CSV, JSON, or ISO 16684 XMP sidecar export files when you explicitly perform an export.
 
 ### B. Camera Permission (`CAMERA`)
-* **Purpose:** Used locally for live-view spot/center-weighted light metering and generating optional shot thumbnail previews.
+* **Purpose:** Used locally for live-view spot/centre-weighted light metering and generating optional shot thumbnail previews.
 * **Scope:** Live camera video frames are processed in-memory for exposure calculations. Camera images are saved as local thumbnails inside your app storage only if enabled in Settings. No photos, video streams, or camera metadata are ever transmitted off-device.
 
 ### C. Storage Access Framework (SAF)

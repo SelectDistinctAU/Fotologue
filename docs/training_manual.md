@@ -1,5 +1,7 @@
 # Fotologue Master Training Manual 📖📸
 
+**Version:** 1.0.17 (Build 18) | **Release Date:** September 2024 | **Audience:** Analog Photographers, Workshop Instructors & Beta Testers
+
 **A Comprehensive Field & Archival Guide for Analog Photographers**
 
 ---
@@ -27,7 +29,7 @@
 
 ## 2. Gear Library & Equipment Pairing
 
-The **Gear Library** organizes your equipment and taxonomy into two distinct sections:
+The **Gear Library** organises your equipment and taxonomy into two distinct sections:
 
 ```
 ⚙️ EQUIPMENT & KITS              🏷️ TAXONOMY & TAGS
@@ -69,7 +71,7 @@ Fotologue uses a 3-axis taxonomy to classify exposures:
 
 ## 4. Smart Camera Kits
 
-* **One-Tap Quick Fill**: Pre-configure favorite equipment combinations (e.g. *Leica M6 + 35mm Summicron + Tri-X 400*).
+* **One-Tap Quick Fill**: Pre-configure favourite equipment combinations (e.g. *Leica M6 + 35mm Summicron + Tri-X 400*).
 * **Field Speed**: Selecting a Kit on the **Add Log Screen** fills Camera, Lens, Film, ISO, and accessories in a single tap.
 
 ---
@@ -79,11 +81,11 @@ Fotologue uses a 3-axis taxonomy to classify exposures:
 ### The Pro Calibration Wizard
 Transform your phone into a precision light meter via **Settings > EV Calibration**:
 1. **Stage 1 (The Void)**: Measure the sensor "Noise Floor" with a covered lens to eliminate internal electronic noise.
-2. **Stage 2 (The Balance)**: Calibrate signal gain against an 18% gray card or neutral wall.
+2. **Stage 2 (The Balance)**: Calibrate signal gain against an 18% grey card or neutral wall.
 
 ### Live Metering & Pre-Visualization
-* **Metering Modes**: Toggle between Spot and Center-Weighted metering.
-* **Film Look Simulations**: Pre-visualize scene contrast in live-view with **B&W**, **C-41 (Color Negative)**, or **E-6 (Slide/Reversal)** color profiles.
+* **Metering Modes**: Toggle between Spot and Centre-Weighted metering.
+* **Film Look Simulations**: Pre-visualise scene contrast in live-view with **B&W**, **C-41 (Colour Negative)**, or **E-6 (Slide/Reversal)** colour profiles.
 * **Scene Thumbnails**: Capturing a scene thumbnail creates a visual fingerprint attached to the log.
 
 ---

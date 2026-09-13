@@ -1,5 +1,7 @@
 # Google Play Store Data Safety Guide: Fotologue
 
+**Version:** 1.0.17 (Build 18) | **Release Date:** September 2024 | **Audience:** Developers & Play Store Compliance Reviewers
+
 To ensure a smooth approval process and compliance with Google Play policies regarding "On-device Face Tagging," follow this guide when filling out the **Data Safety** section in the Google Play Console.
 
 ---
@@ -23,31 +25,8 @@ Even though Fotologue processes face detection **100% on-device** and **transiti
 Fotologue allows users to log the GPS coordinates of their shots.
 
 ### Console Selection:
-- **Data Type**: "Precise Location."
-- **Collection**: Select **Yes**, this data is collected.
-- **Sharing**: Select **No**, this data is NOT shared.
-- **Processing**: Select **Stored**. (The data is stored in the local SQLite database).
+- **Data Type**: "Precise Location" (under Location).
+- **Collection**: Select **Yes**.
+- **Sharing**: Select **No**.
+- **Processing**: Stored locally in the app's database; only included in export files requested explicitly by the user.
 - **Purpose**: "App Functionality."
-
----
-
-## 3. Photos and Videos
-If the user enables "Automatic Thumbnail Capture."
-
-### Console Selection:
-- **Data Type**: "Photos."
-- **Collection**: Select **Yes**, this data is collected.
-- **Sharing**: Select **No**, this data is NOT shared.
-- **Processing**: Select **Stored**. (Thumbnails are stored in the app's private internal storage).
-- **Purpose**: "App Functionality."
-
----
-
-## 4. Privacy Policy Link
-Ensure your privacy policy at `https://www.fotologue.au/privacy-policy` explicitly mentions:
-1.  **Local-Only Storage**: All logging data remains on the device.
-2.  **No Cloud Sync**: The app does not have a backend or cloud component.
-3.  **On-Device ML**: Face detection is local and non-identifiable.
-
----
-*Generated for Fotologue Release v1.0.12*

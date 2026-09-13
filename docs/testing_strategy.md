@@ -1,123 +1,155 @@
 # Fotologue: Professional QA Test Plan & Strategy
-**Version:** 1.0.12 (Build 13)
-**Audience:** New Testers (No prior knowledge required)
+
+**Version:** 1.0.17 (Build 18) | **Release Date:** September 2024 | **Audience:** Testers, QA Engineers & Reviewers | **Test Suite:** 58 Automated Unit Tests Passing
 
 ---
 
 ## 1. App Objective
-**Fotologue** is a specialized digital companion for analog (film) photographers. In the analog world, cameras do not record metadata (EXIF) like digital ones. Fotologue fills this gap by allowing photographers to log the technical details of every shot—aperture, shutter speed, location, and gear used—creating a professional record for development and digital archiving.
+**Fotologue** is a specialized digital companion and archival suite for analog (film) photographers. In the analog world, physical cameras do not record EXIF metadata. Fotologue bridges this gap by enabling photographers to log every shot's technical parameters—aperture, shutter speed, lens, film stock, accessories, GPS coordinates, and artistic intent—producing industry-standard metadata sidecars for development and desktop archiving (Lightroom, Capture One, Darktable).
 
 ### Design Intent
-- **Speed**: Interactions must be fast enough to happen in the field between shots.
-- **Privacy**: No cloud. No accounts. All data is processed on-device (local-first).
-- **Precision**: Professional-grade metering that can be calibrated to match high-end hardware.
+- **Speed**: Field interactions take seconds between shots.
+- **Privacy**: No cloud. No accounts. 100% local-first architecture.
+- **Precision**: Professional light metering calibrated to hardware standards.
+- **Archival Integrity**: Full 3-axis taxonomy (Subject • Content • Intent) and 1-to-1 scan-to-log matching.
 
 ---
 
 ## 2. Core Feature Map
-1. **The Gear Library**: A database to manage Cameras, Lenses, and Film stocks.
-2. **The Light Meter**: Uses the phone's sensor to suggest exposure settings.
-3. **The Timeline**: A chronological list of shots with interactive maps and export statuses.
-4. **The Wizard**: A 2-stage hardware calibration tool for sensor accuracy.
-5. **Data Export**: Generating CSV, JSON, or ZIP (thumbnails + XMP sidecars) packages.
+1. **The Gear Library & Taxonomy**:
+   * **⚙️ Equipment & Kits**: Cameras, Lenses, Films, Accessories (Viewfinders, TCs, Filters, Flashes), and Camera Kits.
+   * **🏷️ Taxonomy & Tags**: 3-Axis classification (**Subject • Content • Intent**).
+2. **The Light Meter**: Live spot/centre-weighted metering with B&W, C-41, E-6 previews.
+3. **The Timeline**: Chronological shot log with interactive maps and export badges (`[Z]`, `[C]`, `[J]`, `[X]`).
+4. **Digital Contact Sheet View**: Interactive A4 contact sheet grid with in-grid gap insertion/removal (+1 / -1 offset).
+5. **Printable PDF Proof Sheet Exporter**: High-resolution A4 darkroom proof sheet generation.
+6. **Camera Macro Copy Presets**: Auto-names `.xmp` sidecars (`_DSF1024.xmp`) to match RAW camera scan sequences.
+7. **Pro Calibration Wizard**: 2-stage hardware tuning (*The Void* & *The Balance*).
 
 ---
 
 ## 3. Test Scripts
 
-### Script A: First-Run & Permissions
+### Script A: First-Run, Welcome & Quick Settings
 **Steps:**
-1. Clear App Data/Cache or perform a fresh install.
+1. Clear App Data or perform a fresh install.
 2. Launch the app. Observe the "Welcome" screen.
-3. Attempt to add a Camera.
-4. **Calibration Check**: On the Welcome screen, observe the "Advanced Configuration" section and verify the "Calibrate Light Meter" option is available.
-5. **Permission Trigger**: Grant Location and Camera permissions when prompted.
+3. Verify top bar contains the **Settings** icon.
+4. Verify "Quick Settings" card contains "View All Settings" link.
+5. Grant Location and Camera permissions when prompted.
+6. Complete Equipment Setup (Add Camera, Lens, Film).
 
 **Expected Behaviour:**
-- The app should not crash during the permission flow.
-- "Equipment Setup" indicators on the Welcome screen should update to "Complete" as you add gear.
-
-**Unexpected Behaviour:**
-- App closes when granting permissions.
-- "Save" button remains disabled even after gear is added.
+- App grants permissions without crashing.
+- Equipment Setup steps mark as "Complete".
+- "Let's Go!" button enables upon completing setup.
 
 ---
 
-### Script B: The "Fixed Lens" Logic
+### Script B: TLR & Fixed-Lens Auto-Creation
 **Steps:**
-1. Go to **Gear Library > Cameras**.
-2. Add a new Camera and select "Compact" or "Point & Shoot" (Fixed Lens types).
-3. Fill in the "Fixed Lens" specifications in the lookup.
+1. Go to **Gear Library > Cameras > Add Camera**.
+2. Search or select a TLR camera (e.g., **Yashica Mat-124G** or **Rolleiflex 2.8F**).
+3. Observe Camera Type (`TLR (Twin Lens Reflex)`).
 4. Save the camera.
-5. Go to the **Lenses** tab.
+5. Navigate to the **Lenses** tab in Gear Library.
 
 **Expected Behaviour:**
-- A new lens should automatically appear in the library with the "Fixed" mount type.
-- This lens should be automatically associated with your new camera.
-
-**Unexpected Behaviour:**
-- The lens is not created.
-- The lens appears with an "Interchangeable" mount type.
+- Camera is saved with format `120 (Medium Format)`.
+- A matching fixed lens (**Yashinon 80mm f/3.5**) is automatically created and linked to the camera.
 
 ---
 
-### Script C: The Wizard's Calibration
+### Script C: Missing Film Prompting
 **Steps:**
-1. Go to **Settings > EV Calibration**.
-2. Tap **Launch Pro Calibration Wizard**.
-3. **Stage 1 (The Void)**: Cover the camera lens completely with your thumb. Tap "Measure Black Point."
-4. **Stage 2 (The Balance)**: Point the camera at a neutral gray wall or gray card in daylight. Tap "Calibrate Sensitivity."
-5. Complete the wizard.
+1. Select a 120 Medium Format camera (e.g. *Yashica Mat-124G*).
+2. Ensure no 120 film stock exists in your library.
+3. Tap **Add Log** (+).
+4. Select the 120 camera. Observe the **Film** field.
 
 **Expected Behaviour:**
-- The app returns you to the **EV Calibration** settings page.
-- "Hardware Baseline" values (Noise Floor and Signal Gain) should now be non-zero.
-
-**Unexpected Behaviour:**
-- App gets stuck in the Light Meter measure mode after the wizard.
-- Calibration values do not update or show "NaN".
+- OutlinedTextField displays *"No matching film in library"*.
+- A warning card appears below: *"No film stock matching this camera format in your library. Tap here to add a film."*
+- Tapping the card opens **Add Film Screen** to add 120 film stock.
 
 ---
 
-### Script D: The Logging Loop (Update vs. Create)
+### Script D: 3-Axis Taxonomy & Intent Groups
 **Steps:**
-1. Start a new Log from the Timeline (+).
-2. Type a note: "Initial Note." Save the log.
-3. Open that log from the Timeline and tap the **Edit (Pencil)** icon.
-4. Change the note to "Updated Note" and tap **Save Changes**.
-5. Return to the Timeline and check the log.
+1. Go to **Gear Library**.
+2. Observe drawer list is split into two headers: **⚙️ EQUIPMENT & KITS** and **🏷️ TAXONOMY & TAGS**.
+3. Select the **Intent** tab. Verify header reads **"Intent Groups"**.
+4. Tap **+** and create a new project tag under **Series** (e.g. `Urban Decay`).
+5. Open **Add Log Screen** and expand Intent.
+6. Select **Series** from the dropdown, then select **Urban Decay** chip.
+7. Save the log.
 
 **Expected Behaviour:**
-- There is only **ONE** log entry in the Timeline.
-- The note is updated to "Updated Note."
-- The detail view shows a "Last updated" timestamp under the main date.
-
-**Unexpected Behaviour:**
-- A second, duplicate log entry appears in the Timeline.
-- The original note is lost.
+- Tag `Urban Decay` is stored as `category = Intent` under parent `Series`.
+- XMP export contains `Intent|Series|Urban Decay` in `lr:hierarchicalSubject`.
 
 ---
 
-### Script E: Export & Badges
+### Script E: Digital Contact Sheet & In-Grid Gap Insertion
 **Steps:**
-1. Long-press a log in the Timeline to select it.
-2. Tap the **Export (Share)** icon and choose **ZIP**.
-3. Save the file to your device's Downloads folder.
-4. Observe the log entry in the Timeline.
+1. Open the Timeline and tap the **Digital Contact Sheet** icon (`gallery_thumbnail_24px`) in the top bar.
+2. Select an active film roll. Observe the grid layout (6 columns for 35mm, 3 for 120 format).
+3. Locate a skipped frame slot (e.g., `#04 Skipped / Gap`).
+4. Tap the skipped card `#04`.
+5. Select **"Insert Additional Gap (+1 Offset)"**.
+6. Observe subsequent frames (#05–36) shift right by 1 column.
+7. Tap the card again and select **"Remove Gap / Pull Frames Back (-1 Offset)"**.
 
 **Expected Behaviour:**
-- A small `[Z]` badge appears in the bottom-right corner of the log entry.
-- The file saved contains a `.jpg` thumbnail and a `.xmp` metadata file.
+- The grid updates dynamically, maintaining 1-to-1 alignment with physical film rebate numbers.
+- Tapping *"Log Exposure for Frame #N"* opens `AddLog` pre-filled for that slot.
 
-**Unexpected Behaviour:**
-- The badge does not appear after a successful save.
-- Tapping the badge does nothing (it should be non-interactive).
+---
+
+### Script F: Camera Macro Copy Presets & XMP Export
+**Steps:**
+1. Open **Settings > Camera Macro Copying Presets**.
+2. Verify default presets (*Fujifilm _DSF*, *Canon IMG_*, *Nikon DSC_*, *Sony _DSC*) are present.
+3. Add a custom preset (e.g. *"Leica M Macro"*, prefix `L1`, 5 digits).
+4. Go to **Digital Contact Sheet > Export (Share)**.
+5. Enable **Macro Copy Filename Matching**.
+6. Select *"Fujifilm RAW (_DSF)"* from the Load Preset dropdown.
+7. Set Start No. to `1024` and export ZIP.
+
+**Expected Behaviour:**
+- Exported ZIP contains sidecars named `_DSF1024.xmp`, `_DSF1025.xmp`, etc., matching camera RAW scan file sequences.
+
+---
+
+### Script G: Printable A4 PDF Proof Sheet Exporter
+**Steps:**
+1. In the Digital Contact Sheet, tap **Export (Share)**.
+2. Select **"Export as Printable PDF Proof Sheet"**.
+3. Choose a destination and save the `.pdf` file.
+4. Open the resulting PDF.
+
+**Expected Behaviour:**
+- Generates an A4 PDF proof sheet with darkroom styling.
+- Header displays Camera Name, Film Stock, Roll #, Date, Creator, and Copyright.
+- Grid renders scene thumbnails, frame rebate badges (`#01`), and exposure metadata (`1/125 @ f/8`).
+
+---
+
+### Script H: Pro Calibration Wizard
+**Steps:**
+1. Go to **Settings > EV Calibration > Launch Pro Calibration Wizard**.
+2. **Stage 1 (The Void)**: Cover the camera lens completely. Tap "Measure Black Point."
+3. **Stage 2 (The Balance)**: Point camera at a neutral 18% grey card or neutral wall. Tap "Calibrate Sensitivity."
+4. Complete wizard.
+
+**Expected Behaviour:**
+- EV Calibration updates with non-zero Noise Floor and Signal Gain multipliers.
 
 ---
 
 ## 4. System Red Flags
-If you see any of the following, file a high-priority bug report:
-- **IME Overlap**: The keyboard covers the text field you are typing in.
-- **Race Condition**: The Light Meter "freezes" or flickers rapidly between two values.
-- **Data Leak**: Being prompted to create an account or sign in (this app is local-only).
-- **Locale Failure**: Dates appearing in English when the phone is set to German/Spanish/etc.
+File a high-priority bug report if any of the following occur:
+- **IME / Keyboard Overlap**: Keyboard obscures active input fields.
+- **Race Condition**: Light Meter flickers or freezes during live metering.
+- **Data Leak**: Prompts for accounts, logins, or remote server connections (app is 100% local-first).
+- **Locale / Translation Failure**: Missing string resources or raw keys appearing in non-English locales.

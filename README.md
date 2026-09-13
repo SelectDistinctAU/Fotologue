@@ -1,5 +1,7 @@
 # Fotologue 📸🎞️
 
+**Version:** 1.0.17 (Build 18) | **Release Date:** September 2024 | **Audience:** Developers, Beta Reviewers & Testers
+
 **Professional Exposure Log & Light Meter companion for Analog Photographers.**
 
 Fotologue is a high-precision, privacy-first mobile application designed to bridge the technical gap between physical film photography and modern digital archiving. Built for speed in the field and accuracy in the lab, Fotologue replaces paper shot lists with a robust, metadata-rich logging ecosystem.
@@ -11,7 +13,7 @@ Fotologue is a high-precision, privacy-first mobile application designed to brid
 ### 🛠️ The Wizard's Calibration
 A specialized 2-stage hardware tuning tool designed to transform your smartphone into a precision instrument.
 *   **Stage 1: The Void**: Measures the sensor "Noise Floor" with a covered lens to eliminate electronic "ghost light."
-*   **Stage 2: The Balance**: Calibrates signal gain against an 18% gray card for industrial-grade accuracy.
+*   **Stage 2: The Balance**: Calibrates signal gain against an 18% grey card for industrial-grade accuracy.
 *   **Hardware Baseline**: Transparent monitoring of "Noise Floor" units and "Signal Gain" multipliers.
 
 ### 📐 Relational Gear Library & 3-Axis Taxonomy
@@ -19,16 +21,16 @@ Maintain a professional database of your entire arsenal with intelligent camera 
 *   **Cameras**: Full support for 35mm, 120 (Medium Format), Half-Frame (e.g., Pentax 17), Large Format, and TLR (e.g. Yashica Mat-124G) bodies.
 *   **Fixed & Interchangeable Lenses**: Automatic fixed-lens auto-creation and cross-referencing for TLR and compact cameras. Full camera cross-referencing for Lenses, Viewfinders, Teleconverters, Filters, and Flashes.
 *   **Film Stocks**: Manage ISO and expected exposures (12, 24, 36) per stock with 35mm half-frame doubling.
-*   **3-Axis Tag Taxonomy (Subject • Content • Intent)**: Classify shots by domain (*Subject*), detail (*Content*), and creative purpose (*Intent*: *Study*, *Series*, *Documentation*, *Commission*).
-*   **Smart Kits**: Pre-configure favorite camera/lens/film/accessory combinations for one-tap quick fill during fieldwork.
+*   **3-Axis Tag Taxonomy (Subject • Content • Intent)**: Categorise shots by domain (*Subject*), detail (*Content*), and creative purpose (*Intent*: *Study*, *Series*, *Documentation*, *Commission*).
+*   **Smart Kits**: Pre-configure favourite camera/lens/film/accessory combinations for one-tap quick fill during fieldwork.
 
 ### 🎞️ Live Session Tracking & Digital Contact Sheet
 Intelligent "Film Roll.Frame" management and visual scene-matching for your cataloguing pipeline.
-*   **Digital Contact Sheet View**: Interactive grid view of all frame thumbnails organized by film roll (6 columns for 35mm, 3 for 120 format).
+*   **Digital Contact Sheet View**: Interactive grid view of all frame thumbnails organised by film roll (6 columns for 35mm, 3 for 120 format).
 *   **In-Grid Frame Gap Adjuster**: Interactively insert or remove frame gaps (+1 / -1 offset) to keep the contact sheet 1-to-1 aligned with physical film rebate numbers.
 *   **Printable PDF Proof Sheet Exporter**: Generates styled A4 PDF contact proof sheets ready for printing or digital archival binders.
 *   **Active Roll Counter**: Dedicated management screen to increment/decrement frames, set active frame numbers, or reset roll counts.
-*   **Visual Simulations**: Pre-visualize your shots with B&W, C-41 (Color Negative), and E-6 (Slide) film look previews in the meter.
+*   **Visual Simulations**: Pre-visualise your shots with B&W, C-41 (Colour Negative), and E-6 (Slide) film look previews in the meter.
 
 ### 📊 Professional Meta-Integrity & Camera Copy Exporter
 Export your data directly into your professional post-processing workflow (Lightroom/Capture One).
@@ -49,8 +51,8 @@ Export your data directly into your professional post-processing workflow (Light
 ---
 
 ## 🌍 Global Presence
-Fotologue is localized for the international photography community, supporting 8 languages:
-*   English (Primary)
+Fotologue is localised for the international photography community, supporting 8 languages:
+*   English (Australia / Primary)
 *   German (Deutsch)
 *   Spanish (Español)
 *   French (Français)
@@ -69,7 +71,7 @@ Fotologue is localized for the international photography community, supporting 8
 *   **UI Framework**: Jetpack Compose (Material 3 Adaptive V2)
 *   **Architecture**: MVVM Pattern with Hilt Dependency Injection
 *   **Persistence**: Room Database (Schema Version 36) with DataStore for typed preferences
-*   **Compliance**: Optimized for Android 15+ Edge-to-Edge and IME insets.
+*   **Compliance**: Optimised for Android 15+ Edge-to-Edge and IME insets.
 
 ---
 
