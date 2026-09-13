@@ -7,9 +7,7 @@ import com.fotologue.app.data.Camera
 import com.fotologue.app.data.FotologueRepository
 import com.fotologue.app.data.LogEntryWithGear
 import com.fotologue.app.data.SettingsRepository
-import com.fotologue.app.util.LogEntryExporter
-import com.fotologue.app.util.LogEntryJsonExporter
-import com.fotologue.app.util.LogEntryZipExporter
+
 import com.fotologue.app.util.LogExporter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
