@@ -227,11 +227,15 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun deleteMacroCopyPreset(id: String) {
         context.dataStore.edit { preferences ->
-            val jsonString = preferences[MACRO_COPY_PRESETS] ?: return@edit
-            val currentList = try {
-                json.decodeFromString<List<MacroCopyPreset>>(jsonString).toMutableList()
-            } catch (e: Exception) {
-                return@edit
+            val jsonString = preferences[MACRO_COPY_PRESETS]
+            val currentList = if (jsonString.isNullOrBlank()) {
+                MacroCopyPreset.DEFAULT_PRESETS.toMutableList()
+            } else {
+                try {
+                    json.decodeFromString<List<MacroCopyPreset>>(jsonString).toMutableList()
+                } catch (e: Exception) {
+                    MacroCopyPreset.DEFAULT_PRESETS.toMutableList()
+                }
             }
             currentList.removeAll { it.id == id }
             preferences[MACRO_COPY_PRESETS] = Json.encodeToString(currentList)
