@@ -3,8 +3,8 @@ package com.fotologue.app.di
 import android.content.Context
 import com.fotologue.app.connectivity.BleManager
 import com.fotologue.app.connectivity.TriggerManager
-import com.fotologue.app.data.*
-import com.fotologue.app.location.LocationProvider
+import com.fotologue.core.data.*
+import com.fotologue.core.data.location.LocationProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

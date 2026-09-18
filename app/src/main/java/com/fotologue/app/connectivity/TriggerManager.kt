@@ -2,8 +2,8 @@ package com.fotologue.app.connectivity
 
 import android.content.Context
 import android.widget.Toast
-import com.fotologue.app.data.*
-import com.fotologue.app.location.LocationProvider
+import com.fotologue.core.data.*
+import com.fotologue.core.data.location.LocationProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

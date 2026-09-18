@@ -2,10 +2,10 @@ package com.fotologue.app.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fotologue.app.data.ConfigurationManager
-import com.fotologue.app.data.MacroCopyPreset
-import com.fotologue.app.data.PictureExportSize
-import com.fotologue.app.data.SettingsRepository
+import com.fotologue.core.data.ConfigurationManager
+import com.fotologue.core.data.MacroCopyPreset
+import com.fotologue.core.data.PictureExportSize
+import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

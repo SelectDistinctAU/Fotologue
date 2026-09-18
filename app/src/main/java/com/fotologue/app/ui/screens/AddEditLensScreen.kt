@@ -17,7 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fotologue.app.data.Lens
+import com.fotologue.core.data.Lens
 import com.fotologue.app.ui.viewmodel.AddEditLensViewModel
 import com.fotologue.app.R
 

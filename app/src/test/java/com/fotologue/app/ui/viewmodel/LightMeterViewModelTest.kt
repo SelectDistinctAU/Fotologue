@@ -1,7 +1,7 @@
 package com.fotologue.app.ui.viewmodel
 
 import android.graphics.Rect
-import com.fotologue.app.data.*
+import com.fotologue.core.data.*
 import com.fotologue.app.util.MeteringMode
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers

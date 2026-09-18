@@ -14,7 +14,7 @@ This document provides ready-to-use recruitment templates tailored for film phot
 **Post Body**:  
 > Hi everyone! Years ago, I had the best intentions of keeping a paper notebook log while shooting film—recording the Who, What, When, Where, Why, and How of every frame. But fumbling with a pen, paper, and gear in the field was cumbersome, so like many photographers, I abandoned it.
 > 
-> I realized that if a field logging tool wasn't convenient, fast, accurate, and above all **easy**, I simply wouldn't use it.
+> I realised that if a field logging tool wasn't convenient, fast, accurate, and above all **easy**, I simply wouldn't use it.
 > 
 > From that simple idea, **Fotologue** grew into a complete creative companion. Logging with Fotologue is as easy as you want it to be: take a 1-tap quick log during fast street shooting, or use live B&W previews to study scene composition, tonal contrast, and depth of field before tripping the film shutter.
 > 
@@ -69,7 +69,7 @@ This document provides ready-to-use recruitment templates tailored for film phot
 > 
 > Years ago, I started out with the best intentions of keeping a paper notebook log while shooting film—recording the Who, What, When, Where, Why, and How of every frame. But in the field, fumbling with a pen and notebook while holding camera gear was frustrating, so I stopped doing it.
 > 
-> I realized that if a logging tool wasn't convenient, accurate, and above all **easy**, I wouldn't use it.
+> I realised that if a logging tool wasn't convenient, accurate, and above all **easy**, I wouldn't use it.
 > 
 > From that initial need, **Fotologue** grew into a complete creative tool. Logging is as easy as you want it to be: from 1-tap quick logs during fast shooting, to live B&W scene previews for evaluating composition, tonal contrast, and depth of field before firing the shutter.
 > 

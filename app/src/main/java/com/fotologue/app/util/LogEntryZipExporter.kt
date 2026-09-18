@@ -6,10 +6,10 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
-import com.fotologue.app.data.LogEntryWithGear
-import com.fotologue.app.data.MacroCopyNamingOptions
-import com.fotologue.app.data.PictureExportSize
-import com.fotologue.app.data.Tag
+import com.fotologue.core.data.LogEntryWithGear
+import com.fotologue.core.data.MacroCopyNamingOptions
+import com.fotologue.core.data.PictureExportSize
+import com.fotologue.core.data.Tag
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.text.SimpleDateFormat

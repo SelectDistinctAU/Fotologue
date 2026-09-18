@@ -1,6 +1,6 @@
 package com.fotologue.app.util
 
-import com.fotologue.app.data.LogEntryWithGear
+import com.fotologue.core.data.LogEntryWithGear
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString

@@ -28,7 +28,17 @@ import androidx.compose.runtime.key
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.fotologue.app.data.FotologueRepository
+import com.fotologue.core.data.FotologueRepository
+import com.fotologue.feature.lab.AddEditInventoryMasterScreen
+import com.fotologue.feature.lab.AddEditSupplierScreen
+import com.fotologue.feature.lab.AddEquipmentScreen
+import com.fotologue.feature.lab.AddStockLotScreen
+import com.fotologue.feature.lab.EnlargerPrintingSessionScreen
+import com.fotologue.feature.lab.FilmProcessingSessionScreen
+import com.fotologue.feature.lab.LabHomeScreen
+import com.fotologue.feature.lab.LabHomeViewModel
+import com.fotologue.feature.lab.LabMaintenanceScreen
+import com.fotologue.feature.lab.SupplierIssueLogScreen
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -52,7 +62,7 @@ class MainActivity : ComponentActivity() {
 
                 if (isOnboardingComplete != null) {
                     key(isOnboardingComplete) {
-                        val backStack = rememberNavBackStack(if (isOnboardingComplete == true) Route.Timeline else Route.Welcome)
+                        val backStack = rememberNavBackStack(if (isOnboardingComplete == true) Route.Hub else Route.Welcome)
 
                         val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()
                         val directive = remember(windowAdaptiveInfo) {
@@ -74,6 +84,22 @@ class MainActivity : ComponentActivity() {
                                 rememberViewModelStoreNavEntryDecorator(),
                             ),
                             entryProvider = entryProvider {
+                                entry<Route.Hub> {
+                                    HubScreen(
+                                        onNavigateToField = { backStack.add(Route.Timeline) },
+                                        onNavigateToLab = { backStack.add(Route.Lab()) },
+                                        onNavigateToStation = { backStack.add(Route.ContactSheet()) },
+                                        onNavigateToArchive = { backStack.add(Route.ArchiveVault) },
+                                        onNavigateToSettings = { backStack.add(Route.Settings) }
+                                    )
+                                }
+                                entry<Route.ArchiveVault> {
+                                    val viewModel: SettingsViewModel = hiltViewModel()
+                                    ArchiveScreen(
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                    )
+                                }
                                 entry<Route.Welcome> {
                                     val viewModel: OnboardingViewModel = hiltViewModel()
                                     WelcomeScreen(
@@ -102,6 +128,7 @@ class MainActivity : ComponentActivity() {
                                     val selectedLogId = backStack.find { it is Route.LogDetail }?.let { (it as Route.LogDetail).logId }
                                     TimelineScreen(
                                         viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
                                         onAddLogClick = { backStack.add(Route.AddLog) },
                                         onLogClick = { logId ->
                                             backStack.removeIf { it is Route.LogDetail }
@@ -110,7 +137,118 @@ class MainActivity : ComponentActivity() {
                                         onGearLibraryClick = { backStack.add(Route.GearLibrary) },
                                         onSettingsClick = { backStack.add(Route.Settings) },
                                         onContactSheetClick = { backStack.add(Route.ContactSheet()) },
+                                        onLabClick = { backStack.add(Route.Lab()) },
                                         selectedLogId = selectedLogId
+                                    )
+                                }
+                                entry<Route.Lab> { navRoute ->
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    LabHomeScreen(
+                                        initialTab = navRoute.initialTab,
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onNavigateToMaintenance = { backStack.add(Route.LabMaintenance) },
+                                        onAddItemMaster = { defaultCat -> backStack.add(Route.AddEditItemMaster(defaultCategory = defaultCat)) },
+                                        onEditItemMaster = { id -> backStack.add(Route.AddEditItemMaster(id)) },
+                                        onAddStockLot = { backStack.add(Route.AddStockLot) },
+                                        onEditStockLot = { id -> backStack.add(Route.EditStockLot(id)) },
+                                        onAddSupplier = { backStack.add(Route.AddEditSupplier()) },
+                                        onEditSupplier = { id -> backStack.add(Route.AddEditSupplier(id)) },
+                                        onViewSupplierIssues = { id -> backStack.add(Route.SupplierIssueTracker(id)) },
+                                        onAddEquipment = { backStack.add(Route.AddEquipment) },
+                                        onEditEquipment = { id -> backStack.add(Route.EditEquipment(id)) },
+                                        onStartFilmSession = { backStack.add(Route.FilmProcessingSession()) },
+                                        onStartPrintingSession = { backStack.add(Route.EnlargerPrintingSession()) }
+                                    )
+                                }
+                                entry<Route.SupplierIssueTracker> { navRoute ->
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    SupplierIssueLogScreen(
+                                        supplierId = navRoute.supplierId,
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                    )
+                                }
+                                entry<Route.AddEditSupplier> { navRoute ->
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    AddEditSupplierScreen(
+                                        supplierId = navRoute.supplierId,
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                    )
+                                }
+                                entry<Route.LabMaintenance> {
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    LabMaintenanceScreen(
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                    )
+                                }
+                                entry<Route.FilmProcessingSession> { navRoute ->
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    FilmProcessingSessionScreen(
+                                        rollId = navRoute.rollId,
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                    )
+                                }
+                                entry<Route.EnlargerPrintingSession> { navRoute ->
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    EnlargerPrintingSessionScreen(
+                                        logId = navRoute.logId,
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                    )
+                                }
+                                entry<Route.AddEditItemMaster> { navRoute ->
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    AddEditInventoryMasterScreen(
+                                        masterId = navRoute.masterId,
+                                        defaultCategory = navRoute.defaultCategory,
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onSaveAndAddStock = { savedMasterId ->
+                                            if (backStack.size > 1) backStack.removeAt(backStack.size - 1)
+                                            backStack.add(Route.AddStockLot)
+                                        }
+                                    )
+                                }
+                                entry<Route.AddStockLot> {
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    AddStockLotScreen(
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                    )
+                                }
+                                entry<Route.EditStockLot> { navRoute ->
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    AddStockLotScreen(
+                                        lotId = navRoute.lotId,
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                    )
+                                }
+                                entry<Route.AddEquipment> {
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    AddEquipmentScreen(
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                    )
+                                }
+                                entry<Route.EditEquipment> { navRoute ->
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    AddEquipmentScreen(
+                                        equipmentId = navRoute.equipmentId,
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
                                     )
                                 }
                                 entry<Route.GearLibrary> {

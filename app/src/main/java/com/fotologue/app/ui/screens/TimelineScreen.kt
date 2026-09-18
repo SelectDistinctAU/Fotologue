@@ -22,16 +22,16 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.fotologue.app.data.Camera
-import com.fotologue.app.data.Film
-import com.fotologue.app.data.LogEntry
-import com.fotologue.app.data.LogEntryWithGear
+import com.fotologue.core.data.Camera
+import com.fotologue.core.data.Film
+import com.fotologue.core.data.LogEntry
+import com.fotologue.core.data.LogEntryWithGear
 import com.fotologue.core.designsystem.FotologueTheme
 import com.fotologue.app.ui.viewmodel.TimelineViewModel
 import com.fotologue.app.ui.viewmodel.ExportType
 import com.fotologue.app.R
-import com.fotologue.app.data.CameraType
-import com.fotologue.app.data.ExposureSettings
+import com.fotologue.core.data.CameraType
+import com.fotologue.core.data.ExposureSettings
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,11 +44,13 @@ import java.util.Date
 @Composable
 fun TimelineScreen(
     viewModel: TimelineViewModel,
+    onBack: () -> Unit = {},
     onAddLogClick: () -> Unit,
     onLogClick: (Long) -> Unit,
     onGearLibraryClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onContactSheetClick: () -> Unit = {},
+    onLabClick: () -> Unit = {},
     selectedLogId: Long? = null,
 ) {
     val logs by viewModel.logEntries.collectAsStateWithLifecycle()
@@ -60,6 +62,7 @@ fun TimelineScreen(
     val selectedIds by viewModel.selectedIds.collectAsStateWithLifecycle()
 
     TimelineScreenContent(
+        onBack = onBack,
         logs = logs,
         allLogsCount = allLogs.size,
         cameras = cameras,
@@ -73,6 +76,7 @@ fun TimelineScreen(
         onGearLibraryClick = onGearLibraryClick,
         onSettingsClick = onSettingsClick,
         onContactSheetClick = onContactSheetClick,
+        onLabClick = onLabClick,
         onCameraFilterClick = viewModel::setCameraFilter,
         onToggleUnexportedFilter = viewModel::toggleUnexportedFilter,
         onToggleSelection = viewModel::toggleSelection,
@@ -99,6 +103,8 @@ fun TimelineScreenContent(
     onGearLibraryClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onContactSheetClick: () -> Unit = {},
+    onLabClick: () -> Unit = {},
+    onBack: () -> Unit = {},
     onCameraFilterClick: (Long?) -> Unit,
     onToggleUnexportedFilter: () -> Unit,
     onToggleSelection: (Long) -> Unit,
@@ -219,15 +225,28 @@ fun TimelineScreenContent(
                 )
             } else {
                 TopAppBar(
-                    title = { Text(stringResource(R.string.app_name)) },
+                    title = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painter = painterResource(R.drawable.hiking_24px),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Field", style = MaterialTheme.typography.titleLarge)
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_arrow_back),
+                                contentDescription = "Back to Application Hub"
+                            )
+                        }
+                    },
                     actions = {
                         if (logs.isNotEmpty()) {
-                            IconButton(onClick = onContactSheetClick) {
-                                Icon(
-                                    painter = painterResource(R.drawable.gallery_thumbnail_24px), 
-                                    contentDescription = "Digital Contact Sheet"
-                                )
-                            }
                             IconButton(onClick = onSelectAll) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_select_all), 
@@ -237,9 +256,6 @@ fun TimelineScreenContent(
                         }
                         IconButton(onClick = onGearLibraryClick) {
                             Icon(painterResource(R.drawable.ic_handyman), contentDescription = stringResource(R.string.gear_library_title))
-                        }
-                        IconButton(onClick = onSettingsClick) {
-                            Icon(painterResource(R.drawable.ic_settings), contentDescription = stringResource(R.string.settings))
                         }
                     }
                 )

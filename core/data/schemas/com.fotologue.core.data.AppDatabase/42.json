@@ -1,0 +1,2089 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 42,
+    "identityHash": "5bbb6afb52a3aed6742202cc7bb8387e",
+    "entities": [
+      {
+        "tableName": "cameras",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `mount` TEXT NOT NULL, `modelNumber` TEXT NOT NULL, `shutterSpeeds` TEXT NOT NULL, `isHalfFrame` INTEGER NOT NULL, `format` TEXT NOT NULL, `triggerDeviceId` TEXT, `position` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mount",
+            "columnName": "mount",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modelNumber",
+            "columnName": "modelNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shutterSpeeds",
+            "columnName": "shutterSpeeds",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isHalfFrame",
+            "columnName": "isHalfFrame",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "format",
+            "columnName": "format",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "triggerDeviceId",
+            "columnName": "triggerDeviceId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "films",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `iso` INTEGER NOT NULL, `type` TEXT NOT NULL, `expectedExposures` INTEGER NOT NULL, `format` TEXT NOT NULL, `abbreviation` TEXT NOT NULL, `position` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "iso",
+            "columnName": "iso",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expectedExposures",
+            "columnName": "expectedExposures",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "format",
+            "columnName": "format",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "abbreviation",
+            "columnName": "abbreviation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "log_entries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL, `notes` TEXT NOT NULL, `environmentalConditions` TEXT NOT NULL, `cameraId` INTEGER, `filmId` INTEGER, `lensId` INTEGER, `teleconverterId` INTEGER, `filterId` INTEGER, `kitId` INTEGER, `flashId` INTEGER, `viewfinderId` INTEGER, `focalLength` REAL, `effectiveFocalLength` REAL, `effectiveAperture` TEXT, `latitude` REAL, `longitude` REAL, `filmRoll` TEXT, `lastUpdated` INTEGER NOT NULL, `isExportedZip` INTEGER NOT NULL, `isExportedCsv` INTEGER NOT NULL, `isExportedJson` INTEGER NOT NULL, `isExportedXmp` INTEGER NOT NULL, `shutterSpeed` TEXT NOT NULL, `aperture` TEXT NOT NULL, `iso` INTEGER NOT NULL, `thumbnailUri` TEXT, `faceDetected` INTEGER NOT NULL, FOREIGN KEY(`cameraId`) REFERENCES `cameras`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`filmId`) REFERENCES `films`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`lensId`) REFERENCES `lenses`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`teleconverterId`) REFERENCES `teleconverters`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`filterId`) REFERENCES `filters`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`kitId`) REFERENCES `camera_kits`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`flashId`) REFERENCES `flashes`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`viewfinderId`) REFERENCES `viewfinders`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "environmentalConditions",
+            "columnName": "environmentalConditions",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cameraId",
+            "columnName": "cameraId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "filmId",
+            "columnName": "filmId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lensId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "teleconverterId",
+            "columnName": "teleconverterId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "filterId",
+            "columnName": "filterId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "kitId",
+            "columnName": "kitId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "flashId",
+            "columnName": "flashId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "viewfinderId",
+            "columnName": "viewfinderId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "focalLength",
+            "columnName": "focalLength",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "effectiveFocalLength",
+            "columnName": "effectiveFocalLength",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "effectiveAperture",
+            "columnName": "effectiveAperture",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "filmRoll",
+            "columnName": "filmRoll",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isExportedZip",
+            "columnName": "isExportedZip",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isExportedCsv",
+            "columnName": "isExportedCsv",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isExportedJson",
+            "columnName": "isExportedJson",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isExportedXmp",
+            "columnName": "isExportedXmp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "exposureSettings.shutterSpeed",
+            "columnName": "shutterSpeed",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "exposureSettings.aperture",
+            "columnName": "aperture",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "exposureSettings.iso",
+            "columnName": "iso",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "exposureSettings.thumbnailUri",
+            "columnName": "thumbnailUri",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "exposureSettings.faceDetected",
+            "columnName": "faceDetected",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_log_entries_cameraId",
+            "unique": false,
+            "columnNames": [
+              "cameraId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_log_entries_cameraId` ON `${TABLE_NAME}` (`cameraId`)"
+          },
+          {
+            "name": "index_log_entries_filmId",
+            "unique": false,
+            "columnNames": [
+              "filmId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_log_entries_filmId` ON `${TABLE_NAME}` (`filmId`)"
+          },
+          {
+            "name": "index_log_entries_lensId",
+            "unique": false,
+            "columnNames": [
+              "lensId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_log_entries_lensId` ON `${TABLE_NAME}` (`lensId`)"
+          },
+          {
+            "name": "index_log_entries_teleconverterId",
+            "unique": false,
+            "columnNames": [
+              "teleconverterId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_log_entries_teleconverterId` ON `${TABLE_NAME}` (`teleconverterId`)"
+          },
+          {
+            "name": "index_log_entries_filterId",
+            "unique": false,
+            "columnNames": [
+              "filterId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_log_entries_filterId` ON `${TABLE_NAME}` (`filterId`)"
+          },
+          {
+            "name": "index_log_entries_kitId",
+            "unique": false,
+            "columnNames": [
+              "kitId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_log_entries_kitId` ON `${TABLE_NAME}` (`kitId`)"
+          },
+          {
+            "name": "index_log_entries_flashId",
+            "unique": false,
+            "columnNames": [
+              "flashId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_log_entries_flashId` ON `${TABLE_NAME}` (`flashId`)"
+          },
+          {
+            "name": "index_log_entries_viewfinderId",
+            "unique": false,
+            "columnNames": [
+              "viewfinderId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_log_entries_viewfinderId` ON `${TABLE_NAME}` (`viewfinderId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "cameras",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "cameraId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "films",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "filmId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "lenses",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lensId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "teleconverters",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "teleconverterId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "filters",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "filterId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "camera_kits",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "kitId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "flashes",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "flashId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "viewfinders",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "viewfinderId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "lenses",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `make` TEXT NOT NULL, `model` TEXT NOT NULL, `modelNumber` TEXT NOT NULL, `type` TEXT NOT NULL, `mount` TEXT NOT NULL, `filterSize` INTEGER NOT NULL, `isStabilized` INTEGER NOT NULL, `minFocusDistance` REAL NOT NULL, `maxMagnification` REAL NOT NULL, `minAperture` REAL NOT NULL, `maxAperture` REAL NOT NULL, `minFocalLength` INTEGER NOT NULL, `maxFocalLength` INTEGER NOT NULL, `position` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "make",
+            "columnName": "make",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "model",
+            "columnName": "model",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modelNumber",
+            "columnName": "modelNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mount",
+            "columnName": "mount",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "filterSize",
+            "columnName": "filterSize",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isStabilized",
+            "columnName": "isStabilized",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minFocusDistance",
+            "columnName": "minFocusDistance",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxMagnification",
+            "columnName": "maxMagnification",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minAperture",
+            "columnName": "minAperture",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxAperture",
+            "columnName": "maxAperture",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minFocalLength",
+            "columnName": "minFocalLength",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxFocalLength",
+            "columnName": "maxFocalLength",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "teleconverters",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `magnification` REAL NOT NULL, `lightLossStops` REAL NOT NULL, `position` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "magnification",
+            "columnName": "magnification",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lightLossStops",
+            "columnName": "lightLossStops",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "filters",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `compensationStops` REAL NOT NULL, `position` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "compensationStops",
+            "columnName": "compensationStops",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "camera_kits",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `cameraId` INTEGER, `lensId` INTEGER, `filmId` INTEGER, `teleconverterId` INTEGER, `filterId` INTEGER, `flashId` INTEGER, `viewfinderId` INTEGER, `position` INTEGER NOT NULL, FOREIGN KEY(`cameraId`) REFERENCES `cameras`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`lensId`) REFERENCES `lenses`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`filmId`) REFERENCES `films`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`teleconverterId`) REFERENCES `teleconverters`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`filterId`) REFERENCES `filters`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`flashId`) REFERENCES `flashes`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`viewfinderId`) REFERENCES `viewfinders`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cameraId",
+            "columnName": "cameraId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lensId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "filmId",
+            "columnName": "filmId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "teleconverterId",
+            "columnName": "teleconverterId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "filterId",
+            "columnName": "filterId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "flashId",
+            "columnName": "flashId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "viewfinderId",
+            "columnName": "viewfinderId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_camera_kits_cameraId",
+            "unique": false,
+            "columnNames": [
+              "cameraId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_kits_cameraId` ON `${TABLE_NAME}` (`cameraId`)"
+          },
+          {
+            "name": "index_camera_kits_lensId",
+            "unique": false,
+            "columnNames": [
+              "lensId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_kits_lensId` ON `${TABLE_NAME}` (`lensId`)"
+          },
+          {
+            "name": "index_camera_kits_filmId",
+            "unique": false,
+            "columnNames": [
+              "filmId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_kits_filmId` ON `${TABLE_NAME}` (`filmId`)"
+          },
+          {
+            "name": "index_camera_kits_teleconverterId",
+            "unique": false,
+            "columnNames": [
+              "teleconverterId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_kits_teleconverterId` ON `${TABLE_NAME}` (`teleconverterId`)"
+          },
+          {
+            "name": "index_camera_kits_filterId",
+            "unique": false,
+            "columnNames": [
+              "filterId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_kits_filterId` ON `${TABLE_NAME}` (`filterId`)"
+          },
+          {
+            "name": "index_camera_kits_flashId",
+            "unique": false,
+            "columnNames": [
+              "flashId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_kits_flashId` ON `${TABLE_NAME}` (`flashId`)"
+          },
+          {
+            "name": "index_camera_kits_viewfinderId",
+            "unique": false,
+            "columnNames": [
+              "viewfinderId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_kits_viewfinderId` ON `${TABLE_NAME}` (`viewfinderId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "cameras",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "cameraId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "lenses",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lensId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "films",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "filmId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "teleconverters",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "teleconverterId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "filters",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "filterId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "flashes",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "flashId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "viewfinders",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "viewfinderId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "tags",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `category` TEXT NOT NULL, `parentId` INTEGER, `position` INTEGER NOT NULL, FOREIGN KEY(`parentId`) REFERENCES `tags`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parentId",
+            "columnName": "parentId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_tags_parentId",
+            "unique": false,
+            "columnNames": [
+              "parentId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tags_parentId` ON `${TABLE_NAME}` (`parentId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "tags",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "parentId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "log_entry_tag_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`logEntryId` INTEGER NOT NULL, `tagId` INTEGER NOT NULL, PRIMARY KEY(`logEntryId`, `tagId`), FOREIGN KEY(`logEntryId`) REFERENCES `log_entries`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`tagId`) REFERENCES `tags`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "logEntryId",
+            "columnName": "logEntryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagId",
+            "columnName": "tagId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "logEntryId",
+            "tagId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_log_entry_tag_cross_ref_logEntryId",
+            "unique": false,
+            "columnNames": [
+              "logEntryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_log_entry_tag_cross_ref_logEntryId` ON `${TABLE_NAME}` (`logEntryId`)"
+          },
+          {
+            "name": "index_log_entry_tag_cross_ref_tagId",
+            "unique": false,
+            "columnNames": [
+              "tagId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_log_entry_tag_cross_ref_tagId` ON `${TABLE_NAME}` (`tagId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "log_entries",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "logEntryId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "tags",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "tagId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "flashes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `make` TEXT NOT NULL, `model` TEXT NOT NULL, `guideNumber` INTEGER NOT NULL, `position` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "make",
+            "columnName": "make",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "model",
+            "columnName": "model",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "guideNumber",
+            "columnName": "guideNumber",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "camera_lens_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cameraId` INTEGER NOT NULL, `lensId` INTEGER NOT NULL, PRIMARY KEY(`cameraId`, `lensId`))",
+        "fields": [
+          {
+            "fieldPath": "cameraId",
+            "columnName": "cameraId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lensId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cameraId",
+            "lensId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_camera_lens_cross_ref_lensId",
+            "unique": false,
+            "columnNames": [
+              "lensId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_lens_cross_ref_lensId` ON `${TABLE_NAME}` (`lensId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "film_roll_sessions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cameraId` INTEGER NOT NULL, `filmId` INTEGER NOT NULL, `rollNumber` INTEGER NOT NULL, `nextFrameNumber` INTEGER NOT NULL, PRIMARY KEY(`cameraId`, `filmId`))",
+        "fields": [
+          {
+            "fieldPath": "cameraId",
+            "columnName": "cameraId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "filmId",
+            "columnName": "filmId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rollNumber",
+            "columnName": "rollNumber",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextFrameNumber",
+            "columnName": "nextFrameNumber",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cameraId",
+            "filmId"
+          ]
+        }
+      },
+      {
+        "tableName": "viewfinders",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `modelNumber` TEXT NOT NULL, `position` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modelNumber",
+            "columnName": "modelNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "camera_viewfinder_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cameraId` INTEGER NOT NULL, `viewfinderId` INTEGER NOT NULL, PRIMARY KEY(`cameraId`, `viewfinderId`))",
+        "fields": [
+          {
+            "fieldPath": "cameraId",
+            "columnName": "cameraId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "viewfinderId",
+            "columnName": "viewfinderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cameraId",
+            "viewfinderId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_camera_viewfinder_cross_ref_viewfinderId",
+            "unique": false,
+            "columnNames": [
+              "viewfinderId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_viewfinder_cross_ref_viewfinderId` ON `${TABLE_NAME}` (`viewfinderId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "camera_teleconverter_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cameraId` INTEGER NOT NULL, `teleconverterId` INTEGER NOT NULL, PRIMARY KEY(`cameraId`, `teleconverterId`))",
+        "fields": [
+          {
+            "fieldPath": "cameraId",
+            "columnName": "cameraId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "teleconverterId",
+            "columnName": "teleconverterId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cameraId",
+            "teleconverterId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_camera_teleconverter_cross_ref_teleconverterId",
+            "unique": false,
+            "columnNames": [
+              "teleconverterId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_teleconverter_cross_ref_teleconverterId` ON `${TABLE_NAME}` (`teleconverterId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "camera_filter_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cameraId` INTEGER NOT NULL, `filterId` INTEGER NOT NULL, PRIMARY KEY(`cameraId`, `filterId`))",
+        "fields": [
+          {
+            "fieldPath": "cameraId",
+            "columnName": "cameraId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "filterId",
+            "columnName": "filterId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cameraId",
+            "filterId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_camera_filter_cross_ref_filterId",
+            "unique": false,
+            "columnNames": [
+              "filterId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_filter_cross_ref_filterId` ON `${TABLE_NAME}` (`filterId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "camera_flash_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cameraId` INTEGER NOT NULL, `flashId` INTEGER NOT NULL, PRIMARY KEY(`cameraId`, `flashId`))",
+        "fields": [
+          {
+            "fieldPath": "cameraId",
+            "columnName": "cameraId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flashId",
+            "columnName": "flashId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cameraId",
+            "flashId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_camera_flash_cross_ref_flashId",
+            "unique": false,
+            "columnNames": [
+              "flashId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_camera_flash_cross_ref_flashId` ON `${TABLE_NAME}` (`flashId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "lab_equipment",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `category` TEXT NOT NULL, `notes` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "lab_chemicals",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `dilution` TEXT NOT NULL, `mixDate` INTEGER NOT NULL, `capacityRollsTotal` INTEGER NOT NULL, `capacityRollsUsed` INTEGER NOT NULL, `isExhausted` INTEGER NOT NULL, `quantityOnHand` INTEGER NOT NULL, `unopenedQuantity` INTEGER NOT NULL, `openedQuantity` INTEGER NOT NULL, `volumeAmount` REAL NOT NULL, `volumeUnit` TEXT NOT NULL, `expirationDate` INTEGER, `supplier` TEXT NOT NULL, `cost` TEXT NOT NULL, `userRating` REAL NOT NULL, `performanceNotes` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dilution",
+            "columnName": "dilution",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mixDate",
+            "columnName": "mixDate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "capacityRollsTotal",
+            "columnName": "capacityRollsTotal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "capacityRollsUsed",
+            "columnName": "capacityRollsUsed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isExhausted",
+            "columnName": "isExhausted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "quantityOnHand",
+            "columnName": "quantityOnHand",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unopenedQuantity",
+            "columnName": "unopenedQuantity",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "openedQuantity",
+            "columnName": "openedQuantity",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "volumeAmount",
+            "columnName": "volumeAmount",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "volumeUnit",
+            "columnName": "volumeUnit",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expirationDate",
+            "columnName": "expirationDate",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "supplier",
+            "columnName": "supplier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cost",
+            "columnName": "cost",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userRating",
+            "columnName": "userRating",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "performanceNotes",
+            "columnName": "performanceNotes",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "lab_suppliers",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `region` TEXT NOT NULL, `website` TEXT NOT NULL, `email` TEXT NOT NULL, `phone` TEXT NOT NULL, `address` TEXT NOT NULL, `reliabilityRating` REAL NOT NULL, `notes` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "region",
+            "columnName": "region",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "website",
+            "columnName": "website",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reliabilityRating",
+            "columnName": "reliabilityRating",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "lab_inventory_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `category` TEXT NOT NULL, `type` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `batchNumber` TEXT NOT NULL, `containerSize` TEXT NOT NULL, `supplierId` INTEGER, `cost` TEXT NOT NULL, `quantityOnHand` INTEGER NOT NULL, `quantityInUse` INTEGER NOT NULL, `quantityInTransit` INTEGER NOT NULL, `expiryDate` INTEGER, `notes` TEXT NOT NULL, FOREIGN KEY(`supplierId`) REFERENCES `lab_suppliers`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "manufacturer",
+            "columnName": "manufacturer",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "batchNumber",
+            "columnName": "batchNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "containerSize",
+            "columnName": "containerSize",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierId",
+            "columnName": "supplierId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "cost",
+            "columnName": "cost",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "quantityOnHand",
+            "columnName": "quantityOnHand",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "quantityInUse",
+            "columnName": "quantityInUse",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "quantityInTransit",
+            "columnName": "quantityInTransit",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expiryDate",
+            "columnName": "expiryDate",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_lab_inventory_items_supplierId",
+            "unique": false,
+            "columnNames": [
+              "supplierId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_lab_inventory_items_supplierId` ON `${TABLE_NAME}` (`supplierId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "lab_suppliers",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "supplierId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "lab_order_history",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `supplierId` INTEGER, `orderDate` INTEGER NOT NULL, `status` TEXT NOT NULL, `totalCost` TEXT NOT NULL, `trackingNumber` TEXT NOT NULL, `notes` TEXT NOT NULL, FOREIGN KEY(`supplierId`) REFERENCES `lab_suppliers`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierId",
+            "columnName": "supplierId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "orderDate",
+            "columnName": "orderDate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalCost",
+            "columnName": "totalCost",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trackingNumber",
+            "columnName": "trackingNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_lab_order_history_supplierId",
+            "unique": false,
+            "columnNames": [
+              "supplierId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_lab_order_history_supplierId` ON `${TABLE_NAME}` (`supplierId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "lab_suppliers",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "supplierId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "lab_performance_logs",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `logEntryId` INTEGER NOT NULL, `inventoryItemId` INTEGER, `outcomeStatus` TEXT NOT NULL, `rejectCategory` TEXT, `systemErrorReason` TEXT, `learningTag` TEXT, `outcomeRating` REAL NOT NULL, `notes` TEXT NOT NULL, FOREIGN KEY(`logEntryId`) REFERENCES `log_entries`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`inventoryItemId`) REFERENCES `lab_inventory_items`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "logEntryId",
+            "columnName": "logEntryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "inventoryItemId",
+            "columnName": "inventoryItemId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "outcomeStatus",
+            "columnName": "outcomeStatus",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rejectCategory",
+            "columnName": "rejectCategory",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "systemErrorReason",
+            "columnName": "systemErrorReason",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "learningTag",
+            "columnName": "learningTag",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "outcomeRating",
+            "columnName": "outcomeRating",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_lab_performance_logs_logEntryId",
+            "unique": false,
+            "columnNames": [
+              "logEntryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_lab_performance_logs_logEntryId` ON `${TABLE_NAME}` (`logEntryId`)"
+          },
+          {
+            "name": "index_lab_performance_logs_inventoryItemId",
+            "unique": false,
+            "columnNames": [
+              "inventoryItemId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_lab_performance_logs_inventoryItemId` ON `${TABLE_NAME}` (`inventoryItemId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "log_entries",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "logEntryId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "lab_inventory_items",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "inventoryItemId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "lab_process_events",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `filmRollId` TEXT NOT NULL, `developerName` TEXT NOT NULL, `temperatureCelsius` REAL NOT NULL, `durationSeconds` INTEGER NOT NULL, `agitationSchedule` TEXT NOT NULL, `pushPullStops` REAL NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "filmRollId",
+            "columnName": "filmRollId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "developerName",
+            "columnName": "developerName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "temperatureCelsius",
+            "columnName": "temperatureCelsius",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durationSeconds",
+            "columnName": "durationSeconds",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "agitationSchedule",
+            "columnName": "agitationSchedule",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pushPullStops",
+            "columnName": "pushPullStops",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_lab_process_events_filmRollId",
+            "unique": false,
+            "columnNames": [
+              "filmRollId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_lab_process_events_filmRollId` ON `${TABLE_NAME}` (`filmRollId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "print_recipes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `logEntryId` INTEGER NOT NULL, `paperName` TEXT NOT NULL, `paperSize` TEXT NOT NULL, `enlargerLens` TEXT NOT NULL, `baseExposureSeconds` REAL NOT NULL, `gradeFilter` TEXT NOT NULL, `dodgeBurnMapUri` TEXT, FOREIGN KEY(`logEntryId`) REFERENCES `log_entries`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "logEntryId",
+            "columnName": "logEntryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paperName",
+            "columnName": "paperName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paperSize",
+            "columnName": "paperSize",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "enlargerLens",
+            "columnName": "enlargerLens",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseExposureSeconds",
+            "columnName": "baseExposureSeconds",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gradeFilter",
+            "columnName": "gradeFilter",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dodgeBurnMapUri",
+            "columnName": "dodgeBurnMapUri",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_print_recipes_logEntryId",
+            "unique": false,
+            "columnNames": [
+              "logEntryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_print_recipes_logEntryId` ON `${TABLE_NAME}` (`logEntryId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "log_entries",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "logEntryId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "lab_storage_locations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `sleeveNumber` TEXT NOT NULL, `locationType` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sleeveNumber",
+            "columnName": "sleeveNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locationType",
+            "columnName": "locationType",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "print_outcomes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `printRecipeId` INTEGER NOT NULL, `editionNumber` TEXT NOT NULL, `status` TEXT NOT NULL, `exhibitionName` TEXT, `buyerName` TEXT, `salePrice` TEXT, `saleDate` INTEGER, `notes` TEXT NOT NULL, FOREIGN KEY(`printRecipeId`) REFERENCES `print_recipes`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "printRecipeId",
+            "columnName": "printRecipeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "editionNumber",
+            "columnName": "editionNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "exhibitionName",
+            "columnName": "exhibitionName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "buyerName",
+            "columnName": "buyerName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "salePrice",
+            "columnName": "salePrice",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "saleDate",
+            "columnName": "saleDate",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_print_outcomes_printRecipeId",
+            "unique": false,
+            "columnNames": [
+              "printRecipeId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_print_outcomes_printRecipeId` ON `${TABLE_NAME}` (`printRecipeId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "print_recipes",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "printRecipeId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5bbb6afb52a3aed6742202cc7bb8387e')"
+    ]
+  }
+}

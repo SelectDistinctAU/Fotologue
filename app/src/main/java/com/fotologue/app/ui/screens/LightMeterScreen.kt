@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fotologue.app.data.ExposureSettings
+import com.fotologue.core.data.ExposureSettings
 import com.fotologue.app.ui.viewmodel.LightMeterViewModel
 import com.fotologue.app.ui.viewmodel.LightMeterUiState
 import com.fotologue.app.util.LuminanceAnalyzer
@@ -61,7 +61,7 @@ import android.view.WindowManager
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import com.fotologue.app.data.Film
+import com.fotologue.core.data.Film
 import com.fotologue.app.ui.viewmodel.CalibrationStage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState

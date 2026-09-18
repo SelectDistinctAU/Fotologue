@@ -1,10 +1,10 @@
 package com.fotologue.app.ui.viewmodel
 
-import com.fotologue.app.data.ConfigurationManager
-import com.fotologue.app.data.MacroCopyNamingOptions
-import com.fotologue.app.data.MacroCopyPreset
-import com.fotologue.app.data.PictureExportSize
-import com.fotologue.app.data.SettingsRepository
+import com.fotologue.core.data.ConfigurationManager
+import com.fotologue.core.data.MacroCopyNamingOptions
+import com.fotologue.core.data.MacroCopyPreset
+import com.fotologue.core.data.PictureExportSize
+import com.fotologue.core.data.SettingsRepository
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

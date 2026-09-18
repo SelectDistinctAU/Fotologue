@@ -2,10 +2,10 @@ package com.fotologue.app.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fotologue.app.data.FotologueRepository
-import com.fotologue.app.data.ConfigurationManager
-import com.fotologue.app.data.SettingsRepository
-import com.fotologue.app.data.PictureExportSize
+import com.fotologue.core.data.FotologueRepository
+import com.fotologue.core.data.ConfigurationManager
+import com.fotologue.core.data.SettingsRepository
+import com.fotologue.core.data.PictureExportSize
 import android.net.Uri
 import android.content.ContentResolver
 import dagger.hilt.android.lifecycle.HiltViewModel

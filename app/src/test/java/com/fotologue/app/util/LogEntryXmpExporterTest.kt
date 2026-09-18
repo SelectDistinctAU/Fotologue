@@ -1,6 +1,6 @@
 package com.fotologue.app.util
 
-import com.fotologue.app.data.*
+import com.fotologue.core.data.*
 import org.junit.Assert.assertTrue
 import org.junit.Test
 

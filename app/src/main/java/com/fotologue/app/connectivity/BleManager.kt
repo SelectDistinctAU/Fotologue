@@ -9,7 +9,7 @@ import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import com.fotologue.app.data.SettingsRepository
+import com.fotologue.core.data.SettingsRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.util.*

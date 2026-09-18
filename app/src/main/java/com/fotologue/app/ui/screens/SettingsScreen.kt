@@ -19,9 +19,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fotologue.app.data.MacroCopyNamingOptions
-import com.fotologue.app.data.MacroCopyPreset
-import com.fotologue.app.data.PictureExportSize
+import com.fotologue.core.data.MacroCopyNamingOptions
+import com.fotologue.core.data.MacroCopyPreset
+import com.fotologue.core.data.PictureExportSize
 import com.fotologue.app.ui.viewmodel.SettingsEvent
 import com.fotologue.app.ui.viewmodel.SettingsViewModel
 import com.fotologue.app.R
@@ -122,10 +122,21 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.settings_title)) },
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(R.drawable.settings_24px),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Settings", style = MaterialTheme.typography.titleLarge)
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.action_back))
+                        Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "Return to Application Hub")
                     }
                 }
             )
@@ -520,8 +531,14 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
+            val currentConfiguration = LocalConfiguration.current
             Surface(
-                onClick = { createDocumentLauncher.launch("fotologue_backup.json") },
+                onClick = {
+                    val locale = currentConfiguration.locales[0]
+                    val dateFormat = SimpleDateFormat("yyyyMMdd_HHmm", locale)
+                    val backupFileName = "backup_${dateFormat.format(Date())}.json"
+                    createDocumentLauncher.launch(backupFileName)
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(vertical = 8.dp)) {

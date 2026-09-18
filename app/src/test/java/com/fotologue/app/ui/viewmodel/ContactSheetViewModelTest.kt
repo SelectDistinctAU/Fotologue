@@ -1,7 +1,7 @@
 package com.fotologue.app.ui.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import com.fotologue.app.data.*
+import com.fotologue.core.data.*
 import com.fotologue.app.util.LogExporter
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers

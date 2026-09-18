@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fotologue.app.R
-import com.fotologue.app.data.*
+import com.fotologue.core.data.*
 import com.fotologue.core.designsystem.FotologueTheme
 import com.fotologue.app.ui.viewmodel.AddLogViewModel
 import com.fotologue.app.util.ExposureSuggester

@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fotologue.app.R
-import com.fotologue.app.data.PictureExportSize
+import com.fotologue.core.data.PictureExportSize
 import com.fotologue.app.ui.viewmodel.OnboardingUiState
 import com.fotologue.app.ui.viewmodel.OnboardingViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi

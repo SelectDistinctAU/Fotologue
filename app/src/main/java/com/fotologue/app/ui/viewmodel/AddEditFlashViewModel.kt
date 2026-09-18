@@ -3,9 +3,9 @@ package com.fotologue.app.ui.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fotologue.app.data.Camera
-import com.fotologue.app.data.FotologueRepository
-import com.fotologue.app.data.Flash
+import com.fotologue.core.data.Camera
+import com.fotologue.core.data.FotologueRepository
+import com.fotologue.core.data.Flash
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,6 +1,6 @@
 package com.fotologue.app.util
 
-import com.fotologue.app.data.Lens
+import com.fotologue.core.data.Lens
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test

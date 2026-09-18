@@ -1,61 +1,60 @@
 # Fotologue 📸🎞️
 
-**Version:** 1.0.17 (Build 18) | **Last Updated:** September 2026 | **Audience:** Developers, Beta Reviewers & Testers
+**Version:** 1.0.18 | **Last Updated:** September 2026 | **Audience:** Photographers, Directors of Photography (DPs) & Developers
 
-**Professional Exposure Log & Light Meter companion for Analog Photographers.**
+**A Photographic Catalogue Suite — Equally Empowering All Painting-With-Light Artists.**
 
-Fotologue is a high-precision, privacy-first mobile application designed to bridge the technical gap between physical film photography and modern digital archiving. Built for speed in the field and accuracy in the lab, Fotologue replaces paper shot lists with a robust, metadata-rich logging ecosystem.
-
----
-
-## 📜 The Backstory & Creative Philosophy
-
-> *"Years ago, I had the best intentions of keeping a paper notebook log while shooting film—recording the Who, What, When, Where, Why, and How of every frame. But in the field, fumbling with a pen, notebook, and camera gear was cumbersome, so like many photographers, I abandoned it.*  
-> 
-> *I realized that if a logging tool wasn't convenient, fast, accurate, and above all **easy**, I simply wouldn't use it. From that simple idea, Fotologue grew into an indispensable creative companion.*  
-> 
-> *Logging with Fotologue is as easy as you want it to be: take a 1-tap quick log during fast street shooting, or use live B&W previews to study scene composition, tonal contrast, and depth of field before tripping the film shutter."*
-
-Fotologue solves the 5 W's + H of analogue photography in the field:
-* **What**: Camera, Lens, Film Stock, Shutter Speed, Aperture, ISO, Focal Length.
-* **When**: Timestamp, Roll & Frame counter (`Roll 03, Frame 12`).
-* **Where**: Exact GPS coordinates and interactive location mapping.
-* **Who**: On-device face detection and custom People tags (*Portrait*, *Family*).
-* **Why**: 3-Axis Tag Taxonomy (*Subject • Content • Intent*) for fine-art projects (*Study*, *Series*, *Book Projects*).
-* **How**: Calibrated spot/centre-weighted light metering with live C-41, E-6, and B&W previews.
+Fotologue (*Foto* + *Catalogue*) is a high-precision, privacy-first mobile application designed to bridge physical film shooting, wet darkroom craftsmanship, and lifetime digital archiving. Built around the **4-Stage Division of Labour (`Field → Lab → Station → Archive`)**, Fotologue replaces paper shot lists and darkroom notebooks with a robust, metadata-rich catalogue ecosystem.
 
 ---
 
-## ✨ Key Features
+## 🏛️ Application Division of Labour (`Field → Lab → Station → Archive`)
 
-### 🛠️ The Wizard's Calibration
-A specialized 2-stage hardware tuning tool designed to transform your smartphone into a precision instrument.
-*   **Stage 1: The Void**: Measures the sensor "Noise Floor" with a covered lens to eliminate electronic "ghost light."
-*   **Stage 2: The Balance**: Calibrates signal gain against an 18% grey card for industrial-grade accuracy.
-*   **Hardware Baseline**: Transparent monitoring of "Noise Floor" units and "Signal Gain" multipliers.
+```
+                          FOTOLOGUE APPLICATION HUB
+                                      │
+     ┌──────────────────┬─────────────┴────────────┬──────────────────┐
+     ▼                  ▼                          ▼                  ▼
+1. FIELD             2. LAB                     3. STATION         4. ARCHIVE
+Exposures & Metering Darkroom Processing        Digital Contact    Master Negative
+Roll & Frame Logs    Chemistry & Paper Stock    Sheets & Exposure  Registry & JSON
+Smart Gear Kits      Equipment Maintenance      Analytics          Vault / XMP Export
+```
 
-### 📐 Relational Gear Library & 3-Axis Taxonomy
-Maintain a professional database of your entire arsenal with intelligent camera cross-referencing and live category badges.
-*   **Cameras**: Full support for 35mm, 120 (Medium Format), Half-Frame (e.g., Pentax 17), Large Format, and TLR (e.g. Yashica Mat-124G) bodies.
-*   **Fixed & Interchangeable Lenses**: Automatic fixed-lens auto-creation and cross-referencing for TLR and compact cameras. Full camera cross-referencing for Lenses, Viewfinders, Teleconverters, Filters, and Flashes.
-*   **Film Stocks**: Manage ISO and expected exposures (12, 24, 36) per stock with 35mm half-frame doubling.
-*   **3-Axis Tag Taxonomy (Subject • Content • Intent)**: Categorise shots by domain (*Subject*), detail (*Content*), and creative purpose (*Intent*: *Study*, *Series*, *Documentation*, *Commission*).
-*   **Smart Kits**: Pre-configure favourite camera/lens/film/accessory combinations for one-tap quick fill during fieldwork.
+### 1. 🟢 FIELD (In-situ Exposure & Observation)
+*   **Tactile Field Logging**: Record Who, What, When, Where, Why, and How for every exposure in seconds.
+*   **Pro Light Meter**: Calibrated spot/centre-weighted light metering with live C-41, E-6, and B&W pre-visualization previews.
+*   **Relational Gear Library**: Cameras (35mm, Medium Format, Half-Frame, Large Format, Digital Cinema), Lenses, Viewfinders, Teleconverters, Filters, and Flashes.
+*   **Smart Kits**: One-tap loading for favourite Camera + Lens + Film/Digital Sensor + Accessory combinations.
 
-### 🎞️ Live Session Tracking & Digital Contact Sheet
-Intelligent "Film Roll.Frame" management and visual scene-matching for your cataloguing pipeline.
-*   **Digital Contact Sheet View**: Interactive grid view of all frame thumbnails organised by film roll (6 columns for 35mm, 3 for 120 format).
-*   **In-Grid Frame Gap Adjuster**: Interactively insert or remove frame gaps (+1 / -1 offset) to keep the contact sheet 1-to-1 aligned with physical film rebate numbers.
-*   **Printable PDF Proof Sheet Exporter**: Generates styled A4 PDF contact proof sheets ready for printing or digital archival binders.
-*   **Active Roll Counter**: Dedicated management screen to increment/decrement frames, set active frame numbers, or reset roll counts.
-*   **Visual Simulations**: Pre-visualise your shots with B&W, C-41 (Colour Negative), and E-6 (Slide) film look previews in the meter.
+### 2. 🧪 LAB (Wet Darkroom Processing & Inventory)
+*   **Master Item Catalogue**: Define consumable specifications (Chemistry, Paper, Safety Gear, Supplies) with quantifiable inner yield capacities (*e.g. 1 Box of 25 sheets*).
+*   **Physical Stock Lots**: Track stock in-flow from vendor to darkroom (*`🚚 IN_TRANSIT` $\to$ `🟢 ON_HAND` $\to$ `🟡 IN_USE` $\to$ `🔴 EXHAUSTED`*).
+*   **Supplier Directory**: Curated vendor contacts (*Rewind Photo Lab, Vanbar, Ikigai, Digital Camera Warehouse*) with active "In Use" filters.
+*   **Maintenance Screen**: Full-screen LOV management for Storage Locations (*Chemical Shelf, Darkroom Fridge, Paper Safe*), Manufacturers, Categories, and Units.
 
-### 📊 Professional Meta-Integrity & Camera Copy Exporter
-Export your data directly into your professional post-processing workflow (Lightroom/Capture One).
-*   **ISO 16684 (XMP)**: Generates industry-standard sidecar files with Creator, Copyright, Contact metadata, and `Intent|Study` / `Intent|Series` tag hierarchies.
-*   **Camera Macro Copy Presets & Scanner Matching**: Auto-names exported `.xmp` sidecar files (e.g. `_DSF1024.xmp`) to match RAW scan file sequences from Fujifilm, Canon, Nikon, Sony, Leica, or flatbed scanners. Save custom presets in Settings for one-tap loading.
-*   **Export Awareness**: Visual tracking in the Timeline (`[Z]`, `[C]`, `[J]`, `[X]`) to show exactly which logs have been archived.
-*   **Interactive Maps**: One-tap navigation to your shoot locations via Google Maps integration.
+### 3. 🔬 STATION (Studio Research, Analytics & Reflection)
+*   **Digital Contact Sheets**: Interactive grid views organized by film roll / digital shoot session with 1-to-1 rebate frame-gap alignment.
+*   **Performance Logs & Knowledge Base**: Track frame quality (*Keepers vs. Rejects*) and classify errors between **System Errors** (*Expired Chemistry, Fogged Paper, Light Leak*) and **Photographer Learning** (*Framing, Exposure, Focus*).
+*   **Printable PDF Proof Sheets**: A4 PDF proof sheet generator ready for printing or binder archiving.
+
+### 4. 🏛️ ARCHIVE (Lifetime Preservation & Master Vault)
+*   **Canonical Native JSON Vault**: Single-source-of-truth backup files (`backup_YYYYMMDD_HHMM.json`) containing the full relational data graph.
+*   **Non-Destructive Merge Import**: Re-import historical `Roll.Frame ID` records from Google Drive / Base Camp archives without thumbnail disk bloat.
+*   **ISO 16684 (XMP) Export**: Generates industry-standard sidecars with 3-Axis Tag hierarchies (`Subject`, `Content`, `Intent`) for desktop DAMs (digiKam, Lightroom, darktable).
+
+---
+
+## 🎬 For Directors of Photography (DPs), Hybrid & Digital Artists
+
+> *"Discipline for Digital, Freedom for Film"*
+
+Fotologue provides digital photographers, DPs, and hybrid artists with **unmatched field metadata control, RAW sequence matching, and zero-trust privacy**:
+- 🎯 **Capture Intent at Exposure**: Record creative lighting intent before SD cards are dumped and context is lost.
+- ⚡ **RAW & Scanner Sequence Matching**: Auto-names exported `.xmp` sidecars (*e.g. `_DSF1024.xmp`*) to match RAW file sequences from Fujifilm, Nikon, Canon, Sony, or flatbed scanners.
+- 🧰 **Assignment Smart Kits**: One-tap pre-loading for commercial editorial, street, or landscape kits.
+
+👉 **Read the full [WIIFY Guide for DPs & Digital Photographers](docs/dp_and_digital_photographers_guide.md)** for detailed feature breakdowns and workflow comparisons.
 
 ---
 
@@ -63,41 +62,12 @@ Export your data directly into your professional post-processing workflow (Light
 
 **Privacy is the core of Fotologue's architecture.** See our full [Privacy Policy](PRIVACY_POLICY.md) for complete details.
 *   **100% Local-First**: No accounts, no cloud syncing, and no external tracking. Your data never leaves your device.
-*   **On-Device Intelligence**: Smart Face-Aware Tagging uses on-device ML; biometric data is processed transiently and never stored or transmitted.
-*   **User Sovereignty**: All shooting data, locations, and notes belong to the user. System access is handled via standard Android Storage Access Framework (SAF).
-
----
-
-## 🛰️ Release Focus & Future Roadmap (v2.0 & v3.0)
-
-### Current Major Release Focus (v1.0.x)
-The feature set for this major release is **finalized and feature-frozen**. The current priority is comprehensive QA testing, community verification, and validating that all metering, cataloguing, cross-referencing, and XMP export features operate with 100% precision.
-
-### Future Roadmap
-* **v2.0: Bluetooth Hotshoe / PC-Sync Flash Trigger Hardware (`Fotologue Trigger`)**:
-  Connects via Bluetooth Low Energy (BLE) to capture flash sync signals upon exposure, logging millisecond GPS coordinates, auto-incrementing film frame counters, and managing multi-camera field timelines.
-* **v3.0: Full End-to-End Imaging & Darkroom Suite (`Fotologue Lab`)**:
-  Extends Fotologue from field logging to the full physical image lifecycle—tracking physical film roll stock (*Fridge $\to$ Camera $\to$ Lab $\to$ Negative Sleeve*), darkroom printing paper, processing chemistry capacity/exhaustion, enlarger split-grade print recipes, and fine-art print edition custodianship (*Gallery Exhibitions, Sales, Provenance*).
+*   **User Sovereignty**: All shooting data, locations, notes, and stock records belong to the user.
 
 ---
 
 ## 🧪 Quality Assurance
 
 Fotologue is built to professional engineering standards.
-*   **Unit Tests**: 58 core logic unit tests covering calibration math, session management, camera-gear cross-referencing, macro copy preset formatting, PDF proof sheet generation, and metadata integrity.
+*   **Unit Tests**: 64 core logic unit tests covering calibration math, session management, camera-gear cross-referencing, macro copy preset formatting, PDF proof sheet generation, Room migrations v29 to v48, and JSON merge imports.
 *   **Verification**: Field-tested on Pixel devices and modern system emulators.
-*   **Test Plan**: See the [Testing Strategy](docs/testing_strategy.md) for detailed QA scripts and manual verification steps. 
-
----
-
-## 🚀 Getting Started for Testers
-
-1.  **Clone the Repository**: `git clone https://github.com/[your-repo]/Fotologue.git`
-2.  **Environment**: Open in Android Studio (Quail 2026.1.4 or later).
-3.  **Build**: Run `./gradlew :app:assembleDebug`. 
-    *Note: Requires compileSdk 37. Android 16 / API 36 is targeted; see [Target API Roadmap](docs/target-api-roadmap.md).*
-4.  **Initial Setup**: Use the "Pro Calibration Wizard" under Settings before your first shoot for maximum metering accuracy.
-
----
-
-*Developed with a commitment to professional high-fidelity photography standards and long-term technical collaboration.*

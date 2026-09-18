@@ -1,5 +1,7 @@
 package com.fotologue.app.data
 
+import com.fotologue.core.data.*
+
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider

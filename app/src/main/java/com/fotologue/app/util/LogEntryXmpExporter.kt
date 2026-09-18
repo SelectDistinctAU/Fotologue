@@ -1,7 +1,7 @@
 package com.fotologue.app.util
 
-import com.fotologue.app.data.LogEntryWithGear
-import com.fotologue.app.data.Tag
+import com.fotologue.core.data.LogEntryWithGear
+import com.fotologue.core.data.Tag
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -34,6 +34,8 @@ object LogEntryXmpExporter {
         }
 
         val tagMap = allTags.associateBy { it.id }
+        val lat = log.latitude
+        val lon = log.longitude
 
         return """
             |<?xpacket begin="" id="W5M0MpCehiHzreSzNTczkc9d"?>
@@ -92,9 +94,9 @@ object LogEntryXmpExporter {
             |   <Iptc4xmpCore:CreatorContactInfo
             |    Iptc4xmpCore:CiEmailOut="$contact"
             |    Iptc4xmpCore:CiUrlWork="$contact" />
-            |   ${if (log.latitude != null && log.longitude != null) """
-            |   <exif:GPSLatitude>${formatLatLong(log.latitude)}</exif:GPSLatitude>
-            |   <exif:GPSLongitude>${formatLatLong(log.longitude)}</exif:GPSLongitude>
+            |   ${if (lat != null && lon != null) """
+            |   <exif:GPSLatitude>${formatLatLong(lat)}</exif:GPSLatitude>
+            |   <exif:GPSLongitude>${formatLatLong(lon)}</exif:GPSLongitude>
             |   """.trimMargin() else ""}
             |   <photoshop:Headline>${escapeXml(gearString)}</photoshop:Headline>
             |  </rdf:Description>

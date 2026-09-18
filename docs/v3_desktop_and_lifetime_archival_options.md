@@ -21,7 +21,7 @@ Fotologue began as a mobile field-logging tool. Expanding into a **Desktop Appli
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    THE FULL IMAGE LIFETIME PIPELINE                         │
 ├─────────────────┬───────────────────┬───────────────────┬───────────────────┤
-│ 1. CREATION     │ 2. DIGITIZATION   │ 3. PRINTING       │ 4. PROVENANCE     │
+│ 1. CREATION     │ 2. DIGITISATION   │ 3. PRINTING       │ 4. PROVENANCE     │
 │ (Mobile Field)  │ (Scan & XMP)      │ (Darkroom / Lab)  │ (Exhibition/Sale) │
 ├─────────────────┼───────────────────┼───────────────────┼───────────────────┤
 │ • Exposure Log  │ • Macro Presets   │ • Enlarger Setup  │ • Print Editions  │

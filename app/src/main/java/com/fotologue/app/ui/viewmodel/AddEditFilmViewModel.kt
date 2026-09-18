@@ -3,10 +3,10 @@ package com.fotologue.app.ui.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fotologue.app.data.Film
-import com.fotologue.app.data.FilmPreset
-import com.fotologue.app.data.FilmPresets
-import com.fotologue.app.data.FotologueRepository
+import com.fotologue.core.data.Film
+import com.fotologue.core.data.FilmPreset
+import com.fotologue.core.data.FilmPresets
+import com.fotologue.core.data.FotologueRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,6 +45,36 @@ class AddEditFilmViewModel @Inject constructor(
 
     var filmId: Long? = savedStateHandle.get<Long>("filmId")
         private set
+
+    init {
+        checkCameraFormatsAndSetDefault()
+    }
+
+    private fun checkCameraFormatsAndSetDefault() {
+        if (filmId != null) return
+
+        viewModelScope.launch {
+            repository.allCameras.collect { cameras ->
+                if (cameras.isNotEmpty()) {
+                    val distinctFormats = cameras.map { it.format }.distinct()
+                    if (distinctFormats.size == 1) {
+                        val singleFormat = distinctFormats.first()
+                        val defaultExposures = when (singleFormat) {
+                            Film.FORMAT_120 -> "12"
+                            Film.FORMAT_LARGE -> "1"
+                            else -> "36"
+                        }
+                        _uiState.update {
+                            it.copy(
+                                format = singleFormat,
+                                expectedExposures = defaultExposures
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun setFilmId(id: Long?) {
         if (filmId == id) return

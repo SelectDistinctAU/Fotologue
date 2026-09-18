@@ -9,7 +9,43 @@ sealed class Route : NavKey {
     data object Welcome : Route()
 
     @Serializable
+    data object Hub : Route()
+
+    @Serializable
     data object Timeline : Route()
+
+    @Serializable
+    data class Lab(val initialTab: Int = 0) : Route()
+
+    @Serializable
+    data object LabMaintenance : Route()
+
+    @Serializable
+    data class AddEditItemMaster(val masterId: Long? = null, val defaultCategory: String? = null) : Route()
+
+    @Serializable
+    data object AddStockLot : Route()
+
+    @Serializable
+    data class EditStockLot(val lotId: Long) : Route()
+
+    @Serializable
+    data object AddEquipment : Route()
+
+    @Serializable
+    data class EditEquipment(val equipmentId: Long) : Route()
+
+    @Serializable
+    data class AddEditSupplier(val supplierId: Long? = null) : Route()
+
+    @Serializable
+    data class SupplierIssueTracker(val supplierId: Long? = null) : Route()
+
+    @Serializable
+    data class FilmProcessingSession(val rollId: String? = null) : Route()
+
+    @Serializable
+    data class EnlargerPrintingSession(val logId: Long? = null) : Route()
 
     @Serializable
     data class LogDetail(val logId: Long) : Route()
@@ -78,6 +114,9 @@ sealed class Route : NavKey {
 
     @Serializable
     data object RollCounter : Route()
+
+    @Serializable
+    data object ArchiveVault : Route()
 
     @Serializable
     data class ContactSheet(

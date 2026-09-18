@@ -3,8 +3,8 @@ package com.fotologue.app.ui.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fotologue.app.data.FotologueRepository
-import com.fotologue.app.data.LogEntryWithGear
+import com.fotologue.core.data.FotologueRepository
+import com.fotologue.core.data.LogEntryWithGear
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*

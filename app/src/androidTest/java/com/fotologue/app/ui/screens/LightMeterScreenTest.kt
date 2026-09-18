@@ -4,7 +4,7 @@ import androidx.camera.view.PreviewView
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
-import com.fotologue.app.data.ExposureSettings
+import com.fotologue.core.data.ExposureSettings
 import com.fotologue.core.designsystem.FotologueTheme
 import com.fotologue.app.ui.viewmodel.LightMeterUiState
 import org.junit.Rule

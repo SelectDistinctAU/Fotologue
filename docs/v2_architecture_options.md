@@ -8,7 +8,7 @@
 > **Product Scope & Priority Strategy**:
 > * **v2.0 Primary Goal (P0 / Mandatory)**: Analogue Film Cameras (35mm, 120 Medium Format, Half-Frame, Large Format, TLRs, and **Instant Film / Polaroids**) paired with the **Fotologue Trigger** (Hotshoe & PC-Sync BLE Flash Hardware).
 > * **v2.0 Secondary / v3.0 Scope**: Digital Camera Cataloguing & Burst Auto-Batching. Included in v2.0 as a secondary module if lightweight; otherwise deferred to v3.0.
-> * **Centralized Taxonomy Principle**: A single, centralized **3-Axis Tag Taxonomy (Subject • Content • Intent)** serves all film stocks, instant films, and cameras in one unified database.
+> * **Centralised Taxonomy Principle**: A single, centralised **3-Axis Tag Taxonomy (Subject • Content • Intent)** serves all film stocks, instant films, and cameras in one unified database.
 
 ---
 

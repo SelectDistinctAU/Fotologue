@@ -2,11 +2,11 @@ package com.fotologue.app.util
 
 import android.content.Context
 import android.net.Uri
-import com.fotologue.app.data.FotologueRepository
-import com.fotologue.app.data.LogEntryWithGear
-import com.fotologue.app.data.MacroCopyNamingOptions
-import com.fotologue.app.data.PictureExportSize
-import com.fotologue.app.data.SettingsRepository
+import com.fotologue.core.data.FotologueRepository
+import com.fotologue.core.data.LogEntryWithGear
+import com.fotologue.core.data.MacroCopyNamingOptions
+import com.fotologue.core.data.PictureExportSize
+import com.fotologue.core.data.SettingsRepository
 import com.fotologue.app.ui.viewmodel.ExportType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first

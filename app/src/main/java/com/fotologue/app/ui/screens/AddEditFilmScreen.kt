@@ -16,9 +16,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.res.stringResource
-import com.fotologue.app.data.Film
-import com.fotologue.app.data.FilmPreset
-import com.fotologue.app.data.FilmPresets
+import com.fotologue.core.data.Film
+import com.fotologue.core.data.FilmPreset
+import com.fotologue.core.data.FilmPresets
 import com.fotologue.app.ui.viewmodel.AddEditFilmViewModel
 import com.fotologue.app.R
 

@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.fotologue.app.R
-import com.fotologue.app.data.MacroCopyNamingOptions
-import com.fotologue.app.data.MacroCopyPreset
+import com.fotologue.core.data.MacroCopyNamingOptions
+import com.fotologue.core.data.MacroCopyPreset
 import com.fotologue.app.ui.viewmodel.ContactSheetFrame
 import com.fotologue.app.ui.viewmodel.ContactSheetUiState
 import com.fotologue.app.ui.viewmodel.ContactSheetViewModel
@@ -418,10 +418,21 @@ fun ContactSheetScreenContent(
                 )
             } else {
                 TopAppBar(
-                    title = { Text("Digital Contact Sheet") },
+                    title = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painter = painterResource(R.drawable.hub_24px),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Station", style = MaterialTheme.typography.titleLarge)
+                        }
+                    },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.action_back))
+                            Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "Return to Application Hub")
                         }
                     },
                     actions = {

@@ -28,4 +28,4 @@
 }
 
 # General Android
--keep class com.fotologue.app.data.** { *; }
+-keep class com.fotologue.core.data.** { *; }

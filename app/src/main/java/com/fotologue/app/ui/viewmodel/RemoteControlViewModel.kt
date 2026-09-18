@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fotologue.app.connectivity.BleConnectionState
 import com.fotologue.app.connectivity.BleManager
-import com.fotologue.app.data.SettingsRepository
+import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

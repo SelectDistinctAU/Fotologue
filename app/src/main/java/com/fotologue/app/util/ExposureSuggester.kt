@@ -1,10 +1,10 @@
 package com.fotologue.app.util
 
-import com.fotologue.app.data.Camera
-import com.fotologue.app.data.ExposureSettings
-import com.fotologue.app.data.Filter
-import com.fotologue.app.data.Lens
-import com.fotologue.app.data.Teleconverter
+import com.fotologue.core.data.Camera
+import com.fotologue.core.data.ExposureSettings
+import com.fotologue.core.data.Filter
+import com.fotologue.core.data.Lens
+import com.fotologue.core.data.Teleconverter
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.log2

@@ -3,11 +3,11 @@ package com.fotologue.app.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import android.net.Uri
-import com.fotologue.app.data.Camera
-import com.fotologue.app.data.FotologueRepository
-import com.fotologue.app.data.LogEntryWithGear
-import com.fotologue.app.data.MacroCopyNamingOptions
-import com.fotologue.app.data.SettingsRepository
+import com.fotologue.core.data.Camera
+import com.fotologue.core.data.FotologueRepository
+import com.fotologue.core.data.LogEntryWithGear
+import com.fotologue.core.data.MacroCopyNamingOptions
+import com.fotologue.core.data.SettingsRepository
 
 import com.fotologue.app.util.LogExporter
 import dagger.hilt.android.lifecycle.HiltViewModel

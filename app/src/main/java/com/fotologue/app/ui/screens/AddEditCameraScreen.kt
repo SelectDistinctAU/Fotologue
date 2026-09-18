@@ -13,8 +13,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fotologue.app.data.CameraType
-import com.fotologue.app.data.Film
+import com.fotologue.core.data.CameraType
+import com.fotologue.core.data.Film
 import com.fotologue.app.ui.viewmodel.AddEditCameraViewModel
 import com.fotologue.app.R
 

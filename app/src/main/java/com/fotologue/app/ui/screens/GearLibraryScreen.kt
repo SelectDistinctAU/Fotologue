@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fotologue.app.data.*
+import com.fotologue.core.data.*
 import com.fotologue.app.ui.viewmodel.GearLibraryViewModel
 import com.fotologue.app.R
 

@@ -1,6 +1,6 @@
 package com.fotologue.app.util
 
-import com.fotologue.app.data.LogEntryWithGear
+import com.fotologue.core.data.LogEntryWithGear
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

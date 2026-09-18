@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.fotologue.app.R
-import com.fotologue.app.data.Film
-import com.fotologue.app.data.LogEntryWithGear
+import com.fotologue.core.data.Film
+import com.fotologue.core.data.LogEntryWithGear
 import com.fotologue.app.ui.viewmodel.LogDetailViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -122,9 +122,9 @@ fun LogDetailContent(
                 val total = if (isHalf && (expected != null)) expected * 2 else expected
                 
                 val displayText = if (total != null) {
-                    "${log.filmRoll}/$total"
+                    "${log.filmRoll ?: ""}/$total"
                 } else {
-                    log.filmRoll
+                    log.filmRoll ?: ""
                 }
                 ExposureRow(
                     label = stringResource(R.string.label_film_roll),
@@ -220,7 +220,9 @@ fun LogDetailContent(
             }
         }
 
-        if (log.latitude != null && log.longitude != null) {
+        val latitude = log.latitude
+        val longitude = log.longitude
+        if (latitude != null && longitude != null) {
             DetailSection(title = stringResource(R.string.label_location)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -231,7 +233,7 @@ fun LogDetailContent(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(R.string.location_lat_long, log.latitude, log.longitude),
+                        text = stringResource(R.string.location_lat_long, latitude, longitude),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

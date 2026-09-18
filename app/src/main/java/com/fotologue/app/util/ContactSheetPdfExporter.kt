@@ -10,7 +10,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
-import com.fotologue.app.data.LogEntryWithGear
+import com.fotologue.core.data.LogEntryWithGear
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Date

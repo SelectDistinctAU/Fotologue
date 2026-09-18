@@ -1,7 +1,8 @@
 package com.fotologue.app.data
 
 import androidx.room.withTransaction
-import com.fotologue.app.location.LocationProvider
+import com.fotologue.core.data.*
+import com.fotologue.core.data.location.LocationProvider
 import io.mockk.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf

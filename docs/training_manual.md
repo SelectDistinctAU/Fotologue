@@ -1,169 +1,91 @@
 # Fotologue Master Training Manual 📖📸
 
-**Version:** 1.0.17 (Build 18) | **Last Updated:** September 2026 | **Audience:** Analog Photographers, Workshop Instructors & Beta Testers
+**Version:** 1.0.18 | **Last Updated:** September 2026 | **Audience:** Photographers, DPs, Workshop Instructors & Lab Technicians
 
-**A Comprehensive Field & Archival Guide for Analog Photographers**
+**A Photographic Catalogue Suite — Equally Empowering All Painting-With-Light Artists.**
 
 ---
 
 ## Table of Contents
 
-1. [Core Philosophy & Onboarding](#1-core-philosophy--onboarding)
-2. [Gear Library & Equipment Pairing](#2-gear-library--equipment-pairing)
-3. [The 3-Axis Tag Taxonomy (Subject • Content • Intent)](#3-the-3-axis-tag-taxonomy-subject--content--intent)
-4. [Smart Face-Aware Detection vs. Named People Tags](#4-smart-face-aware-detection-vs-named-people-tags)
-5. [Smart Camera Kits](#5-smart-camera-kits)
-6. [Field Workflow & Metering Calibration](#6-field-workflow--metering-calibration)
-7. [Digital Contact Sheet & In-Grid Gap Adjuster](#7-digital-contact-sheet--in-grid-gap-adjuster)
-8. [Camera Macro Copying & Scanner Matching](#8-camera-macro-copying--scanner-matching)
-9. [Printable PDF Proof Sheets & Archiving](#9-printable-pdf-proof-sheets--archiving)
-10. [Privacy, Backups & Portability](#10-privacy-backups--portability)
+1. [Application Architecture & Division of Labour](#1-application-architecture--division-of-labour)
+2. [Module 1: FIELD (In-situ Exposure & Metering)](#2-module-1-field-in-situ-exposure--metering)
+3. [Module 2: LAB (Wet Darkroom & Inventory Supply Chain)](#3-module-2-lab-wet-darkroom--inventory-supply-chain)
+4. [Module 3: STATION (Digital Contact Sheets & Reflection)](#4-module-3-station-digital-contact-sheets--reflection)
+5. [Module 4: ARCHIVE (Master Vault & XMP Exports)](#5-module-4-archive-master-vault--xmp-exports)
+6. [Educational Curriculum & Workshop Exercises](#6-educational-curriculum--workshop-exercises)
 
 ---
 
-## 1. Core Philosophy & Onboarding
+## 1. Application Architecture & Division of Labour
 
-* **Zero Cloud Dependence**: No user accounts, no logins, no cloud tracking. All databases, preferences, and thumbnails stay stored strictly on your device.
-* **First-Run Welcome Screen**: Guides you through adding your first **Camera**, **Lens**, and **Film Stock**. Quick settings allow configuring automatic thumbnails, on-device face detection, and export resolutions up front.
-
----
-
-## 2. Gear Library & Equipment Pairing
-
-The **Gear Library** organises your equipment and taxonomy into two distinct sections:
+Fotologue (*Foto* + *Catalogue*) is built around the **4-Stage Division of Labour**:
 
 ```
-⚙️ EQUIPMENT & KITS              🏷️ TAXONOMY & TAGS
- ├── Camera Kits                  ├── Subjects (Who / What domain?)
- ├── Cameras                      ├── Content (Specific details?)
- ├── Lenses                       └── Intent (Purpose / Project?)
- ├── Film Stocks
- └── Accessories (TCs, Filters, Flashes, Viewfinders)
+                          FOTOLOGUE APPLICATION HUB
+                                      │
+     ┌──────────────────┬─────────────┴────────────┬──────────────────┐
+     ▼                  ▼                          ▼                  ▼
+1. FIELD             2. LAB                     3. STATION         4. ARCHIVE
+Exposures & Metering Darkroom Processing        Digital Contact    Master Negative
+Roll & Frame Logs    Chemistry & Paper Stock    Sheets & Exposure  Registry & JSON
+Smart Gear Kits      Equipment Maintenance      Analytics          Vault / XMP Export
 ```
 
-### Camera Cross-Referencing & Fixed Lenses
-* **Camera Associations**: Link interchangeable lenses, teleconverters, filters, flashes, and viewfinders to specific camera bodies.
-* **Fixed-Lens Cameras & TLRs**: Adding a TLR (e.g. *Yashica Mat-124G* or *Rolleiflex 2.8F*) or compact camera automatically creates and pairs its fixed lens (*Yashinon 80mm f/3.5*) in your database.
-* **Half-Frame Support**: Selecting *35mm Half Frame* on cameras (e.g., Pentax 17) automatically doubles expected exposure counts (e.g. 36 exp → 72 exp).
+---
+
+## 2. Module 1: FIELD (In-situ Exposure & Metering)
+
+### Pro Light Meter Calibration (Wizard's Calibration)
+1. **Stage 1: The Void**: Measures sensor Noise Floor with covered lens.
+2. **Stage 2: The Balance**: Calibrates Signal Gain multiplier against an 18% grey card.
+
+### Field Logging Workflow
+- Tap **`+ Log Exposure`** to record: Camera Body, Lens, Film/Sensor Stock, Aperture, Shutter Speed, ISO, GPS Location, and 3-Axis Tags (`Subject • Content • Intent`).
+- Use **Smart Kits** to pre-load Camera + Lens + Film + Accessory combinations for 1-tap fieldwork setup.
 
 ---
 
-## 3. The 3-Axis Tag Taxonomy (Subject • Content • Intent)
+## 3. Module 2: LAB (Wet Darkroom & Inventory Supply Chain)
 
-Fotologue uses a 3-axis taxonomy to classify exposures:
+### Master Item Catalogue & Physical Stock In-Flow
+- **Item Specification**: Define product specifications with strict Major/Minor Unit derivative rules (*e.g. 1 Box of 25 sheets*).
+- **Stock In-Flow**:
+  `🚚 IN_TRANSIT` $\to$ Tap **`[Receive]`** $\to$ `🟢 ON_HAND` $\to$ Tap **`[Open/Use]`** $\to$ `🟡 IN_USE` $\to$ `🔴 EXHAUSTED`.
+- **Active Suppliers**: Filter vendors by "In Use" checkbox; view store addresses on Google Maps with 1-tap.
+- **Vendor Issue Tracker**: Log order inquiries, missing items, and call follow-ups with status badges (`🔴 OPEN`, `🟡 FOLLOWED UP`, `🟢 RESOLVED`).
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                             3-AXIS TAXONOMY                                 │
-├──────────────────────┬──────────────────────┬───────────────────────────────┤
-│ 1. SUBJECT           │ 2. CONTENT           │ 3. INTENT                     │
-│ (Broad Domain)       │ (Specific Details)   │ (Purpose & Project)           │
-├──────────────────────┼──────────────────────┼───────────────────────────────┤
-│ • Urban / Built      │ • Architecture       │ • Study (Process/Inquiry)     │
-│ • Nature             │ • Street             │ • Series (Curated Body)       │
-│ • Events             │ • Wildlife           │ • Documentation (Journal)     │
-│ • People             │ • Portrait           │ • Commission (Client Assignment)│
-└──────────────────────┴──────────────────────┴───────────────────────────────┘
-```
-
-**Building a Book or Exhibition**: Create a custom **Intent Sub-Tag** under **Series** (e.g. `Series > Urban Decay` or `Series > Monoliths`). Attaching this tag exports directly into Adobe Lightroom or Capture One as `Intent|Series|Urban Decay`, allowing instant smart collection grouping for book layouts!
+### Film Processing & Enlarger Printing Sessions
+- **Film Development Timer**: Select imported film roll (*e.g. Roll 03 - Tri-X 400*) and developer chemistry lot; run live countdown timer with progress bar; finish session to auto-deplete developer roll capacity.
+- **Enlarger Printing Session**: Select `Roll.Frame ID` and paper stock lot (*e.g. Multigrade RC Deluxe Satin 8x10*); log exposure recipe, grade filter, and dodge/burn notes; record outcome (*`🟢 Keeper`* vs *`🔴 Reject`* with Photographer Learning reflection); auto-deplete paper stock!
 
 ---
 
-## 4. Smart Face-Aware Detection vs. Named People Tags
+## 4. Module 3: STATION (Digital Contact Sheets & Reflection)
 
-Understanding how Fotologue handles human subjects:
-
-### Face-Aware Detection (On-Device ML)
-* **What It Does**: Scans live camera viewfinder frames in real-time using Google ML Kit to detect whether a **human face is present** in the shot.
-* **How It Helps**: When a face is detected:
-  1. The light meter adjusts exposure suggestions to favor skin tones.
-  2. The log creation screen automatically highlights **People** category tags.
-* **Privacy & Biometrics**: Face detection is **100% ephemeral and local**. Fotologue stores **no biometric face hashes, templates, or facial recognition profiles**.
-
-### Named People Tags
-* **How to Tag Specific Individuals**:
-  1. In the **Gear Library**, navigate to **Subjects > People** (or **Taxonomy & Tags**).
-  2. Add custom sub-tags for specific individuals (e.g. `People > John`, `People > Sarah`).
-  3. When logging a shot detected with a human, select your custom name chip (*John* or *Sarah*) in one tap.
+### Digital Contact Sheets
+- Interactive grid view of frame thumbnails organized by film roll (6 columns for 35mm, 3 for 120 format).
+- **In-Grid Frame Gap Adjuster**: Insert/remove frame gaps (+1 / -1 offset) to keep contact sheets 1-to-1 aligned with physical film rebate numbers.
+- **Printable PDF Proof Sheets**: A4 PDF proof sheet generator ready for printing or binder archiving.
 
 ---
 
-## 5. Smart Camera Kits
+## 5. Module 4: ARCHIVE (Master Vault & XMP Exports)
 
-* **One-Tap Quick Fill**: Pre-configure favourite equipment combinations (e.g. *Leica M6 + 35mm Summicron + Tri-X 400*).
-* **Field Speed**: Selecting a Kit on the **Add Log Screen** fills Camera, Lens, Film, ISO, and accessories in a single tap.
-
----
-
-## 6. Field Workflow & Metering Calibration
-
-### The Pro Calibration Wizard
-Transform your phone into a precision light meter via **Settings > EV Calibration**:
-1. **Stage 1 (The Void)**: Measure the sensor "Noise Floor" with a covered lens to eliminate internal electronic noise.
-2. **Stage 2 (The Balance)**: Calibrate signal gain against an 18% grey card or neutral wall.
-
-### Live Metering & Pre-Visualization
-* **Metering Modes**: Toggle between Spot and Centre-Weighted metering.
-* **Film Look Simulations**: Pre-visualise scene contrast in live-view with **B&W**, **C-41 (Colour Negative)**, or **E-6 (Slide/Reversal)** colour profiles.
-* **Scene Thumbnails**: Capturing a scene thumbnail creates a visual fingerprint attached to the log.
+### Single Source of Truth & Merge Import
+- **Canonical Native JSON Vault**: Full relational database backup (`backup_YYYYMMDD_HHMM.json`).
+- **Non-Destructive Merge Import**: Re-import historical `Roll.Frame ID` records from Google Drive / OneDrive archives into local database without thumbnail bloat.
+- **ISO 16684 (XMP) Export**: Export `.xmp` sidecars with Creator, Copyright, Contact, and 3-Axis Tag hierarchies for Lightroom, Capture One, digiKam, and darktable.
 
 ---
 
-## 7. Digital Contact Sheet & In-Grid Gap Adjuster
+## 6. Educational Curriculum & Workshop Exercises
 
-Open the **Digital Contact Sheet** via the top bar icon on the Timeline.
+### Exercise A: Field Exposure & Intention
+*Objective*: Practice logging 5 frames using calibrated light metering and 3-Axis Tagging (`Intent|Study` vs `Intent|Series`).
 
-```
-┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐
-│ #01 [IMG] │ │ #02 [IMG] │ │ #03 [IMG] │ │ #04 [GAP] │ ◄─ Tap to shift +1 / -1
-├───────────┤ ├───────────┤ ├───────────┤ ├───────────┤
-│ 1/125 f/8 │ │ 1/250 f/4 │ │ 1/60 f/11 │ │ Skipped   │
-└───────────┘ └───────────┘ └───────────┘ └───────────┘
-```
+### Exercise B: Darkroom Development & Chemistry Capacity
+*Objective*: Execute a Film Processing Session with live timer, log temperature, and verify chemical roll capacity auto-depletion.
 
-### In-Grid Gap Adjuster
-If a frame was skipped on film or unlogged:
-* **Skipped Frame Placeholder**: Displayed as `#04 Skipped / Gap`.
-* **Gap Actions**: Tap any skipped slot or active frame card to:
-  1. *"Insert Additional Gap (+1 Offset)"*: Shifts subsequent frame numbers forward by $+1$.
-  2. *"Remove Gap / Pull Frames Back (-1 Offset)"*: Shifts subsequent frame numbers back by $-1$ to fill the gap.
-  3. *"Log Exposure for Frame #N"*: Opens `AddLog` pre-filled for that exact slot.
-
----
-
-## 8. Camera Macro Copying & Scanner Matching
-
-When photographing negatives with a DSLR/mirrorless macro setup or flatbed scanner:
-
-To automatically pair XMP sidecars in Adobe Lightroom or Capture One, the XMP sidecar filename **must match the RAW/TIF file name** (e.g. `_DSF1024.xmp` for `_DSF1024.RAF`).
-
-### Setting Up Macro Copying Options
-In the Export Sheet or Settings:
-1. **Enable Macro Copy Filename Matching**.
-2. Select or save a **Camera Preset**:
-   * *Fujifilm RAW*: `_DSF` prefix, 4 digits (`_DSF1024.xmp`).
-   * *Canon RAW*: `IMG_` prefix, 4 digits (`IMG_4821.xmp`).
-   * *Nikon RAW*: `DSC_` prefix, 4 digits (`DSC_0050.xmp`).
-   * *Sony RAW*: `_DSC` prefix, 5 digits (`_DSC00050.xmp`).
-3. Set **Start File Number** (e.g. `1024`).
-4. **Sequence Direction**: Choose *Forward* or *Reverse* (for inverted film strip feeding).
-
----
-
-## 9. Printable PDF Proof Sheets & Archiving
-
-* **Export as Printable PDF Proof Sheet**:
-  Generates an A4 PDF contact proof sheet complete with:
-  * **Header**: Camera, Film Stock, Roll Number, Exposure Count, Date, Creator & Copyright notices.
-  * **Darkroom Grid**: Format-adaptive layout (6 columns for 35mm, 3 columns for 120 format).
-  * **Frame Cards**: High-res scene thumbnails, frame rebate badges (`#01`, `#02`), and exposure metadata (`1/125 @ f/8`, ISO).
-  * **Usage**: Print physical proof sheets for negative storage sleeves or client presentation binders.
-
----
-
-## 10. Privacy, Backups & Portability
-
-* **100% On-Device Storage**: No telemetry, analytics, or external trackers.
-* **On-Device Face Detection**: Biometric data is processed in-memory via Google ML Kit and never saved or transmitted.
-* **SAF Backup & Restore**: Create full JSON backups or restore complete gear and exposure databases via standard Android Storage Access Framework (SAF) in Settings.
+### Exercise C: Enlarger Printing & Error Classification
+*Objective*: Log an Enlarger Printing Session, create a dodge/burn map, and classify a test print reject between *System Error* and *Photographer Learning*.

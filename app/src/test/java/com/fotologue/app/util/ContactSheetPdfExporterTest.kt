@@ -1,12 +1,12 @@
 package com.fotologue.app.util
 
 import android.content.Context
-import com.fotologue.app.data.Camera
-import com.fotologue.app.data.CameraType
-import com.fotologue.app.data.ExposureSettings
-import com.fotologue.app.data.Film
-import com.fotologue.app.data.LogEntry
-import com.fotologue.app.data.LogEntryWithGear
+import com.fotologue.core.data.Camera
+import com.fotologue.core.data.CameraType
+import com.fotologue.core.data.ExposureSettings
+import com.fotologue.core.data.Film
+import com.fotologue.core.data.LogEntry
+import com.fotologue.core.data.LogEntryWithGear
 import io.mockk.mockk
 import org.junit.Assert.assertFalse
 import org.junit.Test
