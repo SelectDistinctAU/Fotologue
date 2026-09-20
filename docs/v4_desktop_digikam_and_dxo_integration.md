@@ -134,3 +134,17 @@ As a photographer, you have **3 clear, flexible architectural options** for how 
 
 ### Option C: Automated Background NAS Sync Service
 - **How it works**: Fotologue Desktop runs as a lightweight background service alongside digiKam or Lightroom. Whenever you copy new RAW macro scan files into your NAS archive folder, Fotologue automatically detects them and generates matching XMP sidecars in real-time.
+
+---
+
+## 7. NAS-Hosted digiKam Setup (Shared MariaDB / SQLite over SMB)
+
+For photographers running digiKam against a **Local NAS (Synology, TrueNAS, Unraid)**:
+
+### 1. Database Configurations Supported:
+- **Shared MariaDB / MySQL Server (Docker on NAS)**: digiKam connects to `mariadb://nas.local:3306/digikam`. Multiple desktop workstations (e.g. studio PC, darkroom laptop) share the exact same central catalogue database simultaneously.
+- **SQLite over SMB/NFS Share**: `digikam4.db` resides directly on the shared NAS volume alongside film scan subfolders (`//NAS/FilmArchive/2026/PNTX-TX400-R01/`).
+
+### 2. How Fotologue Dispatches Metadata to NAS digiKam:
+1. Fotologue Mobile or Desktop writes ISO 16684 `.xmp` sidecar files (*`_DSF1024.xmp`*) directly to your NAS film roll subfolders via SAF or SMB/NFS.
+2. digiKam's background file watcher detects modified XMP sidecars, reads Fotologue's 3-Axis Tag hierarchy (`Subject • Content • Intent`), creator copyright, GPS coordinates, and darkroom print recipe notes, and automatically updates its central MariaDB / SQLite index!
