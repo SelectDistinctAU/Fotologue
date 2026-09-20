@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,10 +32,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +61,8 @@ import java.util.Locale
 @Composable
 fun ArchiveScreen(
     viewModel: SettingsViewModel,
+    isSafelightActive: Boolean = false,
+    onToggleSafelight: (() -> Unit)? = null,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -127,22 +133,33 @@ fun ArchiveScreen(
 
     val timestamp = SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault()).format(Date())
 
+    val safelightBg = if (isSafelightActive) Color.Black else MaterialTheme.colorScheme.surface
+    val safelightCardBg = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceVariant
+    val safelightFg = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface
+    val safelightSubFg = if (isSafelightActive) Color(0xFFFF3333) else MaterialTheme.colorScheme.onSurfaceVariant
+    val safelightPrimary = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.primary
+    val safelightBtnBg = if (isSafelightActive) Color(0xFF660000) else MaterialTheme.colorScheme.primary
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = safelightBg,
+        contentColor = safelightFg,
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = painterResource(R.drawable.shelves_24px),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = safelightPrimary,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "Archive Vault & Desktop Bridge",
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
+                            color = safelightFg
                         )
                     }
                 },
@@ -150,8 +167,35 @@ fun ArchiveScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Return to Application Hub"
+                            contentDescription = "Return to Application Hub",
+                            tint = safelightPrimary
                         )
+                    }
+                },
+                actions = {
+                    if (onToggleSafelight != null) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(end = 4.dp)
+                        ) {
+                            Text(
+                                text = "Safelight",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = safelightPrimary,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Switch(
+                                checked = isSafelightActive,
+                                onCheckedChange = { onToggleSafelight() },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = Color(0xFFFF0000),
+                                    checkedTrackColor = Color(0xFF660000),
+                                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                                )
+                            )
+                        }
                     }
                 }
             )
@@ -169,7 +213,7 @@ fun ArchiveScreen(
             // MOUNTED STORAGE TARGET CARD (NAS / Proton Drive / Google Drive)
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                colors = CardDefaults.cardColors(containerColor = safelightCardBg)
             ) {
                 Column(
                     modifier = Modifier
@@ -180,28 +224,30 @@ fun ArchiveScreen(
                     Text(
                         text = "STORAGE TARGET & DESTINATION SHARE",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = safelightPrimary,
                         fontWeight = FontWeight.Bold
                     )
 
                     val targetDisplay = archiveTargetUri?.lastPathSegment ?: "Not Mounted (Defaulting to Downloads / SAF)"
                     Text(
                         text = "Target Share: $targetDisplay",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = safelightFg
                     )
                     Text(
                         text = "Mount your Local NAS (SMB/WebDAV), Proton Drive, or Google Drive folder via Storage Access Framework for 1-tap backups.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = safelightSubFg
                     )
 
                     Button(
                         onClick = { folderPickerLauncher.launch(null) },
+                        colors = ButtonDefaults.buttonColors(containerColor = safelightBtnBg, contentColor = safelightPrimary),
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
-                        Icon(painterResource(R.drawable.warehouse_24px), contentDescription = null)
+                        Icon(painterResource(R.drawable.warehouse_24px), contentDescription = null, tint = safelightPrimary)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(if (archiveTargetUri != null) "Change Target Directory" else "Mount NAS / Cloud Directory")
+                        Text(if (archiveTargetUri != null) "Change Target Directory" else "Mount NAS / Cloud Directory", color = safelightPrimary)
                     }
                 }
             }
@@ -209,7 +255,7 @@ fun ArchiveScreen(
             // CANONICAL NATIVE JSON BACKUP VAULT
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                colors = CardDefaults.cardColors(containerColor = safelightCardBg)
             ) {
                 Column(
                     modifier = Modifier
@@ -220,13 +266,13 @@ fun ArchiveScreen(
                     Text(
                         text = "CANONICAL NATIVE JSON VAULT",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = safelightPrimary,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = "Full-fidelity relational database backups. The native JSON backup is the single source of truth for your lifetime catalogue.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = safelightSubFg
                     )
 
                     Row(
@@ -235,13 +281,14 @@ fun ArchiveScreen(
                     ) {
                         Button(
                             onClick = { createJsonLauncher.launch("backup_$timestamp.json") },
+                            colors = ButtonDefaults.buttonColors(containerColor = safelightBtnBg, contentColor = safelightPrimary),
                             modifier = Modifier
                                 .weight(1f)
                                 .height(48.dp)
                         ) {
-                            Icon(Icons.Default.Share, contentDescription = null)
+                            Icon(Icons.Default.Share, contentDescription = null, tint = safelightPrimary)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Export Vault", style = MaterialTheme.typography.labelSmall)
+                            Text("Export Vault", style = MaterialTheme.typography.labelSmall, color = safelightPrimary)
                         }
 
                         OutlinedButton(
@@ -250,9 +297,9 @@ fun ArchiveScreen(
                                 .weight(1f)
                                 .height(48.dp)
                         ) {
-                            Icon(Icons.Default.Refresh, contentDescription = null)
+                            Icon(Icons.Default.Refresh, contentDescription = null, tint = safelightPrimary)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Merge Import", style = MaterialTheme.typography.labelSmall)
+                            Text("Merge Import", style = MaterialTheme.typography.labelSmall, color = safelightPrimary)
                         }
                     }
                 }
@@ -261,7 +308,7 @@ fun ArchiveScreen(
             // DESKTOP DAM EXPORTER (digiKam / Lightroom / Capture One)
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                colors = CardDefaults.cardColors(containerColor = safelightCardBg)
             ) {
                 Column(
                     modifier = Modifier
@@ -272,24 +319,25 @@ fun ArchiveScreen(
                     Text(
                         text = "DESKTOP DAM EXPORTER (digiKam / Lightroom / Capture One)",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = safelightPrimary,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = "Generates ISO 16684 XMP sidecar files with 3-Axis Tag hierarchies (`Subject`, `Content`, `Intent`), creator copyright, and camera RAW scan sequence matching.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = safelightSubFg
                     )
 
                     Button(
                         onClick = { createCsvLauncher.launch("catalogue_summary_$timestamp.csv") },
+                        colors = ButtonDefaults.buttonColors(containerColor = safelightBtnBg, contentColor = safelightPrimary),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp)
                     ) {
-                        Icon(Icons.Default.Share, contentDescription = null)
+                        Icon(Icons.Default.Share, contentDescription = null, tint = safelightPrimary)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Export CSV Summary Log", style = MaterialTheme.typography.labelMedium)
+                        Text("Export CSV Summary Log", style = MaterialTheme.typography.labelMedium, color = safelightPrimary)
                     }
                 }
             }

@@ -117,15 +117,26 @@ class AddEditLensViewModel @Inject constructor(
         }
     }
 
+    fun preSelectCameraId(cameraId: Long) {
+        _uiState.update { state ->
+            val updated = state.selectedCameraIds + cameraId
+            savedStateHandle["selectedCameraIds"] = updated.toLongArray()
+            state.copy(
+                selectedCameraIds = updated,
+                isCameraSelectionValid = true
+            )
+        }
+    }
+
     fun onCameraToggled(cameraId: Long) {
         _uiState.update { state ->
-            val camera = state.cameras.find { it.id == cameraId } ?: return@update state
+            val camera = state.cameras.find { it.id == cameraId }
             
             val currentIds = state.selectedCameraIds
             val newIds = if (currentIds.contains(cameraId)) {
                 currentIds - cameraId
             } else {
-                if (!camera.type.isInterchangeable) {
+                if (camera?.type?.isInterchangeable == false) {
                     setOf(cameraId)
                 } else {
                     val hasFixed = currentIds.any { id ->

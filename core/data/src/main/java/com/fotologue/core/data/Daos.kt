@@ -475,6 +475,9 @@ interface TagDao {
 @Dao
 interface FilmRollSessionDao {
     @Query("SELECT * FROM film_roll_sessions")
+    fun getAllSessions(): Flow<List<FilmRollSession>>
+
+    @Query("SELECT * FROM film_roll_sessions")
     suspend fun getAllSessionsOnce(): List<FilmRollSession>
 
     @Query("SELECT * FROM film_roll_sessions WHERE cameraId = :cameraId AND filmId = :filmId")

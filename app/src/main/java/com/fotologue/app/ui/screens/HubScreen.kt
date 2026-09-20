@@ -18,11 +18,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,6 +35,8 @@ import com.fotologue.core.designsystem.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HubScreen(
+    isSafelightActive: Boolean = false,
+    onToggleSafelight: (() -> Unit)? = null,
     onNavigateToField: () -> Unit,
     onNavigateToLab: () -> Unit,
     onNavigateToStation: () -> Unit,
@@ -38,28 +44,63 @@ fun HubScreen(
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val safelightBg = if (isSafelightActive) Color.Black else MaterialTheme.colorScheme.surface
+    val safelightCardBg = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceVariant
+    val safelightFg = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface
+    val safelightSubFg = if (isSafelightActive) Color(0xFFFF3333) else MaterialTheme.colorScheme.onSurfaceVariant
+    val safelightPrimary = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.primary
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = safelightBg,
+        contentColor = safelightFg,
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                 title = {
                     Column {
                         Text(
                             text = "Fotologue",
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                            color = safelightFg
                         )
                         Text(
                             text = "A Photographic Catalogue Suite",
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            color = safelightPrimary
                         )
                     }
                 },
                 actions = {
+                    if (onToggleSafelight != null) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(end = 4.dp)
+                        ) {
+                            Text(
+                                text = "Safelight",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = safelightPrimary,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Switch(
+                                checked = isSafelightActive,
+                                onCheckedChange = { onToggleSafelight() },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = Color(0xFFFF0000),
+                                    checkedTrackColor = Color(0xFF660000),
+                                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                                )
+                            )
+                        }
+                    }
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(
                             painter = painterResource(R.drawable.settings_24px),
-                            contentDescription = "Settings"
+                            contentDescription = "Settings",
+                            tint = safelightPrimary
                         )
                     }
                 }
@@ -77,7 +118,7 @@ fun HubScreen(
                 Text(
                     text = "APPLICATION STAGING PORTAL",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = safelightPrimary,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
                 )
@@ -89,6 +130,10 @@ fun HubScreen(
                     subtitle = "In-situ Exposure & Observation",
                     description = "Exposure Logging • Light Meter • Active Roll Counter • Gear Kits",
                     iconRes = R.drawable.hiking_24px,
+                    cardBg = safelightCardBg,
+                    titleColor = safelightFg,
+                    subColor = safelightPrimary,
+                    descColor = safelightSubFg,
                     onClick = onNavigateToField
                 )
             }
@@ -99,6 +144,10 @@ fun HubScreen(
                     subtitle = "Wet Darkroom Processing & Inventory",
                     description = "Item Specifications • Stock Lots & In-Flow • Suppliers • Maintenance",
                     iconRes = R.drawable.experiment_24px,
+                    cardBg = safelightCardBg,
+                    titleColor = safelightFg,
+                    subColor = safelightPrimary,
+                    descColor = safelightSubFg,
                     onClick = onNavigateToLab
                 )
             }
@@ -109,6 +158,10 @@ fun HubScreen(
                     subtitle = "Studio Analysis & Reflection",
                     description = "Digital Contact Sheets • Frame Gap Alignment • Performance Trends",
                     iconRes = R.drawable.hub_24px,
+                    cardBg = safelightCardBg,
+                    titleColor = safelightFg,
+                    subColor = safelightPrimary,
+                    descColor = safelightSubFg,
                     onClick = onNavigateToStation
                 )
             }
@@ -119,6 +172,10 @@ fun HubScreen(
                     subtitle = "Master Registry & Preservation Vault",
                     description = "Canonical JSON Backup Vault • Merge Import • XMP Desktop Sidecar Exports",
                     iconRes = R.drawable.shelves_24px,
+                    cardBg = safelightCardBg,
+                    titleColor = safelightFg,
+                    subColor = safelightPrimary,
+                    descColor = safelightSubFg,
                     onClick = onNavigateToArchive
                 )
             }
@@ -132,12 +189,16 @@ fun HubModuleCard(
     subtitle: String,
     description: String,
     iconRes: Int,
+    cardBg: Color,
+    titleColor: Color,
+    subColor: Color,
+    descColor: Color,
     onClick: () -> Unit
 ) {
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = cardBg)
     ) {
         Row(
             modifier = Modifier
@@ -148,7 +209,7 @@ fun HubModuleCard(
             Icon(
                 painter = painterResource(iconRes),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = subColor,
                 modifier = Modifier.size(36.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
@@ -156,20 +217,21 @@ fun HubModuleCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = titleColor
                     )
                 }
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = subColor,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = descColor
                 )
             }
         }

@@ -39,6 +39,7 @@ import android.content.res.Configuration
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -167,14 +168,20 @@ fun LightMeterScreen(
 
                     val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-                    cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(
+                    val camera = cameraProvider.bindToLifecycle(
                         lifecycleOwner,
                         cameraSelector,
                         preview,
                         imageAnalysis,
                         imageCapture
                     )
+
+                    try {
+                        val zoom = (uiState.currentFocalLength?.toFloat() ?: 50f) / 24.0f
+                        camera.cameraControl.setZoomRatio(zoom.coerceIn(1.0f, 8.0f))
+                    } catch (_: Exception) {
+                        // Zoom ratio handled
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -223,6 +230,7 @@ fun LightMeterScreen(
         onBack = onBack,
         onToggleMeteringMode = viewModel::toggleMeteringMode,
         onFocalLengthChanged = viewModel::onFocalLengthChanged,
+        onAdjustEvOffset = viewModel::adjustEvOffset,
         onSpotLocationUpdated = viewModel::updateSpotLocation,
         onTakeThumbnail = { takeThumbnail(it) },
         onToggleFilmSimulation = viewModel::toggleFilmSimulation,
@@ -248,6 +256,7 @@ fun LightMeterScreenContent(
     onBack: () -> Unit,
     onToggleMeteringMode: () -> Unit,
     onFocalLengthChanged: (Int) -> Unit,
+    onAdjustEvOffset: (Float) -> Unit,
     onSpotLocationUpdated: (Int, Int, Int, Int) -> Unit,
     onTakeThumbnail: ((String?) -> Unit) -> Unit,
     onToggleFilmSimulation: () -> Unit,
@@ -317,6 +326,7 @@ fun LightMeterScreenContent(
                     onToggleMeteringMode = onToggleMeteringMode,
                     onToggleFilmSimulation = onToggleFilmSimulation,
                     onFocalLengthChanged = onFocalLengthChanged,
+                    onAdjustEvOffset = onAdjustEvOffset,
                     onTakeThumbnail = onTakeThumbnail,
                     onUseSettings = onUseSettings,
                     targetIso = targetIso,
@@ -356,6 +366,7 @@ fun LightMeterScreenContent(
                     onToggleMeteringMode = onToggleMeteringMode,
                     onToggleFilmSimulation = onToggleFilmSimulation,
                     onFocalLengthChanged = onFocalLengthChanged,
+                    onAdjustEvOffset = onAdjustEvOffset,
                     onTakeThumbnail = onTakeThumbnail,
                     onUseSettings = onUseSettings,
                     targetIso = targetIso,
@@ -456,6 +467,7 @@ private fun InputSettingsColumn(
     onToggleMeteringMode: () -> Unit,
     onToggleFilmSimulation: () -> Unit,
     onFocalLengthChanged: (Int) -> Unit,
+    onAdjustEvOffset: (Float) -> Unit,
     onTakeThumbnail: ((String?) -> Unit) -> Unit,
     onUseSettings: (ExposureSettings) -> Unit,
     targetIso: Int,
@@ -515,6 +527,48 @@ private fun InputSettingsColumn(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Large [-] and [+] Focal Length Fine-Tuning Controls
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val currentFL = uiState.currentFocalLength ?: 50
+            Text(
+                text = "Focal Length (${currentFL}mm):",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                FilledTonalIconButton(
+                    onClick = { onFocalLengthChanged((currentFL - 5).coerceAtLeast(14)) },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Text("-", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold))
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Text(
+                    text = "${currentFL}mm",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                FilledTonalIconButton(
+                    onClick = { onFocalLengthChanged((currentFL + 5).coerceAtMost(800)) },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Text("+", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold))
+                }
             }
         }
 

@@ -8,7 +8,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    repository: FotologueRepository
+    private val repository: FotologueRepository
 ) : ViewModel() {
     val isOnboardingComplete: Flow<Boolean> = repository.isOnboardingComplete
+    val isSafelightActive: Flow<Boolean> = repository.isSafelightActive
+
+    fun setSafelightActive(active: Boolean) {
+        repository.setSafelightActive(active)
+    }
+
+    fun toggleSafelight() {
+        repository.toggleSafelight()
+    }
 }

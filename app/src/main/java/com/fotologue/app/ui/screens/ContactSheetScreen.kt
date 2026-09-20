@@ -28,6 +28,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -49,6 +52,8 @@ data class ContactSheetGridCell(
 @Composable
 fun ContactSheetScreen(
     viewModel: ContactSheetViewModel,
+    isSafelightActive: Boolean = false,
+    onToggleSafelight: (() -> Unit)? = null,
     onBack: () -> Unit,
     onLogClick: (Long) -> Unit,
     onAddLogForFrame: ((Int) -> Unit)? = null
@@ -57,6 +62,8 @@ fun ContactSheetScreen(
 
     ContactSheetScreenContent(
         uiState = uiState,
+        isSafelightActive = isSafelightActive,
+        onToggleSafelight = onToggleSafelight,
         onBack = onBack,
         onLogClick = onLogClick,
         onAddLogForFrame = onAddLogForFrame,
@@ -74,6 +81,8 @@ fun ContactSheetScreen(
 @Composable
 fun ContactSheetScreenContent(
     uiState: ContactSheetUiState,
+    isSafelightActive: Boolean = false,
+    onToggleSafelight: (() -> Unit)? = null,
     onBack: () -> Unit,
     onLogClick: (Long) -> Unit,
     onAddLogForFrame: ((Int) -> Unit)? = null,
@@ -394,51 +403,83 @@ fun ContactSheetScreenContent(
         }
     }
 
+    val safelightBg = if (isSafelightActive) Color.Black else MaterialTheme.colorScheme.surface
+    val safelightFg = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface
+    val safelightPrimary = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.primary
+
     Scaffold(
+        containerColor = safelightBg,
+        contentColor = safelightFg,
         topBar = {
             if (uiState.isSelectionMode) {
                 TopAppBar(
-                    title = { Text(stringResource(R.string.selected_count, uiState.selectedFrameIds.size)) },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
+                    title = { Text(stringResource(R.string.selected_count, uiState.selectedFrameIds.size), color = safelightFg) },
                     navigationIcon = {
                         IconButton(onClick = onClearSelection) {
-                            Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.action_clear_selection))
+                            Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.action_clear_selection), tint = safelightPrimary)
                         }
                     },
                     actions = {
                         IconButton(onClick = onSelectAll) {
-                            Icon(painterResource(R.drawable.ic_select_all), contentDescription = stringResource(R.string.action_select_all))
+                            Icon(painterResource(R.drawable.ic_select_all), contentDescription = stringResource(R.string.action_select_all), tint = safelightPrimary)
                         }
                         IconButton(onClick = { showExportOptions = true }) {
-                            Icon(painterResource(R.drawable.ic_share), contentDescription = "Export")
+                            Icon(painterResource(R.drawable.ic_share), contentDescription = "Export", tint = safelightPrimary)
                         }
                         IconButton(onClick = onDeleteSelected) {
-                            Icon(painterResource(R.drawable.ic_delete), contentDescription = stringResource(R.string.action_delete))
+                            Icon(painterResource(R.drawable.ic_delete), contentDescription = stringResource(R.string.action_delete), tint = safelightPrimary)
                         }
                     }
                 )
             } else {
                 TopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                     title = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 painter = painterResource(R.drawable.hub_24px),
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
+                                tint = safelightPrimary,
                                 modifier = Modifier.size(24.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Station", style = MaterialTheme.typography.titleLarge)
+                            Text("Station", style = MaterialTheme.typography.titleLarge, color = safelightFg)
                         }
                     },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "Return to Application Hub")
+                            Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "Return to Application Hub", tint = safelightPrimary)
                         }
                     },
                     actions = {
+                        if (onToggleSafelight != null) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(end = 4.dp)
+                            ) {
+                                Text(
+                                    text = "Safelight",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = safelightPrimary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Switch(
+                                    checked = isSafelightActive,
+                                    onCheckedChange = { onToggleSafelight() },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = Color(0xFFFF0000),
+                                        checkedTrackColor = Color(0xFF660000),
+                                        uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                                    )
+                                )
+                            }
+                        }
                         if (uiState.frames.isNotEmpty()) {
                             IconButton(onClick = onSelectAll) {
-                                Icon(painterResource(R.drawable.ic_select_all), contentDescription = stringResource(R.string.action_select_all))
+                                Icon(painterResource(R.drawable.ic_select_all), contentDescription = stringResource(R.string.action_select_all), tint = safelightPrimary)
                             }
                         }
                     }

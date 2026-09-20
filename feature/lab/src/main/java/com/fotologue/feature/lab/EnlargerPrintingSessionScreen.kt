@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -28,10 +29,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,12 +65,55 @@ fun EnlargerPrintingSessionScreen(
 ) {
     val masterList by viewModel.masterList.collectAsState()
     val lotList by viewModel.lotList.collectAsState()
+    val equipmentList by viewModel.equipmentList.collectAsState()
+    val logEntriesWithGear by viewModel.allLogEntriesWithGear.collectAsState()
+    val allCameras by viewModel.allCameras.collectAsState()
+    val allFilms by viewModel.allFilms.collectAsState()
+    val filmRollSessions by viewModel.allFilmRollSessions.collectAsState()
+    val isSafelightActive by viewModel.isSafelightActive.collectAsState()
+
+    // AUTO-TRIGGER: Turn Safelight Mode ON by default on entering Enlarger Printing Session!
+    LaunchedEffect(Unit) {
+        viewModel.setSafelightActive(true)
+    }
 
     val paperMasters = masterList.filter { it.category.equals("Paper", ignoreCase = true) }
 
-    var rollFrameIdText by remember { mutableStateOf("Roll 03, Frame 12") }
+    // Roll.Frame Picker directly from Database / Imported JSON Logs & Active Sessions
+    val availableFrames = remember(logEntriesWithGear, filmRollSessions, allCameras, allFilms) {
+        val framesFromLogs = logEntriesWithGear.map { entry ->
+            val camera = entry.camera?.name ?: "Camera"
+            val film = entry.film?.name ?: "Film Stock"
+            val roll = entry.logEntry.filmRoll ?: "Roll 01"
+            "$film ($camera) • $roll, Frame #${entry.logEntry.id}"
+        }
+
+        val framesFromSessions = filmRollSessions.mapNotNull { session ->
+            val camera = allCameras.find { it.id == session.cameraId }?.name ?: "Camera"
+            val film = allFilms.find { it.id == session.filmId }?.name ?: "Film Stock"
+            "$film ($camera) • Roll ${session.rollNumber}"
+        }
+
+        val combined = (framesFromSessions + framesFromLogs).distinct().sorted()
+        if (combined.isNotEmpty()) combined else listOf("Ilford FP4 Plus 125 (Pentax LX) • Roll 01", "Kodak Tri-X 400 (Leica M6) • Roll 01")
+    }
+
+    // User Enlarger Bodies & Lenses from Equipment DB
+    val userEnlargers = equipmentList.filter { it.category.equals("Enlarger", ignoreCase = true) }.map { it.name }
+    val enlargerOptions = (userEnlargers + listOf("Intrepid Compact 4x5 Enlarger", "Beseler 23C II", "Omega D2 4x5")).distinct()
+
+    val dbEnlargerLenses = equipmentList.filter { it.category.equals("Enlarger Lens", ignoreCase = true) }.map { it.name }
+    val enlargerLensOptions = if (dbEnlargerLenses.isNotEmpty()) dbEnlargerLenses else listOf("Rodagon 80mm f/5.6", "El-Nikkor 50mm f/2.8", "Schneider Componon-S 100mm f/5.6")
+
+    val standardPrintDimensions = listOf("4x5\"", "5x7\"", "8x10\"", "11x14\"", "12x16\"", "16x20\"", "20x24\"", "30x40 cm", "40x50 cm")
+    val standardGradeFilters = listOf("Grade 00", "Grade 0", "Grade 0.5", "Grade 1", "Grade 1.5", "Grade 2", "Grade 2.5", "Grade 3", "Grade 3.5", "Grade 4", "Grade 4.5", "Grade 5", "Split-Grade (00 + 5)")
+    val learningOpportunitiesLOV = listOf("Misfire / Accidental Shutter", "Underexposed Shadows", "Overexposed Highlights", "Missed Focus / Focus Shift", "Low Light Hand Shake", "Contrast Too High", "Contrast Too Flat", "Frame Overlap", "Distortion / Perspective Error", "Bellows Light Leak")
+
+    var rollFrameIdText by remember(availableFrames) { mutableStateOf(availableFrames.first()) }
     var selectedMasterId by remember { mutableStateOf(paperMasters.firstOrNull()?.id) }
-    var enlargerLensText by remember { mutableStateOf("Rodagon 80mm f/5.6") }
+    var selectedEnlargerBody by remember(enlargerOptions) { mutableStateOf(enlargerOptions.first()) }
+    var printSizeText by remember { mutableStateOf("8x10\"") }
+    var enlargerLensText by remember(enlargerLensOptions) { mutableStateOf(enlargerLensOptions.first()) }
     var baseExposureSecText by remember { mutableStateOf("12.5") }
     var gradeFilterText by remember { mutableStateOf("Grade 2.5") }
     var dodgeBurnNotes by remember { mutableStateOf("Dodge sky -1 EV (3s), Burn shadows +1 EV (5s)") }
@@ -73,10 +122,16 @@ fun EnlargerPrintingSessionScreen(
     var outcomeStatus by remember { mutableStateOf("KEEPER") } // KEEPER vs REJECT
     var rejectCategory by remember { mutableStateOf("PHOTOGRAPHER_LEARNING") } // SYSTEM_ERROR vs PHOTOGRAPHER_LEARNING
     var systemErrorReason by remember { mutableStateOf("Expired Chemistry") }
-    var learningTag by remember { mutableStateOf("Underexposed") }
+    var learningTag by remember { mutableStateOf("Misfire / Accidental Shutter") }
     var outcomeNotes by remember { mutableStateOf("Fine-art exhibition print candidate") }
 
+    var rollFrameExpanded by remember { mutableStateOf(false) }
     var masterExpanded by remember { mutableStateOf(false) }
+    var enlargerBodyExpanded by remember { mutableStateOf(false) }
+    var printSizeExpanded by remember { mutableStateOf(false) }
+    var lensExpanded by remember { mutableStateOf(false) }
+    var gradeExpanded by remember { mutableStateOf(false) }
+    var learningExpanded by remember { mutableStateOf(false) }
 
     // Check paper stock on hand
     val selectedPaperMaster = paperMasters.find { it.id == selectedMasterId }
@@ -84,21 +139,56 @@ fun EnlargerPrintingSessionScreen(
     val paperOnHandQty = paperLots.filter { it.status == "ON_HAND" || it.status == "IN_USE" }.sumOf { it.quantity }
     val isPaperOnHand = selectedPaperMaster == null || paperOnHandQty > 0 || paperLots.isEmpty()
 
+    // PURE DARKROOM SAFELIGHT RED COLORS (ZERO WHITE OR GREY LIGHT!)
+    val safelightBg = if (isSafelightActive) Color.Black else MaterialTheme.colorScheme.surface
+    val safelightFg = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface
+    val safelightPrimary = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.primary
+    val safelightBtnBg = if (isSafelightActive) Color(0xFF660000) else MaterialTheme.colorScheme.primary
+    val safelightBtnFg = if (isSafelightActive) Color(0xFFFF0000) else Color.White
+
+    val textFieldColors = if (isSafelightActive) {
+        OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Color(0xFFFF0000),
+            unfocusedTextColor = Color(0xFFFF0000),
+            focusedBorderColor = Color(0xFFFF0000),
+            unfocusedBorderColor = Color(0xFF660000),
+            focusedLabelColor = Color(0xFFFF0000),
+            unfocusedLabelColor = Color(0xFFCC0000)
+        )
+    } else {
+        OutlinedTextFieldDefaults.colors()
+    }
+
+    val chipColors = if (isSafelightActive) {
+        FilterChipDefaults.filterChipColors(
+            selectedContainerColor = Color(0xFF8B0000),
+            selectedLabelColor = Color(0xFFFF0000),
+            containerColor = Color(0xFF1F0000),
+            labelColor = Color(0xFFFF3333)
+        )
+    } else {
+        FilterChipDefaults.filterChipColors()
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = safelightBg,
+        contentColor = safelightFg,
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = painterResource(R.drawable.table_lamp_24px),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = safelightPrimary,
                             modifier = Modifier.padding(end = 8.dp)
                         )
                         Text(
                             text = "Enlarger Printing Session",
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
+                            color = safelightFg
                         )
                     }
                 },
@@ -106,7 +196,33 @@ fun EnlargerPrintingSessionScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = safelightPrimary
+                        )
+                    }
+                },
+                actions = {
+                    // UNAMBIGUOUS SAFELIGHT TOGGLE SWITCH
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(end = 4.dp)
+                    ) {
+                        Text(
+                            text = "Safelight",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = safelightPrimary,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Switch(
+                            checked = isSafelightActive,
+                            onCheckedChange = { viewModel.setSafelightActive(it) },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color(0xFFFF0000),
+                                checkedTrackColor = Color(0xFF660000),
+                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                            )
                         )
                     }
                 }
@@ -141,14 +257,35 @@ fun EnlargerPrintingSessionScreen(
                 }
             }
 
-            // Roll & Frame ID
-            OutlinedTextField(
-                value = rollFrameIdText,
-                onValueChange = { rollFrameIdText = it },
-                label = { Text("Roll.Frame ID (e.g. Roll 03, Frame 12)") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            // Roll.Frame Picker directly from Database / Imported JSON Logs
+            ExposedDropdownMenuBox(
+                expanded = rollFrameExpanded,
+                onExpandedChange = { rollFrameExpanded = !rollFrameExpanded }
+            ) {
+                OutlinedTextField(
+                    value = rollFrameIdText,
+                    onValueChange = { rollFrameIdText = it },
+                    label = { Text("Roll.Frame ID (Imported / Logged Frames)") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = rollFrameExpanded) },
+                    singleLine = true,
+                    colors = textFieldColors,
+                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = rollFrameExpanded,
+                    onDismissRequest = { rollFrameExpanded = false }
+                ) {
+                    availableFrames.forEach { frameStr ->
+                        DropdownMenuItem(
+                            text = { Text(frameStr) },
+                            onClick = {
+                                rollFrameIdText = frameStr
+                                rollFrameExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             // Paper Stock Selection
             ExposedDropdownMenuBox(
@@ -162,6 +299,7 @@ fun EnlargerPrintingSessionScreen(
                     readOnly = true,
                     label = { Text("Paper Stock Specification") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = masterExpanded) },
+                    colors = textFieldColors,
                     modifier = Modifier.menuAnchor().fillMaxWidth()
                 )
                 ExposedDropdownMenu(
@@ -180,41 +318,158 @@ fun EnlargerPrintingSessionScreen(
                 }
             }
 
+            // Enlarger Body Selection
+            ExposedDropdownMenuBox(
+                expanded = enlargerBodyExpanded,
+                onExpandedChange = { enlargerBodyExpanded = !enlargerBodyExpanded }
+            ) {
+                OutlinedTextField(
+                    value = selectedEnlargerBody,
+                    onValueChange = { selectedEnlargerBody = it },
+                    label = { Text("Enlarger Machine / Body") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = enlargerBodyExpanded) },
+                    singleLine = true,
+                    colors = textFieldColors,
+                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = enlargerBodyExpanded,
+                    onDismissRequest = { enlargerBodyExpanded = false }
+                ) {
+                    enlargerOptions.forEach { en ->
+                        DropdownMenuItem(
+                            text = { Text(en) },
+                            onClick = {
+                                selectedEnlargerBody = en
+                                enlargerBodyExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Enlarger Lens & Print Size Selection
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Enlarger Lens Dropdown (STRICTLY FROM USER EQUIPMENT DB)
+                ExposedDropdownMenuBox(
+                    expanded = lensExpanded,
+                    onExpandedChange = { lensExpanded = !lensExpanded },
+                    modifier = Modifier.weight(1.2f)
+                ) {
+                    OutlinedTextField(
+                        value = enlargerLensText,
+                        onValueChange = { enlargerLensText = it },
+                        label = { Text("Enlarger Lens") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = lensExpanded) },
+                        singleLine = true,
+                        colors = textFieldColors,
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = lensExpanded,
+                        onDismissRequest = { lensExpanded = false }
+                    ) {
+                        enlargerLensOptions.forEach { lensOpt ->
+                            DropdownMenuItem(
+                                text = { Text(lensOpt) },
+                                onClick = {
+                                    enlargerLensText = lensOpt
+                                    lensExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Print Dimensions Dropdown
+                ExposedDropdownMenuBox(
+                    expanded = printSizeExpanded,
+                    onExpandedChange = { printSizeExpanded = !printSizeExpanded },
+                    modifier = Modifier.weight(0.8f)
+                ) {
+                    OutlinedTextField(
+                        value = printSizeText,
+                        onValueChange = { printSizeText = it },
+                        label = { Text("Print Size") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = printSizeExpanded) },
+                        singleLine = true,
+                        colors = textFieldColors,
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = printSizeExpanded,
+                        onDismissRequest = { printSizeExpanded = false }
+                    ) {
+                        standardPrintDimensions.forEach { dim ->
+                            DropdownMenuItem(
+                                text = { Text(dim) },
+                                onClick = {
+                                    printSizeText = dim
+                                    printSizeExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Exposure Time & Multigrade Filter
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
-                    value = enlargerLensText,
-                    onValueChange = { enlargerLensText = it },
-                    label = { Text("Enlarger Lens & Aperture") },
-                    singleLine = true,
-                    modifier = Modifier.weight(1.2f)
-                )
-
-                OutlinedTextField(
                     value = baseExposureSecText,
                     onValueChange = { baseExposureSecText = it },
                     label = { Text("Base Sec") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
+                    colors = textFieldColors,
                     modifier = Modifier.weight(0.8f)
                 )
-            }
 
-            OutlinedTextField(
-                value = gradeFilterText,
-                onValueChange = { gradeFilterText = it },
-                label = { Text("Grade Filter (e.g. Grade 2.5, Split-Grade 00+5)") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+                // Grade Filter Dropdown
+                ExposedDropdownMenuBox(
+                    expanded = gradeExpanded,
+                    onExpandedChange = { gradeExpanded = !gradeExpanded },
+                    modifier = Modifier.weight(1.2f)
+                ) {
+                    OutlinedTextField(
+                        value = gradeFilterText,
+                        onValueChange = { gradeFilterText = it },
+                        label = { Text("Grade Filter") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = gradeExpanded) },
+                        singleLine = true,
+                        colors = textFieldColors,
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = gradeExpanded,
+                        onDismissRequest = { gradeExpanded = false }
+                    ) {
+                        standardGradeFilters.forEach { gr ->
+                            DropdownMenuItem(
+                                text = { Text(gr) },
+                                onClick = {
+                                    gradeFilterText = gr
+                                    gradeExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
 
             OutlinedTextField(
                 value = dodgeBurnNotes,
                 onValueChange = { dodgeBurnNotes = it },
                 label = { Text("Dodge & Burn Map Notes") },
+                colors = textFieldColors,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -222,7 +477,7 @@ fun EnlargerPrintingSessionScreen(
             Text(
                 text = "PRINT OUTCOME & REFLECTION",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary,
+                color = safelightPrimary,
                 fontWeight = FontWeight.Bold
             )
 
@@ -233,22 +488,16 @@ fun EnlargerPrintingSessionScreen(
                 FilterChip(
                     selected = outcomeStatus == "KEEPER",
                     onClick = { outcomeStatus = "KEEPER" },
-                    label = { Text("🟢 KEEPER (Exhibition/Edition)") },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF2E7D32),
-                        selectedLabelColor = Color.White
-                    ),
+                    label = { Text("🔴 KEEPER (Exhibition/Edition)", color = if (outcomeStatus == "KEEPER" && isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                    colors = chipColors,
                     modifier = Modifier.weight(1f)
                 )
 
                 FilterChip(
                     selected = outcomeStatus == "REJECT",
                     onClick = { outcomeStatus = "REJECT" },
-                    label = { Text("🔴 REJECT (Test/Error)") },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.error,
-                        selectedLabelColor = Color.White
-                    ),
+                    label = { Text("🔴 REJECT (Test/Error)", color = if (outcomeStatus == "REJECT" && isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                    colors = chipColors,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -261,13 +510,15 @@ fun EnlargerPrintingSessionScreen(
                     FilterChip(
                         selected = rejectCategory == "SYSTEM_ERROR",
                         onClick = { rejectCategory = "SYSTEM_ERROR" },
-                        label = { Text("System Error") },
+                        label = { Text("System Error", color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                        colors = chipColors,
                         modifier = Modifier.weight(1f)
                     )
                     FilterChip(
                         selected = rejectCategory == "PHOTOGRAPHER_LEARNING",
                         onClick = { rejectCategory = "PHOTOGRAPHER_LEARNING" },
-                        label = { Text("Photographer Learning") },
+                        label = { Text("Photographer Learning", color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                        colors = chipColors,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -276,16 +527,40 @@ fun EnlargerPrintingSessionScreen(
                     OutlinedTextField(
                         value = systemErrorReason,
                         onValueChange = { systemErrorReason = it },
-                        label = { Text("System Error Cause (e.g. Expired Chemistry, Fogged Paper)") },
+                        label = { Text("System Error Cause") },
+                        colors = textFieldColors,
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
-                    OutlinedTextField(
-                        value = learningTag,
-                        onValueChange = { learningTag = it },
-                        label = { Text("Learning Reflection Tag (e.g. Underexposed, Focus Miss)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    // LEARNING OPPORTUNITIES LOV DROPDOWN
+                    ExposedDropdownMenuBox(
+                        expanded = learningExpanded,
+                        onExpandedChange = { learningExpanded = !learningExpanded }
+                    ) {
+                        OutlinedTextField(
+                            value = learningTag,
+                            onValueChange = { learningTag = it },
+                            label = { Text("Learning Opportunity / Reflection Tag") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = learningExpanded) },
+                            singleLine = true,
+                            colors = textFieldColors,
+                            modifier = Modifier.menuAnchor().fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = learningExpanded,
+                            onDismissRequest = { learningExpanded = false }
+                        ) {
+                            learningOpportunitiesLOV.forEach { opp ->
+                                DropdownMenuItem(
+                                    text = { Text(opp) },
+                                    onClick = {
+                                        learningTag = opp
+                                        learningExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -293,6 +568,7 @@ fun EnlargerPrintingSessionScreen(
                 value = outcomeNotes,
                 onValueChange = { outcomeNotes = it },
                 label = { Text("Outcome Notes & Reflection") },
+                colors = textFieldColors,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -315,13 +591,14 @@ fun EnlargerPrintingSessionScreen(
                     onSuccess()
                 },
                 enabled = rollFrameIdText.isNotBlank() && isPaperOnHand,
+                colors = ButtonDefaults.buttonColors(containerColor = safelightBtnBg, contentColor = safelightBtnFg),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp)
             ) {
-                Icon(Icons.Default.Check, contentDescription = null)
+                Icon(Icons.Default.Check, contentDescription = null, tint = safelightBtnFg)
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Save Print Record & Reflection", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                Text("Save Print Record & Reflection", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightBtnFg)
             }
         }
     }

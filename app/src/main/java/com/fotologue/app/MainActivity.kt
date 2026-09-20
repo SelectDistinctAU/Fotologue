@@ -59,6 +59,7 @@ class MainActivity : ComponentActivity() {
             FotologueTheme {
                 val mainViewModel: MainViewModel = hiltViewModel()
                 val isOnboardingComplete by mainViewModel.isOnboardingComplete.collectAsStateWithLifecycle(initialValue = null)
+                val isSafelightActive by mainViewModel.isSafelightActive.collectAsStateWithLifecycle(initialValue = false)
 
                 if (isOnboardingComplete != null) {
                     key(isOnboardingComplete) {
@@ -86,6 +87,8 @@ class MainActivity : ComponentActivity() {
                             entryProvider = entryProvider {
                                 entry<Route.Hub> {
                                     HubScreen(
+                                        isSafelightActive = isSafelightActive,
+                                        onToggleSafelight = { mainViewModel.toggleSafelight() },
                                         onNavigateToField = { backStack.add(Route.Timeline) },
                                         onNavigateToLab = { backStack.add(Route.Lab()) },
                                         onNavigateToStation = { backStack.add(Route.ContactSheet()) },
@@ -97,6 +100,8 @@ class MainActivity : ComponentActivity() {
                                     val viewModel: SettingsViewModel = hiltViewModel()
                                     ArchiveScreen(
                                         viewModel = viewModel,
+                                        isSafelightActive = isSafelightActive,
+                                        onToggleSafelight = { mainViewModel.toggleSafelight() },
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
                                     )
                                 }
@@ -150,7 +155,7 @@ class MainActivity : ComponentActivity() {
                                         onNavigateToMaintenance = { backStack.add(Route.LabMaintenance) },
                                         onAddItemMaster = { defaultCat -> backStack.add(Route.AddEditItemMaster(defaultCategory = defaultCat)) },
                                         onEditItemMaster = { id -> backStack.add(Route.AddEditItemMaster(id)) },
-                                        onAddStockLot = { backStack.add(Route.AddStockLot) },
+                                        onAddStockLot = { targetMasterId -> backStack.add(Route.AddStockLot(masterId = targetMasterId)) },
                                         onEditStockLot = { id -> backStack.add(Route.EditStockLot(id)) },
                                         onAddSupplier = { backStack.add(Route.AddEditSupplier()) },
                                         onEditSupplier = { id -> backStack.add(Route.AddEditSupplier(id)) },
@@ -213,16 +218,18 @@ class MainActivity : ComponentActivity() {
                                         onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
                                         onSaveAndAddStock = { savedMasterId ->
                                             if (backStack.size > 1) backStack.removeAt(backStack.size - 1)
-                                            backStack.add(Route.AddStockLot)
+                                            backStack.add(Route.AddStockLot(masterId = savedMasterId))
                                         }
                                     )
                                 }
-                                entry<Route.AddStockLot> {
+                                entry<Route.AddStockLot> { navRoute ->
                                     val viewModel: LabHomeViewModel = hiltViewModel()
                                     AddStockLotScreen(
+                                        masterId = navRoute.masterId,
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
-                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onAddNewSupplier = { backStack.add(Route.AddEditSupplier()) }
                                     )
                                 }
                                 entry<Route.EditStockLot> { navRoute ->
@@ -322,7 +329,7 @@ class MainActivity : ComponentActivity() {
                                 entry<Route.AddEditLens> { navRoute ->
                                     val viewModel: AddEditLensViewModel = hiltViewModel(key = "AddEditLens_${navRoute.lensId}_${navRoute.cameraId}")
                                     viewModel.setLensId(navRoute.lensId)
-                                    navRoute.cameraId?.let { viewModel.onCameraToggled(it) }
+                                    navRoute.cameraId?.let { viewModel.preSelectCameraId(it) }
                                     AddEditLensScreen(
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
@@ -384,8 +391,8 @@ class MainActivity : ComponentActivity() {
                                     AddLogScreen(
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
-                                        onMeasureExposure = { iso, cameraId, lensId, tcId, filterId, filmId ->
-                                            backStack.add(Route.LightMeter(iso, cameraId, lensId, tcId, filterId, filmId))
+                                        onMeasureExposure = { iso, cameraId, lensId, tcId, filterId, filmId, focalLength ->
+                                            backStack.add(Route.LightMeter(iso, cameraId, lensId, tcId, filterId, filmId, focalLength))
                                         },
                                         onAddLens = { cameraId -> backStack.add(Route.AddEditLens(cameraId = cameraId)) },
                                         onAddFilm = { backStack.add(Route.AddFilm) },
@@ -398,8 +405,8 @@ class MainActivity : ComponentActivity() {
                                     AddLogScreen(
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
-                                        onMeasureExposure = { iso, cameraId, lensId, tcId, filterId, filmId ->
-                                            backStack.add(Route.LightMeter(iso, cameraId, lensId, tcId, filterId, filmId))
+                                        onMeasureExposure = { iso, cameraId, lensId, tcId, filterId, filmId, focalLength ->
+                                            backStack.add(Route.LightMeter(iso, cameraId, lensId, tcId, filterId, filmId, focalLength))
                                         },
                                         onAddLens = { cameraId -> backStack.add(Route.AddEditLens(cameraId = cameraId)) },
                                         onAddFilm = { backStack.add(Route.AddFilm) },
@@ -408,7 +415,7 @@ class MainActivity : ComponentActivity() {
                                 }
                                 entry<Route.LightMeter> { lightRoute ->
                                     val viewModel: LightMeterViewModel = hiltViewModel(
-                                        key = "LightMeter_${lightRoute.targetIso}_${lightRoute.cameraId}_${lightRoute.lensId}_${lightRoute.teleconverterId}_${lightRoute.filterId}_${lightRoute.filmId}_${lightRoute.autoStartCalibration}"
+                                        key = "LightMeter_${lightRoute.targetIso}_${lightRoute.cameraId}_${lightRoute.lensId}_${lightRoute.teleconverterId}_${lightRoute.filterId}_${lightRoute.filmId}_${lightRoute.focalLength}_${lightRoute.autoStartCalibration}"
                                     )
                                     viewModel.setParams(
                                         targetIso = lightRoute.targetIso,
@@ -417,6 +424,7 @@ class MainActivity : ComponentActivity() {
                                         teleconverterId = lightRoute.teleconverterId,
                                         filterId = lightRoute.filterId,
                                         filmId = lightRoute.filmId,
+                                        focalLength = lightRoute.focalLength,
                                         autoStartCalibration = lightRoute.autoStartCalibration
                                     )
                                     LightMeterScreen(
@@ -464,6 +472,8 @@ class MainActivity : ComponentActivity() {
                                     val viewModel: ContactSheetViewModel = hiltViewModel()
                                     ContactSheetScreen(
                                         viewModel = viewModel,
+                                        isSafelightActive = isSafelightActive,
+                                        onToggleSafelight = { mainViewModel.toggleSafelight() },
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
                                         onLogClick = { logId ->
                                             backStack.add(Route.LogDetail(logId))

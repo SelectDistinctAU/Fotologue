@@ -237,6 +237,15 @@ class AddLogViewModel @Inject constructor(
                 onLensSelected(lensId)
             }
         }
+
+        viewModelScope.launch {
+            repository.newlyAddedFilmId.collect { filmId ->
+                val film = repository.getFilmById(filmId).first()
+                if (film != null) {
+                    onFilmSelected(filmId = film.id, filmIso = film.iso, updatePersistent = true)
+                }
+            }
+        }
         
         // Auto-selection of single items
         viewModelScope.launch {
@@ -254,6 +263,24 @@ class AddLogViewModel @Inject constructor(
                     if (_uiState.value.selectedFilmId == null && films.size == 1) {
                         val film = films.first()
                         onFilmSelected(filmId = film.id, filmIso = film.iso, updatePersistent = true)
+                    }
+                }
+            }
+        }
+        viewModelScope.launch {
+            if (editingLogId == null) {
+                filteredLenses.collect { lenses ->
+                    if (_uiState.value.selectedLensId == null && lenses.size == 1) {
+                        onLensSelected(lensId = lenses.first().id, updatePersistent = true)
+                    }
+                }
+            }
+        }
+        viewModelScope.launch {
+            if (editingLogId == null) {
+                filteredViewfinders.collect { viewfinders ->
+                    if (_uiState.value.selectedViewfinderId == null && viewfinders.size == 1) {
+                        onViewfinderSelected(vfId = viewfinders.first().id, updatePersistent = true)
                     }
                 }
             }

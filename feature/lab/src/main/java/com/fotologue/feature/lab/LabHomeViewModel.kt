@@ -33,8 +33,10 @@ import com.fotologue.core.data.lab.StockLotDao
 import com.fotologue.core.data.lab.SupplierIssueLog
 import com.fotologue.core.data.lab.SupplierIssueLogDao
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -62,6 +64,15 @@ class LabHomeViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val allLogEntriesWithGear = repository.allLogEntriesWithGear
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allFilmRollSessions = repository.allFilmRollSessions
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allCameras = repository.allCameras
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allFilms = repository.allFilms
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val equipmentSubCategoryList: StateFlow<List<LabEquipmentSubCategory>> = equipmentSubCategoryDao.getAllSubCategories()
@@ -99,6 +110,16 @@ class LabHomeViewModel @Inject constructor(
 
     val orderList: StateFlow<List<OrderHistory>> = orderHistoryDao.getAllOrders()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val isSafelightActive: StateFlow<Boolean> = repository.isSafelightActive
+
+    fun setSafelightActive(active: Boolean) {
+        repository.setSafelightActive(active)
+    }
+
+    fun toggleSafelight() {
+        repository.toggleSafelight()
+    }
 
     /**
      * Seeds default Supplier Contacts, System Core Categories, Units, Item Names, and Equipment Sub-Categories.

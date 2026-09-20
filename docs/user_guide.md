@@ -37,6 +37,9 @@ Welcome to the **Fotologue User Guide**. Fotologue is **A Photographic Catalogue
 
 In the field, speed and precision are paramount.
 *   **1-Tap Exposure Log**: Record camera body, lens, film stock, aperture, shutter speed, ISO, GPS coordinates, and notes in seconds.
+*   **Physical Film Roll Serial Labeling Protocol**: To prevent ambiguity when shooting multiple "Roll 1" canisters simultaneously across different camera bodies, Fotologue constructs a unique physical roll serial label:
+    $$\text{[Camera Body]} \bullet \text{[Film Stock]} \bullet \text{[Roll Number]} \quad (\text{e.g. } \text{Pentax ME Super} \bullet \text{Kodak Tri-X 400} \bullet \text{Roll 01})$$
+    Photographers write this unique serial (*e.g. `PNTX-TX400-R01`*) on canister leader tape or negative binder sleeves.
 *   **Pro Light Meter**: Spot and centre-weighted metering with live C-41 (Negative), E-6 (Slide), and B&W pre-visualization previews.
 *   **Wizard's Calibration**: 2-stage hardware tuning tool (Noise Floor & Signal Gain against an 18% grey card) for industrial metering accuracy.
 
@@ -46,6 +49,7 @@ In the field, speed and precision are paramount.
 
 Manage your camera bodies and optical equipment in the **Gear Library** (`GearLibraryScreen`).
 *   **Cameras & Lenses**: Support for 35mm, 120 (Medium Format), Half-Frame (e.g. Pentax 17), Large Format, and TLR bodies with auto-created fixed lenses.
+*   **Seamless Lens Auto-Association**: Tapping **`+ Add New Lens...`** directly from the Exposure Log automatically pre-associates the new lens with the active camera body and pre-selects it upon returning to the exposure log.
 *   **Accessories**: Cross-reference Viewfinders, Teleconverters, Filters, and Flashes to specific camera bodies.
 *   **Smart Kits**: Pre-configure favourite camera + lens + film + accessory combinations for 1-tap loading during fieldwork.
 

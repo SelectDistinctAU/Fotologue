@@ -31,6 +31,7 @@ class AddLogViewModelTest {
     private val nextFilmRollFlow = flowOf(1)
     private val meteringResultFlow = MutableStateFlow<ExposureSettings?>(null)
     private val newlyAddedLensIdFlow = MutableSharedFlow<Long>()
+    private val newlyAddedFilmIdFlow = MutableSharedFlow<Long>()
     private val cameraKitsWithGearFlow = MutableStateFlow<List<CameraKitWithGear>>(emptyList())
 
     @Before
@@ -58,6 +59,7 @@ class AddLogViewModelTest {
         every { repository.getLensById(any()) } returns flowOf(null)
         every { repository.getSuggestedFilmRollFlow(any(), any()) } returns flowOf("1.01")
         every { repository.newlyAddedLensId } returns newlyAddedLensIdFlow
+        every { repository.newlyAddedFilmId } returns newlyAddedFilmIdFlow
         coEvery { repository.insertDefaultTagsIfNeeded() } just Runs
         
         every { gearConfigurationManager.currentConfiguration } returns MutableStateFlow(GearConfiguration())

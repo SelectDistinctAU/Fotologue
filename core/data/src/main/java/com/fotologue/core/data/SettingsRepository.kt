@@ -11,6 +11,9 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -55,6 +58,17 @@ class SettingsRepository(private val context: Context) {
     private val CURRENT_ROLL = intPreferencesKey("current_roll")
     private val CURRENT_FRAME = intPreferencesKey("current_frame")
     private val IS_WELCOME_DISMISSED = booleanPreferencesKey("is_welcome_dismissed")
+
+    private val _isSafelightActive = MutableStateFlow(false)
+    val isSafelightActive: StateFlow<Boolean> = _isSafelightActive.asStateFlow()
+
+    fun setSafelightActive(active: Boolean) {
+        _isSafelightActive.value = active
+    }
+
+    fun toggleSafelight() {
+        _isSafelightActive.value = !_isSafelightActive.value
+    }
 
     val isThumbnailEnabled: Flow<Boolean> = context.dataStore.data
         .map { preferences ->

@@ -30,6 +30,9 @@ class FotologueRepository @Inject constructor(
     private val _newlyAddedLensId = MutableSharedFlow<Long>()
     val newlyAddedLensId: SharedFlow<Long> = _newlyAddedLensId.asSharedFlow()
 
+    private val _newlyAddedFilmId = MutableSharedFlow<Long>()
+    val newlyAddedFilmId: SharedFlow<Long> = _newlyAddedFilmId.asSharedFlow()
+
     private val tagMutex = Mutex()
 
     val allCameras: Flow<List<Camera>> = cameraDao.getAllCameras()
@@ -40,6 +43,7 @@ class FotologueRepository @Inject constructor(
     val allFlashes: Flow<List<Flash>> = flashDao.getAllFlashes()
     val allViewfinders: Flow<List<Viewfinder>> = viewfinderDao.getAllViewfinders()
     val allLogEntriesWithGear: Flow<List<LogEntryWithGear>> = logEntryDao.getAllLogEntriesWithGear()
+    val allFilmRollSessions: Flow<List<FilmRollSession>> = filmRollSessionDao.getAllSessions()
     val allCameraKits: Flow<List<CameraKit>> = cameraKitDao.getAllCameraKits()
     val allCameraKitsWithGear: Flow<List<CameraKitWithGear>> = cameraKitDao.getAllCameraKitsWithGear()
     val allTags: Flow<List<Tag>> = tagDao.getAllTags()
@@ -53,6 +57,15 @@ class FotologueRepository @Inject constructor(
     val hasFilm: Flow<Boolean> = filmDao.hasFilms()
     val hasLens: Flow<Boolean> = lensDao.hasLenses()
     val isWelcomeDismissed: Flow<Boolean> = settingsRepository.isWelcomeDismissed
+    val isSafelightActive: StateFlow<Boolean> = settingsRepository.isSafelightActive
+
+    fun setSafelightActive(active: Boolean) {
+        settingsRepository.setSafelightActive(active)
+    }
+
+    fun toggleSafelight() {
+        settingsRepository.toggleSafelight()
+    }
 
     val isOnboardingComplete: Flow<Boolean> = combine(hasCamera, hasFilm, hasLens, isWelcomeDismissed) { camera, film, lens, dismissed ->
         camera && film && lens && dismissed
@@ -90,7 +103,11 @@ class FotologueRepository @Inject constructor(
         filmRollSessionDao.insertSession(session)
 
     suspend fun insertCamera(camera: Camera) = cameraDao.insertCamera(camera)
-    suspend fun insertFilm(film: Film) = filmDao.insertFilm(film)
+    suspend fun insertFilm(film: Film): Long {
+        val id = filmDao.insertFilm(film)
+        _newlyAddedFilmId.emit(id)
+        return id
+    }
     suspend fun insertLens(lens: Lens, cameraIds: List<Long> = emptyList()) {
         database.withTransaction {
             val lensId = lensDao.insertLens(lens)

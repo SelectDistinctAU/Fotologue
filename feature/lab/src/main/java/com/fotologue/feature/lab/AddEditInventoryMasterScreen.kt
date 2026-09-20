@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,10 +29,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.fotologue.core.data.FilmPresets
 import com.fotologue.core.data.lab.InventoryMaster
 import com.fotologue.core.designsystem.R
 import kotlinx.coroutines.launch
@@ -69,10 +74,24 @@ fun AddEditInventoryMasterScreen(
     var name by remember { mutableStateOf(initialMaster?.name ?: "") }
     var manufacturer by remember { mutableStateOf(initialMaster?.manufacturer ?: "") }
     var majorAmountStr by remember { mutableStateOf((initialMaster?.containerSizeAmount ?: 1f).toString()) }
-    var majorUnit by remember { mutableStateOf(initialMaster?.containerSizeUnit ?: if (category == "Paper") "box" else "L") }
-    var minorYieldStr by remember { mutableStateOf((initialMaster?.innerUnitYieldTotal ?: if (category == "Paper") 25 else 1000).toString()) }
-    var minorUnit by remember { mutableStateOf(initialMaster?.innerItemUnit ?: if (category == "Paper") "sheets" else "mL") }
+    var majorUnit by remember { mutableStateOf(initialMaster?.containerSizeUnit ?: if (category == "Paper") "box" else if (category == "Film Stock") "box" else "L") }
+    var minorYieldStr by remember { mutableStateOf((initialMaster?.innerUnitYieldTotal ?: if (category == "Paper") 25 else if (category == "Film Stock") 10 else 1000).toString()) }
+    var minorUnit by remember { mutableStateOf(initialMaster?.innerItemUnit ?: if (category == "Paper") "sheets" else if (category == "Film Stock") "rolls" else "mL") }
     var notes by remember { mutableStateOf(initialMaster?.notes ?: "") }
+
+    // DYNAMIC RE-SYNC: Ensures when editing an InventoryMaster, all fields pre-fill instantly when masterList emits!
+    LaunchedEffect(initialMaster) {
+        initialMaster?.let { master ->
+            category = master.category
+            name = master.name
+            manufacturer = master.manufacturer
+            majorAmountStr = master.containerSizeAmount.toString()
+            majorUnit = master.containerSizeUnit
+            minorYieldStr = master.innerUnitYieldTotal.toString()
+            minorUnit = master.innerItemUnit
+            notes = master.notes
+        }
+    }
 
     var categoryExpanded by remember { mutableStateOf(false) }
     var nameExpanded by remember { mutableStateOf(false) }
@@ -80,12 +99,18 @@ fun AddEditInventoryMasterScreen(
     var majorUnitExpanded by remember { mutableStateOf(false) }
     var minorUnitExpanded by remember { mutableStateOf(false) }
 
-    val categories = if (categoriesList.isNotEmpty()) categoriesList.map { it.name } else listOf("Chemistry", "Paper", "Safety Gear", "Supplies", "Unassigned")
+    // New Manufacturer Input Dialog State
+    var showNewMfgDialog by remember { mutableStateOf(false) }
+    var newMfgInputText by remember { mutableStateOf("") }
+    val baseManufacturers = remember { mutableStateListOf("Ilford", "Kodak", "Ansell", "Adox", "Foma", "CineStill", "Paterson", "AP", "Bergger", "Arista") }
+
+    val categories = if (categoriesList.isNotEmpty()) categoriesList.map { it.name } else listOf("Chemistry", "Paper", "Film Stock", "Safety Gear", "Supplies", "Unassigned")
 
     // Category-Specific Major Units
     val majorUnits = when (category) {
         "Paper" -> listOf("box", "pack", "sheets")
         "Chemistry" -> listOf("L", "mL", "bottle", "gal", "pt")
+        "Film Stock" -> listOf("box", "pack", "roll")
         "Safety Gear" -> listOf("box", "pair", "pack")
         else -> listOf("pack", "box", "unit", "roll")
     }
@@ -99,13 +124,14 @@ fun AddEditInventoryMasterScreen(
         "box", "pack" -> when (category) {
             "Paper" -> listOf("sheets")
             "Chemistry" -> listOf("mL", "fl oz")
+            "Film Stock" -> listOf("rolls")
             "Safety Gear" -> listOf("items", "pairs")
             else -> listOf("units", "items")
         }
         "bottle" -> listOf("mL", "fl oz")
         "pair" -> listOf("items")
         "roll" -> listOf("frames", "ft", "m")
-        else -> listOf("units", "sheets", "mL")
+        else -> listOf("units", "sheets", "mL", "rolls")
     }
 
     // Helper to auto-calculate derivative minor quantity & unit when major unit changes
@@ -129,6 +155,9 @@ fun AddEditInventoryMasterScreen(
                 if (category == "Paper") {
                     minorUnit = "sheets"
                     minorYieldStr = "25"
+                } else if (category == "Film Stock") {
+                    minorUnit = "rolls"
+                    minorYieldStr = "10"
                 } else if (category == "Chemistry") {
                     minorUnit = "mL"
                     minorYieldStr = "1000"
@@ -170,15 +199,30 @@ fun AddEditInventoryMasterScreen(
         )
     }
 
+    // Manufacturer List with FilmPresets integration
+    val mfgList = remember(category, baseManufacturers) {
+        if (category == "Film Stock") {
+            (FilmPresets.manufacturers + baseManufacturers).distinct().sorted()
+        } else {
+            baseManufacturers
+        }
+    }
+
     val customNamesForCategory = itemNamesList.filter { it.category.equals(category, ignoreCase = true) }.map { it.name }
     val defaultPresets = when (category) {
         "Chemistry" -> listOf("Rapid Fixer", "Multigrade Developer", "ID-11", "D-76", "Rodinal / R09", "Indicator Stop Bath", "Ilfotol Wetting Agent")
         "Paper" -> listOf("Multigrade RC Deluxe Satin 8x10", "Multigrade RC Deluxe Pearl 8x10", "Multigrade FB Glossy 8x10", "Fomabrom Variant FB 8x10", "Adox MCC FB 8x10")
+        "Film Stock" -> {
+            if (manufacturer.isNotBlank()) {
+                FilmPresets.getFilmsForManufacturer(manufacturer).map { it.name }
+            } else {
+                FilmPresets.presets.map { it.displayName }
+            }
+        }
         "Safety Gear" -> listOf("Nitrile Gloves XL", "Safety Goggles", "Chemical Apron", "Respirator Mask")
         else -> listOf("Negative Storage Sleeves", "Graduated Cylinder 1L", "Print Tongs", "Squeegee")
     }
     val itemPresets = (customNamesForCategory + defaultPresets).distinct()
-    val manufacturers = listOf("Ilford", "Kodak", "Ansell", "Adox", "Foma", "CineStill", "Paterson", "AP")
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -236,7 +280,7 @@ fun AddEditInventoryMasterScreen(
                                 category = catName
                                 categoryExpanded = false
                                 name = "" // RESET item name on category switch so no stale paper entries linger under chemistry!
-                                if (catName == "Paper") {
+                                if (catName == "Paper" || catName == "Film Stock") {
                                     onMajorUnitChanged("box")
                                 } else if (catName == "Chemistry") {
                                     onMajorUnitChanged("L")
@@ -247,7 +291,51 @@ fun AddEditInventoryMasterScreen(
                 }
             }
 
-            // Item Name Dropdown / Input
+            // Manufacturer Dropdown FIRST (Choose Manufacturer / Brand First!)
+            ExposedDropdownMenuBox(
+                expanded = mfgExpanded,
+                onExpandedChange = { mfgExpanded = !mfgExpanded }
+            ) {
+                OutlinedTextField(
+                    value = manufacturer,
+                    onValueChange = {
+                        manufacturer = it
+                        if (category == "Film Stock") name = "" // Filter film stock options when manufacturer changes
+                    },
+                    label = { Text("Manufacturer / Brand") },
+                    placeholder = { Text("e.g. Ilford, Kodak, Fuji, CineStill") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = mfgExpanded) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = mfgExpanded,
+                    onDismissRequest = { mfgExpanded = false }
+                ) {
+                    mfgList.forEach { mfg ->
+                        DropdownMenuItem(
+                            text = { Text(mfg) },
+                            onClick = {
+                                manufacturer = mfg
+                                mfgExpanded = false
+                                if (category == "Film Stock") name = "" // Filter film stock options when manufacturer is selected
+                            }
+                        )
+                    }
+                    DropdownMenuItem(
+                        text = { Text("+ Add New Manufacturer...", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
+                        onClick = {
+                            mfgExpanded = false
+                            newMfgInputText = ""
+                            showNewMfgDialog = true
+                        }
+                    )
+                }
+            }
+
+            // Item Name Dropdown / Input SECOND (Filtered by Selected Manufacturer!)
             ExposedDropdownMenuBox(
                 expanded = nameExpanded,
                 onExpandedChange = { nameExpanded = !nameExpanded }
@@ -255,8 +343,8 @@ fun AddEditInventoryMasterScreen(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Item Name") },
-                    placeholder = { Text("e.g. Rapid Fixer or Multigrade RC Deluxe 8x10") },
+                    label = { Text(if (category == "Film Stock") "Film Stock Name" else "Item Name") },
+                    placeholder = { Text(if (category == "Film Stock") "e.g. HP5 Plus 400 or Tri-X 400" else "e.g. Rapid Fixer or Multigrade RC 8x10") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = nameExpanded) },
                     singleLine = true,
                     modifier = Modifier
@@ -273,38 +361,6 @@ fun AddEditInventoryMasterScreen(
                             onClick = {
                                 name = preset
                                 nameExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            // Manufacturer Dropdown
-            ExposedDropdownMenuBox(
-                expanded = mfgExpanded,
-                onExpandedChange = { mfgExpanded = !mfgExpanded }
-            ) {
-                OutlinedTextField(
-                    value = manufacturer,
-                    onValueChange = { manufacturer = it },
-                    label = { Text("Manufacturer") },
-                    placeholder = { Text("e.g. Ilford, Kodak, Ansell") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = mfgExpanded) },
-                    singleLine = true,
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = mfgExpanded,
-                    onDismissRequest = { mfgExpanded = false }
-                ) {
-                    manufacturers.forEach { mfg ->
-                        DropdownMenuItem(
-                            text = { Text(mfg) },
-                            onClick = {
-                                manufacturer = mfg
-                                mfgExpanded = false
                             }
                         )
                     }
@@ -464,5 +520,51 @@ fun AddEditInventoryMasterScreen(
                 Text("Save & Add Physical Stock", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
             }
         }
+    }
+
+    // INLINE NEW MANUFACTURER ADD DIALOG (Case-Insensitive Deduplication)
+    if (showNewMfgDialog) {
+        AlertDialog(
+            onDismissRequest = { showNewMfgDialog = false },
+            title = { Text("Add New Manufacturer") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Enter brand or manufacturer name:", style = MaterialTheme.typography.bodyMedium)
+                    OutlinedTextField(
+                        value = newMfgInputText,
+                        onValueChange = { newMfgInputText = it },
+                        label = { Text("Manufacturer Name") },
+                        placeholder = { Text("e.g. Bergger, Arista, Bellini") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val trimmed = newMfgInputText.trim()
+                        if (trimmed.isNotBlank()) {
+                            val existing = baseManufacturers.find { it.equals(trimmed, ignoreCase = true) }
+                            if (existing != null) {
+                                manufacturer = existing
+                            } else {
+                                baseManufacturers.add(trimmed)
+                                manufacturer = trimmed
+                            }
+                        }
+                        showNewMfgDialog = false
+                    },
+                    enabled = newMfgInputText.isNotBlank()
+                ) {
+                    Text("Add Manufacturer")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showNewMfgDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }

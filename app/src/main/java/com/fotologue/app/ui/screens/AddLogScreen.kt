@@ -34,7 +34,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 fun AddLogScreen(
     viewModel: AddLogViewModel,
     onBack: () -> Unit,
-    onMeasureExposure: (Int, Long?, Long?, Long?, Long?, Long?) -> Unit,
+    onMeasureExposure: (Int, Long?, Long?, Long?, Long?, Long?, Float?) -> Unit,
     onAddLens: (Long?) -> Unit,
     onAddFilm: () -> Unit = {},
     onNavigateToRollCounter: () -> Unit,
@@ -248,7 +248,8 @@ fun AddLogScreen(
                                 uiState.selectedLensId,
                                 uiState.selectedTeleconverterId,
                                 uiState.selectedFilterId,
-                                uiState.selectedFilmId
+                                uiState.selectedFilmId,
+                                uiState.focalLength
                             ) 
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -414,31 +415,28 @@ private fun FilmSelection(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                if (films.isEmpty()) {
+                films.forEach { film ->
                     DropdownMenuItem(
-                        text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(painterResource(R.drawable.ic_add), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Add a New Film Stock...", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                            }
-                        },
+                        text = { Text(film.name) },
                         onClick = {
+                            onFilmSelected(film.id, film.iso)
                             expanded = false
-                            onAddFilm()
                         }
                     )
-                } else {
-                    films.forEach { film ->
-                        DropdownMenuItem(
-                            text = { Text(film.name) },
-                            onClick = {
-                                onFilmSelected(film.id, film.iso)
-                                expanded = false
-                            }
-                        )
-                    }
                 }
+                DropdownMenuItem(
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(painterResource(R.drawable.ic_add), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Add a New Film Stock...", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                        }
+                    },
+                    onClick = {
+                        expanded = false
+                        onAddFilm()
+                    }
+                )
             }
         }
 

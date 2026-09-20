@@ -40,8 +40,11 @@ Smart Gear Kits      Equipment Maintenance      Analytics          Vault / XMP E
 1. **Stage 1: The Void**: Measures sensor Noise Floor with covered lens.
 2. **Stage 2: The Balance**: Calibrates Signal Gain multiplier against an 18% grey card.
 
-### Field Logging Workflow
+### Field Logging Workflow & Physical Roll Serials
 - Tap **`+ Log Exposure`** to record: Camera Body, Lens, Film/Sensor Stock, Aperture, Shutter Speed, ISO, GPS Location, and 3-Axis Tags (`Subject • Content • Intent`).
+- **Physical Film Roll Serial Labeling Protocol**: To eliminate ambiguity when shooting multiple "Roll 1" canisters simultaneously across different camera bodies, Fotologue constructs a unique physical roll serial label:
+  `Pentax ME Super • Kodak Tri-X 400 • Roll 01 (36 frames)`
+  Photographers write this unique serial (*e.g. `PNTX-TX400-R01`*) on canister leader tape or negative binder sleeves.
 - Use **Smart Kits** to pre-load Camera + Lens + Film + Accessory combinations for 1-tap fieldwork setup.
 
 ---

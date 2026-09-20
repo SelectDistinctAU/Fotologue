@@ -34,6 +34,8 @@ class LightMeterViewModel @Inject constructor(
     var targetIso: Int = 400
         private set
 
+    val zoomRatio = MutableStateFlow(1.0f)
+
     fun setParams(
         targetIso: Int,
         cameraId: Long? = null,
@@ -41,10 +43,16 @@ class LightMeterViewModel @Inject constructor(
         teleconverterId: Long? = null,
         filterId: Long? = null,
         filmId: Long? = null,
+        focalLength: Float? = null,
         autoStartCalibration: Boolean = false
     ) {
         this.targetIso = targetIso
         loadData(cameraId, lensId, teleconverterId, filterId, filmId)
+        if (focalLength != null && focalLength > 0f) {
+            _uiState.update { it.copy(currentFocalLength = focalLength.toInt()) }
+            val zoom = (focalLength / 24.0f).coerceIn(1.0f, 8.0f)
+            zoomRatio.value = zoom
+        }
         if (autoStartCalibration) {
             _uiState.update { it.copy(isWizardOnly = true) }
             startCalibration()
@@ -273,10 +281,19 @@ class LightMeterViewModel @Inject constructor(
     fun toggleFilmSimulation() {
         _uiState.update { it.copy(isSimulatingFilm = !it.isSimulatingFilm) }
     }
+
+    fun adjustEvOffset(delta: Float) {
+        _uiState.update { state ->
+            val newOffset = (state.evOffset + delta).coerceIn(-3.0f, 3.0f)
+            state.copy(evOffset = newOffset)
+        }
+        updateSuggestions()
+    }
 }
 
 data class LightMeterUiState(
     val currentEv: Double = 0.0,
+    val evOffset: Float = 0.0f,
     val rawLuminance: Double = 0.0,
     val suggestions: List<ExposureSettings> = emptyList(),
     val meteringMode: MeteringMode = MeteringMode.CENTER_WEIGHTED,

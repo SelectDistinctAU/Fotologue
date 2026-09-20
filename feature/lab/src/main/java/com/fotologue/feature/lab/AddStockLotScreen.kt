@@ -47,9 +47,11 @@ import com.fotologue.core.designsystem.R
 @Composable
 fun AddStockLotScreen(
     lotId: Long? = null,
+    masterId: Long? = null,
     viewModel: LabHomeViewModel,
     onBack: () -> Unit,
     onSuccess: () -> Unit,
+    onAddNewSupplier: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val masterList by viewModel.masterList.collectAsState()
@@ -59,14 +61,32 @@ fun AddStockLotScreen(
 
     val initialLot = lotList.find { it.id == lotId }
 
-    // Active Suppliers Filter (Only suppliers marked as isUsed == true!)
-    val activeSuppliers = remember(supplierList) {
+    // Active Suppliers Filter (ONLY suppliers marked as isUsed == true!)
+    val activeSuppliersOnly = remember(supplierList, initialLot) {
         val used = supplierList.filter { it.isUsed }
-        if (used.isNotEmpty()) used else supplierList
+        val assigned = initialLot?.supplierId?.let { id -> supplierList.find { it.id == id } }
+        if (assigned != null && !used.contains(assigned)) {
+            (used + assigned).distinct()
+        } else if (used.isNotEmpty()) {
+            used
+        } else {
+            supplierList
+        }
     }
 
-    var selectedMasterId by remember { mutableStateOf(initialLot?.masterId ?: masterList.firstOrNull()?.id) }
-    var selectedSupplierId by remember { mutableStateOf(initialLot?.supplierId ?: activeSuppliers.firstOrNull()?.id) }
+    var selectedMasterId by remember { mutableStateOf(masterId ?: initialLot?.masterId ?: masterList.firstOrNull()?.id) }
+    var selectedSupplierId by remember { mutableStateOf(initialLot?.supplierId ?: activeSuppliersOnly.firstOrNull()?.id) }
+    var previousSupplierCount by remember { mutableStateOf(supplierList.size) }
+
+    LaunchedEffect(supplierList.size) {
+        if (supplierList.size > previousSupplierCount) {
+            // A new supplier was added! Auto-select the newly created supplier
+            supplierList.lastOrNull()?.let { newSup ->
+                selectedSupplierId = newSup.id
+            }
+        }
+        previousSupplierCount = supplierList.size
+    }
     var batchNumber by remember { mutableStateOf(initialLot?.batchNumber ?: "") }
     var location by remember { mutableStateOf(initialLot?.location ?: locationList.firstOrNull()?.name ?: "Chemical Shelf A") }
     var cost by remember { mutableStateOf(initialLot?.cost?.replace("$", "") ?: "") }
@@ -74,14 +94,17 @@ fun AddStockLotScreen(
     var status by remember { mutableStateOf(initialLot?.status ?: "ON_HAND") } // ON_HAND vs IN_TRANSIT
     var notes by remember { mutableStateOf(initialLot?.notes ?: "") }
 
-    // DYNAMIC RE-SYNC: Ensures when editing a StockLot, all fields pre-fill instantly when lotList emits!
-    LaunchedEffect(initialLot, masterList, supplierList) {
+    // DYNAMIC RE-SYNC: Ensures when editing a StockLot or adding for a specific masterId, all fields pre-fill instantly!
+    LaunchedEffect(initialLot, masterList, supplierList, masterId) {
+        if (masterId != null) {
+            selectedMasterId = masterId
+        }
         initialLot?.let { lot ->
             selectedMasterId = lot.masterId
             if (lot.supplierId != null) {
                 selectedSupplierId = lot.supplierId
             } else if (selectedSupplierId == null) {
-                selectedSupplierId = activeSuppliers.firstOrNull()?.id
+                selectedSupplierId = activeSuppliersOnly.firstOrNull()?.id
             }
             batchNumber = lot.batchNumber
             location = lot.location
@@ -90,8 +113,8 @@ fun AddStockLotScreen(
             status = lot.status
             notes = lot.notes
         } ?: run {
-            if (selectedMasterId == null) selectedMasterId = masterList.firstOrNull()?.id
-            if (selectedSupplierId == null) selectedSupplierId = activeSuppliers.firstOrNull()?.id
+            if (selectedMasterId == null) selectedMasterId = masterId ?: masterList.firstOrNull()?.id
+            if (selectedSupplierId == null) selectedSupplierId = activeSuppliersOnly.firstOrNull()?.id
         }
     }
 
@@ -165,13 +188,12 @@ fun AddStockLotScreen(
                 }
             }
 
-            // Supplier Contact Dropdown (Natural Language Label)
+            // Supplier Contact Dropdown (STRICTLY LIMITED TO ACTIVE SUPPLIERS MARKED IN USE!)
             ExposedDropdownMenuBox(
                 expanded = supplierExpanded,
                 onExpandedChange = { supplierExpanded = !supplierExpanded }
             ) {
-                val allOrActiveSuppliers = (activeSuppliers + supplierList).distinct()
-                val selectedSupplier = allOrActiveSuppliers.find { it.id == selectedSupplierId }
+                val selectedSupplier = activeSuppliersOnly.find { it.id == selectedSupplierId }
                 val displaySupplierName = selectedSupplier?.name ?: "Select Supplier"
                 OutlinedTextField(
                     value = displaySupplierName,
@@ -188,12 +210,21 @@ fun AddStockLotScreen(
                     expanded = supplierExpanded,
                     onDismissRequest = { supplierExpanded = false }
                 ) {
-                    allOrActiveSuppliers.forEach { sup ->
+                    activeSuppliersOnly.forEach { sup ->
                         DropdownMenuItem(
                             text = { Text("${sup.name} (${sup.region})") },
                             onClick = {
                                 selectedSupplierId = sup.id
                                 supplierExpanded = false
+                            }
+                        )
+                    }
+                    if (onAddNewSupplier != null) {
+                        DropdownMenuItem(
+                            text = { Text("+ Add New Supplier Contact...", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
+                            onClick = {
+                                supplierExpanded = false
+                                onAddNewSupplier()
                             }
                         )
                     }

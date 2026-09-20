@@ -4,6 +4,7 @@ import androidx.room.withTransaction
 import com.fotologue.core.data.*
 import com.fotologue.core.data.location.LocationProvider
 import io.mockk.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -52,6 +53,7 @@ class FotologueRepositoryTest {
         every { flashDao.getAllCameraFlashCrossRefs() } returns flowOf(emptyList())
         every { logEntryDao.getAllLogEntries() } returns flowOf(emptyList())
         every { logEntryDao.getAllLogEntriesWithGear() } returns flowOf(emptyList())
+        every { filmRollSessionDao.getAllSessions() } returns flowOf(emptyList())
         every { cameraKitDao.getAllCameraKits() } returns flowOf(emptyList())
         every { cameraKitDao.getAllCameraKitsWithGear() } returns flowOf(emptyList())
         every { tagDao.getAllTags() } returns flowOf(emptyList())
@@ -60,6 +62,7 @@ class FotologueRepositoryTest {
         every { filmDao.hasFilms() } returns flowOf(false)
         every { lensDao.hasLenses() } returns flowOf(false)
         every { settingsRepository.isWelcomeDismissed } returns flowOf(false)
+        every { settingsRepository.isSafelightActive } returns MutableStateFlow(false)
 
         repository = FotologueRepository(
             db, cameraDao, filmDao, lensDao, teleconverterDao,

@@ -24,7 +24,7 @@ sealed class Route : NavKey {
     data class AddEditItemMaster(val masterId: Long? = null, val defaultCategory: String? = null) : Route()
 
     @Serializable
-    data object AddStockLot : Route()
+    data class AddStockLot(val masterId: Long? = null) : Route()
 
     @Serializable
     data class EditStockLot(val lotId: Long) : Route()
@@ -97,6 +97,7 @@ sealed class Route : NavKey {
         val teleconverterId: Long? = null,
         val filterId: Long? = null,
         val filmId: Long? = null,
+        val focalLength: Float? = null,
         val autoStartCalibration: Boolean = false
     ) : Route()
 
