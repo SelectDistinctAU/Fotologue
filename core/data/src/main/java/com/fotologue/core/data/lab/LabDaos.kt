@@ -274,6 +274,9 @@ interface OrderHistoryDao {
 
 @Dao
 interface PerformanceLogDao {
+    @Query("SELECT * FROM lab_performance_logs ORDER BY id DESC")
+    fun getAllPerformanceLogs(): Flow<List<PerformanceLog>>
+
     @Query("SELECT * FROM lab_performance_logs WHERE logEntryId = :logEntryId")
     fun getLogsForEntry(logEntryId: Long): Flow<List<PerformanceLog>>
 
@@ -289,6 +292,9 @@ interface PerformanceLogDao {
 
 @Dao
 interface LabProcessEventDao {
+    @Query("SELECT * FROM lab_process_events ORDER BY id DESC")
+    fun getAllProcessEvents(): Flow<List<LabProcessEvent>>
+
     @Query("SELECT * FROM lab_process_events WHERE filmRollId = :filmRollId")
     fun getProcessEventsForRoll(filmRollId: String): Flow<List<LabProcessEvent>>
 

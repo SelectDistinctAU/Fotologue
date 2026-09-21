@@ -103,6 +103,7 @@ class FotologueRepository @Inject constructor(
         filmRollSessionDao.insertSession(session)
 
     suspend fun insertCamera(camera: Camera) = cameraDao.insertCamera(camera)
+    suspend fun insertLogEntry(logEntry: LogEntry): Long = logEntryDao.insertLogEntry(logEntry)
     suspend fun insertFilm(film: Film): Long {
         val id = filmDao.insertFilm(film)
         _newlyAddedFilmId.emit(id)

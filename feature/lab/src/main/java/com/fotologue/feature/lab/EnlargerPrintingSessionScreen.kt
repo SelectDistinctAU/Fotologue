@@ -51,7 +51,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.fotologue.core.data.lab.PerformanceLog
-import com.fotologue.core.data.lab.PrintRecipe
 import com.fotologue.core.designsystem.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,28 +78,64 @@ fun EnlargerPrintingSessionScreen(
 
     val paperMasters = masterList.filter { it.category.equals("Paper", ignoreCase = true) }
 
-    // Roll.Frame Picker directly from Database / Imported JSON Logs & Active Sessions
-    val availableFrames = remember(logEntriesWithGear, filmRollSessions, allCameras, allFilms) {
-        val framesFromLogs = logEntriesWithGear.map { entry ->
-            val camera = entry.camera?.name ?: "Camera"
-            val film = entry.film?.name ?: "Film Stock"
-            val roll = entry.logEntry.filmRoll ?: "Roll 01"
-            "$film ($camera) • $roll, Frame #${entry.logEntry.id}"
-        }
+    // 1. TOP-LEVEL FILM ROLL SELECTION
+    val availableRolls = remember(logEntriesWithGear, filmRollSessions, allCameras, allFilms) {
+        val rollFrameCounts = mutableMapOf<String, Int>()
 
-        val framesFromSessions = filmRollSessions.mapNotNull { session ->
+        // 1. Map active film roll sessions
+        filmRollSessions.forEach { session ->
             val camera = allCameras.find { it.id == session.cameraId }?.name ?: "Camera"
             val film = allFilms.find { it.id == session.filmId }?.name ?: "Film Stock"
-            "$film ($camera) • Roll ${session.rollNumber}"
+            val key = "$camera • $film • Roll ${session.rollNumber}"
+            rollFrameCounts[key] = rollFrameCounts.getOrDefault(key, 0)
         }
 
-        val combined = (framesFromSessions + framesFromLogs).distinct().sorted()
-        if (combined.isNotEmpty()) combined else listOf("Ilford FP4 Plus 125 (Pentax LX) • Roll 01", "Kodak Tri-X 400 (Leica M6) • Roll 01")
+        // 2. Count logged exposure frames per roll
+        logEntriesWithGear.forEach { entry ->
+            val camera = entry.camera?.name ?: "Camera"
+            val film = entry.film?.name ?: "Film Stock"
+            val rollRaw = entry.logEntry.filmRoll ?: "Roll 1"
+            val rollNum = if (rollRaw.contains(".")) rollRaw.substringBefore(".") else rollRaw
+            val rollClean = if (rollNum.all { c -> c.isDigit() }) "Roll $rollNum" else rollNum
+            val key = "$camera • $film • $rollClean"
+            rollFrameCounts[key] = (rollFrameCounts[key] ?: 0) + 1
+        }
+
+        val formatted = rollFrameCounts.map { (key, count) ->
+            if (count > 0) "$key ($count frames)" else key
+        }.distinct().sorted()
+
+        if (formatted.isNotEmpty()) formatted else listOf("Pentax LX • Ilford FP4 Plus 125 • Roll 1", "Canon AE-1 Program • Ilford FP4 Plus 125 • Roll 1", "Leica M6 • Kodak Tri-X 400 • Roll 1")
     }
+
+    var selectedRollText by remember(availableRolls) { mutableStateOf(availableRolls.first()) }
+    var rollExpanded by remember { mutableStateOf(false) }
+
+    // 2. DETAILED FRAME LAYER SELECTION FOR THE SELECTED ROLL
+    val availableFramesForSelectedRoll = remember(selectedRollText, logEntriesWithGear) {
+        val matchingEntries = logEntriesWithGear.filter { entry ->
+            val camera = entry.camera?.name ?: "Camera"
+            val film = entry.film?.name ?: "Film Stock"
+            selectedRollText.contains(camera) && selectedRollText.contains(film)
+        }
+
+        val frames = matchingEntries.map { entry ->
+            val frameNumStr = entry.logEntry.notes.substringAfter("Frame #", "").takeWhile { it.isDigit() }
+            val frameNum = if (frameNumStr.isNotBlank()) frameNumStr else "${entry.logEntry.id}"
+            val shutter = entry.logEntry.exposureSettings.shutterSpeed
+            val aperture = entry.logEntry.exposureSettings.aperture
+            Pair(entry.logEntry.id, "Frame #$frameNum • $shutter @ $aperture")
+        }.distinctBy { it.first }
+
+        if (frames.isNotEmpty()) frames else listOf(Pair(logEntriesWithGear.firstOrNull()?.logEntry?.id ?: 1L, "Frame #01 • 1/125 @ f/8"))
+    }
+
+    var selectedFramePair by remember(availableFramesForSelectedRoll) { mutableStateOf(availableFramesForSelectedRoll.first()) }
+    var frameExpanded by remember { mutableStateOf(false) }
 
     // User Enlarger Bodies & Lenses from Equipment DB
     val userEnlargers = equipmentList.filter { it.category.equals("Enlarger", ignoreCase = true) }.map { it.name }
-    val enlargerOptions = (userEnlargers + listOf("Intrepid Compact 4x5 Enlarger", "Beseler 23C II", "Omega D2 4x5")).distinct()
+    val enlargerOptions = if (userEnlargers.isNotEmpty()) userEnlargers else listOf("Intrepid Compact 4x5 Enlarger", "Beseler 23C II", "Omega D2 4x5")
 
     val dbEnlargerLenses = equipmentList.filter { it.category.equals("Enlarger Lens", ignoreCase = true) }.map { it.name }
     val enlargerLensOptions = if (dbEnlargerLenses.isNotEmpty()) dbEnlargerLenses else listOf("Rodagon 80mm f/5.6", "El-Nikkor 50mm f/2.8", "Schneider Componon-S 100mm f/5.6")
@@ -109,7 +144,6 @@ fun EnlargerPrintingSessionScreen(
     val standardGradeFilters = listOf("Grade 00", "Grade 0", "Grade 0.5", "Grade 1", "Grade 1.5", "Grade 2", "Grade 2.5", "Grade 3", "Grade 3.5", "Grade 4", "Grade 4.5", "Grade 5", "Split-Grade (00 + 5)")
     val learningOpportunitiesLOV = listOf("Misfire / Accidental Shutter", "Underexposed Shadows", "Overexposed Highlights", "Missed Focus / Focus Shift", "Low Light Hand Shake", "Contrast Too High", "Contrast Too Flat", "Frame Overlap", "Distortion / Perspective Error", "Bellows Light Leak")
 
-    var rollFrameIdText by remember(availableFrames) { mutableStateOf(availableFrames.first()) }
     var selectedMasterId by remember { mutableStateOf(paperMasters.firstOrNull()?.id) }
     var selectedEnlargerBody by remember(enlargerOptions) { mutableStateOf(enlargerOptions.first()) }
     var printSizeText by remember { mutableStateOf("8x10\"") }
@@ -125,7 +159,6 @@ fun EnlargerPrintingSessionScreen(
     var learningTag by remember { mutableStateOf("Misfire / Accidental Shutter") }
     var outcomeNotes by remember { mutableStateOf("Fine-art exhibition print candidate") }
 
-    var rollFrameExpanded by remember { mutableStateOf(false) }
     var masterExpanded by remember { mutableStateOf(false) }
     var enlargerBodyExpanded by remember { mutableStateOf(false) }
     var printSizeExpanded by remember { mutableStateOf(false) }
@@ -186,7 +219,7 @@ fun EnlargerPrintingSessionScreen(
                             modifier = Modifier.padding(end = 8.dp)
                         )
                         Text(
-                            text = "Enlarger Printing Session",
+                            text = "Enlarger Session",
                             style = MaterialTheme.typography.titleLarge,
                             color = safelightFg
                         )
@@ -257,30 +290,62 @@ fun EnlargerPrintingSessionScreen(
                 }
             }
 
-            // Roll.Frame Picker directly from Database / Imported JSON Logs
+            // 1. TOP-LEVEL ROLL FILTER DROPDOWN
             ExposedDropdownMenuBox(
-                expanded = rollFrameExpanded,
-                onExpandedChange = { rollFrameExpanded = !rollFrameExpanded }
+                expanded = rollExpanded,
+                onExpandedChange = { rollExpanded = !rollExpanded }
             ) {
                 OutlinedTextField(
-                    value = rollFrameIdText,
-                    onValueChange = { rollFrameIdText = it },
-                    label = { Text("Roll.Frame ID (Imported / Logged Frames)") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = rollFrameExpanded) },
-                    singleLine = true,
+                    value = selectedRollText,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("1. Select Developed Film Roll (Top-Level Filter)") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = rollExpanded) },
                     colors = textFieldColors,
                     modifier = Modifier.menuAnchor().fillMaxWidth()
                 )
                 ExposedDropdownMenu(
-                    expanded = rollFrameExpanded,
-                    onDismissRequest = { rollFrameExpanded = false }
+                    expanded = rollExpanded,
+                    onDismissRequest = { rollExpanded = false },
+                    containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
-                    availableFrames.forEach { frameStr ->
+                    availableRolls.forEach { rollStr ->
                         DropdownMenuItem(
-                            text = { Text(frameStr) },
+                            text = { Text(rollStr, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {
-                                rollFrameIdText = frameStr
-                                rollFrameExpanded = false
+                                selectedRollText = rollStr
+                                rollExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            // 2. DETAILED FRAME LAYER FILTER DROPDOWN
+            ExposedDropdownMenuBox(
+                expanded = frameExpanded,
+                onExpandedChange = { frameExpanded = !frameExpanded }
+            ) {
+                OutlinedTextField(
+                    value = selectedFramePair.second,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("2. Select Frame to Print (Detailed Layer)") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = frameExpanded) },
+                    colors = textFieldColors,
+                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = frameExpanded,
+                    onDismissRequest = { frameExpanded = false },
+                    containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
+                ) {
+                    availableFramesForSelectedRoll.forEach { framePair ->
+                        DropdownMenuItem(
+                            text = { Text(framePair.second, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                            onClick = {
+                                selectedFramePair = framePair
+                                frameExpanded = false
                             }
                         )
                     }
@@ -304,11 +369,12 @@ fun EnlargerPrintingSessionScreen(
                 )
                 ExposedDropdownMenu(
                     expanded = masterExpanded,
-                    onDismissRequest = { masterExpanded = false }
+                    onDismissRequest = { masterExpanded = false },
+                    containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     paperMasters.forEach { p ->
                         DropdownMenuItem(
-                            text = { Text("${p.name} (${p.manufacturer} - ${p.displaySize})") },
+                            text = { Text("${p.name} (${p.manufacturer} - ${p.displaySize})", color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {
                                 selectedMasterId = p.id
                                 masterExpanded = false
@@ -334,11 +400,12 @@ fun EnlargerPrintingSessionScreen(
                 )
                 ExposedDropdownMenu(
                     expanded = enlargerBodyExpanded,
-                    onDismissRequest = { enlargerBodyExpanded = false }
+                    onDismissRequest = { enlargerBodyExpanded = false },
+                    containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     enlargerOptions.forEach { en ->
                         DropdownMenuItem(
-                            text = { Text(en) },
+                            text = { Text(en, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {
                                 selectedEnlargerBody = en
                                 enlargerBodyExpanded = false
@@ -371,11 +438,12 @@ fun EnlargerPrintingSessionScreen(
                     )
                     ExposedDropdownMenu(
                         expanded = lensExpanded,
-                        onDismissRequest = { lensExpanded = false }
+                        onDismissRequest = { lensExpanded = false },
+                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                     ) {
                         enlargerLensOptions.forEach { lensOpt ->
                             DropdownMenuItem(
-                                text = { Text(lensOpt) },
+                                text = { Text(lensOpt, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                                 onClick = {
                                     enlargerLensText = lensOpt
                                     lensExpanded = false
@@ -402,11 +470,12 @@ fun EnlargerPrintingSessionScreen(
                     )
                     ExposedDropdownMenu(
                         expanded = printSizeExpanded,
-                        onDismissRequest = { printSizeExpanded = false }
+                        onDismissRequest = { printSizeExpanded = false },
+                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                     ) {
                         standardPrintDimensions.forEach { dim ->
                             DropdownMenuItem(
-                                text = { Text(dim) },
+                                text = { Text(dim, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                                 onClick = {
                                     printSizeText = dim
                                     printSizeExpanded = false
@@ -450,11 +519,12 @@ fun EnlargerPrintingSessionScreen(
                     )
                     ExposedDropdownMenu(
                         expanded = gradeExpanded,
-                        onDismissRequest = { gradeExpanded = false }
+                        onDismissRequest = { gradeExpanded = false },
+                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                     ) {
                         standardGradeFilters.forEach { gr ->
                             DropdownMenuItem(
-                                text = { Text(gr) },
+                                text = { Text(gr, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                                 onClick = {
                                     gradeFilterText = gr
                                     gradeExpanded = false
@@ -548,11 +618,12 @@ fun EnlargerPrintingSessionScreen(
                         )
                         ExposedDropdownMenu(
                             expanded = learningExpanded,
-                            onDismissRequest = { learningExpanded = false }
+                            onDismissRequest = { learningExpanded = false },
+                            containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                         ) {
                             learningOpportunitiesLOV.forEach { opp ->
                                 DropdownMenuItem(
-                                    text = { Text(opp) },
+                                    text = { Text(opp, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                                     onClick = {
                                         learningTag = opp
                                         learningExpanded = false
@@ -578,7 +649,7 @@ fun EnlargerPrintingSessionScreen(
                 onClick = {
                     viewModel.addPerformanceLog(
                         PerformanceLog(
-                            logEntryId = logId ?: 1L,
+                            logEntryId = selectedFramePair.first,
                             inventoryItemId = selectedMasterId ?: 1L,
                             outcomeStatus = outcomeStatus,
                             rejectCategory = if (outcomeStatus == "REJECT") rejectCategory else null,
@@ -590,7 +661,7 @@ fun EnlargerPrintingSessionScreen(
 
                     onSuccess()
                 },
-                enabled = rollFrameIdText.isNotBlank() && isPaperOnHand,
+                enabled = selectedRollText.isNotBlank() && isPaperOnHand,
                 colors = ButtonDefaults.buttonColors(containerColor = safelightBtnBg, contentColor = safelightBtnFg),
                 modifier = Modifier
                     .fillMaxWidth()

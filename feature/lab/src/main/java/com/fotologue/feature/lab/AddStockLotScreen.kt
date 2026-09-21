@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -25,8 +26,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -58,6 +63,7 @@ fun AddStockLotScreen(
     val supplierList by viewModel.supplierList.collectAsState()
     val locationList by viewModel.locationList.collectAsState()
     val lotList by viewModel.lotList.collectAsState()
+    val isSafelightActive by viewModel.isSafelightActive.collectAsState()
 
     val initialLot = lotList.find { it.id == lotId }
 
@@ -87,6 +93,7 @@ fun AddStockLotScreen(
         }
         previousSupplierCount = supplierList.size
     }
+
     var batchNumber by remember { mutableStateOf(initialLot?.batchNumber ?: "") }
     var location by remember { mutableStateOf(initialLot?.location ?: locationList.firstOrNull()?.name ?: "Chemical Shelf A") }
     var cost by remember { mutableStateOf(initialLot?.cost?.replace("$", "") ?: "") }
@@ -125,21 +132,70 @@ fun AddStockLotScreen(
 
     val statuses = listOf("ON_HAND", "IN_TRANSIT", "IN_USE", "EXHAUSTED")
 
+    // PURE DARKROOM SAFELIGHT RED COLORS
+    val safelightBg = if (isSafelightActive) Color.Black else MaterialTheme.colorScheme.surface
+    val safelightFg = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface
+    val safelightPrimary = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.primary
+    val safelightBtnBg = if (isSafelightActive) Color(0xFF660000) else MaterialTheme.colorScheme.primary
+    val safelightBtnFg = if (isSafelightActive) Color(0xFFFF0000) else Color.White
+
+    val textFieldColors = if (isSafelightActive) {
+        OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Color(0xFFFF0000),
+            unfocusedTextColor = Color(0xFFFF0000),
+            focusedBorderColor = Color(0xFFFF0000),
+            unfocusedBorderColor = Color(0xFF660000),
+            focusedLabelColor = Color(0xFFFF0000),
+            unfocusedLabelColor = Color(0xFFCC0000)
+        )
+    } else {
+        OutlinedTextFieldDefaults.colors()
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = safelightBg,
+        contentColor = safelightFg,
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                 title = {
                     Text(
                         text = if (initialLot == null) "Add Physical Stock" else "Edit Stock Lot",
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
+                        color = safelightFg
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back to Lab"
+                            contentDescription = "Back to Lab",
+                            tint = safelightPrimary
+                        )
+                    }
+                },
+                actions = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(end = 4.dp)
+                    ) {
+                        Text(
+                            text = "Safelight",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = safelightPrimary,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Switch(
+                            checked = isSafelightActive,
+                            onCheckedChange = { viewModel.setSafelightActive(it) },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color(0xFFFF0000),
+                                checkedTrackColor = Color(0xFF660000),
+                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                            )
                         )
                     }
                 }
@@ -167,18 +223,19 @@ fun AddStockLotScreen(
                     readOnly = true,
                     label = { Text("Stock Item Specification") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = masterExpanded) },
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary),
+                    colors = textFieldColors,
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = masterExpanded,
-                    onDismissRequest = { masterExpanded = false }
+                    onDismissRequest = { masterExpanded = false },
+                    containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     masterList.forEach { m ->
                         DropdownMenuItem(
-                            text = { Text("${m.name} (${m.manufacturer} - ${m.containerSize})") },
+                            text = { Text("${m.name} (${m.manufacturer} - ${m.containerSize})", color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {
                                 selectedMasterId = m.id
                                 masterExpanded = false
@@ -201,18 +258,19 @@ fun AddStockLotScreen(
                     readOnly = true,
                     label = { Text("Supplier Contact") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = supplierExpanded) },
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary),
+                    colors = textFieldColors,
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = supplierExpanded,
-                    onDismissRequest = { supplierExpanded = false }
+                    onDismissRequest = { supplierExpanded = false },
+                    containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     activeSuppliersOnly.forEach { sup ->
                         DropdownMenuItem(
-                            text = { Text("${sup.name} (${sup.region})") },
+                            text = { Text("${sup.name} (${sup.region})", color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {
                                 selectedSupplierId = sup.id
                                 supplierExpanded = false
@@ -221,7 +279,7 @@ fun AddStockLotScreen(
                     }
                     if (onAddNewSupplier != null) {
                         DropdownMenuItem(
-                            text = { Text("+ Add New Supplier Contact...", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
+                            text = { Text("+ Add New Supplier Contact...", fontWeight = FontWeight.Bold, color = safelightPrimary) },
                             onClick = {
                                 supplierExpanded = false
                                 onAddNewSupplier()
@@ -241,6 +299,7 @@ fun AddStockLotScreen(
                     onValueChange = { batchNumber = it },
                     label = { Text("Batch / Lot Number") },
                     singleLine = true,
+                    colors = textFieldColors,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -255,6 +314,7 @@ fun AddStockLotScreen(
                     label = { Text("Purchase Cost ($)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
+                    colors = textFieldColors,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -265,6 +325,7 @@ fun AddStockLotScreen(
                 label = { Text("Quantity Purchased") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,
+                colors = textFieldColors,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -280,17 +341,19 @@ fun AddStockLotScreen(
                     readOnly = true,
                     label = { Text("Storage Location") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = locationExpanded) },
+                    colors = textFieldColors,
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = locationExpanded,
-                    onDismissRequest = { locationExpanded = false }
+                    onDismissRequest = { locationExpanded = false },
+                    containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     locationList.forEach { loc ->
                         DropdownMenuItem(
-                            text = { Text(loc.name) },
+                            text = { Text(loc.name, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {
                                 location = loc.name
                                 locationExpanded = false
@@ -305,11 +368,20 @@ fun AddStockLotScreen(
                 expanded = statusExpanded,
                 onExpandedChange = { statusExpanded = !statusExpanded }
             ) {
-                val statusLabel = when (status) {
-                    "ON_HAND" -> "🟢 On Hand (Received)"
-                    "IN_USE" -> "🟡 In Use (Opened/Mixed)"
-                    "IN_TRANSIT" -> "🚚 In Transit (Ordered)"
-                    else -> "🔴 Exhausted (Empty)"
+                val statusLabel = if (isSafelightActive) {
+                    when (status) {
+                        "ON_HAND" -> "On Hand (Received)"
+                        "IN_USE" -> "In Use (Opened/Mixed)"
+                        "IN_TRANSIT" -> "In Transit (Ordered)"
+                        else -> "Exhausted (Empty)"
+                    }
+                } else {
+                    when (status) {
+                        "ON_HAND" -> "🟢 On Hand (Received)"
+                        "IN_USE" -> "🟡 In Use (Opened/Mixed)"
+                        "IN_TRANSIT" -> "🚚 In Transit (Ordered)"
+                        else -> "🔴 Exhausted (Empty)"
+                    }
                 }
                 OutlinedTextField(
                     value = statusLabel,
@@ -317,23 +389,34 @@ fun AddStockLotScreen(
                     readOnly = true,
                     label = { Text("Initial Stock Status") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = statusExpanded) },
+                    colors = textFieldColors,
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = statusExpanded,
-                    onDismissRequest = { statusExpanded = false }
+                    onDismissRequest = { statusExpanded = false },
+                    containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     statuses.forEach { st ->
-                        val label = when (st) {
-                            "ON_HAND" -> "🟢 On Hand (Received)"
-                            "IN_USE" -> "🟡 In Use (Opened/Mixed)"
-                            "IN_TRANSIT" -> "🚚 In Transit (Ordered)"
-                            else -> "🔴 Exhausted (Empty)"
+                        val label = if (isSafelightActive) {
+                            when (st) {
+                                "ON_HAND" -> "On Hand (Received)"
+                                "IN_USE" -> "In Use (Opened/Mixed)"
+                                "IN_TRANSIT" -> "In Transit (Ordered)"
+                                else -> "Exhausted (Empty)"
+                            }
+                        } else {
+                            when (st) {
+                                "ON_HAND" -> "🟢 On Hand (Received)"
+                                "IN_USE" -> "🟡 In Use (Opened/Mixed)"
+                                "IN_TRANSIT" -> "🚚 In Transit (Ordered)"
+                                else -> "🔴 Exhausted (Empty)"
+                            }
                         }
                         DropdownMenuItem(
-                            text = { Text(label) },
+                            text = { Text(label, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {
                                 status = st
                                 statusExpanded = false
@@ -347,6 +430,7 @@ fun AddStockLotScreen(
                 value = notes,
                 onValueChange = { notes = it },
                 label = { Text("Stock Notes") },
+                colors = textFieldColors,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -378,13 +462,14 @@ fun AddStockLotScreen(
                     }
                 },
                 enabled = selectedMasterId != null,
+                colors = ButtonDefaults.buttonColors(containerColor = safelightBtnBg, contentColor = safelightBtnFg),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp)
             ) {
-                Icon(Icons.Default.Check, contentDescription = null)
+                Icon(Icons.Default.Check, contentDescription = null, tint = safelightBtnFg)
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Save Physical Stock", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                Text("Save Physical Stock", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightBtnFg)
             }
         }
     }

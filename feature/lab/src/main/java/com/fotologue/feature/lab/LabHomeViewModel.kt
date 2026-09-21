@@ -2,7 +2,9 @@ package com.fotologue.feature.lab
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fotologue.core.data.ExposureSettings
 import com.fotologue.core.data.FotologueRepository
+import com.fotologue.core.data.LogEntry
 import com.fotologue.core.data.lab.InventoryItem
 import com.fotologue.core.data.lab.InventoryItemDao
 import com.fotologue.core.data.lab.InventoryMaster
@@ -18,6 +20,8 @@ import com.fotologue.core.data.lab.LabEquipmentSubCategoryDao
 import com.fotologue.core.data.lab.LabItemName
 import com.fotologue.core.data.lab.LabItemNameDao
 import com.fotologue.core.data.lab.LabPresets
+import com.fotologue.core.data.lab.LabProcessEvent
+import com.fotologue.core.data.lab.LabProcessEventDao
 import com.fotologue.core.data.lab.LabStorageLocation
 import com.fotologue.core.data.lab.LabStorageLocationDao
 import com.fotologue.core.data.lab.LabSupplier
@@ -37,6 +41,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -57,8 +63,15 @@ class LabHomeViewModel @Inject constructor(
     private val storageLocationDao: LabStorageLocationDao,
     private val inventoryItemDao: InventoryItemDao,
     private val orderHistoryDao: OrderHistoryDao,
-    private val performanceLogDao: PerformanceLogDao
+    private val performanceLogDao: PerformanceLogDao,
+    private val labProcessEventDao: LabProcessEventDao
 ) : ViewModel() {
+
+    val performanceLogs: StateFlow<List<PerformanceLog>> = performanceLogDao.getAllPerformanceLogs()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val processEvents: StateFlow<List<LabProcessEvent>> = labProcessEventDao.getAllProcessEvents()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val equipmentList: StateFlow<List<LabEquipment>> = equipmentDao.getAllEquipment()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -419,7 +432,39 @@ class LabHomeViewModel @Inject constructor(
 
     fun addPerformanceLog(log: PerformanceLog) {
         viewModelScope.launch {
-            performanceLogDao.insertLog(log)
+            try {
+                val existingLogs = repository.allLogEntriesWithGear.first()
+                val targetLogId = if (existingLogs.any { it.logEntry.id == log.logEntryId }) {
+                    log.logEntryId
+                } else if (existingLogs.isNotEmpty()) {
+                    existingLogs.first().logEntry.id
+                } else {
+                    // Safe fallback log entry insertion if database has no exposure entries yet
+                    val fallbackCamera = repository.allCameras.firstOrNull()?.firstOrNull()
+                    val fallbackFilm = repository.allFilms.firstOrNull()?.firstOrNull()
+                    val fallbackLens = repository.allLenses.firstOrNull()?.firstOrNull()
+                    repository.insertLogEntry(
+                        LogEntry(
+                            timestamp = System.currentTimeMillis(),
+                            notes = "Enlarger Printing Session Log",
+                            environmentalConditions = "",
+                            cameraId = fallbackCamera?.id,
+                            filmId = fallbackFilm?.id,
+                            lensId = fallbackLens?.id,
+                            exposureSettings = ExposureSettings(iso = 400, shutterSpeed = "1/125", aperture = "f/8")
+                        )
+                    )
+                }
+                performanceLogDao.insertLog(log.copy(logEntryId = targetLogId))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun addProcessEvent(event: LabProcessEvent) {
+        viewModelScope.launch {
+            labProcessEventDao.insertProcessEvent(event)
         }
     }
 

@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -28,9 +29,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,6 +46,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -66,6 +71,7 @@ fun AddEditInventoryMasterScreen(
     val masterList by viewModel.masterList.collectAsState()
     val categoriesList by viewModel.categoryList.collectAsState()
     val itemNamesList by viewModel.itemNameList.collectAsState()
+    val isSafelightActive by viewModel.isSafelightActive.collectAsState()
 
     val initialMaster = masterList.find { it.id == masterId }
 
@@ -224,21 +230,70 @@ fun AddEditInventoryMasterScreen(
     }
     val itemPresets = (customNamesForCategory + defaultPresets).distinct()
 
+    // PURE DARKROOM SAFELIGHT RED COLORS
+    val safelightBg = if (isSafelightActive) Color.Black else MaterialTheme.colorScheme.surface
+    val safelightFg = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface
+    val safelightPrimary = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.primary
+    val safelightBtnBg = if (isSafelightActive) Color(0xFF660000) else MaterialTheme.colorScheme.primary
+    val safelightBtnFg = if (isSafelightActive) Color(0xFFFF0000) else Color.White
+
+    val textFieldColors = if (isSafelightActive) {
+        OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Color(0xFFFF0000),
+            unfocusedTextColor = Color(0xFFFF0000),
+            focusedBorderColor = Color(0xFFFF0000),
+            unfocusedBorderColor = Color(0xFF660000),
+            focusedLabelColor = Color(0xFFFF0000),
+            unfocusedLabelColor = Color(0xFFCC0000)
+        )
+    } else {
+        OutlinedTextFieldDefaults.colors()
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = safelightBg,
+        contentColor = safelightFg,
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                 title = {
                     Text(
                         text = if (initialMaster == null) "Add Inventory Item" else "Edit Inventory Item",
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
+                        color = safelightFg
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back to Lab"
+                            contentDescription = "Back to Lab",
+                            tint = safelightPrimary
+                        )
+                    }
+                },
+                actions = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(end = 4.dp)
+                    ) {
+                        Text(
+                            text = "Safelight",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = safelightPrimary,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Switch(
+                            checked = isSafelightActive,
+                            onCheckedChange = { viewModel.setSafelightActive(it) },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color(0xFFFF0000),
+                                checkedTrackColor = Color(0xFF660000),
+                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                            )
                         )
                     }
                 }
@@ -264,18 +319,19 @@ fun AddEditInventoryMasterScreen(
                     readOnly = true,
                     label = { Text("Category") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary),
+                    colors = textFieldColors,
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = categoryExpanded,
-                    onDismissRequest = { categoryExpanded = false }
+                    onDismissRequest = { categoryExpanded = false },
+                    containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     categories.forEach { catName ->
                         DropdownMenuItem(
-                            text = { Text(catName) },
+                            text = { Text(catName, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {
                                 category = catName
                                 categoryExpanded = false
@@ -306,17 +362,19 @@ fun AddEditInventoryMasterScreen(
                     placeholder = { Text("e.g. Ilford, Kodak, Fuji, CineStill") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = mfgExpanded) },
                     singleLine = true,
+                    colors = textFieldColors,
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = mfgExpanded,
-                    onDismissRequest = { mfgExpanded = false }
+                    onDismissRequest = { mfgExpanded = false },
+                    containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     mfgList.forEach { mfg ->
                         DropdownMenuItem(
-                            text = { Text(mfg) },
+                            text = { Text(mfg, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {
                                 manufacturer = mfg
                                 mfgExpanded = false
@@ -325,7 +383,7 @@ fun AddEditInventoryMasterScreen(
                         )
                     }
                     DropdownMenuItem(
-                        text = { Text("+ Add New Manufacturer...", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
+                        text = { Text("+ Add New Manufacturer...", fontWeight = FontWeight.Bold, color = safelightPrimary) },
                         onClick = {
                             mfgExpanded = false
                             newMfgInputText = ""
@@ -347,17 +405,19 @@ fun AddEditInventoryMasterScreen(
                     placeholder = { Text(if (category == "Film Stock") "e.g. HP5 Plus 400 or Tri-X 400" else "e.g. Rapid Fixer or Multigrade RC 8x10") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = nameExpanded) },
                     singleLine = true,
+                    colors = textFieldColors,
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = nameExpanded,
-                    onDismissRequest = { nameExpanded = false }
+                    onDismissRequest = { nameExpanded = false },
+                    containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     itemPresets.forEach { preset ->
                         DropdownMenuItem(
-                            text = { Text(preset) },
+                            text = { Text(preset, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {
                                 name = preset
                                 nameExpanded = false
@@ -382,6 +442,7 @@ fun AddEditInventoryMasterScreen(
                     label = { Text("Major Quantity") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
+                    colors = textFieldColors,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -396,17 +457,19 @@ fun AddEditInventoryMasterScreen(
                         readOnly = true,
                         label = { Text("Major Unit") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = majorUnitExpanded) },
+                        colors = textFieldColors,
                         modifier = Modifier
                             .menuAnchor()
                             .fillMaxWidth()
                     )
                     ExposedDropdownMenu(
                         expanded = majorUnitExpanded,
-                        onDismissRequest = { majorUnitExpanded = false }
+                        onDismissRequest = { majorUnitExpanded = false },
+                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                     ) {
                         majorUnits.forEach { u ->
                             DropdownMenuItem(
-                                text = { Text(u) },
+                                text = { Text(u, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                                 onClick = {
                                     onMajorUnitChanged(u)
                                     majorUnitExpanded = false
@@ -429,6 +492,7 @@ fun AddEditInventoryMasterScreen(
                     label = { Text("Minor Quantity") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
+                    colors = textFieldColors,
                     modifier = Modifier.weight(1.2f)
                 )
 
@@ -443,17 +507,19 @@ fun AddEditInventoryMasterScreen(
                         readOnly = true,
                         label = { Text("Minor Unit") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = minorUnitExpanded) },
+                        colors = textFieldColors,
                         modifier = Modifier
                             .menuAnchor()
                             .fillMaxWidth()
                     )
                     ExposedDropdownMenu(
                         expanded = minorUnitExpanded,
-                        onDismissRequest = { minorUnitExpanded = false }
+                        onDismissRequest = { minorUnitExpanded = false },
+                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                     ) {
                         allowedMinorUnits.forEach { mu ->
                             DropdownMenuItem(
-                                text = { Text(mu) },
+                                text = { Text(mu, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                                 onClick = {
                                     minorUnit = mu
                                     minorUnitExpanded = false
@@ -468,6 +534,7 @@ fun AddEditInventoryMasterScreen(
                 value = notes,
                 onValueChange = { notes = it },
                 label = { Text("Notes") },
+                colors = textFieldColors,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -484,13 +551,14 @@ fun AddEditInventoryMasterScreen(
                     onSuccess()
                 },
                 enabled = name.isNotBlank(),
+                colors = ButtonDefaults.buttonColors(containerColor = safelightBtnBg, contentColor = safelightBtnFg),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp)
             ) {
-                Icon(Icons.Default.Check, contentDescription = null)
+                Icon(Icons.Default.Check, contentDescription = null, tint = safelightBtnFg)
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Save Inventory Item", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                Text("Save Inventory Item", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightBtnFg)
             }
 
             OutlinedButton(
@@ -515,9 +583,9 @@ fun AddEditInventoryMasterScreen(
                     .fillMaxWidth()
                     .height(52.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = null)
+                Icon(Icons.Default.Add, contentDescription = null, tint = safelightPrimary)
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Save & Add Physical Stock", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                Text("Save & Add Physical Stock", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightPrimary)
             }
         }
     }
@@ -526,16 +594,20 @@ fun AddEditInventoryMasterScreen(
     if (showNewMfgDialog) {
         AlertDialog(
             onDismissRequest = { showNewMfgDialog = false },
-            title = { Text("Add New Manufacturer") },
+            containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainerHigh,
+            titleContentColor = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface,
+            textContentColor = if (isSafelightActive) Color(0xFFFF3333) else MaterialTheme.colorScheme.onSurfaceVariant,
+            title = { Text("Add New Manufacturer", color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified, fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Enter brand or manufacturer name:", style = MaterialTheme.typography.bodyMedium)
+                    Text("Enter brand or manufacturer name:", style = MaterialTheme.typography.bodyMedium, color = if (isSafelightActive) Color(0xFFFF3333) else Color.Unspecified)
                     OutlinedTextField(
                         value = newMfgInputText,
                         onValueChange = { newMfgInputText = it },
                         label = { Text("Manufacturer Name") },
                         placeholder = { Text("e.g. Bergger, Arista, Bellini") },
                         singleLine = true,
+                        colors = textFieldColors,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -555,14 +627,15 @@ fun AddEditInventoryMasterScreen(
                         }
                         showNewMfgDialog = false
                     },
-                    enabled = newMfgInputText.isNotBlank()
+                    enabled = newMfgInputText.isNotBlank(),
+                    colors = ButtonDefaults.buttonColors(containerColor = if (isSafelightActive) Color(0xFF660000) else MaterialTheme.colorScheme.primary)
                 ) {
-                    Text("Add Manufacturer")
+                    Text("Add Manufacturer", color = if (isSafelightActive) Color(0xFFFF0000) else Color.White, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showNewMfgDialog = false }) {
-                    Text("Cancel")
+                    Text("Cancel", color = if (isSafelightActive) Color(0xFFFF3333) else MaterialTheme.colorScheme.primary)
                 }
             }
         )
