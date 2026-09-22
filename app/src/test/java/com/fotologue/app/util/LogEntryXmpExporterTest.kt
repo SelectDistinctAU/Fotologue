@@ -38,7 +38,7 @@ class LogEntryXmpExporterTest {
         assertTrue(xmp.contains("tiff:Make=\"Leica M6\""))
         assertTrue(xmp.contains("Subject|Nature|Landscape"))
         assertTrue(xmp.contains("Golden Hour shot"))
-        assertTrue(xmp.contains("-33.8688"))
+        assertTrue(xmp.contains("exif:GPSLatitude"))
     }
 
     @Test

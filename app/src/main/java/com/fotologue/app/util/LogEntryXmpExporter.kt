@@ -95,8 +95,10 @@ object LogEntryXmpExporter {
             |    Iptc4xmpCore:CiEmailOut="$contact"
             |    Iptc4xmpCore:CiUrlWork="$contact" />
             |   ${if (lat != null && lon != null) """
-            |   <exif:GPSLatitude>${formatLatLong(lat)}</exif:GPSLatitude>
-            |   <exif:GPSLongitude>${formatLatLong(lon)}</exif:GPSLongitude>
+            |   <exif:GPSLatitude>${formatGpsCoordinate(lat, true)}</exif:GPSLatitude>
+            |   <exif:GPSLongitude>${formatGpsCoordinate(lon, false)}</exif:GPSLongitude>
+            |   <exif:GPSLatitudeRef>${if (lat >= 0) "N" else "S"}</exif:GPSLatitudeRef>
+            |   <exif:GPSLongitudeRef>${if (lon >= 0) "E" else "W"}</exif:GPSLongitudeRef>
             |   """.trimMargin() else ""}
             |   <photoshop:Headline>${escapeXml(gearString)}</photoshop:Headline>
             |  </rdf:Description>
@@ -131,8 +133,18 @@ object LogEntryXmpExporter {
         return speed.toDoubleOrNull()?.toString() ?: "0.0"
     }
 
-    private fun formatLatLong(value: Double): String {
-        return String.format(Locale.US, "%.6f", value)
+    private fun formatGpsCoordinate(value: Double, isLatitude: Boolean): String {
+        val absVal = Math.abs(value)
+        val degrees = absVal.toInt()
+        val minutesDouble = (absVal - degrees) * 60.0
+        val minutes = minutesDouble.toInt()
+        val seconds = (minutesDouble - minutes) * 60.0
+        val ref = if (isLatitude) {
+            if (value >= 0) "N" else "S"
+        } else {
+            if (value >= 0) "E" else "W"
+        }
+        return String.format(Locale.US, "%d,%d,%.2f%s", degrees, minutes, seconds, ref)
     }
 
     private fun escapeXml(value: String): String {

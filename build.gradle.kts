@@ -6,4 +6,6 @@ plugins {
     alias(libs.plugins.google.devtools.ksp) apply false
     alias(libs.plugins.jetbrains.kotlin.plugin.serialization) apply false
     alias(libs.plugins.hilt) apply false
+    id("org.jetbrains.compose") version "1.7.1" apply false
+    kotlin("jvm") version "2.1.0" apply false
 }
