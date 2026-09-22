@@ -138,7 +138,12 @@ fun ArchiveScreen(
     val safelightFg = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface
     val safelightSubFg = if (isSafelightActive) Color(0xFFFF3333) else MaterialTheme.colorScheme.onSurfaceVariant
     val safelightPrimary = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.primary
-    val safelightBtnBg = if (isSafelightActive) Color(0xFF660000) else MaterialTheme.colorScheme.primary
+    val btnColors = if (isSafelightActive) {
+        ButtonDefaults.buttonColors(containerColor = Color(0xFF660000), contentColor = Color(0xFFFF0000))
+    } else {
+        ButtonDefaults.buttonColors()
+    }
+    val btnTextTint = if (isSafelightActive) Color(0xFFFF0000) else Color.White
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -242,12 +247,12 @@ fun ArchiveScreen(
 
                     Button(
                         onClick = { folderPickerLauncher.launch(null) },
-                        colors = ButtonDefaults.buttonColors(containerColor = safelightBtnBg, contentColor = safelightPrimary),
+                        colors = btnColors,
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
-                        Icon(painterResource(R.drawable.warehouse_24px), contentDescription = null, tint = safelightPrimary)
+                        Icon(painterResource(R.drawable.warehouse_24px), contentDescription = null, tint = btnTextTint)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(if (archiveTargetUri != null) "Change Target Directory" else "Mount NAS / Cloud Directory", color = safelightPrimary)
+                        Text(if (archiveTargetUri != null) "Change Target Directory" else "Mount NAS / Cloud Directory", color = btnTextTint, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -281,14 +286,14 @@ fun ArchiveScreen(
                     ) {
                         Button(
                             onClick = { createJsonLauncher.launch("backup_$timestamp.json") },
-                            colors = ButtonDefaults.buttonColors(containerColor = safelightBtnBg, contentColor = safelightPrimary),
+                            colors = btnColors,
                             modifier = Modifier
                                 .weight(1f)
                                 .height(48.dp)
                         ) {
-                            Icon(Icons.Default.Share, contentDescription = null, tint = safelightPrimary)
+                            Icon(Icons.Default.Share, contentDescription = null, tint = btnTextTint)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Export Vault", style = MaterialTheme.typography.labelSmall, color = safelightPrimary)
+                            Text("Export Vault", style = MaterialTheme.typography.labelSmall, color = btnTextTint, fontWeight = FontWeight.Bold)
                         }
 
                         OutlinedButton(
@@ -330,14 +335,14 @@ fun ArchiveScreen(
 
                     Button(
                         onClick = { createCsvLauncher.launch("catalogue_summary_$timestamp.csv") },
-                        colors = ButtonDefaults.buttonColors(containerColor = safelightBtnBg, contentColor = safelightPrimary),
+                        colors = btnColors,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp)
                     ) {
-                        Icon(Icons.Default.Share, contentDescription = null, tint = safelightPrimary)
+                        Icon(Icons.Default.Share, contentDescription = null, tint = btnTextTint)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Export CSV Summary Log", style = MaterialTheme.typography.labelMedium, color = safelightPrimary)
+                        Text("Export CSV Summary Log", style = MaterialTheme.typography.labelMedium, color = btnTextTint, fontWeight = FontWeight.Bold)
                     }
                 }
             }

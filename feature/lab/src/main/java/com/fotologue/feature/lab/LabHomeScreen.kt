@@ -66,7 +66,7 @@ import com.fotologue.core.data.lab.StockLot
 import com.fotologue.core.designsystem.R
 
 enum class LabView {
-    MAIN_MENU, SUPPLIERS, INVENTORY, INVENTORY_CATEGORY_ITEMS, EQUIPMENT, SESSION_LOGS
+    MAIN_MENU, SUPPLIERS, INVENTORY, INVENTORY_CATEGORY_ITEMS, EQUIPMENT
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -87,7 +87,7 @@ fun LabHomeScreen(
     onEditEquipment: (Long) -> Unit,
     onStartFilmSession: () -> Unit = {},
     onStartPrintingSession: () -> Unit = {},
-    onStartScanningSession: () -> Unit = {},
+    onViewLogDetail: ((Long) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val masterList by viewModel.masterList.collectAsState()
@@ -97,6 +97,7 @@ fun LabHomeScreen(
     val equipmentList by viewModel.equipmentList.collectAsState()
     val performanceLogs by viewModel.performanceLogs.collectAsState()
     val processEvents by viewModel.processEvents.collectAsState()
+    val logEntriesWithGear by viewModel.allLogEntriesWithGear.collectAsState()
     val isSafelightActive by viewModel.isSafelightActive.collectAsState()
 
     // Ensure initial seeding of supplier contacts directory ONLY if empty
@@ -141,7 +142,6 @@ fun LabHomeScreen(
         LabView.INVENTORY -> "Lab • Inventory"
         LabView.INVENTORY_CATEGORY_ITEMS -> "Lab • ${activeInventoryCategory ?: "Inventory"}"
         LabView.EQUIPMENT -> "Lab • Darkroom Equipment"
-        LabView.SESSION_LOGS -> "Lab • Session Logs"
     }
 
     // PURE DARKROOM SAFELIGHT RED COLORS (ZERO WHITE LIGHT!)
@@ -403,60 +403,6 @@ fun LabHomeScreen(
                                 }
                             )
                         }
-
-                        // 6. SCAN / DIGITISE ROLL
-                        item(key = "nav_scan_roll") {
-                            NavigationDrawerItem(
-                                colors = drawerItemColors,
-                                label = {
-                                    Column {
-                                        Text("Scan / Digitise Roll", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
-                                        Text("Bridge camera macro scans / flatbed scans with exposure logs & generate XMP sidecars", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
-                                    }
-                                },
-                                selected = false,
-                                onClick = onStartScanningSession,
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.gallery_thumbnail_24px),
-                                        contentDescription = null,
-                                        tint = safelightPrimary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-                            )
-                        }
-
-                        // 6. SESSION HISTORY & REFLECTION LOGS
-                        item(key = "nav_session_logs") {
-                            NavigationDrawerItem(
-                                colors = drawerItemColors,
-                                label = {
-                                    Column {
-                                        Text("Session History & Reflection Logs", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
-                                        Text("Review past film development events and enlarger print reflection logs", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
-                                    }
-                                },
-                                selected = false,
-                                onClick = { currentView = LabView.SESSION_LOGS },
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.shelves_24px),
-                                        contentDescription = null,
-                                        tint = safelightPrimary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                },
-                                badge = {
-                                    Badge(
-                                        containerColor = badgeBg,
-                                        contentColor = badgeFg
-                                    ) {
-                                        Text("${processEvents.size + performanceLogs.size} logs", color = badgeFg)
-                                    }
-                                }
-                            )
-                        }
                     }
                 }
 
@@ -695,85 +641,6 @@ fun LabHomeScreen(
                                             onEdit = { onEditEquipment(equipment.id) },
                                             onDelete = { viewModel.deleteEquipment(equipment) }
                                         )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                LabView.SESSION_LOGS -> {
-                    // PAGE 4: SESSION HISTORY & REFLECTION LOGS
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        item(key = "header_dev_events") {
-                            Text(
-                                text = "COMPLETED FILM DEVELOPMENT SESSIONS (${processEvents.size})",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = safelightPrimary,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                            )
-                        }
-
-                        if (processEvents.isEmpty()) {
-                            item(key = "empty_dev_events") {
-                                Text(
-                                    text = "No film development sessions logged yet. Tap 'Develop Roll' to process film.",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = safelightSubFg
-                                )
-                            }
-                        } else {
-                            items(processEvents, key = { "dev_evt_${it.id}" }) { evt ->
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = safelightCardBg)
-                                ) {
-                                    Column(modifier = Modifier.padding(16.dp)) {
-                                        Text(text = evt.filmRollId, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
-                                        Text(text = "Developer: ${evt.developerName} • Temp: ${evt.temperatureCelsius}°C • Duration: ${evt.durationSeconds / 60}m ${evt.durationSeconds % 60}s", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
-                                    }
-                                }
-                            }
-                        }
-
-                        item(key = "header_print_logs") {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = if (isSafelightActive) Color(0xFF660000) else MaterialTheme.colorScheme.outlineVariant)
-                            Text(
-                                text = "ENLARGER PRINT REFLECTION LOGS (${performanceLogs.size})",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = safelightPrimary,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
-                            )
-                        }
-
-                        if (performanceLogs.isEmpty()) {
-                            item(key = "empty_print_logs") {
-                                Text(
-                                    text = "No print reflection logs recorded yet. Tap 'Enlarger Session' to log print outcomes.",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = safelightSubFg
-                                )
-                            }
-                        } else {
-                            items(performanceLogs, key = { "perf_log_${it.id}" }) { perf ->
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = safelightCardBg)
-                                ) {
-                                    Column(modifier = Modifier.padding(16.dp)) {
-                                        val statusStr = if (perf.outcomeStatus == "KEEPER") "🔴 KEEPER (Exhibition)" else "🔴 REJECT (${perf.rejectCategory ?: "Test"})"
-                                        Text(text = statusStr, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightPrimary)
-                                        if (!perf.learningTag.isNullOrBlank()) {
-                                            Text(text = "Learning Reflection: ${perf.learningTag}", style = MaterialTheme.typography.bodySmall, color = safelightFg)
-                                        }
-                                        if (perf.notes.isNotBlank()) {
-                                            Text(text = "Notes: ${perf.notes}", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
-                                        }
                                     }
                                 }
                             }

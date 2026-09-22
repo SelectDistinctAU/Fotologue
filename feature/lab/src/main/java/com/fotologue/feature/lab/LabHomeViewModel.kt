@@ -455,7 +455,7 @@ class LabHomeViewModel @Inject constructor(
                         )
                     )
                 }
-                performanceLogDao.insertLog(log.copy(logEntryId = targetLogId))
+                performanceLogDao.insertLog(log.copy(logEntryId = targetLogId, inventoryItemId = null))
             } catch (e: Exception) {
                 e.printStackTrace()
             }

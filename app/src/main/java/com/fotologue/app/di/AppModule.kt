@@ -4,6 +4,8 @@ import android.content.Context
 import com.fotologue.app.connectivity.BleManager
 import com.fotologue.app.connectivity.TriggerManager
 import com.fotologue.core.data.*
+import com.fotologue.core.data.lab.LabProcessEventDao
+import com.fotologue.core.data.lab.PerformanceLogDao
 import com.fotologue.core.data.location.LocationProvider
 import dagger.Module
 import dagger.Provides
@@ -61,12 +63,14 @@ object AppModule {
         tagDao: TagDao,
         filmRollSessionDao: FilmRollSessionDao,
         viewfinderDao: ViewfinderDao,
+        performanceLogDao: PerformanceLogDao,
+        labProcessEventDao: LabProcessEventDao,
         locationProvider: LocationProvider,
         settingsRepository: SettingsRepository
     ): FotologueRepository {
         return FotologueRepository(
             db, cameraDao, filmDao, lensDao, teleconverterDao, filterDao, flashDao,
-            logEntryDao, cameraKitDao, tagDao, filmRollSessionDao, viewfinderDao, locationProvider, settingsRepository
+            logEntryDao, cameraKitDao, tagDao, filmRollSessionDao, viewfinderDao, performanceLogDao, labProcessEventDao, locationProvider, settingsRepository
         )
     }
 

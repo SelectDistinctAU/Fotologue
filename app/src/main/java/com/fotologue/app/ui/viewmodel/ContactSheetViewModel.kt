@@ -11,8 +11,11 @@ import com.fotologue.core.data.LogEntryWithGear
 import com.fotologue.core.data.MacroCopyNamingOptions
 import com.fotologue.core.data.SettingsRepository
 import com.fotologue.app.util.LogExporter
+import com.fotologue.core.data.lab.LabProcessEvent
+import com.fotologue.core.data.lab.PerformanceLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -64,6 +67,15 @@ class ContactSheetViewModel @Inject constructor(
     val uiState: StateFlow<ContactSheetUiState> = _uiState.asStateFlow()
 
     private val _selectedRoll = MutableStateFlow<RollKey?>(null)
+
+    val performanceLogs: StateFlow<List<PerformanceLog>> = repository.allPerformanceLogs
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val processEvents: StateFlow<List<LabProcessEvent>> = repository.allLabProcessEvents
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allLogEntriesWithGear: StateFlow<List<LogEntryWithGear>> = repository.allLogEntriesWithGear
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
         viewModelScope.launch {

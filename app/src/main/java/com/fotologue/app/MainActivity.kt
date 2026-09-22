@@ -164,7 +164,7 @@ class MainActivity : ComponentActivity() {
                                         onEditEquipment = { id -> backStack.add(Route.EditEquipment(id)) },
                                         onStartFilmSession = { backStack.add(Route.FilmProcessingSession()) },
                                         onStartPrintingSession = { backStack.add(Route.EnlargerPrintingSession()) },
-                                        onStartScanningSession = { backStack.add(Route.ContactSheet()) }
+                                        onViewLogDetail = { logId -> backStack.add(Route.LogDetail(logId)) }
                                     )
                                 }
                                 entry<Route.SupplierIssueTracker> { navRoute ->

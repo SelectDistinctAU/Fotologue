@@ -156,7 +156,7 @@ fun HubScreen(
                 HubModuleCard(
                     title = "STATION",
                     subtitle = "Studio Analysis & Reflection",
-                    description = "Digital Contact Sheets • Frame Gap Alignment • Performance Trends",
+                    description = "Digital Contact Sheets • Frame Gap Alignment • Darkroom Reflections",
                     iconRes = R.drawable.hub_24px,
                     cardBg = safelightCardBg,
                     titleColor = safelightFg,

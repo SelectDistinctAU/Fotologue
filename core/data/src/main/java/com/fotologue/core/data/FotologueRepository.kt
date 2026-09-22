@@ -2,6 +2,10 @@ package com.fotologue.core.data
 
 import android.location.Location
 import androidx.room.withTransaction
+import com.fotologue.core.data.lab.LabProcessEvent
+import com.fotologue.core.data.lab.LabProcessEventDao
+import com.fotologue.core.data.lab.PerformanceLog
+import com.fotologue.core.data.lab.PerformanceLogDao
 import com.fotologue.core.data.location.LocationProvider
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
@@ -24,6 +28,8 @@ class FotologueRepository @Inject constructor(
     private val tagDao: TagDao,
     private val filmRollSessionDao: FilmRollSessionDao,
     private val viewfinderDao: ViewfinderDao,
+    private val performanceLogDao: PerformanceLogDao,
+    private val labProcessEventDao: LabProcessEventDao,
     private val locationProvider: LocationProvider,
     @Suppress("unused") private val settingsRepository: SettingsRepository,
 ) {
@@ -44,6 +50,8 @@ class FotologueRepository @Inject constructor(
     val allViewfinders: Flow<List<Viewfinder>> = viewfinderDao.getAllViewfinders()
     val allLogEntriesWithGear: Flow<List<LogEntryWithGear>> = logEntryDao.getAllLogEntriesWithGear()
     val allFilmRollSessions: Flow<List<FilmRollSession>> = filmRollSessionDao.getAllSessions()
+    val allPerformanceLogs: Flow<List<PerformanceLog>> = performanceLogDao.getAllPerformanceLogs()
+    val allLabProcessEvents: Flow<List<LabProcessEvent>> = labProcessEventDao.getAllProcessEvents()
     val allCameraKits: Flow<List<CameraKit>> = cameraKitDao.getAllCameraKits()
     val allCameraKitsWithGear: Flow<List<CameraKitWithGear>> = cameraKitDao.getAllCameraKitsWithGear()
     val allTags: Flow<List<Tag>> = tagDao.getAllTags()

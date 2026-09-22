@@ -31,6 +31,8 @@ class ContactSheetViewModelTest {
         every { repository.allLogEntriesWithGear } returns flowOf(emptyList())
         every { repository.allCameras } returns flowOf(emptyList())
         every { repository.allFilms } returns flowOf(emptyList())
+        every { repository.allPerformanceLogs } returns flowOf(emptyList())
+        every { repository.allLabProcessEvents } returns flowOf(emptyList())
 
         viewModel = ContactSheetViewModel(repository, settingsRepository, logExporter, savedStateHandle)
     }

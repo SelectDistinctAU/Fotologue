@@ -2,6 +2,8 @@ package com.fotologue.app.data
 
 import androidx.room.withTransaction
 import com.fotologue.core.data.*
+import com.fotologue.core.data.lab.LabProcessEventDao
+import com.fotologue.core.data.lab.PerformanceLogDao
 import com.fotologue.core.data.location.LocationProvider
 import io.mockk.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,10 +66,13 @@ class FotologueRepositoryTest {
         every { settingsRepository.isWelcomeDismissed } returns flowOf(false)
         every { settingsRepository.isSafelightActive } returns MutableStateFlow(false)
 
+        val performanceLogDao = mockk<PerformanceLogDao>(relaxed = true)
+        val labProcessEventDao = mockk<LabProcessEventDao>(relaxed = true)
+
         repository = FotologueRepository(
             db, cameraDao, filmDao, lensDao, teleconverterDao,
             filterDao, flashDao, logEntryDao, cameraKitDao,
-            tagDao, filmRollSessionDao, viewfinderDao, locationProvider, settingsRepository
+            tagDao, filmRollSessionDao, viewfinderDao, performanceLogDao, labProcessEventDao, locationProvider, settingsRepository
         )
     }
 

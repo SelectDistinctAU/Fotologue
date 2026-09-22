@@ -8,6 +8,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -22,6 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import com.fotologue.core.data.LogEntryWithGear
+import com.fotologue.core.data.lab.LabProcessEvent
+import com.fotologue.core.data.lab.PerformanceLog
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -59,9 +64,15 @@ fun ContactSheetScreen(
     onAddLogForFrame: ((Int) -> Unit)? = null
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val performanceLogs by viewModel.performanceLogs.collectAsStateWithLifecycle()
+    val processEvents by viewModel.processEvents.collectAsStateWithLifecycle()
+    val allLogEntriesWithGear by viewModel.allLogEntriesWithGear.collectAsStateWithLifecycle()
 
     ContactSheetScreenContent(
         uiState = uiState,
+        performanceLogs = performanceLogs,
+        processEvents = processEvents,
+        allLogEntriesWithGear = allLogEntriesWithGear,
         isSafelightActive = isSafelightActive,
         onToggleSafelight = onToggleSafelight,
         onBack = onBack,
@@ -81,6 +92,9 @@ fun ContactSheetScreen(
 @Composable
 fun ContactSheetScreenContent(
     uiState: ContactSheetUiState,
+    performanceLogs: List<PerformanceLog> = emptyList(),
+    processEvents: List<LabProcessEvent> = emptyList(),
+    allLogEntriesWithGear: List<LogEntryWithGear> = emptyList(),
     isSafelightActive: Boolean = false,
     onToggleSafelight: (() -> Unit)? = null,
     onBack: () -> Unit,
@@ -103,6 +117,8 @@ fun ContactSheetScreenContent(
     var macroStartNumber by remember { mutableStateOf("1001") }
     var macroDigitCount by remember { mutableStateOf("4") }
     var macroIsReverse by remember { mutableStateOf(false) }
+
+    var selectedStationTab by remember { mutableIntStateOf(0) }
 
     fun getMacroOptions() = MacroCopyNamingOptions(
         enabled = enableMacroCopyNaming,
@@ -493,8 +509,26 @@ fun ContactSheetScreenContent(
                 .padding(top = innerPadding.calculateTopPadding())
                 .consumeWindowInsets(innerPadding)
         ) {
-            // Roll Selector Dropdown Header
-            if (uiState.availableRolls.isNotEmpty()) {
+            TabRow(
+                selectedTabIndex = selectedStationTab,
+                containerColor = safelightBg,
+                contentColor = safelightPrimary
+            ) {
+                Tab(
+                    selected = selectedStationTab == 0,
+                    onClick = { selectedStationTab = 0 },
+                    text = { Text("Contact Sheets", fontWeight = FontWeight.Bold, color = if (selectedStationTab == 0) safelightPrimary else safelightFg) }
+                )
+                Tab(
+                    selected = selectedStationTab == 1,
+                    onClick = { selectedStationTab = 1 },
+                    text = { Text("Darkroom Reflections", fontWeight = FontWeight.Bold, color = if (selectedStationTab == 1) safelightPrimary else safelightFg) }
+                )
+            }
+
+            if (selectedStationTab == 0) {
+                // Roll Selector Dropdown Header
+                if (uiState.availableRolls.isNotEmpty()) {
                 var rollExpanded by remember { mutableStateOf(false) }
 
                 Surface(
@@ -607,6 +641,131 @@ fun ContactSheetScreenContent(
                     }
                 }
             }
+        } else {
+            // DARKROOM REFLECTIONS TAB (Moved to Station as requested!)
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item(key = "header_reflections_title") {
+                    Text(
+                        text = "DARKROOM REFLECTIONS & SESSION LOGS",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = safelightPrimary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
+                }
+
+                item(key = "reflections_info_card") {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("🧪 Studio & Darkroom Reflections", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text("Review completed development events, enlarger print recipes, keeper ratings, and photographer learning reflections directly alongside your digital contact sheets.", style = MaterialTheme.typography.bodySmall, color = safelightFg)
+                        }
+                    }
+                }
+
+                item(key = "header_dev_events") {
+                    Text(
+                        text = "COMPLETED FILM DEVELOPMENT SESSIONS (${processEvents.size})",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = safelightPrimary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
+                }
+
+                if (processEvents.isEmpty()) {
+                    item(key = "empty_dev_events") {
+                        Text(
+                            text = "No film development sessions logged yet. Process film in Lab to log events.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = safelightFg
+                        )
+                    }
+                } else {
+                    items(processEvents, key = { "dev_evt_${it.id}" }) { evt ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(text = evt.filmRollId, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                                Text(text = "Developer: ${evt.developerName} • Temp: ${evt.temperatureCelsius}°C • Duration: ${evt.durationSeconds / 60}m ${evt.durationSeconds % 60}s", style = MaterialTheme.typography.bodySmall, color = safelightPrimary)
+                            }
+                        }
+                    }
+                }
+
+                item(key = "header_print_logs") {
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = if (isSafelightActive) Color(0xFF660000) else MaterialTheme.colorScheme.outlineVariant)
+                    Text(
+                        text = "ENLARGER PRINT REFLECTION LOGS (${performanceLogs.size})",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = safelightPrimary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                    )
+                }
+
+                if (performanceLogs.isEmpty()) {
+                    item(key = "empty_print_logs") {
+                        Text(
+                            text = "No print reflection logs recorded yet. Log prints in Lab Enlarger Session.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = safelightFg
+                        )
+                    }
+                } else {
+                    items(performanceLogs, key = { "perf_log_${it.id}" }) { perf ->
+                        val matchingEntry = allLogEntriesWithGear.find { entry -> entry.logEntry.id == perf.logEntryId }
+                        val cameraName = matchingEntry?.camera?.name ?: "Camera"
+                        val filmName = matchingEntry?.film?.name ?: "Film Stock"
+                        val rollName = matchingEntry?.logEntry?.filmRoll ?: "Roll 01"
+                        val frameNumStr = matchingEntry?.logEntry?.notes?.substringAfter("Frame #", "")?.takeWhile { it.isDigit() }
+                        val frameNum = if (!frameNumStr.isNullOrBlank()) frameNumStr else "${perf.logEntryId}"
+                        val rollFrameTitle = "$filmName ($cameraName) • $rollName, Frame #$frameNum"
+
+                        val statusStr = if (perf.outcomeStatus == "KEEPER") {
+                            if (isSafelightActive) "🔴 KEEPER (Exhibition)" else "🟢 KEEPER (Exhibition)"
+                        } else {
+                            "🔴 REJECT (${perf.rejectCategory ?: "Test"})"
+                        }
+
+                        val statusColor = if (perf.outcomeStatus == "KEEPER") {
+                            if (isSafelightActive) Color(0xFFFF0000) else Color(0xFF2E7D32)
+                        } else {
+                            if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.error
+                        }
+
+                        Card(
+                            onClick = { onLogClick(perf.logEntryId) },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(text = rollFrameTitle, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(text = statusStr, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = statusColor)
+                                if (!perf.learningTag.isNullOrBlank()) {
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(text = "Learning Reflection: ${perf.learningTag}", style = MaterialTheme.typography.bodySmall, color = safelightFg)
+                                }
+                                if (perf.notes.isNotBlank()) {
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(text = "Notes: ${perf.notes}", style = MaterialTheme.typography.bodySmall, color = safelightPrimary)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         }
     }
 }
