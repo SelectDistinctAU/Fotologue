@@ -105,19 +105,35 @@ Bridge camera macro scans and flatbed scans with field exposure logs, align reba
 
 ---
 
-## 🏛️ Journey 4: ARCHIVE (Master Vault & Desktop DAM Integration)
+## 🏛️ Journey 4: ARCHIVE & DESKTOP BRIDGE (Master Vault & DAM Integration)
 
 ### Goal
-Maintain a single canonical relational database backup vault, merge historical rolls non-destructively, and export open ISO 16684 XMP sidecars for desktop RAW processors and DAMs.
+Maintain a single canonical relational database backup vault, extract embedded thumbnails, non-destructively merge legacy roll backups, and dispatch open ISO 16684 XMP sidecars to desktop RAW processors and DAMs.
 
 ```
-[Mount NAS Directory Share] ──► [Canonical JSON Vault] ──► [Desktop DAM Sync]
- (//NAS/FilmArchive/ via SAF)   (backup_20260917.json)      (digiKam / DxO PhotoLab XMP)
+[Fotologue Desktop] ──► [Stage 1: Job Lot Ingest] ──► [Stage 2: Master QA] ──► [Stage 3: XMP Dispatcher]
+ (Win / Linux / Mac)      (Extract metadata.json)      (Interactive Edits)      (Geotag RAW Scans)
 ```
 
-### Step-by-Step Walkthrough:
-1. **Mounted Storage Target Directory**:
-   - Open **Archive** (`ArchiveScreen`).
+### Step-by-Step Desktop Walkthrough:
+1. **Stage 1: Ingestion & Vault Inflow**:
+   - Open **Fotologue Desktop Command Center** (Windows 11 Pro / macOS / Linux).
+   - In **Stage 1**, select your `Fotologue exports` folder containing your ZIP backups.
+   - Click **`[Process Job Lot of ZIP Exports & Merge metadata.json Graphs...]`**.
+   - Fotologue seamlessly extracts the JSON graphs and embedded image thumbnails, merging them chronologically into your Master Vault.
+2. **Stage 2: Master QA & Detail Workbench**:
+   - Navigate to **Stage 2** to view your full-fidelity Master Rolls.
+   - Use the **`[⚡ Auto-Standardize Legacy Rolls]`** button to batch-update generic "Camera" or "Film Stock" entries to your canonical gear (e.g., *Pentax LX*, *Ilford FP4 Plus 125*).
+   - Multi-select split legacy rolls and click **`[🔗 Merge Selected Rolls]`** to safely combine them chronologically (preserving all 36 frames and respecting physical 12/36 frame format limits).
+   - Review your **Field Exposure Specs**, **Lab Processing Lineage**, **Enlarger Print Reflections**, and decoded **Image Thumbnails** in the Master-Detail panel.
+   - Use the **`[🗺️ View Location on Web Map]`** button or manually correct GPS Coordinates directly on the frame.
+3. **Stage 3: ExifTool Geotagging & XMP Dispatcher**:
+   - On an inspected roll, click **`[🛠️ Geotag Scans in Stage 3]`**.
+   - Browse your local drive or NAS share for the folder containing your camera macro RAW scans (e.g., `_DSF1024.RAF`).
+   - Click **`[Geotag Scan & Emit ISO XMP Sidecar Now]`**.
+   - Fotologue's bundled `exiftool` engine silently writes your field GPS coordinates, 3-Axis Tags (`Subject • Content • Intent`), and roll serials into `.xmp` sidecars.
+4. **Desktop Software Interoperability**:
+   - Open the scan folder in **digiKam**, **DxO PhotoLab**, **Adobe Lightroom**, or **Immich**. The sidecars automatically drop map pins on the exact shooting location and populate all metadata!
    - Tap **`[Mount NAS / Cloud Directory]`** to select your local NAS share (`//NAS/FilmArchive/`), Proton Drive, or Google Drive folder via Storage Access Framework (SAF).
 2. **Canonical Native JSON Vault**:
    - Tap **`[Export Vault]`** to save a full-fidelity database backup (`backup_YYYYMMDD_HHMM.json`).
