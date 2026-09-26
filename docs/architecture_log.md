@@ -67,6 +67,42 @@ To protect the existing data and UI, we will not rewrite the `:app` module immed
 *   **Verification:** `./gradlew assembleDebug` PASSED, `./gradlew test` PASSED (64/64 unit tests passed).
 *   **Exact NavigationDrawerItem Alignment:** Refactored `LabMaintenanceScreen` to use the exact `NavigationDrawerItem` rows, vector icons, circular `Badge` components, rounded pill shapes, and section headers (`DARKROOM & INVENTORY DIMENSIONS`) from `GearLibraryScreen`.
 *   **Verification:** `./gradlew assembleDebug` PASSED, `./gradlew test` PASSED (64/64 unit tests passed).
+
+---
+
+## Desktop Base Camp & Data Ingestion Architecture (September 2026)
+
+### 1. Reverse Chronological Export Handling & Frame Indexing
+*   **Problem Identified:** The Android mobile app exports exposure logs in reverse chronological order (`Newest First` in `metadata.json`), while `thumbnails/` inside the ZIP are saved sequentially (`_F01.jpg`, `_F02.jpg`).
+*   **Root Cause:** Mapping frame numbers (`frameNumber = idx + 1`) *before* sorting DTOs caused Frame #1 to take on Frame #2's photo and vice versa when imported into Desktop.
+*   **Architectural Standard:** Desktop JSON parsers MUST sort DTO entries chronologically (`Oldest First`) **before** mapping frame numbers and matching thumbnails:
+    ```kotlin
+    val sortedEntries = entries.sortedBy { it.timestamp }
+    val parsedFrames = sortedEntries.mapIndexed { idx, dto ->
+        val derivedFrameNum = dto.filmRoll?.substringAfter(".")?.toIntOrNull() ?: (idx + 1)
+        DesktopFrameDetail(frameNumber = derivedFrameNum, timestampMs = dto.timestamp, ...)
+    }
+    ```
+
+### 2. 3-Tier Multi-Image Thumbnail Resolver
+To ensure thumbnails inside batch ZIP archives are mapped with 100% precision to their underlying exposure frames:
+*   **Tier 1 (Exact Timestamp Match):** Match thumbnail filename against `f.timestampMs.toString()`.
+*   **Tier 2 (Frame Code Match):** Match thumbnail filename against frame serial codes (`_F01`, `_F02`, `_F1`, `frame_1`).
+*   **Tier 3 (Positional Index Match):** Fallback to `thumbnailsList[fIdx]` matching DTO index $i$ to Thumbnail index $i$.
+
+### 3. Exposure Deduplication Engine (`timestampMs` as Canonical Key)
+*   **Canonical Key:** Millisecond timestamp (`timestampMs`) is the single immutable unique identifier for an exposure event.
+*   **Mutable Fields Excluded:** Deduplication ignores GPS coordinates, notes, tags, and camera names—allowing users to correct GPS or standardize camera names on Desktop without causing duplicate frame imports when re-syncing mobile ZIP archives.
+
+### 4. Data Grid & `RollStatus` State Machine
+*   **Data Grid:** Replaced mobile-style cards with a dense 4-column Data Grid: `[ Camera ] | [ Film Stock ] | [ Serial ] | [ Frames ]`.
+*   **Header Controls:** In-line Excel-style header menus for sorting (`Serial`, `Frames`) and filtering (`Camera`, `Film Stock`).
+*   **State Machine (`RollStatus`):**
+    *   `ORPHAN`: Imported legacy/partial rolls with generic serials (*e.g., "Roll 1"*).
+    *   `ACTIVE`: In-camera rolls ready to accept new matching orphan frames.
+    *   `FINISHED`: Full/completed rolls locked for ExifTool XMP sidecar generation.
+*   **Auto-Homing Engine:** Selecting an `ORPHAN` row automatically scans the `ACTIVE` inventory for matching Camera + Film and presents a single-click CTA button: `[ 🏠 Auto-Home to Active Roll ]`.
+
 *   **Item Master Catalogue (`InventoryMaster`):** Created `lab_inventory_masters` (`MIGRATION_42_43`) storing the abstract item specification (category, name, manufacturer, container size, default storage location). Removed ambiguous `type` field.
 *   **Physical Stock Lots (`StockLot`):** Created `lab_stock_lots` (`MIGRATION_42_43`) storing physical purchases linked to `InventoryMaster` and `LabSupplier` with batch number, purchase cost, expiry date, opened date, and status (`ON_HAND`, `IN_USE`, `IN_TRANSIT`).
 *   **Supplier Contacts Clean UI:** Removed promotional text hints on supplier forms, enlarged Email, Phone, and Address fields, and pre-populated default contacts from Australian suppliers list (`Rewind Photo Lab`, `Vanbar`, `Ikigai`, `Digital Camera Warehouse`, etc.).
@@ -79,3 +115,38 @@ To protect the existing data and UI, we will not rewrite the `:app` module immed
 *   **Verification:** `./gradlew assembleDebug` PASSED, `./gradlew test` PASSED (64/64 unit tests passed).
 *   **Exact NavigationDrawerItem Alignment:** Refactored `LabMaintenanceScreen` to use the exact `NavigationDrawerItem` rows, vector icons, circular `Badge` components, rounded pill shapes, and section headers (`DARKROOM & INVENTORY DIMENSIONS`) from `GearLibraryScreen`.
 *   **Verification:** `./gradlew assembleDebug` PASSED, `./gradlew test` PASSED (64/64 unit tests passed).
+
+---
+
+## Desktop Base Camp & Data Ingestion Architecture (September 2026)
+
+### 1. Reverse Chronological Export Handling & Frame Indexing
+*   **Problem Identified:** The Android mobile app exports exposure logs in reverse chronological order (`Newest First` in `metadata.json`), while `thumbnails/` inside the ZIP are saved sequentially (`_F01.jpg`, `_F02.jpg`).
+*   **Root Cause:** Mapping frame numbers (`frameNumber = idx + 1`) *before* sorting DTOs caused Frame #1 to take on Frame #2's photo and vice versa when imported into Desktop.
+*   **Architectural Standard:** Desktop JSON parsers MUST sort DTO entries chronologically (`Oldest First`) **before** mapping frame numbers and matching thumbnails:
+    ```kotlin
+    val sortedEntries = entries.sortedBy { it.timestamp }
+    val parsedFrames = sortedEntries.mapIndexed { idx, dto ->
+        val derivedFrameNum = dto.filmRoll?.substringAfter(".")?.toIntOrNull() ?: (idx + 1)
+        DesktopFrameDetail(frameNumber = derivedFrameNum, timestampMs = dto.timestamp, ...)
+    }
+    ```
+
+### 2. 3-Tier Multi-Image Thumbnail Resolver
+To ensure thumbnails inside batch ZIP archives are mapped with 100% precision to their underlying exposure frames:
+*   **Tier 1 (Exact Timestamp Match):** Match thumbnail filename against `f.timestampMs.toString()`.
+*   **Tier 2 (Frame Code Match):** Match thumbnail filename against frame serial codes (`_F01`, `_F02`, `_F1`, `frame_1`).
+*   **Tier 3 (Positional Index Match):** Fallback to `thumbnailsList[fIdx]` matching DTO index $i$ to Thumbnail index $i$.
+
+### 3. Exposure Deduplication Engine (`timestampMs` as Canonical Key)
+*   **Canonical Key:** Millisecond timestamp (`timestampMs`) is the single immutable unique identifier for an exposure event.
+*   **Mutable Fields Excluded:** Deduplication ignores GPS coordinates, notes, tags, and camera names—allowing users to correct GPS or standardize camera names on Desktop without causing duplicate frame imports when re-syncing mobile ZIP archives.
+
+### 4. Data Grid & `RollStatus` State Machine
+*   **Data Grid:** Replaced mobile-style cards with a dense 4-column Data Grid: `[ Camera ] | [ Film Stock ] | [ Serial ] | [ Frames ]`.
+*   **Header Controls:** In-line Excel-style header menus for sorting (`Serial`, `Frames`) and filtering (`Camera`, `Film Stock`).
+*   **State Machine (`RollStatus`):**
+    *   `ORPHAN`: Imported legacy/partial rolls with generic serials (*e.g., "Roll 1"*).
+    *   `ACTIVE`: In-camera rolls ready to accept new matching orphan frames.
+    *   `FINISHED`: Full/completed rolls locked for ExifTool XMP sidecar generation.
+*   **Auto-Homing Engine:** Selecting an `ORPHAN` row automatically scans the `ACTIVE` inventory for matching Camera + Film and presents a single-click CTA button: `[ 🏠 Auto-Home to Active Roll ]`.
