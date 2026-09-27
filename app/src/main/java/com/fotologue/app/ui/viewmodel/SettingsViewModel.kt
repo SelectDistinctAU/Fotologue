@@ -64,6 +64,15 @@ class SettingsViewModel @Inject constructor(
     private val _contactInfo = MutableStateFlow("")
     val contactInfo: StateFlow<String> = _contactInfo.asStateFlow()
 
+    private val _contributorId = MutableStateFlow(1)
+    val contributorId: StateFlow<Int> = _contributorId.asStateFlow()
+
+    private val _contributorAlias = MutableStateFlow("P1")
+    val contributorAlias: StateFlow<String> = _contributorAlias.asStateFlow()
+
+    private val _contributorFullName = MutableStateFlow("")
+    val contributorFullName: StateFlow<String> = _contributorFullName.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.creatorName.collect { _creatorName.value = it }
@@ -76,6 +85,15 @@ class SettingsViewModel @Inject constructor(
         }
         viewModelScope.launch {
             repository.contactInfo.collect { _contactInfo.value = it }
+        }
+        viewModelScope.launch {
+            repository.contributorId.collect { _contributorId.value = it }
+        }
+        viewModelScope.launch {
+            repository.contributorAlias.collect { _contributorAlias.value = it }
+        }
+        viewModelScope.launch {
+            repository.contributorFullName.collect { _contributorFullName.value = it }
         }
     }
 
@@ -126,6 +144,15 @@ class SettingsViewModel @Inject constructor(
         _copyrightNotice.value = notice
         viewModelScope.launch {
             repository.setCopyrightNotice(notice.trim())
+        }
+    }
+
+    fun setContributorProfile(id: Int, alias: String, fullName: String) {
+        _contributorId.value = id
+        _contributorAlias.value = alias
+        _contributorFullName.value = fullName
+        viewModelScope.launch {
+            repository.setContributorProfile(id, alias.trim(), fullName.trim())
         }
     }
 

@@ -28,6 +28,7 @@ object LogEntryZipExporter {
         creator: String = "",
         copyright: String = "",
         contact: String = "",
+        contributorAlias: String = "P1",
         macroCopyOptions: MacroCopyNamingOptions = MacroCopyNamingOptions()
     ) {
         val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.US)
@@ -36,7 +37,7 @@ object LogEntryZipExporter {
         ZipOutputStream(outputStream.buffered()).use { zos ->
             // 1. metadata.json
             try {
-                val jsonExport = LogEntryJsonExporter.toJson(logs)
+                val jsonExport = LogEntryJsonExporter.toJson(logs, contributorId = 1, contributorAlias = contributorAlias) // We'll pass real ID when we wire it up fully from ViewModel later
                 zos.putNextEntry(ZipEntry("metadata.json"))
                 zos.write(jsonExport.toByteArray())
                 zos.closeEntry()
@@ -61,14 +62,14 @@ object LogEntryZipExporter {
                 var baseName = if (macroCopyOptions.enabled) {
                     macroCopyOptions.formatFileName(index, logs.size)
                 } else {
-                    val datePrefix = dateFormat.format(Date(entry.logEntry.timestamp))
-                    val filmAbbr = entry.film?.abbreviation?.ifBlank { entry.film?.name?.take(3)?.uppercase() } ?: "UNK"
+                    val camCode = entry.camera?.name?.filter { it.isLetterOrDigit() }?.take(3)?.uppercase() ?: "CAM"
+                    val filmCode = entry.film?.name?.filter { it.isLetterOrDigit() }?.take(3)?.uppercase() ?: "FILM"
                     
                     val rollParts = (entry.logEntry.filmRoll ?: "0.00").split(".")
                     val rollNo = rollParts.getOrNull(0)?.toIntOrNull() ?: 0
                     val frameNo = rollParts.getOrNull(1)?.toIntOrNull() ?: 0
                     
-                    String.format(Locale.US, "%s_%s_R%03d_F%02d", datePrefix, filmAbbr, rollNo, frameNo)
+                    String.format(Locale.US, "%s-%s-%s-R%02d_F%02d", contributorAlias, camCode, filmCode, rollNo, frameNo)
                 }
 
                 if (usedNames.contains(baseName)) {
@@ -87,11 +88,11 @@ object LogEntryZipExporter {
                     e.printStackTrace()
                 }
 
-                // 3b. Thumbnail image
+                // 3b. Thumbnail image (STRICT TIMESTAMP NAMING FOR DESKTOP INGESTION)
                 if (!uriString.isNullOrEmpty()) {
                     try {
                         val uri = Uri.parse(uriString)
-                        val fileName = "$baseName.jpg"
+                        val fileName = "${entry.logEntry.timestamp}.jpg"
                         
                         val isAccessible = try {
                             context.contentResolver.openInputStream(uri)?.use { true } ?: false

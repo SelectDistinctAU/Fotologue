@@ -12,13 +12,15 @@ object LogEntryJsonExporter {
         ignoreUnknownKeys = true
     }
 
-    fun toJson(logs: List<LogEntryWithGear>): String {
-        val dtos = logs.map { it.toExportDto() }
+    fun toJson(logs: List<LogEntryWithGear>, contributorId: Int = 1, contributorAlias: String = "P1"): String {
+        val dtos = logs.map { it.toExportDto(contributorId, contributorAlias) }
         return json.encodeToString(dtos)
     }
 
-    private fun LogEntryWithGear.toExportDto() = LogEntryExportDto(
+    private fun LogEntryWithGear.toExportDto(contributorId: Int, contributorAlias: String) = LogEntryExportDto(
         id = logEntry.id,
+        contributorId = contributorId,
+        contributorAlias = contributorAlias,
         timestamp = logEntry.timestamp,
         notes = logEntry.notes,
         environmentalConditions = logEntry.environmentalConditions,
@@ -48,6 +50,8 @@ object LogEntryJsonExporter {
 @Serializable
 data class LogEntryExportDto(
     val id: Long,
+    val contributorId: Int = 1,
+    val contributorAlias: String = "P1",
     val timestamp: Long,
     val notes: String,
     val environmentalConditions: String,

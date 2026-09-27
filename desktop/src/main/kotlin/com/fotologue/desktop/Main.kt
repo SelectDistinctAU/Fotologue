@@ -150,6 +150,7 @@ data class DesktopFrameDetail(
 data class DesktopMasterRollItem(
     val id: String = UUID.randomUUID().toString(),
     var status: RollStatus = RollStatus.ORPHAN,
+    var contributorId: Int = 1,
     var cameraName: String,
     var filmName: String,
     var filmRollSerial: String,
@@ -268,6 +269,8 @@ data class LocationExportDtoV1(
 @Serializable
 data class ExportDtoV1(
     val id: Long = 0,
+    val contributorId: Int = 1,
+    val contributorAlias: String = "P1",
     val timestamp: Long = System.currentTimeMillis(),
     val notes: String = "",
     val camera: String = "Unknown Camera",
@@ -341,7 +344,7 @@ object MasterVaultJsonParser {
             val cam = it.camera.ifBlank { "Canon AE-1 Program" }
             val film = it.film.ifBlank { "Ilford HP5 Plus 400" }
             val roll = it.filmRoll?.ifBlank { "Roll 1" } ?: "Roll 1"
-            "$cam • $film • $roll"
+            "${it.contributorId} • $cam • $film • $roll"
         }.map { (_, entries) ->
             val first = entries.first()
             val camera = first.camera.ifBlank { "Canon AE-1 Program" }
@@ -384,6 +387,7 @@ object MasterVaultJsonParser {
 
             DesktopMasterRollItem(
                 status = resolvedStatus,
+                contributorId = first.contributorId,
                 cameraName = camera,
                 filmName = film,
                 filmRollSerial = "$rollSerial ($frameCount frames)",

@@ -116,27 +116,16 @@ fun TimelineScreenContent(
     val isSelectionMode = selectedIds.isNotEmpty()
     var showExportOptions by remember { mutableStateOf(value = false) }
 
-    val csvExportLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("text/csv")
-    ) { uri -> uri?.let { onExportLogs(ExportType.CSV, it) } }
-
-    val jsonExportLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("application/json")
-    ) { uri -> uri?.let { onExportLogs(ExportType.JSON, it) } }
-
     val zipExportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/zip")
     ) { uri -> uri?.let { onExportLogs(ExportType.ZIP, it) } }
-
-    val xmpExportLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("application/xml")
-    ) { uri -> uri?.let { onExportLogs(ExportType.XMP, it) } }
 
     val pdfExportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/pdf")
     ) { uri -> uri?.let { onExportLogs(ExportType.PDF, it) } }
 
     if (showExportOptions) {
+        val currentConfiguration = LocalConfiguration.current
         ModalBottomSheet(
             onDismissRequest = { showExportOptions = false }
         ) {
@@ -151,56 +140,35 @@ fun TimelineScreenContent(
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
+
+                // The canonical ZIP payload required for the Desktop CCC
                 ListItem(
-                    headlineContent = { Text(stringResource(R.string.export_as_csv)) },
-                    leadingContent = { Icon(painterResource(R.drawable.ic_share), contentDescription = null) },
+                    headlineContent = { Text("Export Master Archive (ZIP)") },
+                    supportingContent = { Text("Contains metadata, thumbnails, and sidecars for Desktop Vault ingestion.") },
                     modifier = Modifier.clickable {
+                        val locale = currentConfiguration.locales[0]
+                        val dateFormat = SimpleDateFormat("yyyyMMdd_HHmm", locale)
+                        zipExportLauncher.launch("fotologue_export_${dateFormat.format(Date())}.zip")
                         showExportOptions = false
-                        val fileName = "fotologue_export_${System.currentTimeMillis()}.csv"
-                        csvExportLauncher.launch(fileName)
                     }
                 )
+
+                // Optional PDF contact sheet for visual review
                 ListItem(
-                    headlineContent = { Text(stringResource(R.string.export_as_json)) },
-                    leadingContent = { Icon(painterResource(R.drawable.ic_share), contentDescription = null) },
+                    headlineContent = { Text("Export Contact Sheet (PDF)") },
+                    supportingContent = { Text("A printable darkroom proof sheet of your field notes.") },
                     modifier = Modifier.clickable {
+                        val locale = currentConfiguration.locales[0]
+                        val dateFormat = SimpleDateFormat("yyyyMMdd_HHmm", locale)
+                        pdfExportLauncher.launch("contact_sheet_${dateFormat.format(Date())}.pdf")
                         showExportOptions = false
-                        val fileName = "fotologue_export_${System.currentTimeMillis()}.json"
-                        jsonExportLauncher.launch(fileName)
                     }
                 )
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.export_as_zip)) },
-                    leadingContent = { Icon(painterResource(R.drawable.ic_share), contentDescription = null) },
-                    modifier = Modifier.clickable {
-                        showExportOptions = false
-                        val fileName = "fotologue_export_${System.currentTimeMillis()}.zip"
-                        zipExportLauncher.launch(fileName)
-                    }
-                )
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.export_as_xmp)) },
-                    leadingContent = { Icon(painterResource(R.drawable.ic_share), contentDescription = null) },
-                    modifier = Modifier.clickable {
-                        showExportOptions = false
-                        val fileName = "fotologue_export_${System.currentTimeMillis()}.xmp"
-                        xmpExportLauncher.launch(fileName)
-                    }
-                )
-                ListItem(
-                    headlineContent = { Text("Export as Printable PDF Proof Sheet") },
-                    leadingContent = { Icon(painterResource(R.drawable.ic_share), contentDescription = null) },
-                    modifier = Modifier.clickable {
-                        showExportOptions = false
-                        val fileName = "proof_sheet_${System.currentTimeMillis()}.pdf"
-                        pdfExportLauncher.launch(fileName)
-                    }
-                )
+
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
-
     Scaffold(
         topBar = {
             if (isSelectionMode) {

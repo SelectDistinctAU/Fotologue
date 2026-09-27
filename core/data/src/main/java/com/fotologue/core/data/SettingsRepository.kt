@@ -43,6 +43,10 @@ class SettingsRepository(private val context: Context) {
     private val CONTACT_INFO = stringPreferencesKey("contact_info")
     private val MACRO_COPY_PRESETS = stringPreferencesKey("macro_copy_presets_json")
 
+    private val CONTRIBUTOR_ID = intPreferencesKey("contributor_id")
+    private val CONTRIBUTOR_ALIAS = stringPreferencesKey("contributor_alias")
+    private val CONTRIBUTOR_FULL_NAME = stringPreferencesKey("contributor_full_name")
+
     private val LAST_CAMERA_ID = longPreferencesKey("last_camera_id")
     private val LAST_FILM_ID = longPreferencesKey("last_film_id")
     private val LAST_LENS_ID = longPreferencesKey("last_lens_id")
@@ -173,6 +177,41 @@ class SettingsRepository(private val context: Context) {
                 ""
             }
         }
+
+    val contributorId: Flow<Int> = context.dataStore.data
+        .map { preferences ->
+            try {
+                preferences[CONTRIBUTOR_ID] ?: 1
+            } catch (e: ClassCastException) {
+                1
+            }
+        }
+
+    val contributorAlias: Flow<String> = context.dataStore.data
+        .map { preferences ->
+            try {
+                preferences[CONTRIBUTOR_ALIAS] ?: "P1"
+            } catch (e: ClassCastException) {
+                "P1"
+            }
+        }
+
+    val contributorFullName: Flow<String> = context.dataStore.data
+        .map { preferences ->
+            try {
+                preferences[CONTRIBUTOR_FULL_NAME] ?: ""
+            } catch (e: ClassCastException) {
+                ""
+            }
+        }
+
+    suspend fun setContributorProfile(id: Int, alias: String, fullName: String) {
+        context.dataStore.edit { preferences ->
+            preferences[CONTRIBUTOR_ID] = id
+            preferences[CONTRIBUTOR_ALIAS] = alias
+            preferences[CONTRIBUTOR_FULL_NAME] = fullName
+        }
+    }
 
     val copyrightNotice: Flow<String> = context.dataStore.data
         .map { preferences ->

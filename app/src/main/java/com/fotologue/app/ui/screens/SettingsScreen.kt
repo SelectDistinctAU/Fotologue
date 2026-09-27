@@ -44,6 +44,9 @@ fun SettingsScreen(
     val isFaceDetectionEnabled by viewModel.isFaceDetectionEnabled.collectAsStateWithLifecycle()
     val faceDetectionDisclosureShown by viewModel.faceDetectionDisclosureShown.collectAsStateWithLifecycle()
     val pictureExportSize by viewModel.pictureExportSize.collectAsStateWithLifecycle()
+    val contributorId by viewModel.contributorId.collectAsStateWithLifecycle()
+    val contributorAlias by viewModel.contributorAlias.collectAsStateWithLifecycle()
+    val contributorFullName by viewModel.contributorFullName.collectAsStateWithLifecycle()
     val creatorName by viewModel.creatorName.collectAsStateWithLifecycle()
     val isAutoCopyrightEnabled by viewModel.isAutoCopyrightEnabled.collectAsStateWithLifecycle()
     val copyrightNotice by viewModel.copyrightNotice.collectAsStateWithLifecycle()
@@ -569,6 +572,47 @@ fun SettingsScreen(
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "CONTRIBUTOR PROFILE",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(
+                text = "Used by the Desktop Master Vault to organize and deduplicate imported logs.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            OutlinedTextField(
+                value = contributorId.toString(),
+                onValueChange = { 
+                    val newId = it.toIntOrNull() ?: 1
+                    viewModel.setContributorProfile(newId, contributorAlias, contributorFullName)
+                },
+                label = { Text("Contributor ID (Int)") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            )
+
+            OutlinedTextField(
+                value = contributorAlias,
+                onValueChange = { viewModel.setContributorProfile(contributorId, it, contributorFullName) },
+                label = { Text("Alias / Shortcode (e.g. GB)") },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            )
+
+            OutlinedTextField(
+                value = contributorFullName,
+                onValueChange = { viewModel.setContributorProfile(contributorId, contributorAlias, it) },
+                label = { Text("Full Name") },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+            )
+
             HorizontalDivider()
 
             Spacer(modifier = Modifier.height(16.dp))
