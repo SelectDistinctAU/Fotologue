@@ -5,7 +5,7 @@
 ## Data Architecture & Modularisation Strategy (September 2026)
 
 ### Context & Goals
-The project is expanding to v3.0 to include a "Lab" component (developing, darkroom, printing) and a "Catalogue" component (archiving, exporting XMP to digiKam). The goal is to modularize the codebase to protect the highly volatile, existing field-capture data (GPS, exposure settings) while building out the new features.
+The project is expanding to v3.0 to include a "Lab" component (developing, darkroom, printing) and a "Catalogue" component (archiving, exporting XMP to digiKam). The goal is to modularise the codebase to protect the highly volatile, existing field-capture data (GPS, exposure settings) while building out the new features.
 
 ### Naming Conventions & Philosophy
 *   **Philosophy:** "Built by a photographer, for photographers, shared freely."
@@ -92,7 +92,7 @@ To ensure thumbnails inside batch ZIP archives are mapped with 100% precision to
 
 ### 3. Exposure Deduplication Engine (`timestampMs` as Canonical Key)
 *   **Canonical Key:** Millisecond timestamp (`timestampMs`) is the single immutable unique identifier for an exposure event.
-*   **Mutable Fields Excluded:** Deduplication ignores GPS coordinates, notes, tags, and camera names—allowing users to correct GPS or standardize camera names on Desktop without causing duplicate frame imports when re-syncing mobile ZIP archives.
+*   **Mutable Fields Excluded:** Deduplication ignores GPS coordinates, notes, tags, and camera names—allowing users to correct GPS or standardise camera names on Desktop without causing duplicate frame imports when re-syncing mobile ZIP archives.
 
 ### 4. Data Grid & `RollStatus` State Machine
 *   **Data Grid:** Replaced mobile-style cards with a dense 4-column Data Grid: `[ Camera ] | [ Film Stock ] | [ Serial ] | [ Frames ]`.
@@ -140,7 +140,7 @@ To ensure thumbnails inside batch ZIP archives are mapped with 100% precision to
 
 ### 3. Exposure Deduplication Engine (`timestampMs` as Canonical Key)
 *   **Canonical Key:** Millisecond timestamp (`timestampMs`) is the single immutable unique identifier for an exposure event.
-*   **Mutable Fields Excluded:** Deduplication ignores GPS coordinates, notes, tags, and camera names—allowing users to correct GPS or standardize camera names on Desktop without causing duplicate frame imports when re-syncing mobile ZIP archives.
+*   **Mutable Fields Excluded:** Deduplication ignores GPS coordinates, notes, tags, and camera names—allowing users to correct GPS or standardise camera names on Desktop without causing duplicate frame imports when re-syncing mobile ZIP archives.
 
 ### 4. Data Grid & `RollStatus` State Machine
 *   **Data Grid:** Replaced mobile-style cards with a dense 4-column Data Grid: `[ Camera ] | [ Film Stock ] | [ Serial ] | [ Frames ]`.

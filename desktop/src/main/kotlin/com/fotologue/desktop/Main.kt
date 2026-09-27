@@ -652,7 +652,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
     if (showBulkEditDialog) {
         AlertDialog(
             onDismissRequest = { showBulkEditDialog = false },
-            title = { Text("Bulk Standardize Selected Rolls", fontWeight = FontWeight.Bold) },
+            title = { Text("Bulk Standardise Selected Rolls", fontWeight = FontWeight.Bold) },
             text = {
                 val selectedCount = masterVaultRolls.count { it.isSelectedForMerge }
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -660,13 +660,13 @@ fun DesktopApp(logoPainter: Painter? = null) {
                     OutlinedTextField(
                         value = bulkEditCamera,
                         onValueChange = { bulkEditCamera = it },
-                        label = { Text("Standardized Camera Body") },
+                        label = { Text("Standardised Camera Body") },
                         modifier = Modifier.fillMaxWidth()
                     )
                     OutlinedTextField(
                         value = bulkEditFilm,
                         onValueChange = { bulkEditFilm = it },
-                        label = { Text("Standardized Film Stock") },
+                        label = { Text("Standardised Film Stock") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -686,7 +686,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                             )
                         }
                     }
-                    vaultFeedbackBanner = "✅ Bulk standardized $selectedCount rolls to $bulkEditCamera • $bulkEditFilm."
+                    vaultFeedbackBanner = "✅ Bulk Standardised $selectedCount rolls to $bulkEditCamera • $bulkEditFilm."
                     showBulkEditDialog = false
                 }) {
                     Text("Apply to Selected", fontWeight = FontWeight.Bold)
@@ -708,21 +708,21 @@ fun DesktopApp(logoPainter: Painter? = null) {
         val selectedRolls = masterVaultRolls.filter { it.isSelectedForMerge }
         AlertDialog(
             onDismissRequest = { showHarmonizeDialog = false },
-            title = { Text("Standardize Camera & Film Stock", fontWeight = FontWeight.Bold) },
+            title = { Text("Standardise Camera & Film Stock", fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("The selected rolls contain different camera bodies or film stocks. Select or enter the standardized names to apply across all ${selectedRolls.size} selected rolls:")
+                    Text("The selected rolls contain different camera bodies or film stocks. Select or enter the Standardised names to apply across all ${selectedRolls.size} selected rolls:")
                     
                     OutlinedTextField(
                         value = harmonizeTargetCamera,
                         onValueChange = { harmonizeTargetCamera = it },
-                        label = { Text("Standardized Camera Body") },
+                        label = { Text("Standardised Camera Body") },
                         modifier = Modifier.fillMaxWidth()
                     )
                     OutlinedTextField(
                         value = harmonizeTargetFilm,
                         onValueChange = { harmonizeTargetFilm = it },
-                        label = { Text("Standardized Film Stock") },
+                        label = { Text("Standardised Film Stock") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -768,10 +768,10 @@ fun DesktopApp(logoPainter: Painter? = null) {
                         selectedRollIndex = 0
                         showHarmonizeDialog = false
 
-                        vaultFeedbackBanner = "✅ Standardized & Combined ${selectedRolls.size} rolls into ${createdRolls.size} unified active roll(s) ($targetCamera • $targetFilm)!"
+                        vaultFeedbackBanner = "✅ Standardised & Combined ${selectedRolls.size} rolls into ${createdRolls.size} unified active roll(s) ($targetCamera • $targetFilm)!"
                     }
                 ) {
-                    Text("Standardize & Merge Now", fontWeight = FontWeight.Bold)
+                    Text("Standardise & Merge Now", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -1099,7 +1099,6 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                             // MASTER LIST TOOLBAR - ROW 1: PERMANENT FILTERS & TRIAGE
                                             val visibleIds = remember(filteredAndSortedRolls) { filteredAndSortedRolls.map { it.id }.toSet() }
                                             val visibleSelectedCount = filteredAndSortedRolls.count { it.isSelectedForMerge }
-                                            val allVisibleSelected = visibleSelectedCount > 0 && visibleSelectedCount == filteredAndSortedRolls.size
 
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
@@ -1223,7 +1222,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                             Spacer(modifier = Modifier.width(6.dp))
                                                             Text("Merge ($selectedCount)", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall, maxLines = 1)
                                                         }
-                                                    } else if (selectedCount == 1) {
+                                                    } else {
                                                         val singleSelected = masterVaultRolls.find { it.isSelectedForMerge }
                                                         if (singleSelected != null && singleSelected.status == RollStatus.ORPHAN) {
                                                             val matchingActive = masterVaultRolls.find { 

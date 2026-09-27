@@ -57,10 +57,12 @@
     <string name="add_log">Add Log</string>
     <string name="selected_count">%1$d selected</string>
     <string name="export_options">Export Options</string>
-    <string name="export_as_csv">Export as CSV</string>
-    <string name="export_as_json">Export as JSON</string>
-    <string name="export_as_zip">Export as Full Package (ZIP)</string>
-    <string name="export_as_xmp" translatable="false">Export as XMP (Sidecar)</string>
+    <string name="export_as_csv">Export as CSV (Legacy)</string>
+    <string name="export_as_json">Export as JSON (Legacy)</string>
+    <string name="export_as_zip">Export Master Archive (ZIP)</string>
+    <string name="export_as_xmp" translatable="false">Export as XMP Sidecar</string>
+    <string name="export_contact_sheet_pdf" translatable="false">Export Contact Sheet (PDF)</string>
+    <string name="export_contact_sheet_pdf_desc" translatable="false">A printable darkroom proof sheet of your field notes.</string>
 
     <!-- Add/Edit Log & Details -->
     <string name="add_exposure_log">Add Exposure Log</string>
@@ -145,7 +147,7 @@
     <string name="label_max_aperture_hint">Max Aperture (e.g. 1.8)</string>
     <string name="label_min_aperture_hint">Min Aperture (e.g. 22)</string>
     <string name="label_filter_size_mm">Filter Size (mm)</string>
-    <string name="label_image_stabilized">Image Stabilized</string>
+    <string name="label_image_stabilized">Image Stabilised</string>
     <string name="label_min_focus_m">Min Focus (m)</string>
     <string name="label_max_magnification_x">Max Magnification (x)</string>
     <string name="save_lens">Save Lens</string>

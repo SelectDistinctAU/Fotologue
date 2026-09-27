@@ -25,14 +25,14 @@ All shared visual assets, colour tokens, typography scales, and reusable Composa
 
 ### B. Cards & List Containers
 *   Container cards use `CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)`.
-*   Card padding is standardized at `16.dp` external padding, `12.dp` to `16.dp` internal content padding.
+*   Card padding is standardised at `16.dp` external padding, `12.dp` to `16.dp` internal content padding.
 *   Item headers inside cards use `titleMedium.copy(fontWeight = FontWeight.Bold)`.
 *   Subtitles and metadata use `bodySmall` with `color = MaterialTheme.colorScheme.onSurfaceVariant`.
 
 ### C. Action Buttons
 *   Main action buttons use explicit labels with a single M3 vector icon on the left (`Icon(Icons.Default.Add)` + `Text("Master Item")`).
 *   Never duplicate text pluses (`+ +`).
-*   Button height is standardized at `48.dp` to `52.dp`.
+*   Button height is standardised at `48.dp` to `52.dp`.
 
 ### D. Single-Choice Inputs & Pick Lists
 *   Long single-selection pick lists MUST use clean `ExposedDropdownMenuBox` dropdowns.
