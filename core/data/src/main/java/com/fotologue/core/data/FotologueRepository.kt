@@ -10,6 +10,8 @@ import com.fotologue.core.data.location.LocationProvider
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -392,6 +394,42 @@ class FotologueRepository @Inject constructor(
     }
 
     suspend fun getCurrentLocation(): Location? = locationProvider.getCurrentLocation()
+
+    suspend fun exportFullDatabaseJson(): String {
+        return database.withTransaction {
+            val dbState = FotologueConfig(
+                cameras = cameraDao.getAllCamerasOnce(),
+                lenses = lensDao.getAllLensesOnce(),
+                cameraLensCrossRefs = lensDao.getAllCameraLensCrossRefsOnce(),
+                viewfinders = viewfinderDao.getAllViewfindersOnce(),
+                cameraViewfinderCrossRefs = viewfinderDao.getAllCameraViewfinderCrossRefsOnce(),
+                teleconverters = teleconverterDao.getAllTeleconvertersOnce(),
+                cameraTeleconverterCrossRefs = teleconverterDao.getAllCameraTeleconverterCrossRefsOnce(),
+                filters = filterDao.getAllFiltersOnce(),
+                cameraFilterCrossRefs = filterDao.getAllCameraFilterCrossRefsOnce(),
+                flashes = flashDao.getAllFlashesOnce(),
+                cameraFlashCrossRefs = flashDao.getAllCameraFlashCrossRefsOnce(),
+                films = filmDao.getAllFilmsOnce(),
+                kits = cameraKitDao.getAllCameraKitsOnce(),
+                tags = tagDao.getAllTagsOnce(),
+                logs = logEntryDao.getAllLogEntriesOnce(),
+                logEntryTags = tagDao.getAllLogEntryTagCrossRefsOnce(),
+                filmRollSessions = filmRollSessionDao.getAllSessionsOnce(),
+                labEquipment = database.labEquipmentDao().getAllEquipmentOnce(),
+                labChemicals = database.labChemicalDao().getAllChemicalsOnce(),
+                labSuppliers = database.labSupplierDao().getAllSuppliersOnce(),
+                inventoryItems = database.inventoryItemDao().getAllItemsOnce(),
+                orderHistory = database.orderHistoryDao().getAllOrdersOnce(),
+                performanceLogs = database.performanceLogDao().getAllLogsOnce(),
+                labProcessEvents = database.labProcessEventDao().getAllProcessEventsOnce(),
+                printRecipes = database.printRecipeDao().getAllPrintRecipesOnce(),
+                labStorageLocations = database.labStorageLocationDao().getAllStorageLocationsOnce(),
+                printOutcomes = database.printOutcomeDao().getAllOutcomesOnce(),
+                settings = emptyMap() // Map extraction needs Context, handled elsewhere typically
+            )
+            Json { encodeDefaults = true }.encodeToString(dbState)
+        }
+    }
 
     suspend fun logExposure(
         notes: String,

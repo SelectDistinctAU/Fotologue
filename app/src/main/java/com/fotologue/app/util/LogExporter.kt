@@ -27,7 +27,10 @@ class LogExporter @Inject constructor(
         type: ExportType,
         uri: Uri,
         exportSize: PictureExportSize = PictureExportSize.NATURAL,
-        macroCopyOptions: MacroCopyNamingOptions = MacroCopyNamingOptions()
+        macroCopyOptions: MacroCopyNamingOptions = MacroCopyNamingOptions(),
+        includeFoundationData: Boolean = false,
+        contributorId: Int = 1,
+        contributorAlias: String = "P1"
     ) : Boolean {
         try {
             val creator = runBlocking { settingsRepository.creatorName.first() }
@@ -51,7 +54,7 @@ class LogExporter @Inject constructor(
                         outputStream.flush()
                     }
                     ExportType.JSON -> {
-                        val json = LogEntryJsonExporter.toJson(logs)
+                        val json = LogEntryJsonExporter.toJson(logs, contributorId, contributorAlias)
                         outputStream.write(json.toByteArray())
                         outputStream.flush()
                     }
@@ -65,6 +68,10 @@ class LogExporter @Inject constructor(
                             creator = creator,
                             copyright = copyright,
                             contact = contact,
+                            contributorId = contributorId,
+                            contributorAlias = contributorAlias,
+                            includeFoundationData = includeFoundationData,
+                            repository = repository,
                             macroCopyOptions = macroCopyOptions
                         )
                     }
@@ -82,6 +89,10 @@ class LogExporter @Inject constructor(
                                 creator = creator,
                                 copyright = copyright,
                                 contact = contact,
+                                contributorId = contributorId,
+                                contributorAlias = contributorAlias,
+                                includeFoundationData = false, // XMP Only mode shouldn't include Foundation DB
+                                repository = repository,
                                 macroCopyOptions = macroCopyOptions
                             )
                         }

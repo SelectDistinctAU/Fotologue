@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.fotologue.core.data.Camera
 import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.Filter
+import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,7 @@ data class AddEditFilterUiState(
 @HiltViewModel
 class AddEditFilterViewModel @Inject constructor(
     private val repository: FotologueRepository,
+    private val settingsRepository: SettingsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -110,8 +112,10 @@ class AddEditFilterViewModel @Inject constructor(
 
             if (filterId == null) {
                 repository.insertFilter(filter, state.selectedCameraIds.toList())
+                settingsRepository.setLocalFoundationChangesPending(true)
             } else {
                 repository.updateFilter(filter, state.selectedCameraIds.toList())
+                settingsRepository.setLocalFoundationChangesPending(true)
             }
             onSuccess()
         }

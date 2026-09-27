@@ -11,6 +11,7 @@ import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.GearDatabase
 import com.fotologue.core.data.Lens
 import com.fotologue.core.data.LensSpec
+import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,7 @@ import javax.inject.Inject
 data class AddEditCameraUiState(
     val name: String = "",
     val modelNumber: String = "",
+    val serialNumber: String = "",
     val type: CameraType = CameraType.FILM_SLR,
     val mount: String = "",
     val shutterSpeeds: String = "",
@@ -38,6 +40,7 @@ data class AddEditCameraUiState(
 @HiltViewModel
 class AddEditCameraViewModel @Inject constructor(
     private val repository: FotologueRepository,
+    private val settingsRepository: SettingsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -45,6 +48,7 @@ class AddEditCameraViewModel @Inject constructor(
         AddEditCameraUiState(
             name = savedStateHandle["name"] ?: "",
             modelNumber = savedStateHandle["modelNumber"] ?: "",
+            serialNumber = savedStateHandle["serialNumber"] ?: ""
         )
     )
     val uiState: StateFlow<AddEditCameraUiState> = _uiState.asStateFlow()
@@ -68,6 +72,7 @@ class AddEditCameraViewModel @Inject constructor(
                     it.copy(
                         name = c.name,
                         modelNumber = c.modelNumber,
+                        serialNumber = c.serialNumber,
                         type = c.type,
                         mount = c.mount,
                         shutterSpeeds = c.shutterSpeeds.joinToString(", "),
@@ -88,6 +93,11 @@ class AddEditCameraViewModel @Inject constructor(
     fun onModelNumberChange(modelNumber: String) {
         _uiState.update { it.copy(modelNumber = modelNumber) }
         savedStateHandle["modelNumber"] = modelNumber
+    }
+
+    fun onSerialNumberChange(serialNumber: String) {
+        _uiState.update { it.copy(serialNumber = serialNumber) }
+        savedStateHandle["serialNumber"] = serialNumber
     }
 
     fun onTypeChange(type: CameraType) {
@@ -193,6 +203,7 @@ class AddEditCameraViewModel @Inject constructor(
                 id = cameraId ?: 0,
                 name = finalName,
                 modelNumber = currentState.modelNumber.trim(),
+                serialNumber = currentState.serialNumber.trim(),
                 type = currentState.type,
                 mount = currentState.mount.trim(),
                 shutterSpeeds = shutterSpeedList,
@@ -202,9 +213,12 @@ class AddEditCameraViewModel @Inject constructor(
             )
 
             val newCamId = if (cameraId == null) {
-                repository.insertCamera(camera)
+                val newId = repository.insertCamera(camera)
+                settingsRepository.setLocalFoundationChangesPending(true)
+                newId
             } else {
                 repository.updateCamera(camera)
+                settingsRepository.setLocalFoundationChangesPending(true)
                 cameraId!!
             }
 

@@ -7,6 +7,9 @@ import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
 import com.fotologue.core.data.LogEntryWithGear
+import com.fotologue.core.data.FotologueRepository
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import com.fotologue.core.data.MacroCopyNamingOptions
 import com.fotologue.core.data.PictureExportSize
 import com.fotologue.core.data.Tag
@@ -28,7 +31,10 @@ object LogEntryZipExporter {
         creator: String = "",
         copyright: String = "",
         contact: String = "",
+        contributorId: Int = 1,
         contributorAlias: String = "P1",
+        includeFoundationData: Boolean = false,
+        repository: FotologueRepository? = null,
         macroCopyOptions: MacroCopyNamingOptions = MacroCopyNamingOptions()
     ) {
         val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.US)
@@ -37,7 +43,7 @@ object LogEntryZipExporter {
         ZipOutputStream(outputStream.buffered()).use { zos ->
             // 1. metadata.json
             try {
-                val jsonExport = LogEntryJsonExporter.toJson(logs, contributorId = 1, contributorAlias = contributorAlias) // We'll pass real ID when we wire it up fully from ViewModel later
+                val jsonExport = LogEntryJsonExporter.toJson(logs, contributorId = contributorId, contributorAlias = contributorAlias)
                 zos.putNextEntry(ZipEntry("metadata.json"))
                 zos.write(jsonExport.toByteArray())
                 zos.closeEntry()
@@ -53,6 +59,20 @@ object LogEntryZipExporter {
                 zos.closeEntry()
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+
+            // 2.5 Foundation Archive (If opted in)
+            if (includeFoundationData && repository != null) {
+                try {
+                    val fullDbJson = runBlocking {
+                        repository.exportFullDatabaseJson()
+                    }
+                    zos.putNextEntry(ZipEntry("foundation_archive.json"))
+                    zos.write(fullDbJson.toByteArray())
+                    zos.closeEntry()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
 
             // 3. sidecars/ & thumbnails/

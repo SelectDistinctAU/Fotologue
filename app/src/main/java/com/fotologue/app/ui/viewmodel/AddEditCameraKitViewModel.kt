@@ -13,6 +13,7 @@ import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.Lens
 import com.fotologue.core.data.Viewfinder
 import com.fotologue.core.data.CameraLensCrossRef
+import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -47,6 +48,7 @@ data class AddEditCameraKitUiState(
 @HiltViewModel
 class AddEditCameraKitViewModel @Inject constructor(
     private val repository: FotologueRepository,
+    private val settingsRepository: SettingsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -293,8 +295,10 @@ class AddEditCameraKitViewModel @Inject constructor(
             )
             if (kitId == null) {
                 repository.insertCameraKit(kit)
+                settingsRepository.setLocalFoundationChangesPending(true)
             } else {
                 repository.updateCameraKit(kit)
+                settingsRepository.setLocalFoundationChangesPending(true)
             }
             onComplete()
         }

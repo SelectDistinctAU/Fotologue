@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.fotologue.core.data.Camera
 import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.Teleconverter
+import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +27,7 @@ data class AddEditTeleconverterUiState(
 @HiltViewModel
 class AddEditTeleconverterViewModel @Inject constructor(
     private val repository: FotologueRepository,
+    private val settingsRepository: SettingsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -109,8 +111,10 @@ class AddEditTeleconverterViewModel @Inject constructor(
 
             if (teleconverterId == null) {
                 repository.insertTeleconverter(tc, state.selectedCameraIds.toList())
+                settingsRepository.setLocalFoundationChangesPending(true)
             } else {
                 repository.updateTeleconverter(tc, state.selectedCameraIds.toList())
+                settingsRepository.setLocalFoundationChangesPending(true)
             }
             onSuccess()
         }

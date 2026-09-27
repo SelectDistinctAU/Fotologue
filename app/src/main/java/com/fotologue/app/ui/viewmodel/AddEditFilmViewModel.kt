@@ -7,6 +7,7 @@ import com.fotologue.core.data.Film
 import com.fotologue.core.data.FilmPreset
 import com.fotologue.core.data.FilmPresets
 import com.fotologue.core.data.FotologueRepository
+import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +31,7 @@ data class AddEditFilmUiState(
 @HiltViewModel
 class AddEditFilmViewModel @Inject constructor(
     private val repository: FotologueRepository,
+    private val settingsRepository: SettingsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -206,8 +208,10 @@ class AddEditFilmViewModel @Inject constructor(
             )
             if (filmId == null) {
                 repository.insertFilm(film)
+                settingsRepository.setLocalFoundationChangesPending(true)
             } else {
                 repository.updateFilm(film)
+                settingsRepository.setLocalFoundationChangesPending(true)
             }
             onComplete()
         }

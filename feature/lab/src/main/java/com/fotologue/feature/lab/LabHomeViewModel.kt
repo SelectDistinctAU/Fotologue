@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.fotologue.core.data.ExposureSettings
 import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.LogEntry
+import com.fotologue.core.data.SettingsRepository
 import com.fotologue.core.data.lab.InventoryItem
 import com.fotologue.core.data.lab.InventoryItemDao
 import com.fotologue.core.data.lab.InventoryMaster
@@ -64,7 +65,8 @@ class LabHomeViewModel @Inject constructor(
     private val inventoryItemDao: InventoryItemDao,
     private val orderHistoryDao: OrderHistoryDao,
     private val performanceLogDao: PerformanceLogDao,
-    private val labProcessEventDao: LabProcessEventDao
+    private val labProcessEventDao: LabProcessEventDao,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     val performanceLogs: StateFlow<List<PerformanceLog>> = performanceLogDao.getAllPerformanceLogs()
@@ -139,6 +141,7 @@ class LabHomeViewModel @Inject constructor(
      */
     fun seedPresets() {
         viewModelScope.launch {
+            settingsRepository.setLocalFoundationChangesPending(true)
             if (supplierList.value.isEmpty()) {
                 LabPresets.supplierPresets.forEach { 
                     supplierDao.insertSupplier(
@@ -268,12 +271,14 @@ class LabHomeViewModel @Inject constructor(
         if (name.isBlank()) return
         viewModelScope.launch {
             categoryDao.insertCategory(LabCategory(name = name.trim(), defaultUnit = defaultUnit.trim()))
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun updateCategory(category: LabCategory) {
         viewModelScope.launch {
             categoryDao.updateCategory(category)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
@@ -281,6 +286,7 @@ class LabHomeViewModel @Inject constructor(
         if (category.isSystemCore) return
         viewModelScope.launch {
             categoryDao.deleteCategory(category)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
@@ -288,12 +294,14 @@ class LabHomeViewModel @Inject constructor(
         if (name.isBlank()) return
         viewModelScope.launch {
             unitDao.insertUnit(LabUnit(name = name.trim()))
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun updateUnit(unit: LabUnit) {
         viewModelScope.launch {
             unitDao.updateUnit(unit)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
@@ -301,6 +309,7 @@ class LabHomeViewModel @Inject constructor(
         if (unit.isSystemCore) return
         viewModelScope.launch {
             unitDao.deleteUnit(unit)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
@@ -308,58 +317,68 @@ class LabHomeViewModel @Inject constructor(
         if (name.isBlank()) return
         viewModelScope.launch {
             storageLocationDao.insertStorageLocation(LabStorageLocation(name = name.trim(), locationType = "Storage"))
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun updateStorageLocation(location: LabStorageLocation) {
         viewModelScope.launch {
             storageLocationDao.updateStorageLocation(location)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun deleteStorageLocation(location: LabStorageLocation) {
         viewModelScope.launch {
             storageLocationDao.deleteStorageLocation(location)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun addMaster(master: InventoryMaster) {
         viewModelScope.launch {
             inventoryMasterDao.insertMaster(master)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     suspend fun addMasterAndGetId(master: InventoryMaster): Long {
+        settingsRepository.setLocalFoundationChangesPending(true)
         return inventoryMasterDao.insertMaster(master)
     }
 
     fun updateMaster(master: InventoryMaster) {
         viewModelScope.launch {
             inventoryMasterDao.updateMaster(master)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun deleteMaster(master: InventoryMaster) {
         viewModelScope.launch {
             inventoryMasterDao.deleteMaster(master)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun addStockLot(lot: StockLot) {
         viewModelScope.launch {
             stockLotDao.insertLot(lot)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun updateStockLot(lot: StockLot) {
         viewModelScope.launch {
             stockLotDao.updateLot(lot)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun deleteStockLot(lot: StockLot) {
         viewModelScope.launch {
             stockLotDao.deleteLot(lot)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
@@ -397,36 +416,42 @@ class LabHomeViewModel @Inject constructor(
     fun addInventoryItem(item: InventoryItem) {
         viewModelScope.launch {
             inventoryItemDao.insertItem(item)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun updateInventoryItem(item: InventoryItem) {
         viewModelScope.launch {
             inventoryItemDao.updateItem(item)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun deleteInventoryItem(item: InventoryItem) {
         viewModelScope.launch {
             inventoryItemDao.deleteItem(item)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun addSupplier(supplier: LabSupplier) {
         viewModelScope.launch {
             supplierDao.insertSupplier(supplier)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun updateSupplier(supplier: LabSupplier) {
         viewModelScope.launch {
             supplierDao.updateSupplier(supplier)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 
     fun deleteSupplier(supplier: LabSupplier) {
         viewModelScope.launch {
             supplierDao.deleteSupplier(supplier)
+            settingsRepository.setLocalFoundationChangesPending(true)
         }
     }
 

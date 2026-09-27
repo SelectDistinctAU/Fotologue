@@ -65,8 +65,17 @@ class TimelineViewModel @Inject constructor(
     val isOnboardingComplete: StateFlow<Boolean> = repository.isOnboardingComplete
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    val localFoundationChangesPending: StateFlow<Boolean> = settingsRepository.localFoundationChangesPending
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     private val _selectedIds = MutableStateFlow<Set<Long>>(emptySet())
     val selectedIds: StateFlow<Set<Long>> = _selectedIds.asStateFlow()
+
+    private var includeFoundationData = false
+
+    fun setIncludeFoundationData(include: Boolean) {
+        includeFoundationData = include
+    }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -119,7 +128,10 @@ class TimelineViewModel @Inject constructor(
         viewModelScope.launch {
             val logs = getSelectedLogs()
             val exportSize = settingsRepository.pictureExportSize.first()
-            val success = logExporter.export(logs, type, uri, exportSize, macroCopyOptions)
+            val contributorAlias = settingsRepository.contributorAlias.first()
+            val contributorId = settingsRepository.contributorId.first()
+
+            val success = logExporter.export(logs, type, uri, exportSize, macroCopyOptions, includeFoundationData, contributorId, contributorAlias)
             
             if (success) {
                 val ids = logs.map { it.logEntry.id }
@@ -128,6 +140,9 @@ class TimelineViewModel @Inject constructor(
                     ExportType.CSV -> repository.markAsExportedCsv(ids)
                     ExportType.JSON -> repository.markAsExportedJson(ids)
                     ExportType.XMP, ExportType.PDF -> repository.markAsExportedXmp(ids)
+                }
+                if (includeFoundationData) {
+                    settingsRepository.setLocalFoundationChangesPending(false)
                 }
             }
             clearSelection()

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.fotologue.core.data.Camera
 import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.Viewfinder
+import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +26,7 @@ data class AddEditViewfinderUiState(
 @HiltViewModel
 class AddEditViewfinderViewModel @Inject constructor(
     private val repository: FotologueRepository,
+    private val settingsRepository: SettingsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -100,8 +102,10 @@ class AddEditViewfinderViewModel @Inject constructor(
 
             if (viewfinderId == null) {
                 repository.insertViewfinder(viewfinder, state.selectedCameraIds.toList())
+                settingsRepository.setLocalFoundationChangesPending(true)
             } else {
                 repository.updateViewfinder(viewfinder, state.selectedCameraIds.toList())
+                settingsRepository.setLocalFoundationChangesPending(true)
             }
             onSuccess()
         }

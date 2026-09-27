@@ -62,6 +62,7 @@ class SettingsRepository(private val context: Context) {
     private val CURRENT_ROLL = intPreferencesKey("current_roll")
     private val CURRENT_FRAME = intPreferencesKey("current_frame")
     private val IS_WELCOME_DISMISSED = booleanPreferencesKey("is_welcome_dismissed")
+    private val LOCAL_FOUNDATION_CHANGES_PENDING = booleanPreferencesKey("local_foundation_changes_pending")
 
     private val _isSafelightActive = MutableStateFlow(false)
     val isSafelightActive: StateFlow<Boolean> = _isSafelightActive.asStateFlow()
@@ -436,5 +437,18 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setWelcomeDismissed(dismissed: Boolean) {
         context.dataStore.edit { it[IS_WELCOME_DISMISSED] = dismissed }
+    }
+
+    val localFoundationChangesPending: Flow<Boolean> = context.dataStore.data
+        .map { preferences ->
+            try {
+                preferences[LOCAL_FOUNDATION_CHANGES_PENDING] ?: false
+            } catch (e: ClassCastException) {
+                false
+            }
+        }
+
+    suspend fun setLocalFoundationChangesPending(pending: Boolean) {
+        context.dataStore.edit { it[LOCAL_FOUNDATION_CHANGES_PENDING] = pending }
     }
 }

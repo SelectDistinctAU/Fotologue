@@ -9,6 +9,7 @@ import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.GearDatabase
 import com.fotologue.core.data.Lens
 import com.fotologue.core.data.LensSpec
+import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,6 +45,7 @@ data class AddEditLensUiState(
 @HiltViewModel
 class AddEditLensViewModel @Inject constructor(
     private val repository: FotologueRepository,
+    private val settingsRepository: SettingsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -303,8 +305,10 @@ class AddEditLensViewModel @Inject constructor(
 
             if (lensId == null) {
                 repository.insertLens(lens, state.selectedCameraIds.toList())
+                settingsRepository.setLocalFoundationChangesPending(true)
             } else {
                 repository.updateLens(lens, state.selectedCameraIds.toList())
+                settingsRepository.setLocalFoundationChangesPending(true)
             }
             onSuccess()
         }

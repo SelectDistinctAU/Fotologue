@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.fotologue.core.data.Camera
 import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.Flash
+import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +27,7 @@ data class AddEditFlashUiState(
 @HiltViewModel
 class AddEditFlashViewModel @Inject constructor(
     private val repository: FotologueRepository,
+    private val settingsRepository: SettingsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -109,8 +111,10 @@ class AddEditFlashViewModel @Inject constructor(
 
             if (flashId == null) {
                 repository.insertFlash(flash, state.selectedCameraIds.toList())
+                settingsRepository.setLocalFoundationChangesPending(true)
             } else {
                 repository.updateFlash(flash, state.selectedCameraIds.toList())
+                settingsRepository.setLocalFoundationChangesPending(true)
             }
             onSuccess()
         }

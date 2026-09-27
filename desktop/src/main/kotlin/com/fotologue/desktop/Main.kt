@@ -59,6 +59,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -561,6 +562,7 @@ fun byteArrayToImageBitmap(bytes: ByteArray?): ImageBitmap? {
 
 @Suppress("DEPRECATION")
 fun main() = application {
+    DatabaseManager.initDatabase()
     val logoBitmap = try {
         useResource("logo.png") { loadImageBitmap(it) }
     } catch (_: Exception) {
@@ -609,19 +611,12 @@ fun DesktopApp(logoPainter: Painter? = null) {
     var isolateOrphansOnly by remember { mutableStateOf(false) }
     
     // Dynamic Master Vault State for Extracted Rolls
-    val sampleInitialFrames = listOf(
-        DesktopFrameDetail(1, "Pentax LX", "Ilford FP4 Plus 125", "1/250", "f/5.6", 125, 1788574279476L, "19 Sep 2026 14:30", "Heavy overcast, tested 1-stop push.", listOf("Portrait", "High Contrast"), -33.8688, 151.2093, "Kodak D-76 (1+1)", "Multigrade RC Satin 8x10", "Rodagon 80mm f/5.6", "12.5s", "Grade 2.5", "Dodge sky -1 EV (3s)", "KEEPER", "Fine-art exhibition print candidate"),
-        DesktopFrameDetail(2, "Pentax LX", "Ilford FP4 Plus 125", "1/125", "f/8", 125, 1788574399476L, "19 Sep 2026 14:32", "Waiting for the sun to break through the clouds.", listOf("Landscape", "Architecture"), -33.8688, 151.2093, "Kodak D-76 (1+1)", "Multigrade RC Satin 8x10", "Rodagon 80mm f/5.6", "14.0s", "Grade 2.5", "Burn shadows +1 EV (4s)", "KEEPER", "Exhibition candidate"),
-        DesktopFrameDetail(3, "Pentax LX", "Ilford FP4 Plus 125", "1/60", "f/11", 125, 1788574579476L, "19 Sep 2026 14:35", "Handheld shot, slightly underexposed.", listOf("Street", "Candid"), -33.8688, 151.2093, "Kodak D-76 (1+1)", "Multigrade RC Satin 8x10", "Rodagon 80mm f/5.6", "10.0s", "Grade 3.0", "Test print", "REJECT", "Low contrast / camera shake")
-    )
-
-    val masterVaultRolls = remember {
-        mutableStateListOf(
-            DesktopMasterRollItem(status = RollStatus.FINISHED, cameraName = "Pentax LX", filmName = "Ilford FP4 Plus 125", filmRollSerial = "PNTX-FP4-R01 (36 frames)", frameCount = 36, frames = sampleInitialFrames),
-            DesktopMasterRollItem(status = RollStatus.ORPHAN, cameraName = "Canon AE-1 Program", filmName = "Ilford HP5 Plus 400", filmRollSerial = "Roll 1 (24 frames)", frameCount = 24, frames = sampleInitialFrames),
-            DesktopMasterRollItem(status = RollStatus.ACTIVE, cameraName = "Leica M6", filmName = "Kodak Tri-X 400", filmRollSerial = "LCA-TX400-R01 (18 frames)", frameCount = 18, frames = sampleInitialFrames),
-            DesktopMasterRollItem(status = RollStatus.FINISHED, cameraName = "Yashica Mat-124G", filmName = "CineStill 800T", filmRollSerial = "YSH-800T-R01 (12 frames)", frameCount = 12, frames = sampleInitialFrames)
-        )
+    val masterVaultRolls = remember { mutableStateListOf<DesktopMasterRollItem>() }
+    
+    LaunchedEffect(Unit) {
+        val loadedRolls = DatabaseRepository.loadAllRolls()
+        masterVaultRolls.clear()
+        masterVaultRolls.addAll(loadedRolls)
     }
 
     var selectedRollIndex by remember { mutableIntStateOf(0) }
@@ -767,6 +762,9 @@ fun DesktopApp(logoPainter: Painter? = null) {
                         masterVaultRolls.addAll(0, createdRolls)
                         selectedRollIndex = 0
                         showHarmonizeDialog = false
+
+                        DatabaseRepository.deleteRolls(selectedRolls)
+                        createdRolls.forEach { DatabaseRepository.saveRoll(it) }
 
                         vaultFeedbackBanner = "✅ Standardised & Combined ${selectedRolls.size} rolls into ${createdRolls.size} unified active roll(s) ($targetCamera • $targetFilm)!"
                     }
@@ -975,6 +973,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                         filmRollSerial = parsedRoll.filmRollSerial.replace(Regex("\\(\\d+ frames\\)"), "(${newFrames.size} frames)")
                                                                     )
                                                                     masterVaultRolls.add(updatedRoll)
+                                                                    DatabaseRepository.saveRoll(updatedRoll)
                                                                     newlyAddedCount++
                                                                 }
                                                             }
@@ -1099,6 +1098,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                             // MASTER LIST TOOLBAR - ROW 1: PERMANENT FILTERS & TRIAGE
                                             val visibleIds = remember(filteredAndSortedRolls) { filteredAndSortedRolls.map { it.id }.toSet() }
                                             val visibleSelectedCount = filteredAndSortedRolls.count { it.isSelectedForMerge }
+                                            val allVisibleSelected = visibleSelectedCount > 0 && visibleSelectedCount == filteredAndSortedRolls.size
 
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
@@ -1212,6 +1212,9 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                     masterVaultRolls.addAll(0, createdRolls)
                                                                     selectedRollIndex = 0
 
+                                                                    DatabaseRepository.deleteRolls(selectedRolls)
+                                                                    createdRolls.forEach { DatabaseRepository.saveRoll(it) }
+
                                                                     vaultFeedbackBanner = "🔗 Combined ${selectedRolls.size} legacy imports into ${createdRolls.size} unified roll(s) preserving ALL ${harmonizedFrames.size} exposure frames!"
                                                                 }
                                                             },
@@ -1252,6 +1255,8 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                                 )
                                                                                 masterVaultRolls.removeAt(orphanIdx)
                                                                                 selectedRollIndex = activeIdx
+                                                                                DatabaseRepository.saveRoll(masterVaultRolls[activeIdx])
+                                                                                DatabaseRepository.deleteRolls(listOf(singleSelected))
                                                                                 vaultFeedbackBanner = "🏠 Auto-Homed ${singleSelected.frameCount} orphan frame(s) into Active Roll: $updatedSerial!"
                                                                             } else {
                                                                                 vaultFeedbackBanner = "⚠️ Cannot Auto-Home: Exceeds max capacity ($maxCap frames)!"
@@ -1285,6 +1290,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                                 filmRollSerial = newSerial,
                                                                                 isSelectedForMerge = false
                                                                             )
+                                                                            DatabaseRepository.saveRoll(masterVaultRolls[orphanIdx])
                                                                             vaultFeedbackBanner = "🆕 Started New Active Roll: $newSerial!"
                                                                         }
                                                                     },
@@ -1303,6 +1309,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                         onClick = {
                                                             val selectedRolls = masterVaultRolls.filter { it.isSelectedForMerge }
                                                             masterVaultRolls.removeAll(selectedRolls)
+                                                            DatabaseRepository.deleteRolls(selectedRolls)
                                                             vaultFeedbackBanner = "🗑️ Deleted ${selectedRolls.size} selected rolls from Master Vault."
                                                         },
                                                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
@@ -1542,6 +1549,8 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                                 )
                                                                                 masterVaultRolls.removeAt(selectedRollIndex)
                                                                                 selectedRollIndex = activeIdx
+                                                                                DatabaseRepository.saveRoll(masterVaultRolls[activeIdx])
+                                                                                DatabaseRepository.deleteRolls(listOf(activeRoll))
                                                                                 vaultFeedbackBanner = "🏠 Auto-Homed ${activeRoll.frameCount} orphan frame(s) into Active Roll: $updatedSerial!"
                                                                             } else {
                                                                                 vaultFeedbackBanner = "⚠️ Cannot Auto-Home: Exceeds maximum capacity ($maxCap frames)!"
@@ -1571,6 +1580,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                             status = RollStatus.ACTIVE,
                                                                             filmRollSerial = newSerial
                                                                         )
+                                                                        DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
                                                                         vaultFeedbackBanner = "🆕 Started New Active Roll: $newSerial!"
                                                                     },
                                                                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
@@ -1593,6 +1603,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                         value = activeRoll.cameraName,
                                                         onValueChange = { newCam ->
                                                             masterVaultRolls[selectedRollIndex] = activeRoll.copy(cameraName = newCam)
+                                                            DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
                                                         },
                                                         label = { Text("Camera Body") },
                                                         modifier = Modifier.weight(1f)
@@ -1601,6 +1612,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                         value = activeRoll.filmName,
                                                         onValueChange = { newFilm ->
                                                             masterVaultRolls[selectedRollIndex] = activeRoll.copy(filmName = newFilm)
+                                                            DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
                                                         },
                                                         label = { Text("Film Stock") },
                                                         modifier = Modifier.weight(1f)
@@ -1613,6 +1625,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                 status = resolvedStatus,
                                                                 filmRollSerial = newSerial
                                                             )
+                                                            DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
                                                         },
                                                         label = { Text("Physical Roll Serial") },
                                                         modifier = Modifier.weight(1f)

@@ -60,6 +60,7 @@ fun TimelineScreen(
     val showOnlyUnexported by viewModel.showOnlyUnexported.collectAsStateWithLifecycle()
     val isOnboardingComplete by viewModel.isOnboardingComplete.collectAsStateWithLifecycle()
     val selectedIds by viewModel.selectedIds.collectAsStateWithLifecycle()
+    val localChangesPending by viewModel.localFoundationChangesPending.collectAsStateWithLifecycle()
 
     TimelineScreenContent(
         onBack = onBack,
@@ -83,7 +84,9 @@ fun TimelineScreen(
         onClearSelection = viewModel::clearSelection,
         onSelectAll = viewModel::selectAll,
         onDeleteSelected = viewModel::deleteSelected,
-        onExportLogs = viewModel::exportLogs
+        onExportLogs = viewModel::exportLogs,
+        localChangesPending = localChangesPending,
+        onSetIncludeFoundationData = viewModel::setIncludeFoundationData
     )
 }
 
@@ -112,9 +115,12 @@ fun TimelineScreenContent(
     onSelectAll: () -> Unit,
     onDeleteSelected: () -> Unit,
     onExportLogs: (ExportType, Uri) -> Unit,
+    localChangesPending: Boolean,
+    onSetIncludeFoundationData: (Boolean) -> Unit
 ) {
     val isSelectionMode = selectedIds.isNotEmpty()
     var showExportOptions by remember { mutableStateOf(value = false) }
+    val currentConfiguration = LocalConfiguration.current
 
     val zipExportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/zip")
@@ -124,8 +130,47 @@ fun TimelineScreenContent(
         contract = ActivityResultContracts.CreateDocument("application/pdf")
     ) { uri -> uri?.let { onExportLogs(ExportType.PDF, it) } }
 
+    var showFoundationSyncDialog by remember { mutableStateOf(false) }
+
+    if (showFoundationSyncDialog) {
+        AlertDialog(
+            onDismissRequest = { showFoundationSyncDialog = false },
+            title = { Text("Share Foundation Additions?") },
+            text = { Text("You have added new gear or materials locally. Would you like to submit these additions to the Base Camp for review?\n\nSelecting 'Export Logs Only' will exclude your new items.") },
+            confirmButton = {
+                Button(onClick = {
+                    showFoundationSyncDialog = false
+                    val locale = currentConfiguration.locales[0]
+                    val dateFormat = SimpleDateFormat("yyyyMMdd_HHmm", locale)
+                    // We need to pass the intention to include foundation data
+                    onSetIncludeFoundationData(true)
+                    zipExportLauncher.launch("fotologue_export_${dateFormat.format(Date())}.zip")
+                }) {
+                    Text("Share with Base")
+                }
+            },
+            dismissButton = {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(onClick = {
+                        showFoundationSyncDialog = false
+                    }) {
+                        Text("Revert")
+                    }
+                    TextButton(onClick = {
+                        showFoundationSyncDialog = false
+                        val locale = currentConfiguration.locales[0]
+                        val dateFormat = SimpleDateFormat("yyyyMMdd_HHmm", locale)
+                        onSetIncludeFoundationData(false)
+                        zipExportLauncher.launch("fotologue_export_${dateFormat.format(Date())}.zip")
+                    }) {
+                        Text("Logs Only")
+                    }
+                }
+            }
+        )
+    }
+
     if (showExportOptions) {
-        val currentConfiguration = LocalConfiguration.current
         ModalBottomSheet(
             onDismissRequest = { showExportOptions = false }
         ) {
@@ -137,7 +182,7 @@ fun TimelineScreenContent(
             ) {
                 Text(
                     text = stringResource(R.string.export_options),
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -146,10 +191,15 @@ fun TimelineScreenContent(
                     headlineContent = { Text("Export Master Archive (ZIP)") },
                     supportingContent = { Text("Contains metadata, thumbnails, and sidecars for Desktop Vault ingestion.") },
                     modifier = Modifier.clickable {
-                        val locale = currentConfiguration.locales[0]
-                        val dateFormat = SimpleDateFormat("yyyyMMdd_HHmm", locale)
-                        zipExportLauncher.launch("fotologue_export_${dateFormat.format(Date())}.zip")
                         showExportOptions = false
+                        if (localChangesPending) {
+                            showFoundationSyncDialog = true
+                        } else {
+                            val locale = currentConfiguration.locales[0]
+                            val dateFormat = SimpleDateFormat("yyyyMMdd_HHmm", locale)
+                            onSetIncludeFoundationData(false)
+                            zipExportLauncher.launch("fotologue_export_${dateFormat.format(Date())}.zip")
+                        }
                     }
                 )
 
@@ -562,7 +612,9 @@ fun TimelineScreenPreview() {
             onClearSelection = {},
             onSelectAll = {},
             onDeleteSelected = {},
-            onExportLogs = { _, _ -> }
+            onExportLogs = { _, _ -> },
+            localChangesPending = false,
+            onSetIncludeFoundationData = {}
         )
     }
 }
