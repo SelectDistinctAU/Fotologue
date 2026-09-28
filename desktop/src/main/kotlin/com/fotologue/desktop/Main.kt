@@ -626,7 +626,7 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Fotologue Desktop Command Center (Windows 11 Pro / Linux)",
+        title = "Fotologue Desktop v3.0.0-DEV (Lexicon Edition)",
         icon = logoPainter,
         state = WindowState(size = DpSize(1380.dp, 900.dp))
     ) {
@@ -843,7 +843,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                 Spacer(modifier = Modifier.width(10.dp))
                             }
                             Text(
-                                "Fotologue Desktop",
+                                "Fotologue Desktop v3.0.0-DEV",
                                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                             )
                             Spacer(modifier = Modifier.width(12.dp))
