@@ -3,6 +3,10 @@ package com.fotologue.desktop
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.encodeToString
 
 object DatabaseRepository {
 
@@ -264,5 +268,21 @@ object DatabaseRepository {
         transaction {
             FoundationSupplierEntity.findById(id)?.delete()
         }
+    }
+
+    fun exportReferenceSyncPackageJson(): String {
+        val cameras = loadFoundationCameras()
+        val films = loadFoundationFilms()
+        val suppliers = loadFoundationSuppliers()
+
+        return Json { prettyPrint = true }.encodeToString(
+            mapOf(
+                "timestamp" to System.currentTimeMillis(),
+                "schemaVersion" to 3,
+                "cameras" to cameras,
+                "films" to films,
+                "labSuppliers" to suppliers
+            )
+        )
     }
 }

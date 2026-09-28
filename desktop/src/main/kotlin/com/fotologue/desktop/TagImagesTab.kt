@@ -20,12 +20,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.io.File
 
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagImagesTab(
     masterVaultRolls: List<DesktopMasterRollItem>,
     exifToolManager: DesktopExifToolManager
 ) {
+    val scope = rememberCoroutineScope()
+    var isExecutingExifTool by remember { mutableStateOf(false) }
     var targetFolderPath by remember { mutableStateOf("") }
     var selectedRoll by remember { mutableStateOf<DesktopMasterRollItem?>(null) }
     var isRollDropdownExpanded by remember { mutableStateOf(false) }
@@ -168,20 +174,57 @@ fun TagImagesTab(
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Button(
                         onClick = {
-                            logOutputText += "Execution started...\n"
-                            // TODO: Add real batch iteration
+                            if (selectedRoll == null || targetFolderPath.isBlank()) return@Button
+                            scope.launch(Dispatchers.IO) {
+                                isExecutingExifTool = true
+                                logOutputText += "🚀 Starting Batch Metadata Tagging for Roll: ${selectedRoll!!.filmRollSerial}\n"
+                                
+                                val scanDir = File(targetFolderPath)
+                                val scanFiles = if (scanDir.exists() && scanDir.isDirectory) {
+                                    scanDir.listFiles { file -> file.extension.lowercase() in listOf("jpg", "jpeg", "tif", "tiff") }?.sortedBy { it.name } ?: emptyList()
+                                } else emptyList()
+
+                                if (scanFiles.isEmpty()) {
+                                    logOutputText += "❌ Error: No valid image files (.jpg, .tif) found in directory.\n"
+                                    isExecutingExifTool = false
+                                    return@launch
+                                }
+
+                                var successCount = 0
+                                selectedRoll!!.frames.forEachIndexed { idx, frame ->
+                                    val mappedFile = scanFiles.getOrNull(idx)
+                                    if (mappedFile != null) {
+                                        logOutputText += " Tagging Frame #${frame.frameNumber} -> ${mappedFile.name}..."
+                                        val res = exifToolManager.injectGpsAndMetadata(
+                                            targetFilePath = mappedFile.absolutePath,
+                                            latitude = frame.latitude ?: 0.0,
+                                            longitude = frame.longitude ?: 0.0,
+                                            creatorName = "Fotologue Photographer",
+                                            filmRollSerial = "${selectedRoll!!.filmRollSerial}_F${frame.frameNumber}",
+                                            description = "Camera: ${frame.cameraName} | Film: ${frame.filmName} | Aperture: ${frame.aperture} | Speed: ${frame.shutterSpeed} | Notes: ${frame.notes}"
+                                        )
+                                        if (res.success) {
+                                            successCount++
+                                            logOutputText += " [OK]\n"
+                                        } else {
+                                            logOutputText += " [FAILED]: ${res.stderr}\n"
+                                        }
+                                    }
+                                }
+
+                                logOutputText += "\n✅ Batch Complete! Successfully tagged $successCount / ${selectedRoll!!.frames.size} images.\n\n"
+                                isExecutingExifTool = false
+                            }
                         },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
-                        enabled = selectedRoll != null && targetFolderPath.isNotBlank()
+                        enabled = selectedRoll != null && targetFolderPath.isNotBlank() && !isExecutingExifTool
                     ) {
                         Icon(Icons.Default.PlayArrow, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Write Metadata to Images", fontWeight = FontWeight.Bold)
+                        Text(if (isExecutingExifTool) "Tagging Images..." else "Write Metadata to Images", fontWeight = FontWeight.Bold)
                     }
 
                     Text("EXECUTION CONSOLE", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-
-                    Text("EXIFTOOL CONSOLE", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                     
                     OutlinedTextField(
                         value = logOutputText,

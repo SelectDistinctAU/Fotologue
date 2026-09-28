@@ -1876,11 +1876,17 @@ fun DesktopApp(logoPainter: Painter? = null) {
                             )
                         }
                         3 -> {
-                            // STAGE 4: FOUNDATION ADMIN (GATEKEEPER)
+                            // STAGE 4: ADMINISTRATION
                             FoundationAdminTab(
                                 onPublishManifest = {
-                                    // TODO: Wire up foundation manifest JSON generation logic
-                                    vaultFeedbackBanner = "📤 Published Foundation Manifest to selected directory."
+                                    val detectedDrive = detectGoogleDrivePath() ?: System.getProperty("user.home")
+                                    val targetDir = chooseDirectoryOrFile(detectedDrive)
+                                    if (targetDir != null) {
+                                        val jsonPayload = DatabaseRepository.exportReferenceSyncPackageJson()
+                                        val manifestFile = if (File(targetDir).isDirectory) File(targetDir, "fotologue_foundation_manifest.json") else File(File(targetDir).parentFile, "fotologue_foundation_manifest.json")
+                                        manifestFile.writeText(jsonPayload)
+                                        vaultFeedbackBanner = "📤 Published Reference Sync Package to: ${manifestFile.absolutePath}"
+                                    }
                                 }
                             )
                         }
