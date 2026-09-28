@@ -950,7 +950,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                         val driveStatus = if (detectedDrive != null) "✅ Detected Google Drive at: $detectedDrive" else "Google Drive Desktop client not detected at default location."
 
                                         Text(
-                                            "📦 MASTER VAULT INGESTION ENGINE",
+                                            "📦 IMPORT ARCHIVES ENGINE",
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = FontWeight.Bold,
                                             color = MaterialTheme.colorScheme.primary
@@ -1028,8 +1028,8 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                             }
                                                             isProcessingJobLot = false
                                                             logOutputText = jobRes.logOutput
-                                                            vaultFeedbackBanner = "✅ Batch Job Lot Complete: Processed ${jobRes.zipCount} ZIP archives. Added $newlyAddedCount new partial rolls into Vault. Skipped $skippedCount rolls where ALL frames were already securely merged."
-                                                            selectedTab = 1 // Switch to QA Workbench!
+                                                            vaultFeedbackBanner = "✅ Batch Import Complete: Processed ${jobRes.zipCount} ZIP archives. Added $newlyAddedCount new roll(s) to database. Skipped $skippedCount rolls where ALL frames were already imported."
+                                                            selectedTab = 1 // Switch to Process!
                                                         }
                                                     }
                                                 },
@@ -1038,7 +1038,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                             ) {
                                                 Icon(Icons.Default.Share, contentDescription = null)
                                                 Spacer(modifier = Modifier.width(6.dp))
-                                                Text(if (isProcessingJobLot) "Processing Target Directory..." else "Select Target Directory (Local / Cloud / NAS) to Ingest ZIPs", fontWeight = FontWeight.Bold)
+                                                Text(if (isProcessingJobLot) "Processing Target Directory..." else "Select Directory to Import Archives", fontWeight = FontWeight.Bold)
                                             }
                                         }
                                     }
