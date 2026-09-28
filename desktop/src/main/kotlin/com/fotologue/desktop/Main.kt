@@ -848,7 +848,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
-                                "• Analogue & Hybrid Photography Command Center",
+                                "• Analogue & Hybrid Photography",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -872,8 +872,8 @@ fun DesktopApp(logoPainter: Painter? = null) {
                 ) {
                     val tabs = listOf(
                         "📥 Import",
-                        "🔍 Process (${masterVaultRolls.size})",
-                        "🛠️ Tag Images",
+                        "⚙️ Process (${masterVaultRolls.size})",
+                        "🏷️ Tag Images",
                         "🏛️ Administration"
                     )
                     tabs.forEachIndexed { index, title ->
