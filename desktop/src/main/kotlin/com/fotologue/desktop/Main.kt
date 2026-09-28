@@ -871,9 +871,10 @@ fun DesktopApp(logoPainter: Painter? = null) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     val tabs = listOf(
-                        "📥 Stage 1: Ingestion & Vault Inflow",
-                        "🔍 Stage 2: Master QA & Detail Workbench (${masterVaultRolls.size})",
-                        "🛠️ Stage 3: ExifTool Geotagging & XMP Dispatcher"
+                        "📥 Import",
+                        "🔍 Process (${masterVaultRolls.size})",
+                        "🛠️ Tag Images",
+                        "🏛️ Administration"
                     )
                     tabs.forEachIndexed { index, title ->
                         val isSelected = selectedTab == index
