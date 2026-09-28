@@ -2176,20 +2176,46 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 modifier = Modifier.fillMaxSize().padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(
-                    "🏛️ REFERENCE DATA MASTER LIST",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    "Items accepted or created here will be included in the Reference Sync Package for Fotologue Mobile to pull.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                // Sub-category selector chips
                 Row(
                     modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "🏛️ REFERENCE DATA MASTER LIST",
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            "Items accepted or created here will be included in the Reference Sync Package for Fotologue Mobile to pull.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Button(
+                        onClick = {
+                            when (selectedCategory) {
+                                0 -> editingCamera = ReferenceCameraItem(name = "")
+                                1 -> editingFilm = ReferenceFilmItem(name = "")
+                                2 -> editingSupplier = ReferenceSupplierItem(name = "")
+                                3 -> editingConsumable = ReferenceConsumableItem(name = "")
+                                4 -> editingLabEquipment = ReferenceLabEquipmentItem(name = "")
+                            }
+                            showAddEditDialog = true
+                        },
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Add New", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+
+                // Scrollable sub-category selector chips
+                Row(
+                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -2207,24 +2233,6 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                             onClick = { selectedCategory = idx },
                             label = { Text(catTitle, fontWeight = FontWeight.Bold) }
                         )
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    Button(
-                        onClick = {
-                            when (selectedCategory) {
-                                0 -> editingCamera = ReferenceCameraItem(name = "")
-                                1 -> editingFilm = ReferenceFilmItem(name = "")
-                                2 -> editingSupplier = ReferenceSupplierItem(name = "")
-                                3 -> editingConsumable = ReferenceConsumableItem(name = "")
-                                4 -> editingLabEquipment = ReferenceLabEquipmentItem(name = "")
-                            }
-                            showAddEditDialog = true
-                        },
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Add New", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
                     }
                 }
 
