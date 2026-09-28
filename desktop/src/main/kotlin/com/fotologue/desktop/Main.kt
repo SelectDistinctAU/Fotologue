@@ -125,7 +125,7 @@ data class ExifResult(
 )
 
 enum class RollStatus {
-    ORPHAN, ACTIVE, FINISHED
+    UNASSIGNED, ACTIVE, FINISHED
 }
 
 data class DesktopFrameDetail(
@@ -154,7 +154,7 @@ data class DesktopFrameDetail(
 
 data class DesktopMasterRollItem(
     val id: String = UUID.randomUUID().toString(),
-    var status: RollStatus = RollStatus.ORPHAN,
+    var status: RollStatus = RollStatus.UNASSIGNED,
     var contributorId: Int = 1,
     var cameraName: String,
     var filmName: String,
@@ -388,7 +388,7 @@ object MasterVaultJsonParser {
                 )
             }
 
-            val resolvedStatus = if (rollSerial == "Roll 1" || rollSerial.startsWith("1.") || !rollSerial.contains("-")) RollStatus.ORPHAN else RollStatus.FINISHED
+            val resolvedStatus = if (rollSerial == "Roll 1" || rollSerial.startsWith("1.") || !rollSerial.contains("-")) RollStatus.UNASSIGNED else RollStatus.FINISHED
 
             DesktopMasterRollItem(
                 status = resolvedStatus,
@@ -548,7 +548,7 @@ suspend fun processZipJobLot(
                             f.copy(imageBytes = bytes) 
                         }
                         
-                        val resolvedStatus = if (roll.filmRollSerial.startsWith("Roll 1") || roll.filmRollSerial.startsWith("1.") || !roll.filmRollSerial.contains("-")) RollStatus.ORPHAN else RollStatus.FINISHED
+                        val resolvedStatus = if (roll.filmRollSerial.startsWith("Roll 1") || roll.filmRollSerial.startsWith("1.") || !roll.filmRollSerial.contains("-")) RollStatus.UNASSIGNED else RollStatus.FINISHED
                         
                         val rollItem = DesktopMasterRollItem(
                             status = resolvedStatus,
@@ -1112,14 +1112,14 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                 modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(6.dp)).background(MaterialTheme.colorScheme.surface).padding(3.dp),
                                                 horizontalArrangement = Arrangement.spacedBy(4.dp)
                                             ) {
-                                                val orphanCount = masterVaultRolls.count { it.status == RollStatus.ORPHAN }
+                                                val orphanCount = masterVaultRolls.count { it.status == RollStatus.UNASSIGNED }
                                                 val activeCount = masterVaultRolls.count { it.status == RollStatus.ACTIVE }
                                                 val finishedCount = masterVaultRolls.count { it.status == RollStatus.FINISHED }
                                                 val totalCount = masterVaultRolls.size
 
                                                 val tabs = listOf(
                                                     Triple("All ($totalCount)", null as RollStatus?, MaterialTheme.colorScheme.primary),
-                                                    Triple("Orphans ($orphanCount)", RollStatus.ORPHAN, Color(0xFFE65100)),
+                                                    Triple("Unassigned ($orphanCount)", RollStatus.UNASSIGNED, Color(0xFFE65100)),
                                                     Triple("Active ($activeCount)", RollStatus.ACTIVE, Color(0xFF2E7D32)),
                                                     Triple("Vault ($finishedCount)", RollStatus.FINISHED, MaterialTheme.colorScheme.secondary)
                                                 )
@@ -1162,7 +1162,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                 ) {
                                                     Icon(if (isolateOrphansOnly) Icons.Default.Close else Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
                                                     Spacer(modifier = Modifier.width(4.dp))
-                                                    Text(if (isolateOrphansOnly) "Clear Orphans" else "Find Orphans", style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                                                    Text(if (isolateOrphansOnly) "Clear Filter" else "Find Unassigned", style = MaterialTheme.typography.bodySmall, maxLines = 1)
                                                 }
                                                 
                                                 // Select Visible Button (Exclusively checks visible items and unchecks hidden ones!)
@@ -1276,7 +1276,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                         }
                                                     } else {
                                                         val singleSelected = masterVaultRolls.find { it.isSelectedForMerge }
-                                                        if (singleSelected != null && singleSelected.status == RollStatus.ORPHAN) {
+                                                        if (singleSelected != null && singleSelected.status == RollStatus.UNASSIGNED) {
                                                             val matchingActive = masterVaultRolls.find { 
                                                                 it.status == RollStatus.ACTIVE &&
                                                                 it.cameraName.equals(singleSelected.cameraName, ignoreCase = true) &&
@@ -1306,9 +1306,9 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                                 selectedRollIndex = activeIdx
                                                                                 DatabaseRepository.saveRoll(masterVaultRolls[activeIdx])
                                                                                 DatabaseRepository.deleteRolls(listOf(singleSelected))
-                                                                                vaultFeedbackBanner = "🏠 Auto-Homed ${singleSelected.frameCount} orphan frame(s) into Active Roll: $updatedSerial!"
+                                                                                vaultFeedbackBanner = "🏠 Auto-Linked ${singleSelected.frameCount} unassigned frame(s) into Active Roll: $updatedSerial!"
                                                                             } else {
-                                                                                vaultFeedbackBanner = "⚠️ Cannot Auto-Home: Exceeds max capacity ($maxCap frames)!"
+                                                                                vaultFeedbackBanner = "⚠️ Cannot Auto-Link: Exceeds max capacity ($maxCap frames)!"
                                                                             }
                                                                         }
                                                                     },
@@ -1317,7 +1317,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                 ) {
                                                                     Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
                                                                     Spacer(modifier = Modifier.width(6.dp))
-                                                                    Text("Auto-Home (1)", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                                                                    Text("Auto-Link (1)", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall, maxLines = 1)
                                                                 }
                                                             } else {
                                                                 Button(
@@ -1531,21 +1531,21 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                         )
                                                     }
 
-                                                    if (activeRoll.status != RollStatus.ORPHAN) {
+                                                    if (activeRoll.status != RollStatus.UNASSIGNED) {
                                                         Button(
                                                             onClick = {
-                                                                selectedTab = 2 // Jump to Stage 3 ExifTool Dispatcher!
+                                                                selectedTab = 2 // Jump to Stage 3 Tag Images!
                                                             }
                                                         ) {
                                                             Icon(Icons.Default.LocationOn, contentDescription = null)
                                                             Spacer(modifier = Modifier.width(6.dp))
-                                                            Text("Geotag Scans in Stage 3", fontWeight = FontWeight.Bold)
+                                                            Text("Tag Images in Stage 3", fontWeight = FontWeight.Bold)
                                                         }
                                                     }
                                                 }
 
-                                                // FULL-WIDTH HERO TRIAGE BANNER (WHEN INSPECTING AN ORPHAN)
-                                                if (activeRoll.status == RollStatus.ORPHAN) {
+                                                // FULL-WIDTH HERO TRIAGE BANNER (WHEN INSPECTING UNASSIGNED FRAMES)
+                                                if (activeRoll.status == RollStatus.UNASSIGNED) {
                                                     val matchingActiveRoll = masterVaultRolls.find { 
                                                         it.status == RollStatus.ACTIVE &&
                                                         it.cameraName.equals(activeRoll.cameraName, ignoreCase = true) &&
@@ -1563,13 +1563,13 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                         ) {
                                                             Column(modifier = Modifier.weight(1f)) {
                                                                 Text(
-                                                                    text = if (matchingActiveRoll != null) "MATCHING ACTIVE ROLL FOUND: ${matchingActiveRoll.filmRollSerial}" else "UNASSIGNED ORPHAN",
+                                                                    text = if (matchingActiveRoll != null) "MATCHING ACTIVE ROLL FOUND: ${matchingActiveRoll.filmRollSerial}" else "UNASSIGNED FRAMES",
                                                                     style = MaterialTheme.typography.labelSmall,
                                                                     fontWeight = FontWeight.Bold,
                                                                     color = if (matchingActiveRoll != null) Color(0xFF2E7D32) else MaterialTheme.colorScheme.primary
                                                                 )
                                                                 Text(
-                                                                    text = if (matchingActiveRoll != null) "Home these ${activeRoll.frameCount} frame(s) directly into ${matchingActiveRoll.filmRollSerial}." else "Provision a canonical roll serial (e.g. ${activeRoll.cameraName.filter{ it.isLetterOrDigit() }.take(3).uppercase()}-${activeRoll.filmName.filter{ it.isLetterOrDigit() }.take(3).uppercase()}-R01) and mark active.",
+                                                                    text = if (matchingActiveRoll != null) "Link these ${activeRoll.frameCount} frame(s) directly to ${matchingActiveRoll.filmRollSerial}." else "Provision a canonical roll serial (e.g. ${activeRoll.cameraName.filter{ it.isLetterOrDigit() }.take(3).uppercase()}-${activeRoll.filmName.filter{ it.isLetterOrDigit() }.take(3).uppercase()}-R01) and mark active.",
                                                                     style = MaterialTheme.typography.bodySmall
                                                                 )
                                                             }
@@ -1598,9 +1598,9 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                                 selectedRollIndex = activeIdx
                                                                                 DatabaseRepository.saveRoll(masterVaultRolls[activeIdx])
                                                                                 DatabaseRepository.deleteRolls(listOf(activeRoll))
-                                                                                vaultFeedbackBanner = "🏠 Auto-Homed ${activeRoll.frameCount} orphan frame(s) into Active Roll: $updatedSerial!"
+                                                                                vaultFeedbackBanner = "🏠 Auto-Linked ${activeRoll.frameCount} unassigned frame(s) into Active Roll: $updatedSerial!"
                                                                             } else {
-                                                                                vaultFeedbackBanner = "⚠️ Cannot Auto-Home: Exceeds maximum capacity ($maxCap frames)!"
+                                                                                vaultFeedbackBanner = "⚠️ Cannot Auto-Link: Exceeds maximum capacity ($maxCap frames)!"
                                                                             }
                                                                         }
                                                                     },
@@ -1608,7 +1608,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                 ) {
                                                                     Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
                                                                     Spacer(modifier = Modifier.width(6.dp))
-                                                                    Text("🏠 Auto-Home Frames", fontWeight = FontWeight.Bold)
+                                                                    Text("🏠 Auto-Link Frames", fontWeight = FontWeight.Bold)
                                                                 }
                                                             } else {
                                                                 Button(
@@ -1919,7 +1919,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    "Unrecognised items caught from Field Device ZIP payloads.",
+                    "Unrecognised items caught from Fotologue Mobile imports.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -2004,12 +2004,12 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(
-                        "🏛️ FOUNDATION MASTER LIST",
+                        "🏛️ REFERENCE DATA MASTER LIST",
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        "Items accepted here will be embedded into the master sync manifest for field devices to pull.",
+                        "Items accepted here will be embedded into the Reference Sync Package for Fotologue Mobile to pull.",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -2020,7 +2020,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 ) {
                     Icon(Icons.Default.Share, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Publish Manifest to NAS", fontWeight = FontWeight.Bold)
+                    Text("Sync to Mobile", fontWeight = FontWeight.Bold)
                 }
             }
         }

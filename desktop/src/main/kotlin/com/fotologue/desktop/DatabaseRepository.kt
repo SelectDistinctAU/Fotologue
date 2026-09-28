@@ -11,7 +11,7 @@ object DatabaseRepository {
             MasterRollEntity.all().map { rollEntity ->
                 DesktopMasterRollItem(
                     id = rollEntity.id.value.toString(),
-                    status = RollStatus.valueOf(rollEntity.status),
+                    status = try { RollStatus.valueOf(rollEntity.status) } catch (_: Exception) { RollStatus.UNASSIGNED },
                     contributorId = rollEntity.contributorId,
                     cameraName = rollEntity.cameraName,
                     filmName = rollEntity.filmName,
