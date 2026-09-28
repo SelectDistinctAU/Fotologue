@@ -48,10 +48,10 @@ fun TagImagesTab(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("1. SELECT DATABASE ROLL", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Text("1. SELECT ROLL", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                     Box(modifier = Modifier.fillMaxWidth()) {
                         OutlinedTextField(
-                            value = selectedRoll?.filmRollSerial ?: "Select an Active or Vault Roll...",
+                            value = selectedRoll?.filmRollSerial ?: "Select an Active or Finished Roll...",
                             onValueChange = {},
                             readOnly = true,
                             modifier = Modifier.fillMaxWidth().clickable { isRollDropdownExpanded = true },
@@ -81,7 +81,7 @@ fun TagImagesTab(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("2. SELECT SCAN DIRECTORY", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Text("2. SELECT IMAGE DIRECTORY", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedTextField(
                             value = targetFolderPath,
@@ -114,7 +114,7 @@ fun TagImagesTab(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("3. FRAME MAPPING", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Text("3. MAP FRAMES TO IMAGES", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     if (selectedRoll == null) {
@@ -123,7 +123,7 @@ fun TagImagesTab(
                         }
                     } else if (targetFolderPath.isBlank()) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("Select a scan directory to map files.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("Select an image directory to map files.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     } else {
                         val scanDir = File(targetFolderPath)
@@ -176,8 +176,10 @@ fun TagImagesTab(
                     ) {
                         Icon(Icons.Default.PlayArrow, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Write Metadata to Scans", fontWeight = FontWeight.Bold)
+                        Text("Write Metadata to Images", fontWeight = FontWeight.Bold)
                     }
+
+                    Text("EXECUTION CONSOLE", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
 
                     Text("EXIFTOOL CONSOLE", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                     
