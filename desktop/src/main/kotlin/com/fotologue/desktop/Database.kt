@@ -125,6 +125,36 @@ class FoundationSupplierEntity(id: EntityID<Int>) : IntEntity(id) {
     var region by FoundationSuppliersTable.region
 }
 
+object FoundationConsumablesTable : IntIdTable("foundation_consumables") {
+    val name = varchar("name", 255).uniqueIndex()
+    val category = varchar("category", 100) // Chemistry, Paper, Film, etc.
+    val type = varchar("type", 100).nullable() // Developer, Fixer, FB Glossy
+    val dilution = varchar("dilution", 50).nullable() // 1+1, Stock
+    val defaultUnit = varchar("default_unit", 50).nullable() // ml, g, sheets
+}
+
+class FoundationConsumableEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationConsumableEntity>(FoundationConsumablesTable)
+    var name by FoundationConsumablesTable.name
+    var category by FoundationConsumablesTable.category
+    var type by FoundationConsumablesTable.type
+    var dilution by FoundationConsumablesTable.dilution
+    var defaultUnit by FoundationConsumablesTable.defaultUnit
+}
+
+object FoundationLabEquipmentTable : IntIdTable("foundation_lab_equipment") {
+    val name = varchar("name", 255).uniqueIndex()
+    val category = varchar("category", 100) // Enlarger, Dev Tank, Tray, Lens
+    val notes = text("notes").nullable()
+}
+
+class FoundationLabEquipmentEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationLabEquipmentEntity>(FoundationLabEquipmentTable)
+    var name by FoundationLabEquipmentTable.name
+    var category by FoundationLabEquipmentTable.category
+    var notes by FoundationLabEquipmentTable.notes
+}
+
 data class ReferenceCameraItem(
     val id: Int = 0,
     val name: String,
@@ -147,6 +177,22 @@ data class ReferenceSupplierItem(
     val name: String,
     val website: String? = null,
     val region: String? = null
+)
+
+data class ReferenceConsumableItem(
+    val id: Int = 0,
+    val name: String,
+    val category: String = "Chemistry",
+    val type: String? = null,
+    val dilution: String? = null,
+    val defaultUnit: String? = null
+)
+
+data class ReferenceLabEquipmentItem(
+    val id: Int = 0,
+    val name: String,
+    val category: String = "Enlarger",
+    val notes: String? = null
 )
 
 object FoundationReviewQueueTable : IntIdTable("foundation_review_queue") {
@@ -192,6 +238,8 @@ object DatabaseManager {
                 FoundationCamerasTable,
                 FoundationFilmsTable,
                 FoundationSuppliersTable,
+                FoundationConsumablesTable,
+                FoundationLabEquipmentTable,
                 FoundationReviewQueueTable
             )
         }

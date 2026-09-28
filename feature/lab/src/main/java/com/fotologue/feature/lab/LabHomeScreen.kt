@@ -139,9 +139,9 @@ fun LabHomeScreen(
     val pageTitle = when (currentView) {
         LabView.MAIN_MENU -> "Fotologue Lab"
         LabView.SUPPLIERS -> "Lab • Suppliers"
-        LabView.INVENTORY -> "Lab • Inventory"
-        LabView.INVENTORY_CATEGORY_ITEMS -> "Lab • ${activeInventoryCategory ?: "Inventory"}"
-        LabView.EQUIPMENT -> "Lab • Darkroom Equipment"
+        LabView.INVENTORY -> "Lab • Consumables"
+        LabView.INVENTORY_CATEGORY_ITEMS -> "Lab • ${activeInventoryCategory ?: "Consumables"}"
+        LabView.EQUIPMENT -> "Lab • Lab Equipment"
     }
 
     // PURE DARKROOM SAFELIGHT RED COLORS (ZERO WHITE LIGHT!)
@@ -285,13 +285,13 @@ fun LabHomeScreen(
                             )
                         }
 
-                        // 2. INVENTORY
+                        // 2. CONSUMABLES
                         item(key = "nav_inventory") {
                             NavigationDrawerItem(
                                 colors = drawerItemColors,
                                 label = {
                                     Column {
-                                        Text("Inventory", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                                        Text("Consumables", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
                                         Text("Chemistry, Paper, Safety Gear, and Supplies", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
                                     }
                                 },
@@ -316,13 +316,13 @@ fun LabHomeScreen(
                             )
                         }
 
-                        // 3. DARKROOM EQUIPMENT
+                        // 3. LAB EQUIPMENT
                         item(key = "nav_equipment") {
                             NavigationDrawerItem(
                                 colors = drawerItemColors,
                                 label = {
                                     Column {
-                                        Text("Darkroom Equipment", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                                        Text("Lab Equipment", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
                                         Text("Enlargers, Tanks, Trays, Lenses, and Processing Gear", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
                                     }
                                 },

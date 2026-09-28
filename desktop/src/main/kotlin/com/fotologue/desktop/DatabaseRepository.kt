@@ -270,10 +270,92 @@ object DatabaseRepository {
         }
     }
 
+    fun loadFoundationConsumables(): List<ReferenceConsumableItem> {
+        return transaction {
+            FoundationConsumableEntity.all().map {
+                ReferenceConsumableItem(
+                    id = it.id.value,
+                    name = it.name,
+                    category = it.category,
+                    type = it.type,
+                    dilution = it.dilution,
+                    defaultUnit = it.defaultUnit
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationConsumable(item: ReferenceConsumableItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationConsumableEntity.findById(item.id)?.apply {
+                    name = item.name
+                    category = item.category
+                    type = item.type
+                    dilution = item.dilution
+                    defaultUnit = item.defaultUnit
+                }
+            } else {
+                FoundationConsumableEntity.new {
+                    name = item.name
+                    category = item.category
+                    type = item.type
+                    dilution = item.dilution
+                    defaultUnit = item.defaultUnit
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationConsumable(id: Int) {
+        transaction {
+            FoundationConsumableEntity.findById(id)?.delete()
+        }
+    }
+
+    fun loadFoundationLabEquipment(): List<ReferenceLabEquipmentItem> {
+        return transaction {
+            FoundationLabEquipmentEntity.all().map {
+                ReferenceLabEquipmentItem(
+                    id = it.id.value,
+                    name = it.name,
+                    category = it.category,
+                    notes = it.notes
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationLabEquipment(item: ReferenceLabEquipmentItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationLabEquipmentEntity.findById(item.id)?.apply {
+                    name = item.name
+                    category = item.category
+                    notes = item.notes
+                }
+            } else {
+                FoundationLabEquipmentEntity.new {
+                    name = item.name
+                    category = item.category
+                    notes = item.notes
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationLabEquipment(id: Int) {
+        transaction {
+            FoundationLabEquipmentEntity.findById(id)?.delete()
+        }
+    }
+
     fun exportReferenceSyncPackageJson(): String {
         val cameras = loadFoundationCameras()
         val films = loadFoundationFilms()
         val suppliers = loadFoundationSuppliers()
+        val consumables = loadFoundationConsumables()
+        val equipment = loadFoundationLabEquipment()
 
         return Json { prettyPrint = true }.encodeToString(
             mapOf(
@@ -281,7 +363,9 @@ object DatabaseRepository {
                 "schemaVersion" to 3,
                 "cameras" to cameras,
                 "films" to films,
-                "labSuppliers" to suppliers
+                "labSuppliers" to suppliers,
+                "consumables" to consumables,
+                "labEquipment" to equipment
             )
         )
     }

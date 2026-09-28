@@ -1905,11 +1905,15 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var cameras by remember { mutableStateOf(emptyList<ReferenceCameraItem>()) }
     var films by remember { mutableStateOf(emptyList<ReferenceFilmItem>()) }
     var suppliers by remember { mutableStateOf(emptyList<ReferenceSupplierItem>()) }
+    var consumables by remember { mutableStateOf(emptyList<ReferenceConsumableItem>()) }
+    var labEquipment by remember { mutableStateOf(emptyList<ReferenceLabEquipmentItem>()) }
 
     var showAddEditDialog by remember { mutableStateOf(false) }
     var editingCamera by remember { mutableStateOf<ReferenceCameraItem?>(null) }
     var editingFilm by remember { mutableStateOf<ReferenceFilmItem?>(null) }
     var editingSupplier by remember { mutableStateOf<ReferenceSupplierItem?>(null) }
+    var editingConsumable by remember { mutableStateOf<ReferenceConsumableItem?>(null) }
+    var editingLabEquipment by remember { mutableStateOf<ReferenceLabEquipmentItem?>(null) }
 
     fun refreshAllData() {
         transaction {
@@ -1918,6 +1922,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
         cameras = DatabaseRepository.loadFoundationCameras()
         films = DatabaseRepository.loadFoundationFilms()
         suppliers = DatabaseRepository.loadFoundationSuppliers()
+        consumables = DatabaseRepository.loadFoundationConsumables()
+        labEquipment = DatabaseRepository.loadFoundationLabEquipment()
     }
 
     LaunchedEffect(Unit) {
@@ -1931,8 +1937,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 editingCamera = null
                 editingFilm = null
                 editingSupplier = null
+                editingConsumable = null
+                editingLabEquipment = null
             },
-            title = { Text(if ((editingCamera?.id ?: 0) > 0 || (editingFilm?.id ?: 0) > 0 || (editingSupplier?.id ?: 0) > 0) "Edit Reference Item" else "Add Reference Item", fontWeight = FontWeight.Bold) },
+            title = { Text(if ((editingCamera?.id ?: 0) > 0 || (editingFilm?.id ?: 0) > 0 || (editingSupplier?.id ?: 0) > 0 || (editingConsumable?.id ?: 0) > 0 || (editingLabEquipment?.id ?: 0) > 0) "Edit Reference Item" else "Add Reference Item", fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     when (selectedCategory) {
@@ -1993,6 +2001,42 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
+                        3 -> {
+                            val item = editingConsumable ?: ReferenceConsumableItem(name = "")
+                            OutlinedTextField(
+                                value = item.name,
+                                onValueChange = { editingConsumable = item.copy(name = it) },
+                                label = { Text("Consumable Product Name (e.g. D-76, Rapid Fixer)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                value = item.category,
+                                onValueChange = { editingConsumable = item.copy(category = it) },
+                                label = { Text("Category (Chemistry, Paper, Safety Gear)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                value = item.dilution ?: "",
+                                onValueChange = { editingConsumable = item.copy(dilution = it) },
+                                label = { Text("Default Dilution (e.g. 1+1, Stock)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        4 -> {
+                            val item = editingLabEquipment ?: ReferenceLabEquipmentItem(name = "")
+                            OutlinedTextField(
+                                value = item.name,
+                                onValueChange = { editingLabEquipment = item.copy(name = it) },
+                                label = { Text("Equipment Name (e.g. Beseler 23C II)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                value = item.category,
+                                onValueChange = { editingLabEquipment = item.copy(category = it) },
+                                label = { Text("Category (Enlarger, Dev Tank, Tray, Lens)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             },
@@ -2002,12 +2046,16 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         0 -> editingCamera?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationCamera(it) }
                         1 -> editingFilm?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationFilm(it) }
                         2 -> editingSupplier?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationSupplier(it) }
+                        3 -> editingConsumable?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationConsumable(it) }
+                        4 -> editingLabEquipment?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationLabEquipment(it) }
                     }
                     refreshAllData()
                     showAddEditDialog = false
                     editingCamera = null
                     editingFilm = null
                     editingSupplier = null
+                    editingConsumable = null
+                    editingLabEquipment = null
                 }) {
                     Text("Save")
                 }
@@ -2018,6 +2066,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     editingCamera = null
                     editingFilm = null
                     editingSupplier = null
+                    editingConsumable = null
+                    editingLabEquipment = null
                 }) {
                     Text("Cancel")
                 }
@@ -2143,7 +2193,13 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val categories = listOf("📷 Cameras (${cameras.size})", "🎞️ Films (${films.size})", "🏬 Suppliers (${suppliers.size})")
+                    val categories = listOf(
+                        "📷 Cameras (${cameras.size})", 
+                        "🎞️ Films (${films.size})", 
+                        "🏬 Suppliers (${suppliers.size})",
+                        "🧪 Consumables (${consumables.size})",
+                        "🎛️ Lab Equipment (${labEquipment.size})"
+                    )
                     categories.forEachIndexed { idx, catTitle ->
                         val isSel = selectedCategory == idx
                         FilterChip(
@@ -2159,6 +2215,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 0 -> editingCamera = ReferenceCameraItem(name = "")
                                 1 -> editingFilm = ReferenceFilmItem(name = "")
                                 2 -> editingSupplier = ReferenceSupplierItem(name = "")
+                                3 -> editingConsumable = ReferenceConsumableItem(name = "")
+                                4 -> editingLabEquipment = ReferenceLabEquipmentItem(name = "")
                             }
                             showAddEditDialog = true
                         },
@@ -2290,6 +2348,90 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                                     }
                                                     IconButton(onClick = {
                                                         DatabaseRepository.deleteFoundationSupplier(sup.id)
+                                                        refreshAllData()
+                                                    }) {
+                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        3 -> { // Consumables
+                            if (consumables.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("No reference consumables logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    items(consumables.size) { idx ->
+                                        val con = consumables[idx]
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Text(con.name, fontWeight = FontWeight.Bold)
+                                                    Text("${con.category} • Dilution: ${con.dilution ?: "N/A"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                }
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                    IconButton(onClick = {
+                                                        editingConsumable = con
+                                                        showAddEditDialog = true
+                                                    }) {
+                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                                    }
+                                                    IconButton(onClick = {
+                                                        DatabaseRepository.deleteFoundationConsumable(con.id)
+                                                        refreshAllData()
+                                                    }) {
+                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        4 -> { // Lab Equipment
+                            if (labEquipment.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("No reference lab equipment logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    items(labEquipment.size) { idx ->
+                                        val eq = labEquipment[idx]
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Text(eq.name, fontWeight = FontWeight.Bold)
+                                                    Text("Category: ${eq.category}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                }
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                    IconButton(onClick = {
+                                                        editingLabEquipment = eq
+                                                        showAddEditDialog = true
+                                                    }) {
+                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                                    }
+                                                    IconButton(onClick = {
+                                                        DatabaseRepository.deleteFoundationLabEquipment(eq.id)
                                                         refreshAllData()
                                                     }) {
                                                         Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
