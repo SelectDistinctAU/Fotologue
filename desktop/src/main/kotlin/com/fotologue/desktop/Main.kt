@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -35,6 +36,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -1889,15 +1891,132 @@ fun DesktopApp(logoPainter: Painter? = null) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var pendingItems by remember { mutableStateOf(emptyList<FoundationReviewQueueEntity>()) }
+    var selectedCategory by remember { mutableIntStateOf(0) } // 0 = Cameras, 1 = Films, 2 = Suppliers
+    var cameras by remember { mutableStateOf(emptyList<ReferenceCameraItem>()) }
+    var films by remember { mutableStateOf(emptyList<ReferenceFilmItem>()) }
+    var suppliers by remember { mutableStateOf(emptyList<ReferenceSupplierItem>()) }
 
-    LaunchedEffect(Unit) {
-        // We do a simple read from the Queue
+    var showAddEditDialog by remember { mutableStateOf(false) }
+    var editingCamera by remember { mutableStateOf<ReferenceCameraItem?>(null) }
+    var editingFilm by remember { mutableStateOf<ReferenceFilmItem?>(null) }
+    var editingSupplier by remember { mutableStateOf<ReferenceSupplierItem?>(null) }
+
+    fun refreshAllData() {
         transaction {
             pendingItems = FoundationReviewQueueEntity.find { FoundationReviewQueueTable.status eq "PENDING" }.toList()
         }
+        cameras = DatabaseRepository.loadFoundationCameras()
+        films = DatabaseRepository.loadFoundationFilms()
+        suppliers = DatabaseRepository.loadFoundationSuppliers()
+    }
+
+    LaunchedEffect(Unit) {
+        refreshAllData()
+    }
+
+    if (showAddEditDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showAddEditDialog = false
+                editingCamera = null
+                editingFilm = null
+                editingSupplier = null
+            },
+            title = { Text(if ((editingCamera?.id ?: 0) > 0 || (editingFilm?.id ?: 0) > 0 || (editingSupplier?.id ?: 0) > 0) "Edit Reference Item" else "Add Reference Item", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    when (selectedCategory) {
+                        0 -> {
+                            val item = editingCamera ?: ReferenceCameraItem(name = "")
+                            OutlinedTextField(
+                                value = item.name,
+                                onValueChange = { editingCamera = item.copy(name = it) },
+                                label = { Text("Camera Name") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                value = item.type,
+                                onValueChange = { editingCamera = item.copy(type = it) },
+                                label = { Text("Camera Type (SLR, Compact, TLR)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                value = item.mount ?: "",
+                                onValueChange = { editingCamera = item.copy(mount = it) },
+                                label = { Text("Lens Mount (e.g. K-Mount, EF)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        1 -> {
+                            val item = editingFilm ?: ReferenceFilmItem(name = "")
+                            OutlinedTextField(
+                                value = item.name,
+                                onValueChange = { editingFilm = item.copy(name = it) },
+                                label = { Text("Film Name") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                value = item.iso.toString(),
+                                onValueChange = { editingFilm = item.copy(iso = it.toIntOrNull() ?: 400) },
+                                label = { Text("ISO Rating") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                value = item.abbreviation,
+                                onValueChange = { editingFilm = item.copy(abbreviation = it) },
+                                label = { Text("Abbreviation (e.g. HP5)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        2 -> {
+                            val item = editingSupplier ?: ReferenceSupplierItem(name = "")
+                            OutlinedTextField(
+                                value = item.name,
+                                onValueChange = { editingSupplier = item.copy(name = it) },
+                                label = { Text("Supplier Name") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                value = item.website ?: "",
+                                onValueChange = { editingSupplier = item.copy(website = it) },
+                                label = { Text("Website") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    when (selectedCategory) {
+                        0 -> editingCamera?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationCamera(it) }
+                        1 -> editingFilm?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationFilm(it) }
+                        2 -> editingSupplier?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationSupplier(it) }
+                    }
+                    refreshAllData()
+                    showAddEditDialog = false
+                    editingCamera = null
+                    editingFilm = null
+                    editingSupplier = null
+                }) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showAddEditDialog = false
+                    editingCamera = null
+                    editingFilm = null
+                    editingSupplier = null
+                }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 
     Row(
@@ -1919,7 +2038,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    "Unrecognised items caught from Fotologue Mobile imports.",
+                    "Unrecognised items from Fotologue Mobile imports.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1957,15 +2076,14 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         Button(
                                             onClick = {
                                                 transaction {
-                                                    // Move to main table
                                                     when (item.itemType) {
                                                         "CAMERA" -> FoundationCameraEntity.new { name = item.submittedName; type = "Unknown" }
                                                         "FILM" -> FoundationFilmEntity.new { name = item.submittedName; iso = item.submittedIso ?: 400; type = "Unknown"; abbreviation = item.submittedName.take(3).uppercase(); format = "Unknown" }
                                                         "SUPPLIER" -> FoundationSupplierEntity.new { name = item.submittedName }
                                                     }
                                                     item.status = "ACCEPTED"
-                                                    pendingItems = FoundationReviewQueueEntity.find { FoundationReviewQueueTable.status eq "PENDING" }.toList()
                                                 }
+                                                refreshAllData()
                                             },
                                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
                                             contentPadding = PaddingValues(horizontal = 8.dp)
@@ -1976,8 +2094,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                             onClick = {
                                                 transaction {
                                                     item.status = "REJECTED"
-                                                    pendingItems = FoundationReviewQueueEntity.find { FoundationReviewQueueTable.status eq "PENDING" }.toList()
                                                 }
+                                                refreshAllData()
                                             },
                                             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
                                             contentPadding = PaddingValues(horizontal = 8.dp)
@@ -1993,30 +2111,196 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             }
         }
 
-        // Right Pane: Master Foundation View
+        // Right Pane: Master Reference Data Manager (Full CRUD)
         Card(
             modifier = Modifier.weight(1f).fillMaxHeight(),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize().padding(20.dp),
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(
-                        "🏛️ REFERENCE DATA MASTER LIST",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        "Items accepted here will be embedded into the Reference Sync Package for Fotologue Mobile to pull.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                Text(
+                    "🏛️ REFERENCE DATA MASTER LIST",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    "Items accepted or created here will be included in the Reference Sync Package for Fotologue Mobile to pull.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                // Sub-category selector chips
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val categories = listOf("📷 Cameras (${cameras.size})", "🎞️ Films (${films.size})", "🏬 Suppliers (${suppliers.size})")
+                    categories.forEachIndexed { idx, catTitle ->
+                        val isSel = selectedCategory == idx
+                        FilterChip(
+                            selected = isSel,
+                            onClick = { selectedCategory = idx },
+                            label = { Text(catTitle, fontWeight = FontWeight.Bold) }
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(
+                        onClick = {
+                            when (selectedCategory) {
+                                0 -> editingCamera = ReferenceCameraItem(name = "")
+                                1 -> editingFilm = ReferenceFilmItem(name = "")
+                                2 -> editingSupplier = ReferenceSupplierItem(name = "")
+                            }
+                            showAddEditDialog = true
+                        },
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Add New", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+
+                HorizontalDivider()
+
+                // Data Grid for Selected Category
+                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                    when (selectedCategory) {
+                        0 -> { // Cameras
+                            if (cameras.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("No reference cameras logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    items(cameras.size) { idx ->
+                                        val cam = cameras[idx]
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Text(cam.name, fontWeight = FontWeight.Bold)
+                                                    Text("${cam.type} • Mount: ${cam.mount ?: "Standard"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                }
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                    IconButton(onClick = {
+                                                        editingCamera = cam
+                                                        showAddEditDialog = true
+                                                    }) {
+                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                                    }
+                                                    IconButton(onClick = {
+                                                        DatabaseRepository.deleteFoundationCamera(cam.id)
+                                                        refreshAllData()
+                                                    }) {
+                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        1 -> { // Films
+                            if (films.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("No reference films logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    items(films.size) { idx ->
+                                        val film = films[idx]
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Text("${film.name} (ISO ${film.iso})", fontWeight = FontWeight.Bold)
+                                                    Text("${film.type} • ${film.format} • Abbr: ${film.abbreviation}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                }
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                    IconButton(onClick = {
+                                                        editingFilm = film
+                                                        showAddEditDialog = true
+                                                    }) {
+                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                                    }
+                                                    IconButton(onClick = {
+                                                        DatabaseRepository.deleteFoundationFilm(film.id)
+                                                        refreshAllData()
+                                                    }) {
+                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        2 -> { // Suppliers
+                            if (suppliers.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("No reference suppliers logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    items(suppliers.size) { idx ->
+                                        val sup = suppliers[idx]
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Text(sup.name, fontWeight = FontWeight.Bold)
+                                                    Text(sup.website ?: "No Website", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                }
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                    IconButton(onClick = {
+                                                        editingSupplier = sup
+                                                        showAddEditDialog = true
+                                                    }) {
+                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                                    }
+                                                    IconButton(onClick = {
+                                                        DatabaseRepository.deleteFoundationSupplier(sup.id)
+                                                        refreshAllData()
+                                                    }) {
+                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Button(
                     onClick = onPublishManifest,
-                    modifier = Modifier.fillMaxWidth().height(54.dp)
+                    modifier = Modifier.fillMaxWidth().height(48.dp)
                 ) {
                     Icon(Icons.Default.Share, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))

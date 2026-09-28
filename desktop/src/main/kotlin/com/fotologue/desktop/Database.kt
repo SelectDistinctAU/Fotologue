@@ -125,6 +125,30 @@ class FoundationSupplierEntity(id: EntityID<Int>) : IntEntity(id) {
     var region by FoundationSuppliersTable.region
 }
 
+data class ReferenceCameraItem(
+    val id: Int = 0,
+    val name: String,
+    val modelNumber: String? = null,
+    val type: String = "Film SLR",
+    val mount: String? = null
+)
+
+data class ReferenceFilmItem(
+    val id: Int = 0,
+    val name: String,
+    val abbreviation: String = "",
+    val iso: Int = 400,
+    val type: String = "Color Negative",
+    val format: String = "35mm"
+)
+
+data class ReferenceSupplierItem(
+    val id: Int = 0,
+    val name: String,
+    val website: String? = null,
+    val region: String? = null
+)
+
 object FoundationReviewQueueTable : IntIdTable("foundation_review_queue") {
     val contributorId = integer("contributor_id")
     val itemType = varchar("item_type", 50) // e.g. "FILM", "CAMERA", "SUPPLIER"

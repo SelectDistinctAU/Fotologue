@@ -143,4 +143,126 @@ object DatabaseRepository {
             }
         }
     }
+
+    // --- REFERENCE DATA CRUD HELPERS ---
+
+    fun loadFoundationCameras(): List<ReferenceCameraItem> {
+        return transaction {
+            FoundationCameraEntity.all().map {
+                ReferenceCameraItem(
+                    id = it.id.value,
+                    name = it.name,
+                    modelNumber = it.modelNumber,
+                    type = it.type,
+                    mount = it.mount
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationCamera(item: ReferenceCameraItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationCameraEntity.findById(item.id)?.apply {
+                    name = item.name
+                    modelNumber = item.modelNumber
+                    type = item.type
+                    mount = item.mount
+                }
+            } else {
+                FoundationCameraEntity.new {
+                    name = item.name
+                    modelNumber = item.modelNumber
+                    type = item.type
+                    mount = item.mount
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationCamera(id: Int) {
+        transaction {
+            FoundationCameraEntity.findById(id)?.delete()
+        }
+    }
+
+    fun loadFoundationFilms(): List<ReferenceFilmItem> {
+        return transaction {
+            FoundationFilmEntity.all().map {
+                ReferenceFilmItem(
+                    id = it.id.value,
+                    name = it.name,
+                    abbreviation = it.abbreviation,
+                    iso = it.iso,
+                    type = it.type,
+                    format = it.format
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationFilm(item: ReferenceFilmItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationFilmEntity.findById(item.id)?.apply {
+                    name = item.name
+                    abbreviation = item.abbreviation
+                    iso = item.iso
+                    type = item.type
+                    format = item.format
+                }
+            } else {
+                FoundationFilmEntity.new {
+                    name = item.name
+                    abbreviation = item.abbreviation
+                    iso = item.iso
+                    type = item.type
+                    format = item.format
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationFilm(id: Int) {
+        transaction {
+            FoundationFilmEntity.findById(id)?.delete()
+        }
+    }
+
+    fun loadFoundationSuppliers(): List<ReferenceSupplierItem> {
+        return transaction {
+            FoundationSupplierEntity.all().map {
+                ReferenceSupplierItem(
+                    id = it.id.value,
+                    name = it.name,
+                    website = it.website,
+                    region = it.region
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationSupplier(item: ReferenceSupplierItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationSupplierEntity.findById(item.id)?.apply {
+                    name = item.name
+                    website = item.website
+                    region = item.region
+                }
+            } else {
+                FoundationSupplierEntity.new {
+                    name = item.name
+                    website = item.website
+                    region = item.region
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationSupplier(id: Int) {
+        transaction {
+            FoundationSupplierEntity.findById(id)?.delete()
+        }
+    }
 }
