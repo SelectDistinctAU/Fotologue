@@ -642,13 +642,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
     val exifToolManager = remember { DesktopExifToolManager() }
     var selectedTab by remember { mutableIntStateOf(0) } // Default to Stage 1 Ingestion!
 
-    var targetFolderPath by remember { mutableStateOf("D:\\Scans\\2026\\PNTX-TX400-R01\\_DSF1024.xmp") }
-    var selectedFilmRollSerial by remember { mutableStateOf("PNTX-TX400-R01") }
-    var latText by remember { mutableStateOf("35.6762") }
-    var lonText by remember { mutableStateOf("139.6503") }
     var logOutputText by remember { mutableStateOf("ExifTool Engine Ready. Detected Operating System: ${exifToolManager.currentOS.name}") }
-
-    // Job Lot Asynchronous Progress State
     var isProcessingJobLot by remember { mutableStateOf(false) }
     var jobLotCurrentIndex by remember { mutableIntStateOf(0) }
     var jobLotTotalCount by remember { mutableIntStateOf(0) }
@@ -1539,9 +1533,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                     if (activeRoll.status != RollStatus.ORPHAN) {
                                                         Button(
                                                             onClick = {
-                                                                selectedFilmRollSerial = activeRoll.filmRollSerial.substringBefore(" ")
                                                                 selectedTab = 2 // Jump to Stage 3 ExifTool Dispatcher!
-                                                                logOutputText = "Auto-filled ExifTool Dispatcher with Serial: $selectedFilmRollSerial"
                                                             }
                                                         ) {
                                                             Icon(Icons.Default.LocationOn, contentDescription = null)
@@ -1874,142 +1866,11 @@ fun DesktopApp(logoPainter: Painter? = null) {
                         }
 
                         2 -> {
-                            // STAGE 3: EXIFTOOL GEOTAGGING & XMP DISPATCHER WORKBENCH
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .verticalScroll(rememberScrollState()),
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                ) {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(20.dp),
-                                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                                    ) {
-                                        Text(
-                                            "CROSS-PLATFORM EXIFTOOL DISPATCHER",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.primary
-                                        )
-
-                                        Text(
-                                            "Detected System OS: ${exifToolManager.currentOS.name} (${if (exifToolManager.currentOS == DesktopOS.WINDOWS) "Windows 11 Pro - exiftool.exe" else "Linux/macOS - exiftool"})",
-                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                                        )
-
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            OutlinedTextField(
-                                                value = targetFolderPath,
-                                                onValueChange = { targetFolderPath = it },
-                                                label = { Text("Target Scan File / Folder Path (NAS Share / Local Drive)") },
-                                                placeholder = { Text("e.g. D:\\Scans\\2026\\PNTX-TX400-R01\\_DSF1024.xmp or //NAS/FilmArchive/") },
-                                                modifier = Modifier.weight(1f)
-                                            )
-
-                                            Button(
-                                                onClick = {
-                                                    val chosen = chooseDirectoryOrFile(targetFolderPath)
-                                                    if (chosen != null) {
-                                                        targetFolderPath = chosen
-                                                    }
-                                                },
-                                                modifier = Modifier
-                                                    .padding(top = 8.dp)
-                                                    .height(54.dp)
-                                            ) {
-                                                Icon(Icons.Default.LocationOn, contentDescription = null)
-                                                Spacer(modifier = Modifier.width(6.dp))
-                                                Text("Browse...", fontWeight = FontWeight.Bold)
-                                            }
-                                        }
-
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                        ) {
-                                            OutlinedTextField(
-                                                value = selectedFilmRollSerial,
-                                                onValueChange = { selectedFilmRollSerial = it },
-                                                label = { Text("Film Roll Serial") },
-                                                modifier = Modifier.weight(1f)
-                                            )
-                                            OutlinedTextField(
-                                                value = latText,
-                                                onValueChange = { latText = it },
-                                                label = { Text("Field Latitude") },
-                                                modifier = Modifier.weight(1f)
-                                            )
-                                            OutlinedTextField(
-                                                value = lonText,
-                                                onValueChange = { lonText = it },
-                                                label = { Text("Field Longitude") },
-                                                modifier = Modifier.weight(1f)
-                                            )
-                                        }
-
-                                        Button(
-                                            onClick = {
-                                                val lat = latText.toDoubleOrNull() ?: 35.6762
-                                                val lon = lonText.toDoubleOrNull() ?: 139.6503
-                                                logOutputText = "Executing ExifTool on $targetFolderPath...\n"
-                                                val res = exifToolManager.injectGpsAndMetadata(
-                                                    targetFilePath = targetFolderPath,
-                                                    latitude = lat,
-                                                    longitude = lon,
-                                                    creatorName = "Gerard Bendotti",
-                                                    filmRollSerial = selectedFilmRollSerial,
-                                                    description = "Fotologue Field Exposure Log + ExifTool Geotagged Scan"
-                                                )
-                                                logOutputText += "Exit Code: ${res.exitCode}\nOutput: ${res.stdout.ifBlank { res.stderr.ifBlank { "Success! Metadata & GPS Coordinates Written." } }}"
-                                            },
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(52.dp)
-                                        ) {
-                                            Icon(Icons.Default.LocationOn, contentDescription = null)
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            Text(
-                                                "Geotag Scan & Emit ISO XMP Sidecar Now",
-                                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                                            )
-                                        }
-                                    }
-                                }
-
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                                ) {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp)
-                                    ) {
-                                        Text(
-                                            "EXIFTOOL EXECUTION CONSOLE",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.primary
-                                        )
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        Text(
-                                            text = logOutputText,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            fontFamily = FontFamily.Monospace
-                                        )
-                                    }
-                                }
-                            }
+                            // STAGE 3: TAG IMAGES
+                            TagImagesTab(
+                                masterVaultRolls = masterVaultRolls,
+                                exifToolManager = exifToolManager
+                            )
                         }
                         3 -> {
                             // STAGE 4: FOUNDATION ADMIN (GATEKEEPER)
