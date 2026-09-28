@@ -1,5 +1,6 @@
 package com.fotologue.desktop
 
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
@@ -106,6 +107,38 @@ object DatabaseRepository {
                 val rollId = roll.id.toIntOrNull()
                 if (rollId != null) {
                     MasterRollEntity.findById(rollId)?.delete()
+                }
+            }
+        }
+    }
+
+    fun checkOrQueueFoundationItem(contributorId: Int, itemType: String, name: String, iso: Int? = null) {
+        if (name.isBlank() || name == "Unknown Camera" || name == "Unknown Film") return
+
+        transaction {
+            val exists = when (itemType) {
+                "CAMERA" -> FoundationCameraEntity.find { FoundationCamerasTable.name eq name }.count() > 0
+                "FILM" -> FoundationFilmEntity.find { FoundationFilmsTable.name eq name }.count() > 0
+                "SUPPLIER" -> FoundationSupplierEntity.find { FoundationSuppliersTable.name eq name }.count() > 0
+                else -> false
+            }
+
+            if (!exists) {
+                // Check if it's already in the queue so we don't spam PENDING records
+                val alreadyQueued = FoundationReviewQueueEntity.find { 
+                    (FoundationReviewQueueTable.submittedName eq name) and 
+                    (FoundationReviewQueueTable.itemType eq itemType) and 
+                    (FoundationReviewQueueTable.status eq "PENDING") 
+                }.count() > 0
+
+                if (!alreadyQueued) {
+                    FoundationReviewQueueEntity.new {
+                        this.contributorId = contributorId
+                        this.itemType = itemType
+                        this.submittedName = name
+                        this.submittedIso = iso
+                        this.submissionDateMs = System.currentTimeMillis()
+                    }
                 }
             }
         }

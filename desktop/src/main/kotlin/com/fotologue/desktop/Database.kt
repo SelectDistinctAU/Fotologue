@@ -80,6 +80,51 @@ class MasterFrameEntity(id: EntityID<Int>) : IntEntity(id) {
     var thumbnailPath by MasterFramesTable.thumbnailPath
 }
 
+object FoundationCamerasTable : IntIdTable("foundation_cameras") {
+    val name = varchar("name", 255).uniqueIndex()
+    val modelNumber = varchar("model_number", 255).nullable()
+    val type = varchar("type", 50)
+    val mount = varchar("mount", 50).nullable()
+}
+
+class FoundationCameraEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationCameraEntity>(FoundationCamerasTable)
+    var name by FoundationCamerasTable.name
+    var modelNumber by FoundationCamerasTable.modelNumber
+    var type by FoundationCamerasTable.type
+    var mount by FoundationCamerasTable.mount
+}
+
+object FoundationFilmsTable : IntIdTable("foundation_films") {
+    val name = varchar("name", 255).uniqueIndex()
+    val abbreviation = varchar("abbreviation", 50)
+    val iso = integer("iso")
+    val type = varchar("type", 50)
+    val format = varchar("format", 50)
+}
+
+class FoundationFilmEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationFilmEntity>(FoundationFilmsTable)
+    var name by FoundationFilmsTable.name
+    var abbreviation by FoundationFilmsTable.abbreviation
+    var iso by FoundationFilmsTable.iso
+    var type by FoundationFilmsTable.type
+    var format by FoundationFilmsTable.format
+}
+
+object FoundationSuppliersTable : IntIdTable("foundation_suppliers") {
+    val name = varchar("name", 255).uniqueIndex()
+    val website = varchar("website", 512).nullable()
+    val region = varchar("region", 50).nullable()
+}
+
+class FoundationSupplierEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationSupplierEntity>(FoundationSuppliersTable)
+    var name by FoundationSuppliersTable.name
+    var website by FoundationSuppliersTable.website
+    var region by FoundationSuppliersTable.region
+}
+
 object FoundationReviewQueueTable : IntIdTable("foundation_review_queue") {
     val contributorId = integer("contributor_id")
     val itemType = varchar("item_type", 50) // e.g. "FILM", "CAMERA", "SUPPLIER"
@@ -117,7 +162,14 @@ object DatabaseManager {
 
         Database.connect("jdbc:sqlite:${dbFile.absolutePath}", driver = "org.sqlite.JDBC")
         transaction {
-            SchemaUtils.create(MasterRollsTable, MasterFramesTable, FoundationReviewQueueTable)
+            SchemaUtils.create(
+                MasterRollsTable, 
+                MasterFramesTable, 
+                FoundationCamerasTable,
+                FoundationFilmsTable,
+                FoundationSuppliersTable,
+                FoundationReviewQueueTable
+            )
         }
     }
 }

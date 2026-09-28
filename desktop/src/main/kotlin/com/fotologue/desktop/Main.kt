@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -100,6 +102,8 @@ import java.awt.Desktop
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
+import kotlinx.serialization.json.*
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -446,13 +450,63 @@ suspend fun processZipJobLot(
             }
             zipInputStream.close()
 
-            // Second pass: extract metadata and pair with thumbnails
+            // Second pass: extract metadata, foundation archives, and pair with thumbnails
             zipInputStream = ZipInputStream(zipFile.inputStream())
             entry = zipInputStream.nextEntry
 
             while (entry != null) {
                 val entryNameLower = entry.name.lowercase(Locale.ROOT)
-                if (!entry.isDirectory && (entryNameLower.endsWith("metadata.json") || entryNameLower.endsWith(".json"))) {
+                
+                // --- INGEST FOUNDATION ARCHIVE (THE CROWDSOURCED KNOWLEDGE BASE) ---
+                if (!entry.isDirectory && entryNameLower.endsWith("foundation_archive.json")) {
+                    val buffer = ByteArray(1024)
+                    val baos = ByteArrayOutputStream()
+                    var len: Int
+                    while (zipInputStream.read(buffer).also { len = it } > 0) {
+                        baos.write(buffer, 0, len)
+                    }
+                    val jsonContent = baos.toString("UTF-8")
+                    
+                    try {
+                        val element = Json { ignoreUnknownKeys = true }.parseToJsonElement(jsonContent)
+                        val jsonObj = element.jsonObject
+                        
+                        // Fallback contributor ID extraction
+                        var contributorId = 1
+                        val logsArray = jsonObj["logs"]?.jsonArray
+                        if (logsArray != null && logsArray.isNotEmpty()) {
+                            val firstLog = logsArray[0].jsonObject
+                            val camId = firstLog["cameraId"]?.jsonPrimitive?.intOrNull
+                            if (camId != null) contributorId = camId
+                        }
+
+                        // Parse Arrays Manually since we don't have the Mobile Data Module imported in Desktop
+                        val cameras = jsonObj["cameras"]?.jsonArray ?: JsonArray(emptyList())
+                        cameras.forEach { camElement ->
+                            val name = camElement.jsonObject["name"]?.jsonPrimitive?.content ?: ""
+                            if (name.isNotBlank()) DatabaseRepository.checkOrQueueFoundationItem(contributorId, "CAMERA", name)
+                        }
+
+                        val films = jsonObj["films"]?.jsonArray ?: JsonArray(emptyList())
+                        films.forEach { filmElement ->
+                            val name = filmElement.jsonObject["name"]?.jsonPrimitive?.content ?: ""
+                            val iso = filmElement.jsonObject["iso"]?.jsonPrimitive?.intOrNull
+                            if (name.isNotBlank()) DatabaseRepository.checkOrQueueFoundationItem(contributorId, "FILM", name, iso)
+                        }
+
+                        val suppliers = jsonObj["labSuppliers"]?.jsonArray ?: JsonArray(emptyList())
+                        suppliers.forEach { supElement ->
+                            val name = supElement.jsonObject["name"]?.jsonPrimitive?.content ?: ""
+                            if (name.isNotBlank()) DatabaseRepository.checkOrQueueFoundationItem(contributorId, "SUPPLIER", name)
+                        }
+                        
+                        logBuilder.append("✓ Intercepted Foundation Archive from ${zipFile.name}. Pushed unrecognized gear to Review Queue.\n")
+                    } catch (e: Exception) {
+                        logBuilder.append("⚠️ Failed to parse Foundation Archive in ${zipFile.name}: ${e.message}\n")
+                    }
+                }
+
+                if (!entry.isDirectory && (entryNameLower.endsWith("metadata.json") || entryNameLower.endsWith(".json") && !entryNameLower.contains("foundation"))) {
                     jsonCount++
                     extractedJsons.add("${zipFile.name} -> ${entry.name}")
 
@@ -1957,7 +2011,154 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                 }
                             }
                         }
+                        3 -> {
+                            // STAGE 4: FOUNDATION ADMIN (GATEKEEPER)
+                            FoundationAdminTab(
+                                onPublishManifest = {
+                                    // TODO: Wire up foundation manifest JSON generation logic
+                                    vaultFeedbackBanner = "📤 Published Foundation Manifest to selected directory."
+                                }
+                            )
+                        }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun FoundationAdminTab(onPublishManifest: () -> Unit) {
+    var pendingItems by remember { mutableStateOf(emptyList<FoundationReviewQueueEntity>()) }
+
+    LaunchedEffect(Unit) {
+        // We do a simple read from the Queue
+        transaction {
+            pendingItems = FoundationReviewQueueEntity.find { FoundationReviewQueueTable.status eq "PENDING" }.toList()
+        }
+    }
+
+    Row(
+        modifier = Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Left Pane: Review Queue
+        Card(
+            modifier = Modifier.weight(1f).fillMaxHeight(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    "📥 REVIEW QUEUE (${pendingItems.size})",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    "Unrecognised items caught from Field Device ZIP payloads.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                HorizontalDivider()
+
+                if (pendingItems.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Queue is empty. You're fully synced!", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                } else {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(pendingItems.size) { index ->
+                            val item = pendingItems[index]
+                            Card(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            "[${item.itemType}] ${item.submittedName}",
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Text(
+                                            "Submitted by Contributor ID: ${item.contributorId}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        Button(
+                                            onClick = {
+                                                transaction {
+                                                    // Move to main table
+                                                    when (item.itemType) {
+                                                        "CAMERA" -> FoundationCameraEntity.new { name = item.submittedName; type = "Unknown" }
+                                                        "FILM" -> FoundationFilmEntity.new { name = item.submittedName; iso = item.submittedIso ?: 400; type = "Unknown"; abbreviation = item.submittedName.take(3).uppercase(); format = "Unknown" }
+                                                        "SUPPLIER" -> FoundationSupplierEntity.new { name = item.submittedName }
+                                                    }
+                                                    item.status = "ACCEPTED"
+                                                    pendingItems = FoundationReviewQueueEntity.find { FoundationReviewQueueTable.status eq "PENDING" }.toList()
+                                                }
+                                            },
+                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
+                                            contentPadding = PaddingValues(horizontal = 8.dp)
+                                        ) {
+                                            Text("Accept")
+                                        }
+                                        OutlinedButton(
+                                            onClick = {
+                                                transaction {
+                                                    item.status = "REJECTED"
+                                                    pendingItems = FoundationReviewQueueEntity.find { FoundationReviewQueueTable.status eq "PENDING" }.toList()
+                                                }
+                                            },
+                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                                            contentPadding = PaddingValues(horizontal = 8.dp)
+                                        ) {
+                                            Text("Reject")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Right Pane: Master Foundation View
+        Card(
+            modifier = Modifier.weight(1f).fillMaxHeight(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(20.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Text(
+                        "🏛️ FOUNDATION MASTER LIST",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        "Items accepted here will be embedded into the master sync manifest for field devices to pull.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                Button(
+                    onClick = onPublishManifest,
+                    modifier = Modifier.fillMaxWidth().height(54.dp)
+                ) {
+                    Icon(Icons.Default.Share, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Publish Manifest to NAS", fontWeight = FontWeight.Bold)
                 }
             }
         }
