@@ -398,6 +398,168 @@ object DatabaseRepository {
         }
     }
 
+    // --- LENSES CRUD HELPERS ---
+    fun loadFoundationLenses(): List<ReferenceLensItem> {
+        return transaction {
+            FoundationLensEntity.all().map {
+                ReferenceLensItem(
+                    id = it.id.value,
+                    name = it.name,
+                    make = it.make,
+                    model = it.model,
+                    focalLength = it.focalLength,
+                    maxAperture = it.maxAperture,
+                    mount = it.mount,
+                    serialNumber = it.serialNumber
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationLens(item: ReferenceLensItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationLensEntity.findById(item.id)?.apply {
+                    name = item.name
+                    make = item.make
+                    model = item.model
+                    focalLength = item.focalLength
+                    maxAperture = item.maxAperture
+                    mount = item.mount
+                    serialNumber = item.serialNumber
+                }
+            } else {
+                FoundationLensEntity.new {
+                    name = item.name
+                    make = item.make
+                    model = item.model
+                    focalLength = item.focalLength
+                    maxAperture = item.maxAperture
+                    mount = item.mount
+                    serialNumber = item.serialNumber
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationLens(id: Int) {
+        transaction {
+            FoundationLensEntity.findById(id)?.delete()
+        }
+    }
+
+    // --- ACCESSORIES CRUD HELPERS ---
+    fun loadFoundationAccessories(): List<ReferenceAccessoryItem> {
+        return transaction {
+            FoundationAccessoryEntity.all().map {
+                ReferenceAccessoryItem(
+                    id = it.id.value,
+                    name = it.name,
+                    type = it.type,
+                    specs = it.specs
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationAccessory(item: ReferenceAccessoryItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationAccessoryEntity.findById(item.id)?.apply {
+                    name = item.name
+                    type = item.type
+                    specs = item.specs
+                }
+            } else {
+                FoundationAccessoryEntity.new {
+                    name = item.name
+                    type = item.type
+                    specs = item.specs
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationAccessory(id: Int) {
+        transaction {
+            FoundationAccessoryEntity.findById(id)?.delete()
+        }
+    }
+
+    // --- KITS CRUD HELPERS ---
+    fun loadFoundationKits(): List<ReferenceKitItem> {
+        return transaction {
+            FoundationKitEntity.all().map {
+                ReferenceKitItem(
+                    id = it.id.value,
+                    name = it.name,
+                    contributorId = it.contributorId,
+                    cameraName = it.cameraName,
+                    lensNames = it.lensNames,
+                    accessoryNames = it.accessoryNames,
+                    defaultFilmName = it.defaultFilmName,
+                    notes = it.notes
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationKit(item: ReferenceKitItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationKitEntity.findById(item.id)?.apply {
+                    name = item.name
+                    contributorId = item.contributorId
+                    cameraName = item.cameraName
+                    lensNames = item.lensNames
+                    accessoryNames = item.accessoryNames
+                    defaultFilmName = item.defaultFilmName
+                    notes = item.notes
+                }
+            } else {
+                FoundationKitEntity.new {
+                    name = item.name
+                    contributorId = item.contributorId
+                    cameraName = item.cameraName
+                    lensNames = item.lensNames
+                    accessoryNames = item.accessoryNames
+                    defaultFilmName = item.defaultFilmName
+                    notes = item.notes
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationKit(id: Int) {
+        transaction {
+            FoundationKitEntity.findById(id)?.delete()
+        }
+    }
+
+    // --- CONTRIBUTORS CRUD HELPERS ---
+    fun loadContributors(): List<ContributorItem> {
+        return transaction {
+            val list = ContributorEntity.all().map {
+                ContributorItem(
+                    id = it.id.value,
+                    alias = it.alias,
+                    fullName = it.fullName,
+                    email = it.email,
+                    lastSyncTimestamp = it.lastSyncTimestamp
+                )
+            }.sortedBy { it.id }
+            if (list.isEmpty()) {
+                val defaultContrib = ContributorEntity.new(1) {
+                    alias = "P1"
+                    fullName = "Gerard Bendotti"
+                    email = "gerard@fotologue.app"
+                    lastSyncTimestamp = System.currentTimeMillis()
+                }
+                listOf(ContributorItem(id = defaultContrib.id.value, alias = defaultContrib.alias, fullName = defaultContrib.fullName, email = defaultContrib.email, lastSyncTimestamp = defaultContrib.lastSyncTimestamp))
+            } else list
+        }
+    }
+
     // --- PRESET CATALOGUE LOOKUP HELPERS ---
 
     fun searchPresetCameras(query: String): List<ReferenceCameraItem> {
@@ -450,8 +612,12 @@ object DatabaseRepository {
     }
 
     fun exportReferenceSyncPackageJson(): String {
+        val contributors = loadContributors()
         val cameras = loadFoundationCameras()
         val films = loadFoundationFilms()
+        val lenses = loadFoundationLenses()
+        val accessories = loadFoundationAccessories()
+        val kits = loadFoundationKits()
         val suppliers = loadFoundationSuppliers()
         val consumables = loadFoundationConsumables()
         val equipment = loadFoundationLabEquipment()
@@ -460,8 +626,12 @@ object DatabaseRepository {
             mapOf(
                 "timestamp" to System.currentTimeMillis(),
                 "schemaVersion" to 3,
+                "contributors" to contributors,
                 "cameras" to cameras,
                 "films" to films,
+                "lenses" to lenses,
+                "accessories" to accessories,
+                "kits" to kits,
                 "labSuppliers" to suppliers,
                 "consumables" to consumables,
                 "labEquipment" to equipment

@@ -243,6 +243,113 @@ data class ReferenceLabEquipmentItem(
     val notes: String? = null
 )
 
+object ContributorsTable : IntIdTable("contributors") {
+    val alias = varchar("alias", 50)
+    val fullName = varchar("full_name", 255)
+    val email = varchar("email", 255).nullable()
+    val lastSyncTimestamp = long("last_sync_timestamp").default(0L)
+}
+
+class ContributorEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<ContributorEntity>(ContributorsTable)
+    var alias by ContributorsTable.alias
+    var fullName by ContributorsTable.fullName
+    var email by ContributorsTable.email
+    var lastSyncTimestamp by ContributorsTable.lastSyncTimestamp
+}
+
+object FoundationLensesTable : IntIdTable("foundation_lenses") {
+    val name = varchar("name", 255).uniqueIndex()
+    val make = varchar("make", 255).nullable()
+    val model = varchar("model", 255).nullable()
+    val focalLength = varchar("focal_length", 100).nullable()
+    val maxAperture = varchar("max_aperture", 50).nullable()
+    val mount = varchar("mount", 50).nullable()
+    val serialNumber = varchar("serial_number", 255).nullable()
+}
+
+class FoundationLensEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationLensEntity>(FoundationLensesTable)
+    var name by FoundationLensesTable.name
+    var make by FoundationLensesTable.make
+    var model by FoundationLensesTable.model
+    var focalLength by FoundationLensesTable.focalLength
+    var maxAperture by FoundationLensesTable.maxAperture
+    var mount by FoundationLensesTable.mount
+    var serialNumber by FoundationLensesTable.serialNumber
+}
+
+object FoundationAccessoriesTable : IntIdTable("foundation_accessories") {
+    val name = varchar("name", 255).uniqueIndex()
+    val type = varchar("type", 50)
+    val specs = text("specs").nullable()
+}
+
+class FoundationAccessoryEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationAccessoryEntity>(FoundationAccessoriesTable)
+    var name by FoundationAccessoriesTable.name
+    var type by FoundationAccessoriesTable.type
+    var specs by FoundationAccessoriesTable.specs
+}
+
+object FoundationKitsTable : IntIdTable("foundation_kits") {
+    val name = varchar("name", 255).uniqueIndex()
+    val contributorId = integer("contributor_id").default(1)
+    val cameraName = varchar("camera_name", 255)
+    val lensNames = varchar("lens_names", 512).nullable()
+    val accessoryNames = varchar("accessory_names", 512).nullable()
+    val defaultFilmName = varchar("default_film_name", 255).nullable()
+    val notes = text("notes").nullable()
+}
+
+class FoundationKitEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationKitEntity>(FoundationKitsTable)
+    var name by FoundationKitsTable.name
+    var contributorId by FoundationKitsTable.contributorId
+    var cameraName by FoundationKitsTable.cameraName
+    var lensNames by FoundationKitsTable.lensNames
+    var accessoryNames by FoundationKitsTable.accessoryNames
+    var defaultFilmName by FoundationKitsTable.defaultFilmName
+    var notes by FoundationKitsTable.notes
+}
+
+data class ContributorItem(
+    val id: Int = 1,
+    val alias: String = "P1",
+    val fullName: String = "Gerard Bendotti",
+    val email: String? = null,
+    val lastSyncTimestamp: Long = 0L
+)
+
+data class ReferenceLensItem(
+    val id: Int = 0,
+    val name: String,
+    val make: String? = null,
+    val model: String? = null,
+    val focalLength: String? = "50mm",
+    val maxAperture: String? = "f/1.4",
+    val mount: String? = null,
+    val serialNumber: String? = null
+)
+
+data class ReferenceAccessoryItem(
+    val id: Int = 0,
+    val name: String,
+    val type: String = "Filter",
+    val specs: String? = null
+)
+
+data class ReferenceKitItem(
+    val id: Int = 0,
+    val name: String,
+    val contributorId: Int = 1,
+    val cameraName: String,
+    val lensNames: String? = null,
+    val accessoryNames: String? = null,
+    val defaultFilmName: String? = null,
+    val notes: String? = null
+)
+
 object FoundationReviewQueueTable : IntIdTable("foundation_review_queue") {
     val contributorId = integer("contributor_id")
     val itemType = varchar("item_type", 50) // e.g. "FILM", "CAMERA", "SUPPLIER"
@@ -288,6 +395,10 @@ object DatabaseManager {
                 FoundationSuppliersTable,
                 FoundationConsumablesTable,
                 FoundationLabEquipmentTable,
+                FoundationLensesTable,
+                FoundationAccessoriesTable,
+                FoundationKitsTable,
+                ContributorsTable,
                 FoundationReviewQueueTable
             )
         }
