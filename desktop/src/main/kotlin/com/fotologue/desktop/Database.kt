@@ -271,7 +271,7 @@ object DatabaseManager {
 
         Database.connect("jdbc:sqlite:${dbFile.absolutePath}", driver = "org.sqlite.JDBC")
         transaction {
-            SchemaUtils.create(
+            SchemaUtils.createMissingTablesAndColumns(
                 MasterRollsTable, 
                 MasterFramesTable, 
                 FoundationCamerasTable,
