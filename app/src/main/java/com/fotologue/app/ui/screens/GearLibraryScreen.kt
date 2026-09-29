@@ -80,7 +80,7 @@ fun GearLibraryScreen(
         GearCategory(stringResource(R.string.category_accessories_tcs), iconRes = R.drawable.frame_inspect_24px, count = teleconverters.size),
         GearCategory(stringResource(R.string.category_accessories_filters), iconRes = R.drawable.filter_24px, count = filters.size),
         GearCategory(stringResource(R.string.category_accessories_flashes), iconRes = R.drawable.ic_flash_on, count = flashes.size),
-        GearCategory(stringResource(R.string.category_accessories_viewfinders), iconRes = R.drawable.viewfinders_24px, count = viewfinders.size),
+        GearCategory(stringResource(R.string.category_accessories_viewfinders), iconRes = R.drawable.ic_visibility, count = viewfinders.size),
         GearCategory(stringResource(R.string.category_subjects), iconRes = R.drawable.ic_label, count = subjects.size),
         GearCategory(stringResource(R.string.category_content), iconRes = R.drawable.ic_label, count = contentTags.size),
         GearCategory(stringResource(R.string.category_intent), iconRes = R.drawable.ic_label, count = intents.size)
@@ -1186,7 +1186,7 @@ private fun ViewfinderList(
                             )
                         } else {
                             Icon(
-                                painter = painterResource(R.drawable.viewfinders_24px),
+                                painter = painterResource(R.drawable.ic_visibility),
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp)
                             )
