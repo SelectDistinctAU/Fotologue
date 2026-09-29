@@ -486,6 +486,173 @@ object DatabaseRepository {
         }
     }
 
+    // --- TELECONVERTERS CRUD HELPERS ---
+    fun loadFoundationTeleconverters(): List<ReferenceTeleconverterItem> {
+        return transaction {
+            FoundationTeleconverterEntity.all().map {
+                ReferenceTeleconverterItem(
+                    id = it.id.value,
+                    name = it.name,
+                    make = it.make,
+                    magnification = it.magnification,
+                    mount = it.mount,
+                    serialNumber = it.serialNumber
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationTeleconverter(item: ReferenceTeleconverterItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationTeleconverterEntity.findById(item.id)?.apply {
+                    name = item.name
+                    make = item.make
+                    magnification = item.magnification
+                    mount = item.mount
+                    serialNumber = item.serialNumber
+                }
+            } else {
+                FoundationTeleconverterEntity.new {
+                    name = item.name
+                    make = item.make
+                    magnification = item.magnification
+                    mount = item.mount
+                    serialNumber = item.serialNumber
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationTeleconverter(id: Int) {
+        transaction {
+            FoundationTeleconverterEntity.findById(id)?.delete()
+        }
+    }
+
+    // --- FILTERS CRUD HELPERS ---
+    fun loadFoundationFilters(): List<ReferenceFilterItem> {
+        return transaction {
+            FoundationFilterEntity.all().map {
+                ReferenceFilterItem(
+                    id = it.id.value,
+                    name = it.name,
+                    threadSize = it.threadSize,
+                    filterType = it.filterType,
+                    serialNumber = it.serialNumber
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationFilter(item: ReferenceFilterItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationFilterEntity.findById(item.id)?.apply {
+                    name = item.name
+                    threadSize = item.threadSize
+                    filterType = item.filterType
+                    serialNumber = item.serialNumber
+                }
+            } else {
+                FoundationFilterEntity.new {
+                    name = item.name
+                    threadSize = item.threadSize
+                    filterType = item.filterType
+                    serialNumber = item.serialNumber
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationFilter(id: Int) {
+        transaction {
+            FoundationFilterEntity.findById(id)?.delete()
+        }
+    }
+
+    // --- FLASHES CRUD HELPERS ---
+    fun loadFoundationFlashes(): List<ReferenceFlashItem> {
+        return transaction {
+            FoundationFlashEntity.all().map {
+                ReferenceFlashItem(
+                    id = it.id.value,
+                    name = it.name,
+                    guideNumber = it.guideNumber,
+                    syncType = it.syncType,
+                    serialNumber = it.serialNumber
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationFlash(item: ReferenceFlashItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationFlashEntity.findById(item.id)?.apply {
+                    name = item.name
+                    guideNumber = item.guideNumber
+                    syncType = item.syncType
+                    serialNumber = item.serialNumber
+                }
+            } else {
+                FoundationFlashEntity.new {
+                    name = item.name
+                    guideNumber = item.guideNumber
+                    syncType = item.syncType
+                    serialNumber = item.serialNumber
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationFlash(id: Int) {
+        transaction {
+            FoundationFlashEntity.findById(id)?.delete()
+        }
+    }
+
+    // --- VIEWFINDERS CRUD HELPERS ---
+    fun loadFoundationViewfinders(): List<ReferenceViewfinderItem> {
+        return transaction {
+            FoundationViewfinderEntity.all().map {
+                ReferenceViewfinderItem(
+                    id = it.id.value,
+                    name = it.name,
+                    type = it.type,
+                    compatibleCamera = it.compatibleCamera,
+                    serialNumber = it.serialNumber
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveFoundationViewfinder(item: ReferenceViewfinderItem) {
+        transaction {
+            if (item.id > 0) {
+                FoundationViewfinderEntity.findById(item.id)?.apply {
+                    name = item.name
+                    type = item.type
+                    compatibleCamera = item.compatibleCamera
+                    serialNumber = item.serialNumber
+                }
+            } else {
+                FoundationViewfinderEntity.new {
+                    name = item.name
+                    type = item.type
+                    compatibleCamera = item.compatibleCamera
+                    serialNumber = item.serialNumber
+                }
+            }
+        }
+    }
+
+    fun deleteFoundationViewfinder(id: Int) {
+        transaction {
+            FoundationViewfinderEntity.findById(id)?.delete()
+        }
+    }
+
     // --- KITS CRUD HELPERS ---
     fun loadFoundationKits(): List<ReferenceKitItem> {
         return transaction {
@@ -616,6 +783,10 @@ object DatabaseRepository {
         val cameras = loadFoundationCameras()
         val films = loadFoundationFilms()
         val lenses = loadFoundationLenses()
+        val teleconverters = loadFoundationTeleconverters()
+        val filters = loadFoundationFilters()
+        val flashes = loadFoundationFlashes()
+        val viewfinders = loadFoundationViewfinders()
         val accessories = loadFoundationAccessories()
         val kits = loadFoundationKits()
         val suppliers = loadFoundationSuppliers()
@@ -630,6 +801,10 @@ object DatabaseRepository {
                 "cameras" to cameras,
                 "films" to films,
                 "lenses" to lenses,
+                "teleconverters" to teleconverters,
+                "filters" to filters,
+                "flashes" to flashes,
+                "viewfinders" to viewfinders,
                 "accessories" to accessories,
                 "kits" to kits,
                 "labSuppliers" to suppliers,

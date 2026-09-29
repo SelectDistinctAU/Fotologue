@@ -292,6 +292,68 @@ class FoundationAccessoryEntity(id: EntityID<Int>) : IntEntity(id) {
     var specs by FoundationAccessoriesTable.specs
 }
 
+object FoundationTeleconvertersTable : IntIdTable("foundation_teleconverters") {
+    val name = varchar("name", 255).uniqueIndex()
+    val make = varchar("make", 255).nullable()
+    val magnification = varchar("magnification", 50).default("2x")
+    val mount = varchar("mount", 50).nullable()
+    val serialNumber = varchar("serial_number", 255).nullable()
+}
+
+class FoundationTeleconverterEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationTeleconverterEntity>(FoundationTeleconvertersTable)
+    var name by FoundationTeleconvertersTable.name
+    var make by FoundationTeleconvertersTable.make
+    var magnification by FoundationTeleconvertersTable.magnification
+    var mount by FoundationTeleconvertersTable.mount
+    var serialNumber by FoundationTeleconvertersTable.serialNumber
+}
+
+object FoundationFiltersTable : IntIdTable("foundation_filters") {
+    val name = varchar("name", 255).uniqueIndex()
+    val threadSize = varchar("thread_size", 50).default("52mm")
+    val filterType = varchar("filter_type", 100).default("Yellow 8")
+    val serialNumber = varchar("serial_number", 255).nullable()
+}
+
+class FoundationFilterEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationFilterEntity>(FoundationFiltersTable)
+    var name by FoundationFiltersTable.name
+    var threadSize by FoundationFiltersTable.threadSize
+    var filterType by FoundationFiltersTable.filterType
+    var serialNumber by FoundationFiltersTable.serialNumber
+}
+
+object FoundationFlashesTable : IntIdTable("foundation_flashes") {
+    val name = varchar("name", 255).uniqueIndex()
+    val guideNumber = varchar("guide_number", 50).default("GN 24")
+    val syncType = varchar("sync_type", 100).default("Hotshoe")
+    val serialNumber = varchar("serial_number", 255).nullable()
+}
+
+class FoundationFlashEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationFlashEntity>(FoundationFlashesTable)
+    var name by FoundationFlashesTable.name
+    var guideNumber by FoundationFlashesTable.guideNumber
+    var syncType by FoundationFlashesTable.syncType
+    var serialNumber by FoundationFlashesTable.serialNumber
+}
+
+object FoundationViewfindersTable : IntIdTable("foundation_viewfinders") {
+    val name = varchar("name", 255).uniqueIndex()
+    val type = varchar("type", 100).default("Waist Level")
+    val compatibleCamera = varchar("compatible_camera", 255).nullable()
+    val serialNumber = varchar("serial_number", 255).nullable()
+}
+
+class FoundationViewfinderEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<FoundationViewfinderEntity>(FoundationViewfindersTable)
+    var name by FoundationViewfindersTable.name
+    var type by FoundationViewfindersTable.type
+    var compatibleCamera by FoundationViewfindersTable.compatibleCamera
+    var serialNumber by FoundationViewfindersTable.serialNumber
+}
+
 object FoundationKitsTable : IntIdTable("foundation_kits") {
     val name = varchar("name", 255).uniqueIndex()
     val contributorId = integer("contributor_id").default(1)
@@ -337,6 +399,39 @@ data class ReferenceAccessoryItem(
     val name: String,
     val type: String = "Filter",
     val specs: String? = null
+)
+
+data class ReferenceTeleconverterItem(
+    val id: Int = 0,
+    val name: String,
+    val make: String? = null,
+    val magnification: String = "2x",
+    val mount: String? = null,
+    val serialNumber: String? = null
+)
+
+data class ReferenceFilterItem(
+    val id: Int = 0,
+    val name: String,
+    val threadSize: String = "52mm",
+    val filterType: String = "Yellow 8",
+    val serialNumber: String? = null
+)
+
+data class ReferenceFlashItem(
+    val id: Int = 0,
+    val name: String,
+    val guideNumber: String = "GN 24",
+    val syncType: String = "Hotshoe",
+    val serialNumber: String? = null
+)
+
+data class ReferenceViewfinderItem(
+    val id: Int = 0,
+    val name: String,
+    val type: String = "Waist Level",
+    val compatibleCamera: String? = null,
+    val serialNumber: String? = null
 )
 
 data class ReferenceKitItem(
@@ -397,6 +492,10 @@ object DatabaseManager {
                 FoundationLabEquipmentTable,
                 FoundationLensesTable,
                 FoundationAccessoriesTable,
+                FoundationTeleconvertersTable,
+                FoundationFiltersTable,
+                FoundationFlashesTable,
+                FoundationViewfindersTable,
                 FoundationKitsTable,
                 ContributorsTable,
                 FoundationReviewQueueTable

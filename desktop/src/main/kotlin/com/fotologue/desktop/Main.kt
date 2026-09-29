@@ -1942,7 +1942,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var lenses by remember { mutableStateOf(emptyList<ReferenceLensItem>()) }
     var films by remember { mutableStateOf(emptyList<ReferenceFilmItem>()) }
     var kits by remember { mutableStateOf(emptyList<ReferenceKitItem>()) }
-    var accessories by remember { mutableStateOf(emptyList<ReferenceAccessoryItem>()) }
+    var teleconverters by remember { mutableStateOf(emptyList<ReferenceTeleconverterItem>()) }
+    var filters by remember { mutableStateOf(emptyList<ReferenceFilterItem>()) }
+    var flashes by remember { mutableStateOf(emptyList<ReferenceFlashItem>()) }
+    var viewfinders by remember { mutableStateOf(emptyList<ReferenceViewfinderItem>()) }
     var suppliers by remember { mutableStateOf(emptyList<ReferenceSupplierItem>()) }
     var consumables by remember { mutableStateOf(emptyList<ReferenceConsumableItem>()) }
     var labEquipment by remember { mutableStateOf(emptyList<ReferenceLabEquipmentItem>()) }
@@ -1953,6 +1956,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var editingLens by remember { mutableStateOf<ReferenceLensItem?>(null) }
     var editingFilm by remember { mutableStateOf<ReferenceFilmItem?>(null) }
     var editingKit by remember { mutableStateOf<ReferenceKitItem?>(null) }
+    var editingTeleconverter by remember { mutableStateOf<ReferenceTeleconverterItem?>(null) }
+    var editingFilter by remember { mutableStateOf<ReferenceFilterItem?>(null) }
+    var editingFlash by remember { mutableStateOf<ReferenceFlashItem?>(null) }
+    var editingViewfinder by remember { mutableStateOf<ReferenceViewfinderItem?>(null) }
     var editingAccessory by remember { mutableStateOf<ReferenceAccessoryItem?>(null) }
     var editingSupplier by remember { mutableStateOf<ReferenceSupplierItem?>(null) }
     var editingConsumable by remember { mutableStateOf<ReferenceConsumableItem?>(null) }
@@ -1968,7 +1975,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
         lenses = DatabaseRepository.loadFoundationLenses()
         films = DatabaseRepository.loadFoundationFilms()
         kits = DatabaseRepository.loadFoundationKits()
-        accessories = DatabaseRepository.loadFoundationAccessories()
+        teleconverters = DatabaseRepository.loadFoundationTeleconverters()
+        filters = DatabaseRepository.loadFoundationFilters()
+        flashes = DatabaseRepository.loadFoundationFlashes()
+        viewfinders = DatabaseRepository.loadFoundationViewfinders()
         suppliers = DatabaseRepository.loadFoundationSuppliers()
         consumables = DatabaseRepository.loadFoundationConsumables()
         labEquipment = DatabaseRepository.loadFoundationLabEquipment()
@@ -2232,7 +2242,105 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                         }
-                        5 -> { // Supplier
+                        4 -> { // Teleconverter
+                            val item = editingTeleconverter ?: ReferenceTeleconverterItem(name = "")
+                            OutlinedTextField(
+                                value = item.name,
+                                onValueChange = { editingTeleconverter = item.copy(name = it) },
+                                label = { Text("Teleconverter Name (e.g. Canon FD 2x-A)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.make ?: "",
+                                    onValueChange = { editingTeleconverter = item.copy(make = it) },
+                                    label = { Text("Make / Brand (e.g. Canon)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.magnification,
+                                    onValueChange = { editingTeleconverter = item.copy(magnification = it) },
+                                    label = { Text("Magnification (e.g. 2x, 1.4x)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.mount ?: "",
+                                    onValueChange = { editingTeleconverter = item.copy(mount = it) },
+                                    label = { Text("Mount (e.g. Canon FD)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                        5 -> { // Filter
+                            val item = editingFilter ?: ReferenceFilterItem(name = "")
+                            OutlinedTextField(
+                                value = item.name,
+                                onValueChange = { editingFilter = item.copy(name = it) },
+                                label = { Text("Filter Name (e.g. Hoya 52mm Yellow 8)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.threadSize,
+                                    onValueChange = { editingFilter = item.copy(threadSize = it) },
+                                    label = { Text("Thread Size (e.g. 52mm, 77mm)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.filterType,
+                                    onValueChange = { editingFilter = item.copy(filterType = it) },
+                                    label = { Text("Filter Type (Yellow, Red, CPL, ND)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                        6 -> { // Flash
+                            val item = editingFlash ?: ReferenceFlashItem(name = "")
+                            OutlinedTextField(
+                                value = item.name,
+                                onValueChange = { editingFlash = item.copy(name = it) },
+                                label = { Text("Flash Name (e.g. Vivitar 283)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.guideNumber,
+                                    onValueChange = { editingFlash = item.copy(guideNumber = it) },
+                                    label = { Text("Guide Number (e.g. GN 28)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.syncType,
+                                    onValueChange = { editingFlash = item.copy(syncType = it) },
+                                    label = { Text("Sync Type (Hotshoe, PC Sync)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                        7 -> { // Viewfinder
+                            val item = editingViewfinder ?: ReferenceViewfinderItem(name = "")
+                            OutlinedTextField(
+                                value = item.name,
+                                onValueChange = { editingViewfinder = item.copy(name = it) },
+                                label = { Text("Viewfinder Name (e.g. Pentax FA-1 Finder)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.type,
+                                    onValueChange = { editingViewfinder = item.copy(type = it) },
+                                    label = { Text("Type (Prism, Waist Level, Magnifier)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.compatibleCamera ?: "",
+                                    onValueChange = { editingViewfinder = item.copy(compatibleCamera = it) },
+                                    label = { Text("Compatible Camera Body") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                        8 -> { // Supplier
                             val item = editingSupplier ?: ReferenceSupplierItem(name = "")
                             OutlinedTextField(
                                 value = item.name,
@@ -2281,7 +2389,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        6 -> { // Consumable
+                        9 -> { // Consumable
                             val item = editingConsumable ?: ReferenceConsumableItem(name = "")
                             OutlinedTextField(
                                 value = item.name,
@@ -2325,7 +2433,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 Text("Hazardous Material / Safety Handling Required", style = MaterialTheme.typography.bodySmall)
                             }
                         }
-                        7 -> { // Equipment
+                        10 -> { // Equipment
                             val item = editingLabEquipment ?: ReferenceLabEquipmentItem(name = "")
                             OutlinedTextField(
                                 value = item.name,
@@ -2372,10 +2480,13 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         1 -> editingLens?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationLens(it) }
                         2 -> editingFilm?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationFilm(it) }
                         3 -> editingKit?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationKit(it) }
-                        4 -> editingAccessory?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationAccessory(it) }
-                        5 -> editingSupplier?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationSupplier(it) }
-                        6 -> editingConsumable?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationConsumable(it) }
-                        7 -> editingLabEquipment?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationLabEquipment(it) }
+                        4 -> editingTeleconverter?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationTeleconverter(it) }
+                        5 -> editingFilter?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationFilter(it) }
+                        6 -> editingFlash?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationFlash(it) }
+                        7 -> editingViewfinder?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationViewfinder(it) }
+                        8 -> editingSupplier?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationSupplier(it) }
+                        9 -> editingConsumable?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationConsumable(it) }
+                        10 -> editingLabEquipment?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationLabEquipment(it) }
                     }
                     refreshAllData()
                     showAddEditDialog = false
@@ -2383,7 +2494,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     editingLens = null
                     editingFilm = null
                     editingKit = null
-                    editingAccessory = null
+                    editingTeleconverter = null
+                    editingFilter = null
+                    editingFlash = null
+                    editingViewfinder = null
                     editingSupplier = null
                     editingConsumable = null
                     editingLabEquipment = null
@@ -2398,7 +2512,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     editingLens = null
                     editingFilm = null
                     editingKit = null
-                    editingAccessory = null
+                    editingTeleconverter = null
+                    editingFilter = null
+                    editingFlash = null
+                    editingViewfinder = null
                     editingSupplier = null
                     editingConsumable = null
                     editingLabEquipment = null
@@ -2535,10 +2652,13 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 1 -> editingLens = ReferenceLensItem(name = "")
                                 2 -> editingFilm = ReferenceFilmItem(name = "")
                                 3 -> editingKit = ReferenceKitItem(name = "", cameraName = cameras.firstOrNull()?.name ?: "Canon AE-1 Program")
-                                4 -> editingAccessory = ReferenceAccessoryItem(name = "")
-                                5 -> editingSupplier = ReferenceSupplierItem(name = "")
-                                6 -> editingConsumable = ReferenceConsumableItem(name = "")
-                                7 -> editingLabEquipment = ReferenceLabEquipmentItem(name = "")
+                                4 -> editingTeleconverter = ReferenceTeleconverterItem(name = "")
+                                5 -> editingFilter = ReferenceFilterItem(name = "")
+                                6 -> editingFlash = ReferenceFlashItem(name = "")
+                                7 -> editingViewfinder = ReferenceViewfinderItem(name = "")
+                                8 -> editingSupplier = ReferenceSupplierItem(name = "")
+                                9 -> editingConsumable = ReferenceConsumableItem(name = "")
+                                10 -> editingLabEquipment = ReferenceLabEquipmentItem(name = "")
                             }
                             showAddEditDialog = true
                         },
@@ -2612,7 +2732,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 .background(if (isSelGroup) MaterialTheme.colorScheme.primary else Color.Transparent)
                                 .clickable {
                                     selectedThemeGroup = themeIdx
-                                    selectedCategory = if (themeIdx == 0) 0 else 2
+                                    selectedCategory = if (themeIdx == 0) 0 else 8
                                 }
                                 .padding(vertical = 8.dp),
                             contentAlignment = Alignment.Center
@@ -2639,6 +2759,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
                         .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(3.dp),
@@ -2646,25 +2767,30 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 ) {
                     val categories = if (selectedThemeGroup == 0) {
                         listOf(
+                            Triple("Kits (${kits.size})", 3, Icons.Default.Home),
                             Triple("Cameras (${cameras.size})", 0, Icons.Default.Search),
-                            Triple("Films (${films.size})", 1, Icons.Default.List)
+                            Triple("Lenses (${lenses.size})", 1, Icons.Default.Search),
+                            Triple("Films (${films.size})", 2, Icons.Default.List),
+                            Triple("Teleconverters (${teleconverters.size})", 4, Icons.Default.Search),
+                            Triple("Filters (${filters.size})", 5, Icons.Default.Search),
+                            Triple("Flashes (${flashes.size})", 6, Icons.Default.Settings),
+                            Triple("Viewfinders (${viewfinders.size})", 7, Icons.Default.Info)
                         )
                     } else {
                         listOf(
-                            Triple("Suppliers (${suppliers.size})", 2, Icons.Default.ShoppingCart),
-                            Triple("Consumables (${consumables.size})", 3, Icons.Default.Refresh),
-                            Triple("Equipment (${labEquipment.size})", 4, Icons.Default.Settings)
+                            Triple("Suppliers (${suppliers.size})", 8, Icons.Default.ShoppingCart),
+                            Triple("Consumables (${consumables.size})", 9, Icons.Default.Refresh),
+                            Triple("Equipment (${labEquipment.size})", 10, Icons.Default.Settings)
                         )
                     }
                     categories.forEach { (catTitle, catIdx, catIcon) ->
                         val isSel = selectedCategory == catIdx
                         Box(
                             modifier = Modifier
-                                .weight(1f)
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(if (isSel) MaterialTheme.colorScheme.primary else Color.Transparent)
                                 .clickable { selectedCategory = catIdx }
-                                .padding(vertical = 8.dp),
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -2859,15 +2985,15 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
                         }
-                        4 -> { // Accessories
-                            if (accessories.isEmpty()) {
+                        4 -> { // Teleconverters
+                            if (teleconverters.isEmpty()) {
                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No reference accessories logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text("No reference teleconverters logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             } else {
                                 LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(accessories.size) { idx ->
-                                        val acc = accessories[idx]
+                                    items(teleconverters.size) { idx ->
+                                        val tc = teleconverters[idx]
                                         Card(
                                             modifier = Modifier.fillMaxWidth(),
                                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
@@ -2878,18 +3004,18 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
                                                 Column(modifier = Modifier.weight(1f)) {
-                                                    Text(acc.name, fontWeight = FontWeight.Bold)
-                                                    Text("Type: ${acc.type} ${if (!acc.specs.isNullOrBlank()) "• Specs: ${acc.specs}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                    Text(tc.name, fontWeight = FontWeight.Bold)
+                                                    Text("Make: ${tc.make ?: "Generic"} • Mag: ${tc.magnification} • Mount: ${tc.mount ?: "Standard"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 }
                                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                                     IconButton(onClick = {
-                                                        editingAccessory = acc
+                                                        editingTeleconverter = tc
                                                         showAddEditDialog = true
                                                     }) {
                                                         Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
                                                     }
                                                     IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationAccessory(acc.id)
+                                                        DatabaseRepository.deleteFoundationTeleconverter(tc.id)
                                                         refreshAllData()
                                                     }) {
                                                         Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
@@ -2901,7 +3027,133 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
                         }
-                        5 -> { // Suppliers
+                        5 -> { // Filters
+                            if (filters.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("No reference filters logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    items(filters.size) { idx ->
+                                        val ft = filters[idx]
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Text(ft.name, fontWeight = FontWeight.Bold)
+                                                    Text("Thread: ${ft.threadSize} • Type: ${ft.filterType}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                }
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                    IconButton(onClick = {
+                                                        editingFilter = ft
+                                                        showAddEditDialog = true
+                                                    }) {
+                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                                    }
+                                                    IconButton(onClick = {
+                                                        DatabaseRepository.deleteFoundationFilter(ft.id)
+                                                        refreshAllData()
+                                                    }) {
+                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        6 -> { // Flashes
+                            if (flashes.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("No reference flashes logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    items(flashes.size) { idx ->
+                                        val fl = flashes[idx]
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Text(fl.name, fontWeight = FontWeight.Bold)
+                                                    Text("Guide No: ${fl.guideNumber} • Sync: ${fl.syncType}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                }
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                    IconButton(onClick = {
+                                                        editingFlash = fl
+                                                        showAddEditDialog = true
+                                                    }) {
+                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                                    }
+                                                    IconButton(onClick = {
+                                                        DatabaseRepository.deleteFoundationFlash(fl.id)
+                                                        refreshAllData()
+                                                    }) {
+                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        7 -> { // Viewfinders
+                            if (viewfinders.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("No reference viewfinders logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    items(viewfinders.size) { idx ->
+                                        val vf = viewfinders[idx]
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Text(vf.name, fontWeight = FontWeight.Bold)
+                                                    Text("Type: ${vf.type} • Fits: ${vf.compatibleCamera ?: "Universal"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                }
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                    IconButton(onClick = {
+                                                        editingViewfinder = vf
+                                                        showAddEditDialog = true
+                                                    }) {
+                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                                    }
+                                                    IconButton(onClick = {
+                                                        DatabaseRepository.deleteFoundationViewfinder(vf.id)
+                                                        refreshAllData()
+                                                    }) {
+                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        8 -> { // Suppliers
                             if (suppliers.isEmpty()) {
                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Text("No reference suppliers logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -2944,7 +3196,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
                         }
-                        6 -> { // Consumables
+                        9 -> { // Consumables
                             if (consumables.isEmpty()) {
                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Text("No reference consumables logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -2987,7 +3239,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
                         }
-                        7 -> { // Lab Equipment
+                        10 -> { // Lab Equipment
                             if (labEquipment.isEmpty()) {
                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Text("No reference lab equipment logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
