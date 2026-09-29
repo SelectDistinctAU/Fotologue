@@ -582,7 +582,7 @@ fun SettingsScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             Text(
-                text = "Used by the Desktop Master Vault to organize and deduplicate imported logs.",
+                text = "Used by Fotologue Desktop to organise and consolidate imported frames.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 16.dp)

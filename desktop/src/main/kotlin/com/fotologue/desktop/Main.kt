@@ -959,7 +959,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                         )
 
                                         Text(
-                                            "Select a directory to scan for ZIP exports (e.g., Local Drive, Google Drive Desktop, or Mounted NAS Share). Fotologue Desktop will recursively scan the folder, safely extract all new embedded metadata graphs & thumbnails, and skip any previously imported frames (100% Zero-Duplicate Guarantee).",
+                                            "Select a directory to scan for ZIP exports (e.g., Local Drive, Google Drive Desktop, or Mounted NAS Share). Fotologue Desktop will recursively scan the folder, safely extract all new embedded metadata graphs & thumbnails, and skip any previously imported frames (100% Consolidation Guarantee).",
                                             style = MaterialTheme.typography.bodyMedium
                                         )
 
@@ -2213,26 +2213,40 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     }
                 }
 
-                // Scrollable sub-category selector chips
+                // Sleek Segmented Category Tabs (Guaranteed 100% Fit)
                 Row(
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     val categories = listOf(
-                        "📷 Cameras (${cameras.size})", 
-                        "🎞️ Films (${films.size})", 
-                        "🏬 Suppliers (${suppliers.size})",
-                        "🧪 Consumables (${consumables.size})",
-                        "🎛️ Lab Equipment (${labEquipment.size})"
+                        "Cameras (${cameras.size})", 
+                        "Films (${films.size})", 
+                        "Suppliers (${suppliers.size})",
+                        "Consumables (${consumables.size})",
+                        "Equipment (${labEquipment.size})"
                     )
                     categories.forEachIndexed { idx, catTitle ->
                         val isSel = selectedCategory == idx
-                        FilterChip(
-                            selected = isSel,
-                            onClick = { selectedCategory = idx },
-                            label = { Text(catTitle, fontWeight = FontWeight.Bold) }
-                        )
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(if (isSel) MaterialTheme.colorScheme.primary else Color.Transparent)
+                                .clickable { selectedCategory = idx }
+                                .padding(vertical = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = catTitle,
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                color = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1
+                            )
+                        }
                     }
                 }
 

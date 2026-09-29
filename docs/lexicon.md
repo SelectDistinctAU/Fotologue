@@ -42,7 +42,7 @@ This document serves as the single source of truth for terminology across the Fo
 | **Data Reconciliation** | *N/A (Umbrella category)* | The process of resolving incoming data conflicts or unassigned items. |
 | ├── **Auto-Link** | Auto-Home | Automatically mapping Unassigned Frames to an active Roll. |
 | ├── **Merge Duplicates** | Combine | Consolidating two identical records into one. |
-| ├── **Consolidate Records** | | Merging related or fragmented data. |
+| ├── **Consolidate Records** | Deduplicate, Deduplication | Merging related or fragmented data without duplication. |
 | ├── **Link to Existing** | Map to Existing | Manually connecting an unassigned item to a known Reference Data entry. |
 | └── **Standardise Metadata** | Standardize | Harmonising names or typos to match official Reference Data. |
 | **Sync to Mobile** | Publish Manifest, Sync Down, Share with Field | Action on Desktop to export the Reference Sync Package. |
