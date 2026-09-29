@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.CameraRoll
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -2728,7 +2729,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                             Triple("Kits (${kits.size})", 3, Icons.Default.Inventory2),
                             Triple("Cameras (${cameras.size})", 0, Icons.Default.PhotoCamera),
                             Triple("Lenses (${lenses.size})", 1, Icons.Default.Camera),
-                            Triple("Films (${films.size})", 2, Icons.AutoMirrored.Filled.List),
+                            Triple("Films (${films.size})", 2, Icons.Default.CameraRoll),
                             Triple("Teleconverters (${teleconverters.size})", 4, Icons.Default.ZoomIn),
                             Triple("Filters (${filters.size})", 5, Icons.Default.Filter),
                             Triple("Flashes (${flashes.size})", 6, Icons.Default.FlashOn),
