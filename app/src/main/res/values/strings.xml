@@ -113,8 +113,8 @@
     <string name="camera_name">Camera Name</string>
     <string name="error_name_empty">Name cannot be empty</string>
     <string name="label_model_number_optional">Model Number (Optional)</string>
-    <string name="online_lookup">Online Lookup</string>
-    <string name="search_web_for_specs">Search Web for Specs</string>
+    <string name="online_lookup">Preset Catalogue</string>
+    <string name="search_web_for_specs">Autofill Specs from Catalogue</string>
     <string name="label_lens_mount">Lens Mount (e.g. EF, F, M)</string>
     <string name="label_camera_type">Camera Type</string>
     <string name="label_shutter_speeds_comma">Shutter Speeds (comma separated)</string>

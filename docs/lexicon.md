@@ -15,6 +15,7 @@ This document serves as the single source of truth for terminology across the Fo
 | :--- | :--- | :--- |
 | **Reference Data** | Foundation Data, Master Picklists, Knowledge Base, Master Data | The master lists of cameras, films, suppliers, and chemistry maintained by Fotologue Desktop. |
 | **Reference Sync Package** | Foundation Manifest, Fridge Manifest, Sync Payload, Foundation Archive | The JSON payload exported by Fotologue Desktop and ingested by Fotologue Mobile to sync Reference Data. |
+| **Preset Catalogue** | Online Lookup, Preset Catalog, Cloud Search | Pre-packaged developer-maintained specification library for gear and consumables. |
 
 ## 3. Photography Entities
 

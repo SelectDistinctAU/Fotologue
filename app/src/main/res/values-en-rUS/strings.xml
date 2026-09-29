@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- US English Overrides (en-US) -->
+    <string name="online_lookup">Preset Catalog</string>
+    <string name="search_web_for_specs">Autofill Specs from Catalog</string>
+</resources>

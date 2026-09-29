@@ -389,6 +389,57 @@ object DatabaseRepository {
         }
     }
 
+    // --- PRESET CATALOGUE LOOKUP HELPERS ---
+
+    fun searchPresetCameras(query: String): List<ReferenceCameraItem> {
+        val presets = listOf(
+            ReferenceCameraItem(name = "Canon AE-1 Program", modelNumber = "AE-1P", type = "Film SLR", mount = "Canon FD", format = "35mm", shutterSpeeds = "2s - 1/1000s, B"),
+            ReferenceCameraItem(name = "Leica M3", modelNumber = "M3", type = "Rangefinder", mount = "Leica M", format = "35mm", shutterSpeeds = "1s - 1/1000s, B"),
+            ReferenceCameraItem(name = "Pentax K1000", modelNumber = "K1000", type = "Film SLR", mount = "Pentax K", format = "35mm", shutterSpeeds = "1s - 1/1000s, B"),
+            ReferenceCameraItem(name = "Hasselblad 500C/M", modelNumber = "500C/M", type = "Medium Format SLR", mount = "Hasselblad V", format = "120", shutterSpeeds = "1s - 1/500s, B"),
+            ReferenceCameraItem(name = "Nikon F3", modelNumber = "F3", type = "Film SLR", mount = "Nikon F", format = "35mm", shutterSpeeds = "8s - 1/2000s, B"),
+            ReferenceCameraItem(name = "Olympus OM-1", modelNumber = "OM-1", type = "Film SLR", mount = "Olympus OM", format = "35mm", shutterSpeeds = "1s - 1/1000s, B"),
+            ReferenceCameraItem(name = "Yashica Mat-124G", modelNumber = "Mat-124G", type = "TLR", mount = "Fixed Lens", format = "120", shutterSpeeds = "1s - 1/500s, B")
+        )
+        if (query.isBlank()) return presets
+        return presets.filter { it.name.contains(query, ignoreCase = true) || (it.modelNumber?.contains(query, ignoreCase = true) == true) }
+    }
+
+    fun searchPresetFilms(query: String): List<ReferenceFilmItem> {
+        val presets = listOf(
+            ReferenceFilmItem(name = "Ilford HP5 Plus 400", abbreviation = "HP5", iso = 400, type = "Black & White Negative", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Kodak Tri-X 400", abbreviation = "TX400", iso = 400, type = "Black & White Negative", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Kodak Portra 400", abbreviation = "PR400", iso = 400, type = "Color Negative", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Fujifilm Velvia 50", abbreviation = "RVP50", iso = 50, type = "Color Slide / Reversal", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Cinestill 800T", abbreviation = "800T", iso = 800, type = "Color Negative", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Ilford FP4 Plus 125", abbreviation = "FP4", iso = 125, type = "Black & White Negative", format = "35mm", expectedExposures = 36)
+        )
+        if (query.isBlank()) return presets
+        return presets.filter { it.name.contains(query, ignoreCase = true) || it.abbreviation.contains(query, ignoreCase = true) }
+    }
+
+    fun searchPresetConsumables(query: String): List<ReferenceConsumableItem> {
+        val presets = listOf(
+            ReferenceConsumableItem(name = "Kodak D-76", manufacturer = "Kodak", category = "Chemistry", type = "Developer", dilution = "1+1", defaultUnit = "ml", isHazardous = false),
+            ReferenceConsumableItem(name = "Ilford Rapid Fixer", manufacturer = "Ilford", category = "Chemistry", type = "Fixer", dilution = "1+4", defaultUnit = "ml", isHazardous = true),
+            ReferenceConsumableItem(name = "Rodinal / R09 One Shot", manufacturer = "Agfa / Adox", category = "Chemistry", type = "Developer", dilution = "1+50", defaultUnit = "ml", isHazardous = true),
+            ReferenceConsumableItem(name = "Kodak Xtol", manufacturer = "Kodak", category = "Chemistry", type = "Developer", dilution = "1+1", defaultUnit = "ml", isHazardous = false),
+            ReferenceConsumableItem(name = "Ilford Multigrade FB Glossy", manufacturer = "Ilford", category = "Paper", type = "FB Glossy", dilution = "N/A", defaultUnit = "sheets", isHazardous = false)
+        )
+        if (query.isBlank()) return presets
+        return presets.filter { it.name.contains(query, ignoreCase = true) || (it.manufacturer?.contains(query, ignoreCase = true) == true) }
+    }
+
+    fun searchPresetEquipment(query: String): List<ReferenceLabEquipmentItem> {
+        val presets = listOf(
+            ReferenceLabEquipmentItem(name = "Beseler 23C II", manufacturer = "Beseler", modelNumber = "23C II", category = "Enlarger", condition = "Excellent"),
+            ReferenceLabEquipmentItem(name = "Paterson Super System 4 Dev Tank", manufacturer = "Paterson", modelNumber = "System 4", category = "Dev Tank", condition = "Excellent"),
+            ReferenceLabEquipmentItem(name = "Rodenstock Rogenar 50mm f/2.8", manufacturer = "Rodenstock", modelNumber = "Rogenar 50mm", category = "Enlarger Lens", condition = "Excellent")
+        )
+        if (query.isBlank()) return presets
+        return presets.filter { it.name.contains(query, ignoreCase = true) || (it.manufacturer?.contains(query, ignoreCase = true) == true) }
+    }
+
     fun exportReferenceSyncPackageJson(): String {
         val cameras = loadFoundationCameras()
         val films = loadFoundationFilms()

@@ -1939,6 +1939,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var labEquipment by remember { mutableStateOf(emptyList<ReferenceLabEquipmentItem>()) }
 
     var showAddEditDialog by remember { mutableStateOf(false) }
+    var isPresetDropdownExpanded by remember { mutableStateOf(false) }
     var editingCamera by remember { mutableStateOf<ReferenceCameraItem?>(null) }
     var editingFilm by remember { mutableStateOf<ReferenceFilmItem?>(null) }
     var editingSupplier by remember { mutableStateOf<ReferenceSupplierItem?>(null) }
@@ -1976,12 +1977,36 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     when (selectedCategory) {
                         0 -> {
                             val item = editingCamera ?: ReferenceCameraItem(name = "")
-                            OutlinedTextField(
-                                value = item.name,
-                                onValueChange = { editingCamera = item.copy(name = it) },
-                                label = { Text("Camera Name") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                OutlinedTextField(
+                                    value = item.name,
+                                    onValueChange = { 
+                                        editingCamera = item.copy(name = it)
+                                        isPresetDropdownExpanded = true
+                                    },
+                                    label = { Text("Camera Name (Type to Search Preset Catalogue)") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    trailingIcon = {
+                                        IconButton(onClick = { isPresetDropdownExpanded = !isPresetDropdownExpanded }) {
+                                            Icon(Icons.Default.Search, contentDescription = "Search Preset Catalogue")
+                                        }
+                                    }
+                                )
+                                DropdownMenu(
+                                    expanded = isPresetDropdownExpanded && DatabaseRepository.searchPresetCameras(item.name).isNotEmpty(),
+                                    onDismissRequest = { isPresetDropdownExpanded = false }
+                                ) {
+                                    DatabaseRepository.searchPresetCameras(item.name).take(5).forEach { preset ->
+                                        DropdownMenuItem(
+                                            text = { Text("${preset.name} (${preset.type} • ${preset.mount ?: "Mount"})") },
+                                            onClick = {
+                                                editingCamera = preset
+                                                isPresetDropdownExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
                                     value = item.modelNumber ?: "",
@@ -2019,12 +2044,36 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         }
                         1 -> {
                             val item = editingFilm ?: ReferenceFilmItem(name = "")
-                            OutlinedTextField(
-                                value = item.name,
-                                onValueChange = { editingFilm = item.copy(name = it) },
-                                label = { Text("Film Name") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                OutlinedTextField(
+                                    value = item.name,
+                                    onValueChange = { 
+                                        editingFilm = item.copy(name = it)
+                                        isPresetDropdownExpanded = true
+                                    },
+                                    label = { Text("Film Name (Type to Search Preset Catalogue)") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    trailingIcon = {
+                                        IconButton(onClick = { isPresetDropdownExpanded = !isPresetDropdownExpanded }) {
+                                            Icon(Icons.Default.Search, contentDescription = "Search Preset Catalogue")
+                                        }
+                                    }
+                                )
+                                DropdownMenu(
+                                    expanded = isPresetDropdownExpanded && DatabaseRepository.searchPresetFilms(item.name).isNotEmpty(),
+                                    onDismissRequest = { isPresetDropdownExpanded = false }
+                                ) {
+                                    DatabaseRepository.searchPresetFilms(item.name).take(5).forEach { preset ->
+                                        DropdownMenuItem(
+                                            text = { Text("${preset.name} (ISO ${preset.iso} • ${preset.type})") },
+                                            onClick = {
+                                                editingFilm = preset
+                                                isPresetDropdownExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
                                     value = item.iso.toString(),
