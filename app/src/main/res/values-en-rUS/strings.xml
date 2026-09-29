@@ -3,4 +3,5 @@
     <!-- US English Overrides (en-US) -->
     <string name="online_lookup">Preset Catalog</string>
     <string name="search_web_for_specs">Autofill Specs from Catalog</string>
+    <string name="gear_library_title">Gear Collection</string>
 </resources>

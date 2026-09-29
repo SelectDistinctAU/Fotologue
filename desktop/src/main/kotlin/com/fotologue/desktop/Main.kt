@@ -1931,7 +1931,8 @@ fun DesktopApp(logoPainter: Painter? = null) {
 @Composable
 fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var pendingItems by remember { mutableStateOf(emptyList<FoundationReviewQueueEntity>()) }
-    var selectedCategory by remember { mutableIntStateOf(0) } // 0 = Cameras, 1 = Films, 2 = Suppliers
+    var selectedThemeGroup by remember { mutableIntStateOf(0) } // 0 = Photography Entities (Gear Collection), 1 = Lab & Inventory
+    var selectedCategory by remember { mutableIntStateOf(0) } // 0 = Cameras, 1 = Films, 2 = Suppliers, 3 = Consumables, 4 = Lab Equipment
     var cameras by remember { mutableStateOf(emptyList<ReferenceCameraItem>()) }
     var films by remember { mutableStateOf(emptyList<ReferenceFilmItem>()) }
     var suppliers by remember { mutableStateOf(emptyList<ReferenceSupplierItem>()) }
@@ -2415,39 +2416,98 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     }
                 }
 
-                // Sleek Segmented Category Tabs (Guaranteed 100% Fit)
+                // Primary Theme Toggle (Photography Entities vs Lab & Inventory)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .padding(3.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    val themeGroups = listOf(
+                        Triple("📷 PHOTOGRAPHY ENTITIES", 0, Icons.Default.Info),
+                        Triple("🧪 LAB & INVENTORY", 1, Icons.Default.List)
+                    )
+                    themeGroups.forEach { (title, themeIdx, icon) ->
+                        val isSelGroup = selectedThemeGroup == themeIdx
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(if (isSelGroup) MaterialTheme.colorScheme.primary else Color.Transparent)
+                                .clickable {
+                                    selectedThemeGroup = themeIdx
+                                    selectedCategory = if (themeIdx == 0) 0 else 2
+                                }
+                                .padding(vertical = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    tint = if (isSelGroup) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = title,
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = if (isSelGroup) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Sub-category selector tabs for active theme group
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(4.dp),
+                        .padding(3.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    val categories = listOf(
-                        "Cameras (${cameras.size})", 
-                        "Films (${films.size})", 
-                        "Suppliers (${suppliers.size})",
-                        "Consumables (${consumables.size})",
-                        "Equipment (${labEquipment.size})"
-                    )
-                    categories.forEachIndexed { idx, catTitle ->
-                        val isSel = selectedCategory == idx
+                    val categories = if (selectedThemeGroup == 0) {
+                        listOf(
+                            Triple("Cameras (${cameras.size})", 0, Icons.Default.Search),
+                            Triple("Films (${films.size})", 1, Icons.Default.List)
+                        )
+                    } else {
+                        listOf(
+                            Triple("Suppliers (${suppliers.size})", 2, Icons.Default.ShoppingCart),
+                            Triple("Consumables (${consumables.size})", 3, Icons.Default.Refresh),
+                            Triple("Equipment (${labEquipment.size})", 4, Icons.Default.Settings)
+                        )
+                    }
+                    categories.forEach { (catTitle, catIdx, catIcon) ->
+                        val isSel = selectedCategory == catIdx
                         Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(if (isSel) MaterialTheme.colorScheme.primary else Color.Transparent)
-                                .clickable { selectedCategory = idx }
+                                .clickable { selectedCategory = catIdx }
                                 .padding(vertical = 8.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = catTitle,
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = catIcon,
+                                    contentDescription = null,
+                                    tint = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = catTitle,
+                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1
+                                )
+                            }
                         }
                     }
                 }

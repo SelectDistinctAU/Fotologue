@@ -287,8 +287,8 @@
     <string name="none">None</string>
     <string name="add_new_lens">Add New Lens…</string>
 
-    <!-- Gear Library -->
-    <string name="gear_library_title">Gear Library</string>
+    <!-- Gear Collection -->
+    <string name="gear_library_title">Gear Collection</string>
     <string name="action_clear_selection">Clear selection</string>
     <string name="action_back_to_categories">Back to categories</string>
     <string name="action_select_all">Select all</string>
