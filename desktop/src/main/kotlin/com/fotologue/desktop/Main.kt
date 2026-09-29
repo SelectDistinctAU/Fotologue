@@ -363,8 +363,7 @@ object MasterVaultJsonParser {
             val frameCount = entries.size
             val dateStr = sdf.format(Date(first.timestamp))
 
-            val sortedEntries = entries.sortedBy { it.timestamp }
-            val parsedFrames = sortedEntries.mapIndexed { idx, dto ->
+            val parsedFrames = entries.mapIndexed { idx, dto ->
                 val derivedFrameNum = dto.filmRoll?.substringAfter(".")?.toIntOrNull() ?: (idx + 1)
                 DesktopFrameDetail(
                     frameNumber = derivedFrameNum,
@@ -388,7 +387,7 @@ object MasterVaultJsonParser {
                     outcomeStatus = null,
                     learningTag = null
                 )
-            }
+            }.sortedBy { it.frameNumber }
 
             val resolvedStatus = if (rollSerial == "Roll 1" || rollSerial.startsWith("1.") || !rollSerial.contains("-")) RollStatus.UNASSIGNED else RollStatus.FINISHED
 
@@ -521,18 +520,21 @@ suspend fun processZipJobLot(
                     val jsonContent = baos.toString("UTF-8")
 
                     val parsedRolls = MasterVaultJsonParser.parseAndMigrate(jsonContent)
-                    val thumbnailsList = thumbnailsMap.values.toList()
-                    val thumbnailKeys = thumbnailsMap.keys.toList()
+                    val sortedThumbnailEntries = thumbnailsMap.entries.sortedBy { (key, _) ->
+                        key.toLongOrNull() ?: 0L
+                    }
+                    val sortedThumbnailsList = sortedThumbnailEntries.map { it.value }
+                    val sortedThumbnailKeys = sortedThumbnailEntries.map { it.key }
 
                     parsedRolls.forEach { roll ->
-                        // 3-Tier Robust Thumbnail Matcher (Timestamp -> Frame Serial _F01/_F02 -> Positional Index)
+                        // 3-Tier Robust Thumbnail Matcher (Timestamp -> Frame Serial _F01/_F02 -> Chronological Index)
                         val updatedFrames = roll.frames.mapIndexed { fIdx, f -> 
                             var bytes = thumbnailsMap[f.timestampMs.toString()]
 
                             if (bytes == null) {
                                 val fNumFormatted = String.format(Locale.US, "F%02d", f.frameNumber)
                                 val fNumAlt = "_F${f.frameNumber}"
-                                val matchingKey = thumbnailKeys.find { key ->
+                                val matchingKey = sortedThumbnailKeys.find { key ->
                                     key.contains(fNumFormatted, ignoreCase = true) || 
                                     key.endsWith(fNumAlt, ignoreCase = true) ||
                                     key.endsWith("_${f.frameNumber}", ignoreCase = true) ||
@@ -543,8 +545,8 @@ suspend fun processZipJobLot(
                                 }
                             }
 
-                            if (bytes == null && fIdx in thumbnailsList.indices) {
-                                bytes = thumbnailsList[fIdx]
+                            if (bytes == null && fIdx in sortedThumbnailsList.indices) {
+                                bytes = sortedThumbnailsList[fIdx]
                             }
 
                             f.copy(imageBytes = bytes) 
