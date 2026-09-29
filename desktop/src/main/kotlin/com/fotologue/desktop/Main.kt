@@ -1963,6 +1963,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var suppliers by remember { mutableStateOf(emptyList<ReferenceSupplierItem>()) }
     var consumables by remember { mutableStateOf(emptyList<ReferenceConsumableItem>()) }
     var labEquipment by remember { mutableStateOf(emptyList<ReferenceLabEquipmentItem>()) }
+    var storageLocations by remember { mutableStateOf(emptyList<ReferenceStorageLocationItem>()) }
+    var custodyInteractions by remember { mutableStateOf(emptyList<ReferenceCustodyInteractionItem>()) }
 
     var showAddEditDialog by remember { mutableStateOf(false) }
     var isPresetDropdownExpanded by remember { mutableStateOf(false) }
@@ -1978,6 +1980,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var editingSupplier by remember { mutableStateOf<ReferenceSupplierItem?>(null) }
     var editingConsumable by remember { mutableStateOf<ReferenceConsumableItem?>(null) }
     var editingLabEquipment by remember { mutableStateOf<ReferenceLabEquipmentItem?>(null) }
+    var editingStorageLocation by remember { mutableStateOf<ReferenceStorageLocationItem?>(null) }
+    var editingCustodyInteraction by remember { mutableStateOf<ReferenceCustodyInteractionItem?>(null) }
 
     fun refreshAllData() {
         transaction {
@@ -1996,6 +2000,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
         suppliers = DatabaseRepository.loadFoundationSuppliers()
         consumables = DatabaseRepository.loadFoundationConsumables()
         labEquipment = DatabaseRepository.loadFoundationLabEquipment()
+        storageLocations = DatabaseRepository.loadStorageLocations()
+        custodyInteractions = DatabaseRepository.loadCustodyInteractions()
     }
 
     LaunchedEffect(Unit) {
@@ -2461,6 +2467,80 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                         }
+                        11 -> { // Storage Location
+                            val item = editingStorageLocation ?: ReferenceStorageLocationItem(name = "")
+                            OutlinedTextField(
+                                value = item.name,
+                                onValueChange = { editingStorageLocation = item.copy(name = it) },
+                                label = { Text("Storage Location Name (e.g. Dry Cabinet A, Camera Bag #1)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.type,
+                                    onValueChange = { editingStorageLocation = item.copy(type = it) },
+                                    label = { Text("Type (Cabinet, Shelf, Bag, Studio)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.notes ?: "",
+                                    onValueChange = { editingStorageLocation = item.copy(notes = it) },
+                                    label = { Text("Notes / Location Info") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                        12, 13 -> { // Custody / Pre-Arrival Order / Loan Ledger
+                            val item = editingCustodyInteraction ?: ReferenceCustodyInteractionItem(assetName = "", interactionType = if (selectedCategory == 12) "PURCHASE_ORDER" else "LOAN_OUT")
+                            OutlinedTextField(
+                                value = item.assetName,
+                                onValueChange = { editingCustodyInteraction = item.copy(assetName = it) },
+                                label = { Text("Asset Name (e.g. Leica M3, Hasselblad Lens)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.interactionType,
+                                    onValueChange = { editingCustodyInteraction = item.copy(interactionType = it) },
+                                    label = { Text("Type (PURCHASE_ORDER, LOAN_OUT, RENTAL_IN, REPAIR)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.contactName ?: "",
+                                    onValueChange = { editingCustodyInteraction = item.copy(contactName = it) },
+                                    label = { Text("Contact / Vendor / Borrower Name") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.orderStatus,
+                                    onValueChange = { editingCustodyInteraction = item.copy(orderStatus = it) },
+                                    label = { Text("Status (WAITLISTED, PACKAGING, IN_TRANSIT, DELIVERED)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.storageLocationName ?: "",
+                                    onValueChange = { editingCustodyInteraction = item.copy(storageLocationName = it) },
+                                    label = { Text("Storage Location (e.g. Dry Cabinet A)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.trackingNumber ?: "",
+                                    onValueChange = { editingCustodyInteraction = item.copy(trackingNumber = it) },
+                                    label = { Text("Tracking Number (Optional)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.carrier ?: "",
+                                    onValueChange = { editingCustodyInteraction = item.copy(carrier = it) },
+                                    label = { Text("Carrier (AusPost, DHL, FedEx)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
                     }
                 }
             },
@@ -2478,6 +2558,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         8 -> editingSupplier?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationSupplier(it) }
                         9 -> editingConsumable?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationConsumable(it) }
                         10 -> editingLabEquipment?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationLabEquipment(it) }
+                        11 -> editingStorageLocation?.let { if (it.name.isNotBlank()) DatabaseRepository.saveStorageLocation(it) }
+                        12, 13 -> editingCustodyInteraction?.let { if (it.assetName.isNotBlank()) DatabaseRepository.saveCustodyInteraction(it) }
                     }
                     refreshAllData()
                     showAddEditDialog = false
@@ -2492,6 +2574,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     editingSupplier = null
                     editingConsumable = null
                     editingLabEquipment = null
+                    editingStorageLocation = null
+                    editingCustodyInteraction = null
                 }) {
                     Text("Save")
                 }
@@ -2510,6 +2594,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     editingSupplier = null
                     editingConsumable = null
                     editingLabEquipment = null
+                    editingStorageLocation = null
+                    editingCustodyInteraction = null
                 }) {
                     Text("Cancel")
                 }
@@ -2764,7 +2850,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         val labCategories = listOf(
                             Triple("Suppliers (${suppliers.size})", 8, Icons.Default.Storefront),
                             Triple("Consumables (${consumables.size})", 9, Icons.Default.Science),
-                            Triple("Equipment (${labEquipment.size})", 10, Icons.Default.Build)
+                            Triple("Equipment (${labEquipment.size})", 10, Icons.Default.Build),
+                            Triple("Storage Locations (${storageLocations.size})", 11, Icons.Default.Home),
+                            Triple("Pre-Arrival Orders (${custodyInteractions.count { it.interactionType == "PURCHASE_ORDER" && !it.isReturned }})", 12, Icons.Default.Info),
+                            Triple("Custody Ledger (${custodyInteractions.count { it.interactionType != "PURCHASE_ORDER" }})", 13, Icons.AutoMirrored.Filled.List)
                         )
                         labCategories.forEach { (catTitle, catIdx, catIcon) ->
                             val isSel = selectedCategory == catIdx
@@ -3239,6 +3328,139 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                                     }
                                                     IconButton(onClick = {
                                                         DatabaseRepository.deleteFoundationLabEquipment(eq.id)
+                                                        refreshAllData()
+                                                    }) {
+                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        11 -> { // Storage Locations
+                            if (storageLocations.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("No storage locations created yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    items(storageLocations.size) { idx ->
+                                        val loc = storageLocations[idx]
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Text("📦 ${loc.name}", fontWeight = FontWeight.Bold)
+                                                    Text("Type: ${loc.type} ${if (!loc.notes.isNullOrBlank()) "• Notes: ${loc.notes}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                }
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                    IconButton(onClick = {
+                                                        editingStorageLocation = loc
+                                                        showAddEditDialog = true
+                                                    }) {
+                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                                    }
+                                                    IconButton(onClick = {
+                                                        DatabaseRepository.deleteStorageLocation(loc.id)
+                                                        refreshAllData()
+                                                    }) {
+                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        12 -> { // Pre-Arrival Orders
+                            val orders = custodyInteractions.filter { it.interactionType == "PURCHASE_ORDER" }
+                            if (orders.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("No pre-arrival asset orders or waitlisted items currently pending.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    items(orders.size) { idx ->
+                                        val ord = orders[idx]
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Text("🚚 ${ord.assetName}", fontWeight = FontWeight.Bold)
+                                                    Text("Status: ${ord.orderStatus} • Vendor: ${ord.contactName ?: "Store"} ${if (!ord.trackingNumber.isNullOrBlank()) "• Tracking: ${ord.trackingNumber}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                }
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                    Button(
+                                                        onClick = {
+                                                            DatabaseRepository.saveCustodyInteraction(ord.copy(orderStatus = "DELIVERED", isReturned = true))
+                                                            refreshAllData()
+                                                        },
+                                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
+                                                        contentPadding = PaddingValues(horizontal = 8.dp)
+                                                    ) {
+                                                        Text("Mark Delivered", style = MaterialTheme.typography.labelSmall)
+                                                    }
+                                                    IconButton(onClick = {
+                                                        editingCustodyInteraction = ord
+                                                        showAddEditDialog = true
+                                                    }) {
+                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        13 -> { // Custody Ledger
+                            val loansAndRentals = custodyInteractions.filter { it.interactionType != "PURCHASE_ORDER" }
+                            if (loansAndRentals.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("No active gear loans, rentals, or repair interactions logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    items(loansAndRentals.size) { idx ->
+                                        val cust = loansAndRentals[idx]
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    val statusText = if (cust.isReturned) "COMPLETED" else "ACTIVE (${cust.interactionType})"
+                                                    Text("${cust.assetName} ➞ ${cust.contactName ?: "Party"}", fontWeight = FontWeight.Bold)
+                                                    Text("Status: $statusText • Location: ${cust.storageLocationName ?: "In Storage"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                }
+                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                    IconButton(onClick = {
+                                                        editingCustodyInteraction = cust
+                                                        showAddEditDialog = true
+                                                    }) {
+                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                                    }
+                                                    IconButton(onClick = {
+                                                        DatabaseRepository.deleteCustodyInteraction(cust.id)
                                                         refreshAllData()
                                                     }) {
                                                         Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))

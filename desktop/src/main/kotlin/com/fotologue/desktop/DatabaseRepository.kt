@@ -703,6 +703,118 @@ object DatabaseRepository {
         }
     }
 
+    // --- STORAGE LOCATIONS CRUD HELPERS ---
+    fun loadStorageLocations(): List<ReferenceStorageLocationItem> {
+        return transaction {
+            StorageLocationEntity.all().map {
+                ReferenceStorageLocationItem(
+                    id = it.id.value,
+                    name = it.name,
+                    type = it.type,
+                    notes = it.notes
+                )
+            }.sortedBy { it.name }
+        }
+    }
+
+    fun saveStorageLocation(item: ReferenceStorageLocationItem) {
+        transaction {
+            if (item.id > 0) {
+                StorageLocationEntity.findById(item.id)?.apply {
+                    name = item.name
+                    type = item.type
+                    notes = item.notes
+                }
+            } else {
+                StorageLocationEntity.new {
+                    name = item.name
+                    type = item.type
+                    notes = item.notes
+                }
+            }
+        }
+    }
+
+    fun deleteStorageLocation(id: Int) {
+        transaction {
+            StorageLocationEntity.findById(id)?.delete()
+        }
+    }
+
+    // --- CUSTODY INTERACTIONS CRUD HELPERS ---
+    fun loadCustodyInteractions(): List<ReferenceCustodyInteractionItem> {
+        return transaction {
+            CustodyInteractionEntity.all().map {
+                ReferenceCustodyInteractionItem(
+                    id = it.id.value,
+                    assetType = it.assetType,
+                    assetName = it.assetName,
+                    contactName = it.contactName,
+                    interactionType = it.interactionType,
+                    orderStatus = it.orderStatus,
+                    trackingNumber = it.trackingNumber,
+                    carrier = it.carrier,
+                    storageLocationName = it.storageLocationName,
+                    startDateMs = it.startDateMs,
+                    dueDateMs = it.dueDateMs,
+                    returnedDateMs = it.returnedDateMs,
+                    costOrFee = it.costOrFee,
+                    ratingStars = it.ratingStars,
+                    isReturned = it.isReturned,
+                    notes = it.notes
+                )
+            }.sortedBy { it.id }
+        }
+    }
+
+    fun saveCustodyInteraction(item: ReferenceCustodyInteractionItem) {
+        transaction {
+            if (item.id > 0) {
+                CustodyInteractionEntity.findById(item.id)?.apply {
+                    assetType = item.assetType
+                    assetName = item.assetName
+                    contactName = item.contactName
+                    interactionType = item.interactionType
+                    orderStatus = item.orderStatus
+                    trackingNumber = item.trackingNumber
+                    carrier = item.carrier
+                    storageLocationName = item.storageLocationName
+                    startDateMs = item.startDateMs
+                    dueDateMs = item.dueDateMs
+                    returnedDateMs = item.returnedDateMs
+                    costOrFee = item.costOrFee
+                    ratingStars = item.ratingStars
+                    isReturned = item.isReturned
+                    notes = item.notes
+                }
+            } else {
+                CustodyInteractionEntity.new {
+                    assetType = item.assetType
+                    assetName = item.assetName
+                    contactName = item.contactName
+                    interactionType = item.interactionType
+                    orderStatus = item.orderStatus
+                    trackingNumber = item.trackingNumber
+                    carrier = item.carrier
+                    storageLocationName = item.storageLocationName
+                    startDateMs = item.startDateMs
+                    dueDateMs = item.dueDateMs
+                    returnedDateMs = item.returnedDateMs
+                    costOrFee = item.costOrFee
+                    ratingStars = item.ratingStars
+                    isReturned = item.isReturned
+                    notes = item.notes
+                }
+            }
+        }
+    }
+
+    fun deleteCustodyInteraction(id: Int) {
+        transaction {
+            CustodyInteractionEntity.findById(id)?.delete()
+        }
+    }
+
     // --- CONTRIBUTORS CRUD HELPERS ---
     fun loadContributors(): List<ContributorItem> {
         return transaction {
@@ -794,6 +906,8 @@ object DatabaseRepository {
         val viewfinders = loadFoundationViewfinders()
         val accessories = loadFoundationAccessories()
         val kits = loadFoundationKits()
+        val storageLocations = loadStorageLocations()
+        val custodyInteractions = loadCustodyInteractions()
         val suppliers = loadFoundationSuppliers()
         val consumables = loadFoundationConsumables()
         val equipment = loadFoundationLabEquipment()
@@ -812,6 +926,8 @@ object DatabaseRepository {
                 "viewfinders" to viewfinders,
                 "accessories" to accessories,
                 "kits" to kits,
+                "storageLocations" to storageLocations,
+                "custodyInteractions" to custodyInteractions,
                 "labSuppliers" to suppliers,
                 "consumables" to consumables,
                 "labEquipment" to equipment

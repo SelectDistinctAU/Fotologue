@@ -445,6 +445,82 @@ data class ReferenceKitItem(
     val notes: String? = null
 )
 
+object StorageLocationsTable : IntIdTable("storage_locations") {
+    val name = varchar("name", 255).uniqueIndex()
+    val type = varchar("type", 50).default("Cabinet")
+    val notes = text("notes").nullable()
+}
+
+class StorageLocationEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<StorageLocationEntity>(StorageLocationsTable)
+    var name by StorageLocationsTable.name
+    var type by StorageLocationsTable.type
+    var notes by StorageLocationsTable.notes
+}
+
+object CustodyInteractionsTable : IntIdTable("custody_interactions") {
+    val assetType = varchar("asset_type", 50)
+    val assetName = varchar("asset_name", 255)
+    val contactName = varchar("contact_name", 255).nullable()
+    val interactionType = varchar("interaction_type", 50)
+    val orderStatus = varchar("order_status", 50).default("DELIVERED")
+    val trackingNumber = varchar("tracking_number", 255).nullable()
+    val carrier = varchar("carrier", 100).nullable()
+    val storageLocationName = varchar("storage_location_name", 255).nullable()
+    val startDateMs = long("start_date_ms").default(0L)
+    val dueDateMs = long("due_date_ms").nullable()
+    val returnedDateMs = long("returned_date_ms").nullable()
+    val costOrFee = double("cost_or_fee").nullable()
+    val ratingStars = integer("rating_stars").default(5)
+    val isReturned = bool("is_returned").default(false)
+    val notes = text("notes").nullable()
+}
+
+class CustodyInteractionEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<CustodyInteractionEntity>(CustodyInteractionsTable)
+    var assetType by CustodyInteractionsTable.assetType
+    var assetName by CustodyInteractionsTable.assetName
+    var contactName by CustodyInteractionsTable.contactName
+    var interactionType by CustodyInteractionsTable.interactionType
+    var orderStatus by CustodyInteractionsTable.orderStatus
+    var trackingNumber by CustodyInteractionsTable.trackingNumber
+    var carrier by CustodyInteractionsTable.carrier
+    var storageLocationName by CustodyInteractionsTable.storageLocationName
+    var startDateMs by CustodyInteractionsTable.startDateMs
+    var dueDateMs by CustodyInteractionsTable.dueDateMs
+    var returnedDateMs by CustodyInteractionsTable.returnedDateMs
+    var costOrFee by CustodyInteractionsTable.costOrFee
+    var ratingStars by CustodyInteractionsTable.ratingStars
+    var isReturned by CustodyInteractionsTable.isReturned
+    var notes by CustodyInteractionsTable.notes
+}
+
+data class ReferenceStorageLocationItem(
+    val id: Int = 0,
+    val name: String,
+    val type: String = "Cabinet",
+    val notes: String? = null
+)
+
+data class ReferenceCustodyInteractionItem(
+    val id: Int = 0,
+    val assetType: String = "CAMERA",
+    val assetName: String,
+    val contactName: String? = null,
+    val interactionType: String = "LOAN_OUT",
+    val orderStatus: String = "DELIVERED",
+    val trackingNumber: String? = null,
+    val carrier: String? = null,
+    val storageLocationName: String? = null,
+    val startDateMs: Long = System.currentTimeMillis(),
+    val dueDateMs: Long? = null,
+    val returnedDateMs: Long? = null,
+    val costOrFee: Double? = null,
+    val ratingStars: Int = 5,
+    val isReturned: Boolean = false,
+    val notes: String? = null
+)
+
 object FoundationReviewQueueTable : IntIdTable("foundation_review_queue") {
     val contributorId = integer("contributor_id")
     val itemType = varchar("item_type", 50) // e.g. "FILM", "CAMERA", "SUPPLIER"
@@ -497,6 +573,8 @@ object DatabaseManager {
                 FoundationFlashesTable,
                 FoundationViewfindersTable,
                 FoundationKitsTable,
+                StorageLocationsTable,
+                CustodyInteractionsTable,
                 ContributorsTable,
                 FoundationReviewQueueTable
             )
