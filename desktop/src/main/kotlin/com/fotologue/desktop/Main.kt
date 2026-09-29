@@ -1123,7 +1123,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                     Triple("All ($totalCount)", null as RollStatus?, MaterialTheme.colorScheme.primary),
                                                     Triple("Unassigned ($orphanCount)", RollStatus.UNASSIGNED, Color(0xFFE65100)),
                                                     Triple("Active ($activeCount)", RollStatus.ACTIVE, Color(0xFF2E7D32)),
-                                                    Triple("Vault ($finishedCount)", RollStatus.FINISHED, MaterialTheme.colorScheme.secondary)
+                                                    Triple("Completed ($finishedCount)", RollStatus.FINISHED, MaterialTheme.colorScheme.secondary)
                                                 )
 
                                                 tabs.forEach { (label, status, color) ->
