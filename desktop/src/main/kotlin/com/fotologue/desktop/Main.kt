@@ -26,25 +26,34 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Filter
+import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Close
@@ -2716,14 +2725,14 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         )
                         
                         val gearCategories = listOf(
-                            Triple("Kits (${kits.size})", 3, Icons.Default.Home),
-                            Triple("Cameras (${cameras.size})", 0, Icons.Default.Search),
-                            Triple("Lenses (${lenses.size})", 1, Icons.Default.Search),
+                            Triple("Kits (${kits.size})", 3, Icons.Default.Inventory2),
+                            Triple("Cameras (${cameras.size})", 0, Icons.Default.PhotoCamera),
+                            Triple("Lenses (${lenses.size})", 1, Icons.Default.Camera),
                             Triple("Films (${films.size})", 2, Icons.AutoMirrored.Filled.List),
-                            Triple("Teleconverters (${teleconverters.size})", 4, Icons.Default.Search),
-                            Triple("Filters (${filters.size})", 5, Icons.Default.Search),
-                            Triple("Flashes (${flashes.size})", 6, Icons.Default.Settings),
-                            Triple("Viewfinders (${viewfinders.size})", 7, Icons.Default.Info)
+                            Triple("Teleconverters (${teleconverters.size})", 4, Icons.Default.ZoomIn),
+                            Triple("Filters (${filters.size})", 5, Icons.Default.Filter),
+                            Triple("Flashes (${flashes.size})", 6, Icons.Default.FlashOn),
+                            Triple("Viewfinders (${viewfinders.size})", 7, Icons.Default.Visibility)
                         )
                         gearCategories.forEach { (catTitle, catIdx, catIcon) ->
                             val isSel = selectedCategory == catIdx
@@ -2751,9 +2760,9 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         )
                         
                         val labCategories = listOf(
-                            Triple("Suppliers (${suppliers.size})", 8, Icons.Default.ShoppingCart),
-                            Triple("Consumables (${consumables.size})", 9, Icons.Default.Refresh),
-                            Triple("Equipment (${labEquipment.size})", 10, Icons.Default.Settings)
+                            Triple("Suppliers (${suppliers.size})", 8, Icons.Default.Storefront),
+                            Triple("Consumables (${consumables.size})", 9, Icons.Default.Science),
+                            Triple("Equipment (${labEquipment.size})", 10, Icons.Default.Build)
                         )
                         labCategories.forEach { (catTitle, catIdx, catIcon) ->
                             val isSel = selectedCategory == catIdx
