@@ -28,6 +28,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Close
@@ -869,18 +885,18 @@ fun DesktopApp(logoPainter: Painter? = null) {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                // EXPLICIT EXCEL-STYLE NAVIGATION TABS
+                // STAGE NAVIGATION TABS (WITH MATERIAL SYMBOLS)
                 Row(
                     modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant).padding(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     val tabs = listOf(
-                        "📥 Import",
-                        "⚙️ Process (${masterVaultRolls.size})",
-                        "🏷️ Tag Images",
-                        "🏛️ Administration"
+                        Triple("Import", Icons.Default.Share, 0),
+                        Triple("Process (${masterVaultRolls.size})", Icons.Default.Refresh, 1),
+                        Triple("Tag Images", Icons.Default.LocationOn, 2),
+                        Triple("Administration", Icons.Default.Settings, 3)
                     )
-                    tabs.forEachIndexed { index, title ->
+                    tabs.forEach { (title, icon, index) ->
                         val isSelected = selectedTab == index
                         Box(
                             modifier = Modifier
@@ -891,11 +907,23 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                 .padding(vertical = 12.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = title,
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = title,
+                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                         }
                     }
                 }
