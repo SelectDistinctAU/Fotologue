@@ -25,6 +25,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -69,6 +70,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -2219,29 +2222,6 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                         }
-                        4 -> { // Accessory
-                            val item = editingAccessory ?: ReferenceAccessoryItem(name = "")
-                            OutlinedTextField(
-                                value = item.name,
-                                onValueChange = { editingAccessory = item.copy(name = it) },
-                                label = { Text("Accessory Name (e.g. FA-1 Finder)") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.type,
-                                    onValueChange = { editingAccessory = item.copy(type = it) },
-                                    label = { Text("Type (Teleconverter, Filter, Flash, Viewfinder)") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                OutlinedTextField(
-                                    value = item.specs ?: "",
-                                    onValueChange = { editingAccessory = item.copy(specs = it) },
-                                    label = { Text("Specifications / Notes") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                        }
                         4 -> { // Teleconverter
                             val item = editingTeleconverter ?: ReferenceTeleconverterItem(name = "")
                             OutlinedTextField(
@@ -2710,113 +2690,91 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     }
                 }
 
-                // Primary Theme Toggle (Photography Entities vs Lab & Inventory)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .padding(3.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    val themeGroups = listOf(
-                        Triple("📷 PHOTOGRAPHY ENTITIES", 0, Icons.Default.Info),
-                        Triple("🧪 LAB & INVENTORY", 1, Icons.Default.List)
-                    )
-                    themeGroups.forEach { (title, themeIdx, icon) ->
-                        val isSelGroup = selectedThemeGroup == themeIdx
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(if (isSelGroup) MaterialTheme.colorScheme.primary else Color.Transparent)
-                                .clickable {
-                                    selectedThemeGroup = themeIdx
-                                    selectedCategory = if (themeIdx == 0) 0 else 8
-                                }
-                                .padding(vertical = 8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = icon,
-                                    contentDescription = null,
-                                    tint = if (isSelGroup) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = title,
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = if (isSelGroup) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
-                                )
-                            }
-                        }
-                    }
-                }
+                HorizontalDivider()
 
-                // Sub-category selector tabs for active theme group
+                // Vertical Category Split Pane
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(3.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    val categories = if (selectedThemeGroup == 0) {
-                        listOf(
+                    // LEFT VERTICAL CATEGORY RAIL
+                    Column(
+                        modifier = Modifier
+                            .width(180.dp)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                            .padding(6.dp)
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            "PHOTOGRAPHY ENTITIES",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
+                        )
+                        
+                        val gearCategories = listOf(
                             Triple("Kits (${kits.size})", 3, Icons.Default.Home),
                             Triple("Cameras (${cameras.size})", 0, Icons.Default.Search),
                             Triple("Lenses (${lenses.size})", 1, Icons.Default.Search),
-                            Triple("Films (${films.size})", 2, Icons.Default.List),
+                            Triple("Films (${films.size})", 2, Icons.AutoMirrored.Filled.List),
                             Triple("Teleconverters (${teleconverters.size})", 4, Icons.Default.Search),
                             Triple("Filters (${filters.size})", 5, Icons.Default.Search),
                             Triple("Flashes (${flashes.size})", 6, Icons.Default.Settings),
                             Triple("Viewfinders (${viewfinders.size})", 7, Icons.Default.Info)
                         )
-                    } else {
-                        listOf(
+                        gearCategories.forEach { (catTitle, catIdx, catIcon) ->
+                            val isSel = selectedCategory == catIdx
+                            NavigationDrawerItem(
+                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) },
+                                selected = isSel,
+                                onClick = { selectedCategory = catIdx },
+                                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                                modifier = Modifier.height(36.dp),
+                                colors = NavigationDrawerItemDefaults.colors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            )
+                        }
+
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
+
+                        Text(
+                            "LAB & INVENTORY",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
+                        )
+                        
+                        val labCategories = listOf(
                             Triple("Suppliers (${suppliers.size})", 8, Icons.Default.ShoppingCart),
                             Triple("Consumables (${consumables.size})", 9, Icons.Default.Refresh),
                             Triple("Equipment (${labEquipment.size})", 10, Icons.Default.Settings)
                         )
-                    }
-                    categories.forEach { (catTitle, catIdx, catIcon) ->
-                        val isSel = selectedCategory == catIdx
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(if (isSel) MaterialTheme.colorScheme.primary else Color.Transparent)
-                                .clickable { selectedCategory = catIdx }
-                                .padding(horizontal = 12.dp, vertical = 8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = catIcon,
-                                    contentDescription = null,
-                                    tint = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.size(14.dp)
+                        labCategories.forEach { (catTitle, catIdx, catIcon) ->
+                            val isSel = selectedCategory == catIdx
+                            NavigationDrawerItem(
+                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) },
+                                selected = isSel,
+                                onClick = { selectedCategory = catIdx },
+                                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                                modifier = Modifier.height(36.dp),
+                                colors = NavigationDrawerItemDefaults.colors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = catTitle,
-                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    maxLines = 1
-                                )
-                            }
+                            )
                         }
                     }
-                }
 
-                HorizontalDivider()
-
-                // Data Grid for Selected Category
-                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                    when (selectedCategory) {
+                    // RIGHT MAIN CONTENT: DATA GRID FOR SELECTED CATEGORY
+                    Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                        when (selectedCategory) {
                         0 -> { // Cameras
                             if (cameras.isEmpty()) {
                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -3283,6 +3241,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         }
                     }
                 }
+            }
 
                 Button(
                     onClick = onPublishManifest,

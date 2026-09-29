@@ -778,6 +778,11 @@ object DatabaseRepository {
         return presets.filter { it.name.contains(query, ignoreCase = true) || (it.manufacturer?.contains(query, ignoreCase = true) == true) }
     }
 
+    private val jsonFormatter = Json {
+        prettyPrint = true
+        ignoreUnknownKeys = true
+    }
+
     fun exportReferenceSyncPackageJson(): String {
         val contributors = loadContributors()
         val cameras = loadFoundationCameras()
@@ -793,7 +798,7 @@ object DatabaseRepository {
         val consumables = loadFoundationConsumables()
         val equipment = loadFoundationLabEquipment()
 
-        return Json { prettyPrint = true }.encodeToString(
+        return jsonFormatter.encodeToString(
             mapOf(
                 "timestamp" to System.currentTimeMillis(),
                 "schemaVersion" to 3,
