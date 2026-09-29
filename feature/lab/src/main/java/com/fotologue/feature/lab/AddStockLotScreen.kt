@@ -161,7 +161,7 @@ fun AddStockLotScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                 title = {
                     Text(
-                        text = if (initialLot == null) "Add Physical Stock" else "Edit Stock Lot",
+                        text = if (initialLot == null) "Add Stock Item" else "Edit Stock Item",
                         style = MaterialTheme.typography.titleLarge,
                         color = safelightFg
                     )
@@ -256,7 +256,7 @@ fun AddStockLotScreen(
                     value = displaySupplierName,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Supplier Contact") },
+                    label = { Text("Supplier") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = supplierExpanded) },
                     colors = textFieldColors,
                     modifier = Modifier
@@ -279,7 +279,7 @@ fun AddStockLotScreen(
                     }
                     if (onAddNewSupplier != null) {
                         DropdownMenuItem(
-                            text = { Text("+ Add New Supplier Contact...", fontWeight = FontWeight.Bold, color = safelightPrimary) },
+                            text = { Text("+ Add New Supplier...", fontWeight = FontWeight.Bold, color = safelightPrimary) },
                             onClick = {
                                 supplierExpanded = false
                                 onAddNewSupplier()

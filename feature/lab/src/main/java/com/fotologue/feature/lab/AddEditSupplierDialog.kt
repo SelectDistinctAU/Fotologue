@@ -44,7 +44,7 @@ fun AddEditSupplierDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = cardColor,
-        title = { Text(if (initialSupplier == null) "Add Supplier Contact" else "Edit Supplier Details", color = textColor, fontWeight = FontWeight.Bold) },
+        title = { Text(if (initialSupplier == null) "Add Supplier" else "Edit Supplier", color = textColor, fontWeight = FontWeight.Bold) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(

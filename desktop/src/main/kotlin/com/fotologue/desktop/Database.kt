@@ -124,6 +124,9 @@ object FoundationSuppliersTable : IntIdTable("foundation_suppliers") {
     val name = varchar("name", 255).uniqueIndex()
     val website = varchar("website", 512).nullable()
     val region = varchar("region", 50).nullable()
+    val email = varchar("email", 255).nullable()
+    val phone = varchar("phone", 100).nullable()
+    val address = text("address").nullable()
     val reliabilityRating = integer("reliability_rating").default(5)
     val notes = text("notes").nullable()
 }
@@ -133,6 +136,9 @@ class FoundationSupplierEntity(id: EntityID<Int>) : IntEntity(id) {
     var name by FoundationSuppliersTable.name
     var website by FoundationSuppliersTable.website
     var region by FoundationSuppliersTable.region
+    var email by FoundationSuppliersTable.email
+    var phone by FoundationSuppliersTable.phone
+    var address by FoundationSuppliersTable.address
     var reliabilityRating by FoundationSuppliersTable.reliabilityRating
     var notes by FoundationSuppliersTable.notes
 }
@@ -207,6 +213,9 @@ data class ReferenceSupplierItem(
     val name: String,
     val website: String? = null,
     val region: String? = null,
+    val email: String? = null,
+    val phone: String? = null,
+    val address: String? = null,
     val reliabilityRating: Int = 5,
     val notes: String? = null
 )

@@ -60,7 +60,7 @@ fun EditStockLotDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = cardColor,
-        title = { Text("Edit Stock Lot ($masterName)", color = textColor, fontWeight = FontWeight.Bold) },
+        title = { Text("Edit Stock Item ($masterName)", color = textColor, fontWeight = FontWeight.Bold) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 // Status Dropdown
@@ -172,7 +172,7 @@ fun EditStockLotDialog(
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("Save Stock Lot", color = Color.White)
+                Text("Save Stock Item", color = Color.White)
             }
         },
         dismissButton = {

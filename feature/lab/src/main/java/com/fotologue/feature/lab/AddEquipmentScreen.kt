@@ -88,7 +88,7 @@ fun AddEquipmentScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = if (initialEquipment == null) "Add Darkroom Equipment" else "Edit Equipment",
+                        text = if (initialEquipment == null) "Add Lab Equipment" else "Edit Lab Equipment",
                         style = MaterialTheme.typography.titleLarge
                     )
                 },

@@ -259,7 +259,7 @@ fun AddEditInventoryMasterScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                 title = {
                     Text(
-                        text = if (initialMaster == null) "Add Inventory Item" else "Edit Inventory Item",
+                        text = if (initialMaster == null) "Add Product Definition" else "Edit Product Definition",
                         style = MaterialTheme.typography.titleLarge,
                         color = safelightFg
                     )
@@ -558,7 +558,7 @@ fun AddEditInventoryMasterScreen(
             ) {
                 Icon(Icons.Default.Check, contentDescription = null, tint = safelightBtnFg)
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Save Inventory Item", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightBtnFg)
+                Text("Save Product Definition", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightBtnFg)
             }
 
             OutlinedButton(

@@ -64,7 +64,7 @@ fun AddEditSupplierScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = if (initialSupplier == null) "Add Supplier Contact" else "Edit Supplier Contact",
+                        text = if (initialSupplier == null) "Add Supplier" else "Edit Supplier",
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -202,7 +202,7 @@ fun AddEditSupplierScreen(
             ) {
                 Icon(Icons.Default.Check, contentDescription = null)
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Save Supplier Contact", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                Text("Save Supplier", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
             }
         }
     }

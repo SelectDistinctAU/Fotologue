@@ -2137,6 +2137,26 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                     modifier = Modifier.weight(1f)
                                 )
                             }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.email ?: "",
+                                    onValueChange = { editingSupplier = item.copy(email = it) },
+                                    label = { Text("Email Address") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.phone ?: "",
+                                    onValueChange = { editingSupplier = item.copy(phone = it) },
+                                    label = { Text("Phone Number") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            OutlinedTextField(
+                                value = item.address ?: "",
+                                onValueChange = { editingSupplier = item.copy(address = it) },
+                                label = { Text("Physical Address / Store Location") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                         3 -> {
                             val item = editingConsumable ?: ReferenceConsumableItem(name = "")

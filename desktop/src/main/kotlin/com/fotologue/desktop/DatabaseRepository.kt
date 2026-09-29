@@ -253,6 +253,9 @@ object DatabaseRepository {
                     name = it.name,
                     website = it.website,
                     region = it.region,
+                    email = it.email,
+                    phone = it.phone,
+                    address = it.address,
                     reliabilityRating = it.reliabilityRating,
                     notes = it.notes
                 )
@@ -267,6 +270,9 @@ object DatabaseRepository {
                     name = item.name
                     website = item.website
                     region = item.region
+                    email = item.email
+                    phone = item.phone
+                    address = item.address
                     reliabilityRating = item.reliabilityRating
                     notes = item.notes
                 }
@@ -275,6 +281,9 @@ object DatabaseRepository {
                     name = item.name
                     website = item.website
                     region = item.region
+                    email = item.email
+                    phone = item.phone
+                    address = item.address
                     reliabilityRating = item.reliabilityRating
                     notes = item.notes
                 }
