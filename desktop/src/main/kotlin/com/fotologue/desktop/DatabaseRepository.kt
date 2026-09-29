@@ -157,8 +157,11 @@ object DatabaseRepository {
                     id = it.id.value,
                     name = it.name,
                     modelNumber = it.modelNumber,
+                    serialNumber = it.serialNumber,
                     type = it.type,
-                    mount = it.mount
+                    mount = it.mount,
+                    format = it.format,
+                    shutterSpeeds = it.shutterSpeeds
                 )
             }.sortedBy { it.name }
         }
@@ -170,15 +173,21 @@ object DatabaseRepository {
                 FoundationCameraEntity.findById(item.id)?.apply {
                     name = item.name
                     modelNumber = item.modelNumber
+                    serialNumber = item.serialNumber
                     type = item.type
                     mount = item.mount
+                    format = item.format
+                    shutterSpeeds = item.shutterSpeeds
                 }
             } else {
                 FoundationCameraEntity.new {
                     name = item.name
                     modelNumber = item.modelNumber
+                    serialNumber = item.serialNumber
                     type = item.type
                     mount = item.mount
+                    format = item.format
+                    shutterSpeeds = item.shutterSpeeds
                 }
             }
         }
@@ -199,7 +208,8 @@ object DatabaseRepository {
                     abbreviation = it.abbreviation,
                     iso = it.iso,
                     type = it.type,
-                    format = it.format
+                    format = it.format,
+                    expectedExposures = it.expectedExposures
                 )
             }.sortedBy { it.name }
         }
@@ -214,6 +224,7 @@ object DatabaseRepository {
                     iso = item.iso
                     type = item.type
                     format = item.format
+                    expectedExposures = item.expectedExposures
                 }
             } else {
                 FoundationFilmEntity.new {
@@ -222,6 +233,7 @@ object DatabaseRepository {
                     iso = item.iso
                     type = item.type
                     format = item.format
+                    expectedExposures = item.expectedExposures
                 }
             }
         }
@@ -240,7 +252,9 @@ object DatabaseRepository {
                     id = it.id.value,
                     name = it.name,
                     website = it.website,
-                    region = it.region
+                    region = it.region,
+                    reliabilityRating = it.reliabilityRating,
+                    notes = it.notes
                 )
             }.sortedBy { it.name }
         }
@@ -253,12 +267,16 @@ object DatabaseRepository {
                     name = item.name
                     website = item.website
                     region = item.region
+                    reliabilityRating = item.reliabilityRating
+                    notes = item.notes
                 }
             } else {
                 FoundationSupplierEntity.new {
                     name = item.name
                     website = item.website
                     region = item.region
+                    reliabilityRating = item.reliabilityRating
+                    notes = item.notes
                 }
             }
         }
@@ -276,10 +294,13 @@ object DatabaseRepository {
                 ReferenceConsumableItem(
                     id = it.id.value,
                     name = it.name,
+                    manufacturer = it.manufacturer,
                     category = it.category,
                     type = it.type,
                     dilution = it.dilution,
-                    defaultUnit = it.defaultUnit
+                    defaultUnit = it.defaultUnit,
+                    isHazardous = it.isHazardous,
+                    safetyNotes = it.safetyNotes
                 )
             }.sortedBy { it.name }
         }
@@ -290,18 +311,24 @@ object DatabaseRepository {
             if (item.id > 0) {
                 FoundationConsumableEntity.findById(item.id)?.apply {
                     name = item.name
+                    manufacturer = item.manufacturer
                     category = item.category
                     type = item.type
                     dilution = item.dilution
                     defaultUnit = item.defaultUnit
+                    isHazardous = item.isHazardous
+                    safetyNotes = item.safetyNotes
                 }
             } else {
                 FoundationConsumableEntity.new {
                     name = item.name
+                    manufacturer = item.manufacturer
                     category = item.category
                     type = item.type
                     dilution = item.dilution
                     defaultUnit = item.defaultUnit
+                    isHazardous = item.isHazardous
+                    safetyNotes = item.safetyNotes
                 }
             }
         }
@@ -319,7 +346,11 @@ object DatabaseRepository {
                 ReferenceLabEquipmentItem(
                     id = it.id.value,
                     name = it.name,
+                    manufacturer = it.manufacturer,
+                    modelNumber = it.modelNumber,
+                    serialNumber = it.serialNumber,
                     category = it.category,
+                    condition = it.condition,
                     notes = it.notes
                 )
             }.sortedBy { it.name }
@@ -331,13 +362,21 @@ object DatabaseRepository {
             if (item.id > 0) {
                 FoundationLabEquipmentEntity.findById(item.id)?.apply {
                     name = item.name
+                    manufacturer = item.manufacturer
+                    modelNumber = item.modelNumber
+                    serialNumber = item.serialNumber
                     category = item.category
+                    condition = item.condition
                     notes = item.notes
                 }
             } else {
                 FoundationLabEquipmentEntity.new {
                     name = item.name
+                    manufacturer = item.manufacturer
+                    modelNumber = item.modelNumber
+                    serialNumber = item.serialNumber
                     category = item.category
+                    condition = item.condition
                     notes = item.notes
                 }
             }

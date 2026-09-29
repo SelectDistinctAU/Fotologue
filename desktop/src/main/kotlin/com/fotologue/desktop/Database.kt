@@ -83,24 +83,31 @@ class MasterFrameEntity(id: EntityID<Int>) : IntEntity(id) {
 object FoundationCamerasTable : IntIdTable("foundation_cameras") {
     val name = varchar("name", 255).uniqueIndex()
     val modelNumber = varchar("model_number", 255).nullable()
-    val type = varchar("type", 50)
+    val serialNumber = varchar("serial_number", 255).nullable()
+    val type = varchar("type", 50).default("Film SLR")
     val mount = varchar("mount", 50).nullable()
+    val format = varchar("format", 50).default("35mm")
+    val shutterSpeeds = varchar("shutter_speeds", 500).nullable()
 }
 
 class FoundationCameraEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<FoundationCameraEntity>(FoundationCamerasTable)
     var name by FoundationCamerasTable.name
     var modelNumber by FoundationCamerasTable.modelNumber
+    var serialNumber by FoundationCamerasTable.serialNumber
     var type by FoundationCamerasTable.type
     var mount by FoundationCamerasTable.mount
+    var format by FoundationCamerasTable.format
+    var shutterSpeeds by FoundationCamerasTable.shutterSpeeds
 }
 
 object FoundationFilmsTable : IntIdTable("foundation_films") {
     val name = varchar("name", 255).uniqueIndex()
     val abbreviation = varchar("abbreviation", 50)
-    val iso = integer("iso")
-    val type = varchar("type", 50)
-    val format = varchar("format", 50)
+    val iso = integer("iso").default(400)
+    val type = varchar("type", 50).default("Color Negative")
+    val format = varchar("format", 50).default("35mm")
+    val expectedExposures = integer("expected_exposures").default(36)
 }
 
 class FoundationFilmEntity(id: EntityID<Int>) : IntEntity(id) {
@@ -110,12 +117,15 @@ class FoundationFilmEntity(id: EntityID<Int>) : IntEntity(id) {
     var iso by FoundationFilmsTable.iso
     var type by FoundationFilmsTable.type
     var format by FoundationFilmsTable.format
+    var expectedExposures by FoundationFilmsTable.expectedExposures
 }
 
 object FoundationSuppliersTable : IntIdTable("foundation_suppliers") {
     val name = varchar("name", 255).uniqueIndex()
     val website = varchar("website", 512).nullable()
     val region = varchar("region", 50).nullable()
+    val reliabilityRating = integer("reliability_rating").default(5)
+    val notes = text("notes").nullable()
 }
 
 class FoundationSupplierEntity(id: EntityID<Int>) : IntEntity(id) {
@@ -123,35 +133,51 @@ class FoundationSupplierEntity(id: EntityID<Int>) : IntEntity(id) {
     var name by FoundationSuppliersTable.name
     var website by FoundationSuppliersTable.website
     var region by FoundationSuppliersTable.region
+    var reliabilityRating by FoundationSuppliersTable.reliabilityRating
+    var notes by FoundationSuppliersTable.notes
 }
 
 object FoundationConsumablesTable : IntIdTable("foundation_consumables") {
     val name = varchar("name", 255).uniqueIndex()
-    val category = varchar("category", 100) // Chemistry, Paper, Film, etc.
-    val type = varchar("type", 100).nullable() // Developer, Fixer, FB Glossy
-    val dilution = varchar("dilution", 50).nullable() // 1+1, Stock
-    val defaultUnit = varchar("default_unit", 50).nullable() // ml, g, sheets
+    val manufacturer = varchar("manufacturer", 255).nullable()
+    val category = varchar("category", 100).default("Chemistry")
+    val type = varchar("type", 100).nullable()
+    val dilution = varchar("dilution", 50).nullable()
+    val defaultUnit = varchar("default_unit", 50).default("ml")
+    val isHazardous = bool("is_hazardous").default(false)
+    val safetyNotes = text("safety_notes").nullable()
 }
 
 class FoundationConsumableEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<FoundationConsumableEntity>(FoundationConsumablesTable)
     var name by FoundationConsumablesTable.name
+    var manufacturer by FoundationConsumablesTable.manufacturer
     var category by FoundationConsumablesTable.category
     var type by FoundationConsumablesTable.type
     var dilution by FoundationConsumablesTable.dilution
     var defaultUnit by FoundationConsumablesTable.defaultUnit
+    var isHazardous by FoundationConsumablesTable.isHazardous
+    var safetyNotes by FoundationConsumablesTable.safetyNotes
 }
 
 object FoundationLabEquipmentTable : IntIdTable("foundation_lab_equipment") {
     val name = varchar("name", 255).uniqueIndex()
-    val category = varchar("category", 100) // Enlarger, Dev Tank, Tray, Lens
+    val manufacturer = varchar("manufacturer", 255).nullable()
+    val modelNumber = varchar("model_number", 255).nullable()
+    val serialNumber = varchar("serial_number", 255).nullable()
+    val category = varchar("category", 100).default("Enlarger")
+    val condition = varchar("condition", 50).default("Good")
     val notes = text("notes").nullable()
 }
 
 class FoundationLabEquipmentEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<FoundationLabEquipmentEntity>(FoundationLabEquipmentTable)
     var name by FoundationLabEquipmentTable.name
+    var manufacturer by FoundationLabEquipmentTable.manufacturer
+    var modelNumber by FoundationLabEquipmentTable.modelNumber
+    var serialNumber by FoundationLabEquipmentTable.serialNumber
     var category by FoundationLabEquipmentTable.category
+    var condition by FoundationLabEquipmentTable.condition
     var notes by FoundationLabEquipmentTable.notes
 }
 
@@ -159,8 +185,11 @@ data class ReferenceCameraItem(
     val id: Int = 0,
     val name: String,
     val modelNumber: String? = null,
+    val serialNumber: String? = null,
     val type: String = "Film SLR",
-    val mount: String? = null
+    val mount: String? = null,
+    val format: String = "35mm",
+    val shutterSpeeds: String? = null
 )
 
 data class ReferenceFilmItem(
@@ -169,29 +198,39 @@ data class ReferenceFilmItem(
     val abbreviation: String = "",
     val iso: Int = 400,
     val type: String = "Color Negative",
-    val format: String = "35mm"
+    val format: String = "35mm",
+    val expectedExposures: Int = 36
 )
 
 data class ReferenceSupplierItem(
     val id: Int = 0,
     val name: String,
     val website: String? = null,
-    val region: String? = null
+    val region: String? = null,
+    val reliabilityRating: Int = 5,
+    val notes: String? = null
 )
 
 data class ReferenceConsumableItem(
     val id: Int = 0,
     val name: String,
+    val manufacturer: String? = null,
     val category: String = "Chemistry",
     val type: String? = null,
     val dilution: String? = null,
-    val defaultUnit: String? = null
+    val defaultUnit: String = "ml",
+    val isHazardous: Boolean = false,
+    val safetyNotes: String? = null
 )
 
 data class ReferenceLabEquipmentItem(
     val id: Int = 0,
     val name: String,
+    val manufacturer: String? = null,
+    val modelNumber: String? = null,
+    val serialNumber: String? = null,
     val category: String = "Enlarger",
+    val condition: String = "Good",
     val notes: String? = null
 )
 

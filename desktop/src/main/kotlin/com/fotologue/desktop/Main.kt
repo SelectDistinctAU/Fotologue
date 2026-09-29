@@ -1954,18 +1954,40 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 label = { Text("Camera Name") },
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            OutlinedTextField(
-                                value = item.type,
-                                onValueChange = { editingCamera = item.copy(type = it) },
-                                label = { Text("Camera Type (SLR, Compact, TLR)") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            OutlinedTextField(
-                                value = item.mount ?: "",
-                                onValueChange = { editingCamera = item.copy(mount = it) },
-                                label = { Text("Lens Mount (e.g. K-Mount, EF)") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.modelNumber ?: "",
+                                    onValueChange = { editingCamera = item.copy(modelNumber = it) },
+                                    label = { Text("Model Number") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.serialNumber ?: "",
+                                    onValueChange = { editingCamera = item.copy(serialNumber = it) },
+                                    label = { Text("Serial Number") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.type,
+                                    onValueChange = { editingCamera = item.copy(type = it) },
+                                    label = { Text("Type (SLR, Compact, TLR)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.mount ?: "",
+                                    onValueChange = { editingCamera = item.copy(mount = it) },
+                                    label = { Text("Mount (e.g. K-Mount, EF)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.format,
+                                    onValueChange = { editingCamera = item.copy(format = it) },
+                                    label = { Text("Format (35mm, 120)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
                         }
                         1 -> {
                             val item = editingFilm ?: ReferenceFilmItem(name = "")
@@ -1975,18 +1997,40 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 label = { Text("Film Name") },
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            OutlinedTextField(
-                                value = item.iso.toString(),
-                                onValueChange = { editingFilm = item.copy(iso = it.toIntOrNull() ?: 400) },
-                                label = { Text("ISO Rating") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            OutlinedTextField(
-                                value = item.abbreviation,
-                                onValueChange = { editingFilm = item.copy(abbreviation = it) },
-                                label = { Text("Abbreviation (e.g. HP5)") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.iso.toString(),
+                                    onValueChange = { editingFilm = item.copy(iso = it.toIntOrNull() ?: 400) },
+                                    label = { Text("ISO Rating") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.abbreviation,
+                                    onValueChange = { editingFilm = item.copy(abbreviation = it) },
+                                    label = { Text("Abbreviation") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.expectedExposures.toString(),
+                                    onValueChange = { editingFilm = item.copy(expectedExposures = it.toIntOrNull() ?: 36) },
+                                    label = { Text("Exposures") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.type,
+                                    onValueChange = { editingFilm = item.copy(type = it) },
+                                    label = { Text("Type (Color Neg, B&W, Slide)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.format,
+                                    onValueChange = { editingFilm = item.copy(format = it) },
+                                    label = { Text("Format (35mm, 120, Sheet)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
                         }
                         2 -> {
                             val item = editingSupplier ?: ReferenceSupplierItem(name = "")
@@ -1996,48 +2040,107 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 label = { Text("Supplier Name") },
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            OutlinedTextField(
-                                value = item.website ?: "",
-                                onValueChange = { editingSupplier = item.copy(website = it) },
-                                label = { Text("Website") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.website ?: "",
+                                    onValueChange = { editingSupplier = item.copy(website = it) },
+                                    label = { Text("Website") },
+                                    modifier = Modifier.weight(2f)
+                                )
+                                OutlinedTextField(
+                                    value = item.region ?: "",
+                                    onValueChange = { editingSupplier = item.copy(region = it) },
+                                    label = { Text("Region") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.reliabilityRating.toString(),
+                                    onValueChange = { editingSupplier = item.copy(reliabilityRating = (it.toIntOrNull() ?: 5).coerceIn(1, 5)) },
+                                    label = { Text("Rating (1-5★)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
                         }
                         3 -> {
                             val item = editingConsumable ?: ReferenceConsumableItem(name = "")
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingConsumable = item.copy(name = it) },
-                                label = { Text("Consumable Product Name (e.g. D-76, Rapid Fixer)") },
+                                label = { Text("Consumable Product Name") },
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            OutlinedTextField(
-                                value = item.category,
-                                onValueChange = { editingConsumable = item.copy(category = it) },
-                                label = { Text("Category (Chemistry, Paper, Safety Gear)") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            OutlinedTextField(
-                                value = item.dilution ?: "",
-                                onValueChange = { editingConsumable = item.copy(dilution = it) },
-                                label = { Text("Default Dilution (e.g. 1+1, Stock)") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.manufacturer ?: "",
+                                    onValueChange = { editingConsumable = item.copy(manufacturer = it) },
+                                    label = { Text("Manufacturer (Kodak, Ilford)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.category,
+                                    onValueChange = { editingConsumable = item.copy(category = it) },
+                                    label = { Text("Category (Chemistry, Paper)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.dilution ?: "",
+                                    onValueChange = { editingConsumable = item.copy(dilution = it) },
+                                    label = { Text("Dilution (1+1, Stock)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.defaultUnit,
+                                    onValueChange = { editingConsumable = item.copy(defaultUnit = it) },
+                                    label = { Text("Unit (ml, g, sheets)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = item.isHazardous,
+                                    onCheckedChange = { editingConsumable = item.copy(isHazardous = it) }
+                                )
+                                Text("Hazardous Material / Safety Handling Required", style = MaterialTheme.typography.bodySmall)
+                            }
                         }
                         4 -> {
                             val item = editingLabEquipment ?: ReferenceLabEquipmentItem(name = "")
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingLabEquipment = item.copy(name = it) },
-                                label = { Text("Equipment Name (e.g. Beseler 23C II)") },
+                                label = { Text("Equipment Name") },
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            OutlinedTextField(
-                                value = item.category,
-                                onValueChange = { editingLabEquipment = item.copy(category = it) },
-                                label = { Text("Category (Enlarger, Dev Tank, Tray, Lens)") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.manufacturer ?: "",
+                                    onValueChange = { editingLabEquipment = item.copy(manufacturer = it) },
+                                    label = { Text("Manufacturer") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.modelNumber ?: "",
+                                    onValueChange = { editingLabEquipment = item.copy(modelNumber = it) },
+                                    label = { Text("Model Number") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.category,
+                                    onValueChange = { editingLabEquipment = item.copy(category = it) },
+                                    label = { Text("Category (Enlarger, Tank, Tray)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.condition,
+                                    onValueChange = { editingLabEquipment = item.copy(condition = it) },
+                                    label = { Text("Condition (Good, Fair, Maintenance)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
                         }
                     }
                 }
@@ -2277,7 +2380,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                             ) {
                                                 Column(modifier = Modifier.weight(1f)) {
                                                     Text(cam.name, fontWeight = FontWeight.Bold)
-                                                    Text("${cam.type} • Mount: ${cam.mount ?: "Standard"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                    Text("${cam.type} • Format: ${cam.format} • Mount: ${cam.mount ?: "Standard"}${if (!cam.modelNumber.isNullOrBlank()) " • Model: ${cam.modelNumber}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 }
                                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                                     IconButton(onClick = {
@@ -2318,8 +2421,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
                                                 Column(modifier = Modifier.weight(1f)) {
-                                                    Text("${film.name} (ISO ${film.iso})", fontWeight = FontWeight.Bold)
-                                                    Text("${film.type} • ${film.format} • Abbr: ${film.abbreviation}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                    Text(film.name, fontWeight = FontWeight.Bold)
+                                                    Text("${film.type} • ${film.format} • ISO ${film.iso} • ${film.expectedExposures} exp • Abbr: ${film.abbreviation}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 }
                                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                                     IconButton(onClick = {
@@ -2360,8 +2463,9 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
                                                 Column(modifier = Modifier.weight(1f)) {
+                                                    val stars = "★".repeat(sup.reliabilityRating.coerceIn(1, 5))
                                                     Text(sup.name, fontWeight = FontWeight.Bold)
-                                                    Text(sup.website ?: "No Website", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                    Text("${sup.region ?: "Global"} • Rating: $stars • ${sup.website ?: "No Website"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 }
                                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                                     IconButton(onClick = {
@@ -2402,8 +2506,9 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
                                                 Column(modifier = Modifier.weight(1f)) {
+                                                    val hazBadge = if (con.isHazardous) " ⚠️ HAZARDOUS" else ""
                                                     Text(con.name, fontWeight = FontWeight.Bold)
-                                                    Text("${con.category} • Dilution: ${con.dilution ?: "N/A"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                    Text("${con.manufacturer ?: "Generic"} • ${con.category} (${con.type ?: "General"}) • Dilution: ${con.dilution ?: "Stock"} • Unit: ${con.defaultUnit}$hazBadge", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 }
                                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                                     IconButton(onClick = {
@@ -2445,7 +2550,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                             ) {
                                                 Column(modifier = Modifier.weight(1f)) {
                                                     Text(eq.name, fontWeight = FontWeight.Bold)
-                                                    Text("Category: ${eq.category}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                    Text("${eq.manufacturer ?: "Generic"} ${eq.modelNumber ?: ""} • Category: ${eq.category} • Condition: ${eq.condition}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 }
                                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                                     IconButton(onClick = {
