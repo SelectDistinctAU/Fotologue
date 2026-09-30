@@ -2475,15 +2475,25 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
                         }
-                        2 -> { // Film Form with Dropdowns and Chemistry Parity
+                        2 -> { // Film Form with 1-to-1 Mobile Parity and Australian English Spelling
                             val item = editingFilm ?: ReferenceFilmItem(name = "")
                             var filmTypeDropdownExpanded by remember { mutableStateOf(false) }
                             var filmFormatDropdownExpanded by remember { mutableStateOf(false) }
                             var exposuresDropdownExpanded by remember { mutableStateOf(false) }
 
-                            val filmTypes = listOf("Color Negative", "Black & White Negative", "Color Slide / Reversal", "B&W Slide", "Infrared")
+                            val filmTypes = listOf("Colour Negative (C-41)", "Black & White Negative (B&W)", "Colour Slide / Reversal (E-6)", "B&W Slide", "Infrared")
                             val filmFormats = listOf("35mm", "120", "Sheet", "110", "APS")
                             val exposureOptions = listOf("36", "24", "12", "16", "10")
+
+                            Button(
+                                onClick = { isPresetDropdownExpanded = true },
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
+                                colors = ButtonDefaults.filledTonalButtonColors()
+                            ) {
+                                Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                            }
 
                             Box(modifier = Modifier.fillMaxWidth()) {
                                 OutlinedTextField(
@@ -2515,75 +2525,14 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                     }
                                 }
                             }
+
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.iso.toString(),
-                                    onValueChange = { editingFilm = item.copy(iso = it.toIntOrNull() ?: 400) },
-                                    label = { Text("ISO Rating") },
-                                    modifier = Modifier.weight(1f)
-                                )
                                 OutlinedTextField(
                                     value = item.abbreviation,
                                     onValueChange = { editingFilm = item.copy(abbreviation = it) },
-                                    label = { Text("Abbreviation (e.g. HP5)") },
+                                    label = { Text("Abbreviation (e.g. TX400, G200)") },
                                     modifier = Modifier.weight(1f)
                                 )
-                                Box(modifier = Modifier.weight(1f)) {
-                                    OutlinedTextField(
-                                        value = item.expectedExposures.toString(),
-                                        onValueChange = { editingFilm = item.copy(expectedExposures = it.toIntOrNull() ?: 36) },
-                                        label = { Text("Exposures") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        trailingIcon = {
-                                            IconButton(onClick = { exposuresDropdownExpanded = !exposuresDropdownExpanded }) {
-                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                                            }
-                                        }
-                                    )
-                                    DropdownMenu(
-                                        expanded = exposuresDropdownExpanded,
-                                        onDismissRequest = { exposuresDropdownExpanded = false }
-                                    ) {
-                                        exposureOptions.forEach { expOpt ->
-                                            DropdownMenuItem(
-                                                text = { Text("$expOpt Exposures") },
-                                                onClick = {
-                                                    editingFilm = item.copy(expectedExposures = expOpt.toIntOrNull() ?: 36)
-                                                    exposuresDropdownExpanded = false
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Box(modifier = Modifier.weight(1f)) {
-                                    OutlinedTextField(
-                                        value = item.type,
-                                        onValueChange = { editingFilm = item.copy(type = it) },
-                                        label = { Text("Film Type") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        trailingIcon = {
-                                            IconButton(onClick = { filmTypeDropdownExpanded = !filmTypeDropdownExpanded }) {
-                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                                            }
-                                        }
-                                    )
-                                    DropdownMenu(
-                                        expanded = filmTypeDropdownExpanded,
-                                        onDismissRequest = { filmTypeDropdownExpanded = false }
-                                    ) {
-                                        filmTypes.forEach { typeOpt ->
-                                            DropdownMenuItem(
-                                                text = { Text(typeOpt) },
-                                                onClick = {
-                                                    editingFilm = item.copy(type = typeOpt)
-                                                    filmTypeDropdownExpanded = false
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.format,
@@ -2609,6 +2558,70 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                                 }
                                             )
                                         }
+                                    }
+                                }
+                            }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.iso.toString(),
+                                    onValueChange = { editingFilm = item.copy(iso = it.toIntOrNull() ?: 400) },
+                                    label = { Text("ISO") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.expectedExposures.toString(),
+                                        onValueChange = { editingFilm = item.copy(expectedExposures = it.toIntOrNull() ?: 36) },
+                                        label = { Text("Expected Exposures (e.g. 12, 24, 36)") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { exposuresDropdownExpanded = !exposuresDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = exposuresDropdownExpanded,
+                                        onDismissRequest = { exposuresDropdownExpanded = false }
+                                    ) {
+                                        exposureOptions.forEach { expOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text("$expOpt Exposures") },
+                                                onClick = {
+                                                    editingFilm = item.copy(expectedExposures = expOpt.toIntOrNull() ?: 36)
+                                                    exposuresDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                OutlinedTextField(
+                                    value = item.type,
+                                    onValueChange = { editingFilm = item.copy(type = it) },
+                                    label = { Text("Film Type") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    trailingIcon = {
+                                        IconButton(onClick = { filmTypeDropdownExpanded = !filmTypeDropdownExpanded }) {
+                                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                        }
+                                    }
+                                )
+                                DropdownMenu(
+                                    expanded = filmTypeDropdownExpanded,
+                                    onDismissRequest = { filmTypeDropdownExpanded = false }
+                                ) {
+                                    filmTypes.forEach { typeOpt ->
+                                        DropdownMenuItem(
+                                            text = { Text(typeOpt) },
+                                            onClick = {
+                                                editingFilm = item.copy(type = typeOpt)
+                                                filmTypeDropdownExpanded = false
+                                            }
+                                        )
                                     }
                                 }
                             }
