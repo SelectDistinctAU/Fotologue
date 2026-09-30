@@ -3769,7 +3769,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            "PHOTOGRAPHY ENTITIES",
+                            "GEAR COLLECTION",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
