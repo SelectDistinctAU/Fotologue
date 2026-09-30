@@ -2037,7 +2037,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     1 -> "Lens"
                     2 -> "Film"
                     3 -> "Camera Kit"
-                    4 -> "Teleconverter"
+                    4 -> "Teleconverter / Extension Ring"
                     5 -> "Filter"
                     6 -> "Flash"
                     7 -> "Viewfinder"
@@ -2710,17 +2710,57 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                         }
-                        4 -> { // Teleconverter Form with Parity
+                        4 -> { // Teleconverter & Extension Ring Form with Domain Restrictions
                             val item = editingTeleconverter ?: ReferenceTeleconverterItem(name = "")
+                            var converterTypeDropdownExpanded by remember { mutableStateOf(false) }
                             var magDropdownExpanded by remember { mutableStateOf(false) }
-                            val magOptions = listOf("1.4x", "2x", "3x")
+                            var lightLossDropdownExpanded by remember { mutableStateOf(false) }
+                            var mountDropdownExpanded by remember { mutableStateOf(false) }
+                            var selectedAssociatedCameraIds by remember { mutableStateOf(setOf<Int>()) }
 
+                            val converterTypes = listOf("Teleconverter (e.g. 1.4x, 2x)", "Extension Ring / Tube (e.g. 12mm, 25mm)", "Speed Booster / Focal Reducer")
+                            val magOptions = listOf("1.4x", "2x", "3x", "12mm", "20mm", "25mm", "36mm")
+                            val lightLossOptions = listOf("0 Stops", "0.5 Stops", "1 Stop", "1.5 Stops", "2 Stops")
+
+                            // Section 1: Associated Cameras (Filtered to SLR/Interchangeable Bodies Only!)
+                            Text("Associated Cameras (Interchangeable Lenses Only)", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                            val interchangeableCameras = cameras.filter { it.mount != "Fixed" && it.type != "TLR" && it.type != "Point & Shoot" && it.type != "Compact" }
+                            if (interchangeableCameras.isEmpty()) {
+                                Text("No interchangeable lens cameras found. Please add an SLR or Rangefinder camera first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                            } else {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    interchangeableCameras.forEach { camera ->
+                                        val isSelected = selectedAssociatedCameraIds.contains(camera.id)
+                                        FilterChip(
+                                            selected = isSelected,
+                                            onClick = {
+                                                selectedAssociatedCameraIds = if (isSelected) selectedAssociatedCameraIds - camera.id else selectedAssociatedCameraIds + camera.id
+                                            },
+                                            label = { Text(camera.name, style = MaterialTheme.typography.labelSmall) },
+                                            leadingIcon = if (isSelected) { { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp)) } } else null
+                                        )
+                                    }
+                                }
+                            }
+                            Text(
+                                "Note: Teleconverters and Extension Rings attach behind interchangeable lenses (SLRs / Rangefinders). For TLRs and fixed-lens cameras, front aux lenses should be logged under Filters / Front Attachments.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                            // Section 2: Form Fields
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingTeleconverter = item.copy(name = it) },
-                                label = { Text("Teleconverter Name (e.g. Canon FD 2x-A)") },
+                                label = { Text("Converter / Extension Ring Name (e.g. Canon FD 2x-A)") },
                                 modifier = Modifier.fillMaxWidth()
                             )
+
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
                                     value = item.make ?: "",
@@ -2730,9 +2770,39 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
+                                        value = item.converterType,
+                                        onValueChange = { editingTeleconverter = item.copy(converterType = it) },
+                                        label = { Text("Converter Type") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { converterTypeDropdownExpanded = !converterTypeDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = converterTypeDropdownExpanded,
+                                        onDismissRequest = { converterTypeDropdownExpanded = false }
+                                    ) {
+                                        converterTypes.forEach { cOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(cOpt) },
+                                                onClick = {
+                                                    editingTeleconverter = item.copy(converterType = cOpt)
+                                                    converterTypeDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
                                         value = item.magnification,
                                         onValueChange = { editingTeleconverter = item.copy(magnification = it) },
-                                        label = { Text("Magnification") },
+                                        label = { Text("Magnification / Extension") },
                                         modifier = Modifier.fillMaxWidth(),
                                         trailingIcon = {
                                             IconButton(onClick = { magDropdownExpanded = !magDropdownExpanded }) {
@@ -2755,10 +2825,67 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.lightLossStops,
+                                        onValueChange = { editingTeleconverter = item.copy(lightLossStops = it) },
+                                        label = { Text("Light Loss (Stops)") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { lightLossDropdownExpanded = !lightLossDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = lightLossDropdownExpanded,
+                                        onDismissRequest = { lightLossDropdownExpanded = false }
+                                    ) {
+                                        lightLossOptions.forEach { lOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(lOpt) },
+                                                onClick = {
+                                                    editingTeleconverter = item.copy(lightLossStops = lOpt)
+                                                    lightLossDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.mount ?: "",
+                                        onValueChange = { editingTeleconverter = item.copy(mount = it) },
+                                        label = { Text("Lens Mount") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { mountDropdownExpanded = !mountDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = mountDropdownExpanded && interchangeableCameras.isNotEmpty(),
+                                        onDismissRequest = { mountDropdownExpanded = false }
+                                    ) {
+                                        interchangeableCameras.mapNotNull { it.mount }.distinct().forEach { mountOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(mountOpt) },
+                                                onClick = {
+                                                    editingTeleconverter = item.copy(mount = mountOpt)
+                                                    mountDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 OutlinedTextField(
-                                    value = item.mount ?: "",
-                                    onValueChange = { editingTeleconverter = item.copy(mount = it) },
-                                    label = { Text("Lens Mount") },
+                                    value = item.serialNumber ?: "",
+                                    onValueChange = { editingTeleconverter = item.copy(serialNumber = it) },
+                                    label = { Text("Serial Number (Optional)") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
@@ -3828,7 +3955,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                             ) {
                                                 Column(modifier = Modifier.weight(1f)) {
                                                     Text(tc.name, fontWeight = FontWeight.Bold)
-                                                    Text("Make: ${tc.make ?: "Generic"} • Mag: ${tc.magnification} • Mount: ${tc.mount ?: "Standard"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                    Text("${tc.converterType} • Mag/Extension: ${tc.magnification} • Light Loss: ${tc.lightLossStops} • Mount: ${tc.mount ?: "Standard"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 }
                                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                                     IconButton(onClick = {

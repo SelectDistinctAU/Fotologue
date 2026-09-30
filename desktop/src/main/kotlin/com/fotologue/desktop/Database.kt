@@ -307,7 +307,9 @@ class FoundationAccessoryEntity(id: EntityID<Int>) : IntEntity(id) {
 object FoundationTeleconvertersTable : IntIdTable("foundation_teleconverters") {
     val name = varchar("name", 255).uniqueIndex()
     val make = varchar("make", 255).nullable()
+    val converterType = varchar("converter_type", 100).default("Teleconverter")
     val magnification = varchar("magnification", 50).default("2x")
+    val lightLossStops = varchar("light_loss_stops", 50).default("1 Stop")
     val mount = varchar("mount", 50).nullable()
     val serialNumber = varchar("serial_number", 255).nullable()
 }
@@ -316,7 +318,9 @@ class FoundationTeleconverterEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<FoundationTeleconverterEntity>(FoundationTeleconvertersTable)
     var name by FoundationTeleconvertersTable.name
     var make by FoundationTeleconvertersTable.make
+    var converterType by FoundationTeleconvertersTable.converterType
     var magnification by FoundationTeleconvertersTable.magnification
+    var lightLossStops by FoundationTeleconvertersTable.lightLossStops
     var mount by FoundationTeleconvertersTable.mount
     var serialNumber by FoundationTeleconvertersTable.serialNumber
 }
@@ -423,7 +427,9 @@ data class ReferenceTeleconverterItem(
     val id: Int = 0,
     val name: String,
     val make: String? = null,
+    val converterType: String = "Teleconverter",
     val magnification: String = "2x",
+    val lightLossStops: String = "1 Stop",
     val mount: String? = null,
     val serialNumber: String? = null
 )

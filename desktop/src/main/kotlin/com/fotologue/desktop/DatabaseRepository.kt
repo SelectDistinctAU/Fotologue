@@ -512,7 +512,9 @@ object DatabaseRepository {
                     id = it.id.value,
                     name = it.name,
                     make = it.make,
+                    converterType = it.converterType,
                     magnification = it.magnification,
+                    lightLossStops = it.lightLossStops,
                     mount = it.mount,
                     serialNumber = it.serialNumber
                 )
@@ -526,7 +528,9 @@ object DatabaseRepository {
                 FoundationTeleconverterEntity.findById(item.id)?.apply {
                     name = item.name
                     make = item.make
+                    converterType = item.converterType
                     magnification = item.magnification
+                    lightLossStops = item.lightLossStops
                     mount = item.mount
                     serialNumber = item.serialNumber
                 }
@@ -534,7 +538,9 @@ object DatabaseRepository {
                 FoundationTeleconverterEntity.new {
                     name = item.name
                     make = item.make
+                    converterType = item.converterType
                     magnification = item.magnification
+                    lightLossStops = item.lightLossStops
                     mount = item.mount
                     serialNumber = item.serialNumber
                 }
