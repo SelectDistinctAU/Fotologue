@@ -1970,6 +1970,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
 
     var showAddEditDialog by remember { mutableStateOf(false) }
     var showReviewQueueDialog by remember { mutableStateOf(false) }
+    var showFilmPresetsDialog by remember { mutableStateOf(false) }
+    var selectedFilmManufacturer by remember { mutableStateOf("Kodak") }
     var isPresetDropdownExpanded by remember { mutableStateOf(false) }
     var editingCamera by remember { mutableStateOf<ReferenceCameraItem?>(null) }
     var fixedLensName by remember { mutableStateOf("") }
@@ -2486,7 +2488,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                             val exposureOptions = listOf("36", "24", "12", "16", "10")
 
                             Button(
-                                onClick = { isPresetDropdownExpanded = true },
+                                onClick = { showFilmPresetsDialog = true },
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
                                 colors = ButtonDefaults.filledTonalButtonColors()
                             ) {
@@ -3351,6 +3353,87 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             },
             confirmButton = {
                 Button(onClick = { showReviewQueueDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    if (showFilmPresetsDialog) {
+        val manufacturers = listOf("Kodak", "Ilford", "Fujifilm", "Cinestill", "Foma", "Lomography", "AgfaPhoto", "Rollei", "Bergger", "Harman")
+        AlertDialog(
+            onDismissRequest = { showFilmPresetsDialog = false },
+            title = { Text("⚙️ Select Film Stock from Presets", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth().height(420.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Select a manufacturer to view curated film presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    
+                    // Manufacturer Filter Chips
+                    Row(
+                        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        manufacturers.forEach { mfg ->
+                            val isSel = selectedFilmManufacturer == mfg
+                            FilterChip(
+                                selected = isSel,
+                                onClick = { selectedFilmManufacturer = mfg },
+                                label = { Text(mfg, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) }
+                            )
+                        }
+                    }
+
+                    HorizontalDivider()
+
+                    // Presets List for Selected Manufacturer
+                    val filteredPresets = DatabaseRepository.searchPresetFilms(selectedFilmManufacturer)
+                    if (filteredPresets.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("No presets found for $selectedFilmManufacturer.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            items(filteredPresets.size) { idx ->
+                                val preset = filteredPresets[idx]
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            editingFilm = preset
+                                            showFilmPresetsDialog = false
+                                        },
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(preset.name, fontWeight = FontWeight.Bold)
+                                            Text("ISO ${preset.iso} • ${preset.type} • Abbr: ${preset.abbreviation}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                        Button(
+                                            onClick = {
+                                                editingFilm = preset
+                                                showFilmPresetsDialog = false
+                                            },
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                                        ) {
+                                            Text("Select", style = MaterialTheme.typography.labelSmall)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showFilmPresetsDialog = false }) {
                     Text("Close")
                 }
             }

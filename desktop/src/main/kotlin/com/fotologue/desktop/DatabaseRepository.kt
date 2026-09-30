@@ -888,12 +888,72 @@ object DatabaseRepository {
 
     fun searchPresetFilms(query: String): List<ReferenceFilmItem> {
         val presets = listOf(
-            ReferenceFilmItem(name = "Ilford HP5 Plus 400", abbreviation = "HP5", iso = 400, type = "Black & White Negative", format = "35mm", expectedExposures = 36),
-            ReferenceFilmItem(name = "Kodak Tri-X 400", abbreviation = "TX400", iso = 400, type = "Black & White Negative", format = "35mm", expectedExposures = 36),
-            ReferenceFilmItem(name = "Kodak Portra 400", abbreviation = "PR400", iso = 400, type = "Color Negative", format = "35mm", expectedExposures = 36),
-            ReferenceFilmItem(name = "Fujifilm Velvia 50", abbreviation = "RVP50", iso = 50, type = "Color Slide / Reversal", format = "35mm", expectedExposures = 36),
-            ReferenceFilmItem(name = "Cinestill 800T", abbreviation = "800T", iso = 800, type = "Color Negative", format = "35mm", expectedExposures = 36),
-            ReferenceFilmItem(name = "Ilford FP4 Plus 125", abbreviation = "FP4", iso = 125, type = "Black & White Negative", format = "35mm", expectedExposures = 36)
+            // Kodak
+            ReferenceFilmItem(name = "Kodak Portra 160", abbreviation = "P160", iso = 160, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Kodak Portra 400", abbreviation = "P400", iso = 400, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Kodak Portra 800", abbreviation = "P800", iso = 800, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Kodak Ektar 100", abbreviation = "E100", iso = 100, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Kodak Gold 200", abbreviation = "G200", iso = 200, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Kodak UltraMax 400", abbreviation = "U400", iso = 400, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Kodak Tri-X 400", abbreviation = "TX400", iso = 400, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Kodak T-Max 100", abbreviation = "TM100", iso = 100, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Kodak T-Max 400", abbreviation = "TM400", iso = 400, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Kodak Ektachrome E100", abbreviation = "E100G", iso = 100, type = "Colour Slide / Reversal (E-6)", format = "35mm", expectedExposures = 36),
+
+            // Ilford
+            ReferenceFilmItem(name = "Ilford HP5 Plus 400", abbreviation = "HP5", iso = 400, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Ilford FP4 Plus 125", abbreviation = "FP4", iso = 125, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Ilford Delta 100 Professional", abbreviation = "D100", iso = 100, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Ilford Delta 400 Professional", abbreviation = "D400", iso = 400, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Ilford Delta 3200 Professional", abbreviation = "D3200", iso = 3200, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Ilford Pan F Plus 50", abbreviation = "PANF", iso = 50, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Ilford XP2 Super 400", abbreviation = "XP2", iso = 400, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+
+            // Fujifilm
+            ReferenceFilmItem(name = "Fujifilm Fujicolor 200", abbreviation = "F200", iso = 200, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Fujifilm Superia X-TRA 400", abbreviation = "S400", iso = 400, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Fujifilm Velvia 50", abbreviation = "V50", iso = 50, type = "Colour Slide / Reversal (E-6)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Fujifilm Velvia 100", abbreviation = "V100", iso = 100, type = "Colour Slide / Reversal (E-6)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Fujifilm Provia 100F", abbreviation = "RDP", iso = 100, type = "Colour Slide / Reversal (E-6)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Fujifilm Neopan 100 Acros II", abbreviation = "ACROS", iso = 100, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+
+            // Cinestill
+            ReferenceFilmItem(name = "Cinestill 50Daylight", abbreviation = "50D", iso = 50, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Cinestill 800Tungsten", abbreviation = "800T", iso = 800, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Cinestill 400Dynamic", abbreviation = "400D", iso = 400, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Cinestill BwXX", abbreviation = "XX", iso = 250, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+
+            // Foma
+            ReferenceFilmItem(name = "Foma Fomapan 100 Classic", abbreviation = "FOM100", iso = 100, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Foma Fomapan 200 Creative", abbreviation = "FOM200", iso = 200, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Foma Fomapan 400 Action", abbreviation = "FOM400", iso = 400, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+
+            // Lomography
+            ReferenceFilmItem(name = "Lomography Color Negative 100", abbreviation = "L100", iso = 100, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Lomography Color Negative 400", abbreviation = "L400", iso = 400, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Lomography Color Negative 800", abbreviation = "L800", iso = 800, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Lomography LomoChrome Metropolis", abbreviation = "METRO", iso = 200, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Lomography LomoChrome Purple", abbreviation = "PURP", iso = 400, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+
+            // AgfaPhoto
+            ReferenceFilmItem(name = "AgfaPhoto APX 100 Professional", abbreviation = "APX100", iso = 100, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "AgfaPhoto APX 400 Professional", abbreviation = "APX400", iso = 400, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "AgfaPhoto Vista 200", abbreviation = "VIST", iso = 200, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+
+            // Rollei
+            ReferenceFilmItem(name = "Rollei Retro 80s", abbreviation = "R80S", iso = 80, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Rollei Retro 400s", abbreviation = "R400S", iso = 400, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Rollei RPX 100", abbreviation = "RPX100", iso = 100, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Rollei RPX 400", abbreviation = "RPX400", iso = 400, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Rollei Superpan 200", abbreviation = "SPAN", iso = 200, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+
+            // Bergger
+            ReferenceFilmItem(name = "Bergger Pancro 400", abbreviation = "PAN400", iso = 400, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+
+            // Harman
+            ReferenceFilmItem(name = "Harman Phoenix 200", abbreviation = "PHX", iso = 200, type = "Colour Negative (C-41)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Harman Kentmere Pan 100", abbreviation = "KP100", iso = 100, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36),
+            ReferenceFilmItem(name = "Harman Kentmere Pan 400", abbreviation = "KP400", iso = 400, type = "Black & White Negative (B&W)", format = "35mm", expectedExposures = 36)
         )
         if (query.isBlank()) return presets
         return presets.filter { it.name.contains(query, ignoreCase = true) || it.abbreviation.contains(query, ignoreCase = true) }
