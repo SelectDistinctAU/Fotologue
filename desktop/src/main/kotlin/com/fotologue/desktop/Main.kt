@@ -2753,49 +2753,41 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
 
                             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
-                            // Section 2: Form Fields
+                            // Section 2: Form Fields Matching Mobile 1-to-1
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                OutlinedTextField(
+                                    value = item.converterType,
+                                    onValueChange = { editingTeleconverter = item.copy(converterType = it) },
+                                    label = { Text("Converter Type") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    trailingIcon = {
+                                        IconButton(onClick = { converterTypeDropdownExpanded = !converterTypeDropdownExpanded }) {
+                                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                        }
+                                    }
+                                )
+                                DropdownMenu(
+                                    expanded = converterTypeDropdownExpanded,
+                                    onDismissRequest = { converterTypeDropdownExpanded = false }
+                                ) {
+                                    converterTypes.forEach { cOpt ->
+                                        DropdownMenuItem(
+                                            text = { Text(cOpt) },
+                                            onClick = {
+                                                editingTeleconverter = item.copy(converterType = cOpt)
+                                                converterTypeDropdownExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingTeleconverter = item.copy(name = it) },
                                 label = { Text("Converter / Extension Ring Name (e.g. Canon FD 2x-A)") },
                                 modifier = Modifier.fillMaxWidth()
                             )
-
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.make ?: "",
-                                    onValueChange = { editingTeleconverter = item.copy(make = it) },
-                                    label = { Text("Make / Brand") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Box(modifier = Modifier.weight(1f)) {
-                                    OutlinedTextField(
-                                        value = item.converterType,
-                                        onValueChange = { editingTeleconverter = item.copy(converterType = it) },
-                                        label = { Text("Converter Type") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        trailingIcon = {
-                                            IconButton(onClick = { converterTypeDropdownExpanded = !converterTypeDropdownExpanded }) {
-                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                                            }
-                                        }
-                                    )
-                                    DropdownMenu(
-                                        expanded = converterTypeDropdownExpanded,
-                                        onDismissRequest = { converterTypeDropdownExpanded = false }
-                                    ) {
-                                        converterTypes.forEach { cOpt ->
-                                            DropdownMenuItem(
-                                                text = { Text(cOpt) },
-                                                onClick = {
-                                                    editingTeleconverter = item.copy(converterType = cOpt)
-                                                    converterTypeDropdownExpanded = false
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
-                            }
 
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
@@ -2852,42 +2844,6 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
-                            }
-
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Box(modifier = Modifier.weight(1f)) {
-                                    OutlinedTextField(
-                                        value = item.mount ?: "",
-                                        onValueChange = { editingTeleconverter = item.copy(mount = it) },
-                                        label = { Text("Lens Mount") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        trailingIcon = {
-                                            IconButton(onClick = { mountDropdownExpanded = !mountDropdownExpanded }) {
-                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                                            }
-                                        }
-                                    )
-                                    DropdownMenu(
-                                        expanded = mountDropdownExpanded && interchangeableCameras.isNotEmpty(),
-                                        onDismissRequest = { mountDropdownExpanded = false }
-                                    ) {
-                                        interchangeableCameras.mapNotNull { it.mount }.distinct().forEach { mountOpt ->
-                                            DropdownMenuItem(
-                                                text = { Text(mountOpt) },
-                                                onClick = {
-                                                    editingTeleconverter = item.copy(mount = mountOpt)
-                                                    mountDropdownExpanded = false
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
-                                OutlinedTextField(
-                                    value = item.serialNumber ?: "",
-                                    onValueChange = { editingTeleconverter = item.copy(serialNumber = it) },
-                                    label = { Text("Serial Number (Optional)") },
-                                    modifier = Modifier.weight(1f)
-                                )
                             }
                         }
                         5 -> { // Filter Form with Parity
