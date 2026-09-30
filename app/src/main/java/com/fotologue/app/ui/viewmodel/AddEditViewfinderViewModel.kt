@@ -19,6 +19,9 @@ import javax.inject.Inject
 data class AddEditViewfinderUiState(
     val name: String = "",
     val modelNumber: String = "",
+    val type: String = "Eye-Level Prism",
+    val serialNumber: String = "",
+    val viewfinderTypes: List<String> = listOf("Eye-Level Prism", "Waist-Level Finder", "Action Finder", "Right-Angle Finder", "Magnifier / Diopter", "Coldshoe Auxiliary Finder"),
     val cameras: List<Camera> = emptyList(),
     val selectedCameraIds: Set<Long> = emptySet()
 )
@@ -42,7 +45,17 @@ class AddEditViewfinderViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             repository.allCameras.collect { cameras ->
-                _uiState.update { it.copy(cameras = cameras) }
+                val interchangeableFinderCameras = cameras.filter { camera ->
+                    camera.name.contains("Pentax LX", ignoreCase = true) ||
+                    camera.name.contains("Nikon F", ignoreCase = true) ||
+                    camera.name.contains("Hasselblad", ignoreCase = true) ||
+                    camera.name.contains("Leica", ignoreCase = true) ||
+                    camera.name.contains("Mamiya", ignoreCase = true) ||
+                    camera.name.contains("Canon F-1", ignoreCase = true) ||
+                    camera.name.contains("Exakta", ignoreCase = true) ||
+                    (camera.type.isInterchangeable && camera.mount != "Fixed")
+                }
+                _uiState.update { it.copy(cameras = interchangeableFinderCameras) }
             }
         }
         loadViewfinder()
@@ -81,6 +94,16 @@ class AddEditViewfinderViewModel @Inject constructor(
     fun onModelNumberChange(value: String) {
         savedStateHandle["modelNumber"] = value
         _uiState.update { it.copy(modelNumber = value) }
+    }
+
+    fun onTypeChange(value: String) {
+        savedStateHandle["type"] = value
+        _uiState.update { it.copy(type = value) }
+    }
+
+    fun onSerialNumberChange(value: String) {
+        savedStateHandle["serialNumber"] = value
+        _uiState.update { it.copy(serialNumber = value) }
     }
 
     fun onCameraToggled(cameraId: Long) {

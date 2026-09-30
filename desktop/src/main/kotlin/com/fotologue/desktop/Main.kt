@@ -3053,19 +3053,61 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        7 -> { // Viewfinder Form with Parity
+                        7 -> { // Viewfinder Form with 1-to-1 Mobile Parity & Camera Filtering
                             val item = editingViewfinder ?: ReferenceViewfinderItem(name = "")
+                            var selectedAssociatedCameraIds by remember { mutableStateOf(setOf<Int>()) }
                             var vfTypeDropdownExpanded by remember { mutableStateOf(false) }
-                            var cameraDropdownExpanded by remember { mutableStateOf(false) }
 
-                            val vfTypes = listOf("Eye-Level Prism", "Waist-Level Finder", "Action Finder", "Right-Angle Finder", "Magnifier / Diopter")
+                            val vfTypes = listOf("Eye-Level Prism", "Waist-Level Finder", "Action Finder", "Right-Angle Finder", "Magnifier / Diopter", "Coldshoe Auxiliary Finder")
 
+                            // Section 1: Associated Cameras (Filtered to bodies supporting removable/external finders)
+                            Text("Associated Cameras (Interchangeable Viewfinders Only)", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                            val interchangeableFinderCameras = cameras.filter { camera ->
+                                camera.name.contains("Pentax LX", ignoreCase = true) ||
+                                camera.name.contains("Nikon F", ignoreCase = true) ||
+                                camera.name.contains("Hasselblad", ignoreCase = true) ||
+                                camera.name.contains("Leica", ignoreCase = true) ||
+                                camera.name.contains("Mamiya", ignoreCase = true) ||
+                                camera.name.contains("Canon F-1", ignoreCase = true) ||
+                                camera.name.contains("Exakta", ignoreCase = true) ||
+                                (camera.type != "TLR" && camera.type != "Point & Shoot" && camera.type != "Compact" && camera.mount != "Fixed")
+                            }
+                            if (interchangeableFinderCameras.isEmpty()) {
+                                Text("No camera bodies supporting interchangeable viewfinders found.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                            } else {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    interchangeableFinderCameras.forEach { camera ->
+                                        val isSelected = selectedAssociatedCameraIds.contains(camera.id)
+                                        FilterChip(
+                                            selected = isSelected,
+                                            onClick = {
+                                                selectedAssociatedCameraIds = if (isSelected) selectedAssociatedCameraIds - camera.id else selectedAssociatedCameraIds + camera.id
+                                            },
+                                            label = { Text(camera.name, style = MaterialTheme.typography.labelSmall) },
+                                            leadingIcon = if (isSelected) { { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp)) } } else null
+                                        )
+                                    }
+                                }
+                            }
+                            Text(
+                                "Note: Only camera bodies with removable viewfinders (e.g. Pentax LX, Nikon F3, Hasselblad 500C/M) or coldshoe finders (e.g. Leica M3) are listed.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                            // Section 2: Form Controls
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingViewfinder = item.copy(name = it) },
                                 label = { Text("Viewfinder Name (e.g. Pentax FA-1 Finder)") },
                                 modifier = Modifier.fillMaxWidth()
                             )
+
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
@@ -3094,34 +3136,20 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
-                                Box(modifier = Modifier.weight(1f)) {
-                                    OutlinedTextField(
-                                        value = item.compatibleCamera ?: "",
-                                        onValueChange = { editingViewfinder = item.copy(compatibleCamera = it) },
-                                        label = { Text("Compatible Camera Body") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        trailingIcon = {
-                                            IconButton(onClick = { cameraDropdownExpanded = !cameraDropdownExpanded }) {
-                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                                            }
-                                        }
-                                    )
-                                    DropdownMenu(
-                                        expanded = cameraDropdownExpanded && cameras.isNotEmpty(),
-                                        onDismissRequest = { cameraDropdownExpanded = false }
-                                    ) {
-                                        cameras.forEach { cam ->
-                                            DropdownMenuItem(
-                                                text = { Text("${cam.name} (${cam.type})") },
-                                                onClick = {
-                                                    editingViewfinder = item.copy(compatibleCamera = cam.name)
-                                                    cameraDropdownExpanded = false
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
+                                OutlinedTextField(
+                                    value = item.compatibleCamera ?: "",
+                                    onValueChange = { editingViewfinder = item.copy(compatibleCamera = it) },
+                                    label = { Text("Model Number (Optional)") },
+                                    modifier = Modifier.weight(1f)
+                                )
                             }
+
+                            OutlinedTextField(
+                                value = item.serialNumber ?: "",
+                                onValueChange = { editingViewfinder = item.copy(serialNumber = it) },
+                                label = { Text("Serial Number (Optional)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                         8 -> { // Supplier
                             val item = editingSupplier ?: ReferenceSupplierItem(name = "")

@@ -106,6 +106,12 @@ fun AddEditViewfinderScreen(
                 }
             }
 
+            Text(
+                "Note: Only camera bodies with removable viewfinders (e.g. Pentax LX, Nikon F3, Hasselblad 500C/M) or coldshoe finders (e.g. Leica M3) are listed.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
@@ -113,14 +119,52 @@ fun AddEditViewfinderScreen(
             OutlinedTextField(
                 value = uiState.name,
                 onValueChange = viewModel::onNameChange,
-                label = { Text("Name (e.g. FA-1 Finder)") },
+                label = { Text("Viewfinder Name (e.g. Pentax FA-1 Finder)") },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            var vfTypeExpanded by remember { mutableStateOf(false) }
+
+            ExposedDropdownMenuBox(
+                expanded = vfTypeExpanded,
+                onExpandedChange = { vfTypeExpanded = it },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = uiState.type,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Viewfinder Type") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = vfTypeExpanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = vfTypeExpanded,
+                    onDismissRequest = { vfTypeExpanded = false }
+                ) {
+                    uiState.viewfinderTypes.forEach { typeOpt ->
+                        DropdownMenuItem(
+                            text = { Text(typeOpt) },
+                            onClick = {
+                                viewModel.onTypeChange(typeOpt)
+                                vfTypeExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             OutlinedTextField(
                 value = uiState.modelNumber,
                 onValueChange = viewModel::onModelNumberChange,
-                label = { Text("Model Number") },
+                label = { Text("Model Number (Optional)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = uiState.serialNumber,
+                onValueChange = viewModel::onSerialNumberChange,
+                label = { Text("Serial Number (Optional)") },
                 modifier = Modifier.fillMaxWidth()
             )
             
