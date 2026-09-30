@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.CenterFocusStrong
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Filter
 import androidx.compose.material.icons.filled.FlashOn
@@ -60,6 +61,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
@@ -1967,6 +1969,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var custodyInteractions by remember { mutableStateOf(emptyList<ReferenceCustodyInteractionItem>()) }
 
     var showAddEditDialog by remember { mutableStateOf(false) }
+    var showReviewQueueDialog by remember { mutableStateOf(false) }
     var isPresetDropdownExpanded by remember { mutableStateOf(false) }
     var editingCamera by remember { mutableStateOf<ReferenceCameraItem?>(null) }
     var editingLens by remember { mutableStateOf<ReferenceLensItem?>(null) }
@@ -2202,8 +2205,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                         }
-                        3 -> { // Desktop Kit Builder!
+                        3 -> { // Desktop Kit Builder with Parent Relational Dropdowns
                             val item = editingKit ?: ReferenceKitItem(name = "", cameraName = cameras.firstOrNull()?.name ?: "Canon AE-1 Program")
+                            var cameraDropdownExpanded by remember { mutableStateOf(false) }
+                            var filmDropdownExpanded by remember { mutableStateOf(false) }
+
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingKit = item.copy(name = it) },
@@ -2211,12 +2217,33 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.cameraName,
-                                    onValueChange = { editingKit = item.copy(cameraName = it) },
-                                    label = { Text("Primary Camera Body") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.cameraName,
+                                        onValueChange = { editingKit = item.copy(cameraName = it) },
+                                        label = { Text("Primary Camera Body") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { cameraDropdownExpanded = !cameraDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = cameraDropdownExpanded && cameras.isNotEmpty(),
+                                        onDismissRequest = { cameraDropdownExpanded = false }
+                                    ) {
+                                        cameras.forEach { cam ->
+                                            DropdownMenuItem(
+                                                text = { Text("${cam.name} (${cam.type})") },
+                                                onClick = {
+                                                    editingKit = item.copy(cameraName = cam.name)
+                                                    cameraDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 OutlinedTextField(
                                     value = item.lensNames ?: "",
                                     onValueChange = { editingKit = item.copy(lensNames = it) },
@@ -2225,12 +2252,33 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.defaultFilmName ?: "",
-                                    onValueChange = { editingKit = item.copy(defaultFilmName = it) },
-                                    label = { Text("Default Film Stock") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.defaultFilmName ?: "",
+                                        onValueChange = { editingKit = item.copy(defaultFilmName = it) },
+                                        label = { Text("Default Film Stock") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { filmDropdownExpanded = !filmDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = filmDropdownExpanded && films.isNotEmpty(),
+                                        onDismissRequest = { filmDropdownExpanded = false }
+                                    ) {
+                                        films.forEach { fl ->
+                                            DropdownMenuItem(
+                                                text = { Text("${fl.name} (ISO ${fl.iso})") },
+                                                onClick = {
+                                                    editingKit = item.copy(defaultFilmName = fl.name)
+                                                    filmDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 OutlinedTextField(
                                     value = item.notes ?: "",
                                     onValueChange = { editingKit = item.copy(notes = it) },
@@ -2490,8 +2538,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                         }
-                        12, 13 -> { // Custody / Pre-Arrival Order / Loan Ledger
+                        12, 13 -> { // Custody / Pre-Arrival Order / Loan Ledger with Relational Dropdowns
                             val item = editingCustodyInteraction ?: ReferenceCustodyInteractionItem(assetName = "", interactionType = if (selectedCategory == 12) "PURCHASE_ORDER" else "LOAN_OUT")
+                            var contactDropdownExpanded by remember { mutableStateOf(false) }
+                            var locationDropdownExpanded by remember { mutableStateOf(false) }
+
                             OutlinedTextField(
                                 value = item.assetName,
                                 onValueChange = { editingCustodyInteraction = item.copy(assetName = it) },
@@ -2505,12 +2556,33 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                     label = { Text("Type (PURCHASE_ORDER, LOAN_OUT, RENTAL_IN, REPAIR)") },
                                     modifier = Modifier.weight(1f)
                                 )
-                                OutlinedTextField(
-                                    value = item.contactName ?: "",
-                                    onValueChange = { editingCustodyInteraction = item.copy(contactName = it) },
-                                    label = { Text("Contact / Vendor / Borrower Name") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.contactName ?: "",
+                                        onValueChange = { editingCustodyInteraction = item.copy(contactName = it) },
+                                        label = { Text("Contact / Vendor / Borrower Name") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { contactDropdownExpanded = !contactDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = contactDropdownExpanded && suppliers.isNotEmpty(),
+                                        onDismissRequest = { contactDropdownExpanded = false }
+                                    ) {
+                                        suppliers.forEach { sup ->
+                                            DropdownMenuItem(
+                                                text = { Text("${sup.name} (${sup.region ?: "Global"})") },
+                                                onClick = {
+                                                    editingCustodyInteraction = item.copy(contactName = sup.name)
+                                                    contactDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
@@ -2519,12 +2591,33 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                     label = { Text("Status (WAITLISTED, PACKAGING, IN_TRANSIT, DELIVERED)") },
                                     modifier = Modifier.weight(1f)
                                 )
-                                OutlinedTextField(
-                                    value = item.storageLocationName ?: "",
-                                    onValueChange = { editingCustodyInteraction = item.copy(storageLocationName = it) },
-                                    label = { Text("Storage Location (e.g. Dry Cabinet A)") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.storageLocationName ?: "",
+                                        onValueChange = { editingCustodyInteraction = item.copy(storageLocationName = it) },
+                                        label = { Text("Storage Location (e.g. Dry Cabinet A)") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { locationDropdownExpanded = !locationDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = locationDropdownExpanded && storageLocations.isNotEmpty(),
+                                        onDismissRequest = { locationDropdownExpanded = false }
+                                    ) {
+                                        storageLocations.forEach { loc ->
+                                            DropdownMenuItem(
+                                                text = { Text("📦 ${loc.name} (${loc.type})") },
+                                                onClick = {
+                                                    editingCustodyInteraction = item.copy(storageLocationName = loc.name)
+                                                    locationDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
@@ -2603,88 +2696,68 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
         )
     }
 
-    Row(
-        modifier = Modifier.fillMaxSize(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // Left Pane: Review Queue
-        Card(
-            modifier = Modifier.weight(1f).fillMaxHeight(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    "📥 REVIEW QUEUE (${pendingItems.size})",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    "Unrecognised items from Fotologue Mobile imports.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                HorizontalDivider()
-
-                if (pendingItems.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Queue is empty. You're fully synced!", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                } else {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(pendingItems.size) { index ->
-                            val item = pendingItems[index]
-                            Card(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().padding(12.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+    if (showReviewQueueDialog) {
+        AlertDialog(
+            onDismissRequest = { showReviewQueueDialog = false },
+            title = { Text("📥 Review Queue (${pendingItems.size} Submissions)", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth().height(400.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Unrecognised reference items submitted from Fotologue Mobile imports.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    HorizontalDivider()
+                    if (pendingItems.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("Queue is empty. All reference items are fully reconciled!", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            items(pendingItems.size) { idx ->
+                                val item = pendingItems[idx]
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                                 ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            "[${item.itemType}] ${item.submittedName}",
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            "Submitted by Contributor ID: ${item.contributorId}",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Button(
-                                            onClick = {
-                                                transaction {
-                                                    when (item.itemType) {
-                                                        "CAMERA" -> FoundationCameraEntity.new { name = item.submittedName; type = "Unknown" }
-                                                        "FILM" -> FoundationFilmEntity.new { name = item.submittedName; iso = item.submittedIso ?: 400; type = "Unknown"; abbreviation = item.submittedName.take(3).uppercase(); format = "Unknown" }
-                                                        "SUPPLIER" -> FoundationSupplierEntity.new { name = item.submittedName }
-                                                    }
-                                                    item.status = "ACCEPTED"
-                                                }
-                                                refreshAllData()
-                                            },
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
-                                            contentPadding = PaddingValues(horizontal = 8.dp)
-                                        ) {
-                                            Text("Accept")
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text("[${item.itemType}] ${item.submittedName}", fontWeight = FontWeight.Bold)
+                                            Text("Submitted by Contributor ID: ${item.contributorId}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                         }
-                                        OutlinedButton(
-                                            onClick = {
-                                                transaction {
-                                                    item.status = "REJECTED"
-                                                }
-                                                refreshAllData()
-                                            },
-                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                                            contentPadding = PaddingValues(horizontal = 8.dp)
-                                        ) {
-                                            Text("Reject")
+                                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                            Button(
+                                                onClick = {
+                                                    transaction {
+                                                        when (item.itemType) {
+                                                            "CAMERA" -> FoundationCameraEntity.new { name = item.submittedName; type = "Unknown" }
+                                                            "FILM" -> FoundationFilmEntity.new { name = item.submittedName; iso = item.submittedIso ?: 400; type = "Unknown"; abbreviation = item.submittedName.take(3).uppercase(); format = "Unknown" }
+                                                            "SUPPLIER" -> FoundationSupplierEntity.new { name = item.submittedName }
+                                                        }
+                                                        item.status = "ACCEPTED"
+                                                    }
+                                                    refreshAllData()
+                                                },
+                                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
+                                                contentPadding = PaddingValues(horizontal = 8.dp)
+                                            ) {
+                                                Text("Accept", style = MaterialTheme.typography.labelSmall)
+                                            }
+                                            OutlinedButton(
+                                                onClick = {
+                                                    transaction {
+                                                        item.status = "REJECTED"
+                                                    }
+                                                    refreshAllData()
+                                                },
+                                                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                                                contentPadding = PaddingValues(horizontal = 8.dp)
+                                            ) {
+                                                Text("Reject", style = MaterialTheme.typography.labelSmall)
+                                            }
                                         }
                                     }
                                 }
@@ -2692,36 +2765,57 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         }
                     }
                 }
+            },
+            confirmButton = {
+                Button(onClick = { showReviewQueueDialog = false }) {
+                    Text("Close")
+                }
             }
-        }
+        )
+    }
 
-        // Right Pane: Master Reference Data Manager (Full CRUD)
-        Card(
-            modifier = Modifier.weight(1f).fillMaxHeight(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    // Full-Width Stage 4 Reference Data Administration Manager
+    Card(
+        modifier = Modifier.fillMaxSize(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "🏛️ REFERENCE DATA MASTER LIST",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        "Items accepted or created here will be included in the Reference Sync Package for Fotologue Mobile to pull.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    // Actionable Review Queue Header Alert Button
+                    Button(
+                        onClick = { showReviewQueueDialog = true },
+                        colors = if (pendingItems.isNotEmpty()) ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary) else ButtonDefaults.outlinedButtonColors(),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            "🏛️ REFERENCE DATA MASTER LIST",
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            "Items accepted or created here will be included in the Reference Sync Package for Fotologue Mobile to pull.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = if (pendingItems.isNotEmpty()) "Review Queue (${pendingItems.size} Pending)" else "Review Queue (0)",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodySmall
                         )
                     }
-                    Spacer(modifier = Modifier.width(12.dp))
+
                     Button(
                         onClick = {
                             when (selectedCategory) {
@@ -2736,6 +2830,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 8 -> editingSupplier = ReferenceSupplierItem(name = "")
                                 9 -> editingConsumable = ReferenceConsumableItem(name = "")
                                 10 -> editingLabEquipment = ReferenceLabEquipmentItem(name = "")
+                                11 -> editingStorageLocation = ReferenceStorageLocationItem(name = "")
+                                12, 13 -> editingCustodyInteraction = ReferenceCustodyInteractionItem(assetName = "", interactionType = if (selectedCategory == 12) "PURCHASE_ORDER" else "LOAN_OUT")
                             }
                             showAddEditDialog = true
                         },
@@ -2746,6 +2842,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         Text("Add New", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
                     }
                 }
+            }
 
                 // Contributor Profile Bar (User Configuration Selection)
                 Card(
@@ -3487,4 +3584,3 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             }
         }
     }
-}
