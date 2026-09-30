@@ -262,9 +262,15 @@ object FoundationLensesTable : IntIdTable("foundation_lenses") {
     val name = varchar("name", 255).uniqueIndex()
     val make = varchar("make", 255).nullable()
     val model = varchar("model", 255).nullable()
+    val type = varchar("type", 50).default("Prime")
+    val mount = varchar("mount", 50).nullable()
     val focalLength = varchar("focal_length", 100).nullable()
     val maxAperture = varchar("max_aperture", 50).nullable()
-    val mount = varchar("mount", 50).nullable()
+    val minAperture = varchar("min_aperture", 50).nullable()
+    val filterSize = varchar("filter_size", 50).nullable()
+    val isImageStabilised = bool("is_image_stabilised").default(false)
+    val minFocusMeters = varchar("min_focus_meters", 50).nullable()
+    val maxMagnification = varchar("max_magnification", 50).nullable()
     val serialNumber = varchar("serial_number", 255).nullable()
 }
 
@@ -273,9 +279,15 @@ class FoundationLensEntity(id: EntityID<Int>) : IntEntity(id) {
     var name by FoundationLensesTable.name
     var make by FoundationLensesTable.make
     var model by FoundationLensesTable.model
+    var type by FoundationLensesTable.type
+    var mount by FoundationLensesTable.mount
     var focalLength by FoundationLensesTable.focalLength
     var maxAperture by FoundationLensesTable.maxAperture
-    var mount by FoundationLensesTable.mount
+    var minAperture by FoundationLensesTable.minAperture
+    var filterSize by FoundationLensesTable.filterSize
+    var isImageStabilised by FoundationLensesTable.isImageStabilised
+    var minFocusMeters by FoundationLensesTable.minFocusMeters
+    var maxMagnification by FoundationLensesTable.maxMagnification
     var serialNumber by FoundationLensesTable.serialNumber
 }
 
@@ -388,9 +400,15 @@ data class ReferenceLensItem(
     val name: String,
     val make: String? = null,
     val model: String? = null,
+    val type: String = "Prime",
+    val mount: String? = null,
     val focalLength: String? = "50mm",
     val maxAperture: String? = "f/1.4",
-    val mount: String? = null,
+    val minAperture: String? = "f/16",
+    val filterSize: String? = "52mm",
+    val isImageStabilised: Boolean = false,
+    val minFocusMeters: String? = null,
+    val maxMagnification: String? = null,
     val serialNumber: String? = null
 )
 

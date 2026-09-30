@@ -407,9 +407,15 @@ object DatabaseRepository {
                     name = it.name,
                     make = it.make,
                     model = it.model,
+                    type = it.type,
+                    mount = it.mount,
                     focalLength = it.focalLength,
                     maxAperture = it.maxAperture,
-                    mount = it.mount,
+                    minAperture = it.minAperture,
+                    filterSize = it.filterSize,
+                    isImageStabilised = it.isImageStabilised,
+                    minFocusMeters = it.minFocusMeters,
+                    maxMagnification = it.maxMagnification,
                     serialNumber = it.serialNumber
                 )
             }.sortedBy { it.name }
@@ -423,9 +429,15 @@ object DatabaseRepository {
                     name = item.name
                     make = item.make
                     model = item.model
+                    type = item.type
+                    mount = item.mount
                     focalLength = item.focalLength
                     maxAperture = item.maxAperture
-                    mount = item.mount
+                    minAperture = item.minAperture
+                    filterSize = item.filterSize
+                    isImageStabilised = item.isImageStabilised
+                    minFocusMeters = item.minFocusMeters
+                    maxMagnification = item.maxMagnification
                     serialNumber = item.serialNumber
                 }
             } else {
@@ -433,9 +445,15 @@ object DatabaseRepository {
                     name = item.name
                     make = item.make
                     model = item.model
+                    type = item.type
+                    mount = item.mount
                     focalLength = item.focalLength
                     maxAperture = item.maxAperture
-                    mount = item.mount
+                    minAperture = item.minAperture
+                    filterSize = item.filterSize
+                    isImageStabilised = item.isImageStabilised
+                    minFocusMeters = item.minFocusMeters
+                    maxMagnification = item.maxMagnification
                     serialNumber = item.serialNumber
                 }
             }

@@ -2175,50 +2175,84 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        1 -> { // Lens Form with Parity
+                        1 -> { // Lens Form with 1-to-1 Mobile Parity
                             val item = editingLens ?: ReferenceLensItem(name = "")
+                            var makeDropdownExpanded by remember { mutableStateOf(false) }
+                            var lensTypeDropdownExpanded by remember { mutableStateOf(false) }
                             var mountDropdownExpanded by remember { mutableStateOf(false) }
 
-                            OutlinedTextField(
-                                value = item.name,
-                                onValueChange = { editingLens = item.copy(name = it) },
-                                label = { Text("Lens Name (e.g. Canon FD 50mm f/1.4)") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            val commonMakes = listOf("Canon", "Nikon", "Leica", "Carl Zeiss", "Voigtländer", "Sigma", "Tamron", "Pentax", "Olympus", "Minolta", "Fujifilm", "Mamiya", "Hasselblad")
+                            val lensTypes = listOf("Prime", "Zoom", "Macro", "Anamorphic", "Tilt-Shift")
+
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.make ?: "",
-                                    onValueChange = { editingLens = item.copy(make = it) },
-                                    label = { Text("Make / Brand") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.make ?: "",
+                                        onValueChange = { editingLens = item.copy(make = it, name = "${it} ${item.model ?: ""}".trim()) },
+                                        label = { Text("Make / Brand") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { makeDropdownExpanded = !makeDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = makeDropdownExpanded,
+                                        onDismissRequest = { makeDropdownExpanded = false }
+                                    ) {
+                                        commonMakes.forEach { mOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(mOpt) },
+                                                onClick = {
+                                                    editingLens = item.copy(make = mOpt, name = "$mOpt ${item.model ?: ""}".trim())
+                                                    makeDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 OutlinedTextField(
                                     value = item.model ?: "",
-                                    onValueChange = { editingLens = item.copy(model = it) },
-                                    label = { Text("Model Number (Optional)") },
+                                    onValueChange = { editingLens = item.copy(model = it, name = "${item.make ?: ""} $it".trim()) },
+                                    label = { Text("Model Name") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
+
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.focalLength ?: "50mm",
-                                    onValueChange = { editingLens = item.copy(focalLength = it) },
-                                    label = { Text("Focal Length (e.g. 50mm)") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                OutlinedTextField(
-                                    value = item.maxAperture ?: "f/1.4",
-                                    onValueChange = { editingLens = item.copy(maxAperture = it) },
-                                    label = { Text("Max Aperture (e.g. f/1.4)") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.type,
+                                        onValueChange = { editingLens = item.copy(type = it) },
+                                        label = { Text("Lens Type") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { lensTypeDropdownExpanded = !lensTypeDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = lensTypeDropdownExpanded,
+                                        onDismissRequest = { lensTypeDropdownExpanded = false }
+                                    ) {
+                                        lensTypes.forEach { tOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(tOpt) },
+                                                onClick = {
+                                                    editingLens = item.copy(type = tOpt)
+                                                    lensTypeDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.mount ?: "",
                                         onValueChange = { editingLens = item.copy(mount = it) },
-                                        label = { Text("Lens Mount (e.g. EF, F, M)") },
+                                        label = { Text("Lens Mount") },
                                         modifier = Modifier.fillMaxWidth(),
                                         trailingIcon = {
                                             IconButton(onClick = { mountDropdownExpanded = !mountDropdownExpanded }) {
@@ -2241,12 +2275,72 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
+                            }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.focalLength ?: "50mm",
+                                    onValueChange = { editingLens = item.copy(focalLength = it) },
+                                    label = { Text("Focal Length (mm)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.filterSize ?: "",
+                                    onValueChange = { editingLens = item.copy(filterSize = it) },
+                                    label = { Text("Filter Size (mm)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.maxAperture ?: "f/1.4",
+                                    onValueChange = { editingLens = item.copy(maxAperture = it) },
+                                    label = { Text("Max Ap (e.g. 1.8)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.minAperture ?: "f/22",
+                                    onValueChange = { editingLens = item.copy(minAperture = it) },
+                                    label = { Text("Min Ap (e.g. 22)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.minFocusMeters ?: "",
+                                    onValueChange = { editingLens = item.copy(minFocusMeters = it) },
+                                    label = { Text("Min Focus (m)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.maxMagnification ?: "",
+                                    onValueChange = { editingLens = item.copy(maxMagnification = it) },
+                                    label = { Text("Max Mag (x)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 OutlinedTextField(
                                     value = item.serialNumber ?: "",
                                     onValueChange = { editingLens = item.copy(serialNumber = it) },
                                     label = { Text("Serial Number (Optional)") },
                                     modifier = Modifier.weight(1f)
                                 )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Checkbox(
+                                        checked = item.isImageStabilised,
+                                        onCheckedChange = { editingLens = item.copy(isImageStabilised = it) }
+                                    )
+                                    Text("Image Stabilised", style = MaterialTheme.typography.bodySmall)
+                                }
                             }
                         }
                         2 -> { // Film Form with Dropdowns and Chemistry Parity
@@ -3358,8 +3452,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
                                                 Column(modifier = Modifier.weight(1f)) {
-                                                    Text(lens.name, fontWeight = FontWeight.Bold)
-                                                    Text("${lens.make ?: "Generic"} ${lens.focalLength ?: "50mm"} ${lens.maxAperture ?: "f/1.4"} • Mount: ${lens.mount ?: "Standard"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                    val isBadge = if (lens.isImageStabilised) " • 🟢 IS" else ""
+                                                    val filterBadge = if (!lens.filterSize.isNullOrBlank()) " • Filter: ${lens.filterSize}" else ""
+                                                    Text(if (lens.name.isNotBlank()) lens.name else "${lens.make ?: ""} ${lens.model ?: "Lens"}".trim(), fontWeight = FontWeight.Bold)
+                                                    Text("${lens.type} • ${lens.focalLength ?: "50mm"} ${lens.maxAperture ?: "f/1.4"}/${lens.minAperture ?: "f/22"} • Mount: ${lens.mount ?: "Standard"}$filterBadge$isBadge", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 }
                                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                                     IconButton(onClick = {
