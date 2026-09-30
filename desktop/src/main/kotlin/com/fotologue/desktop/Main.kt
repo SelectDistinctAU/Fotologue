@@ -2175,8 +2175,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        1 -> { // Lens
+                        1 -> { // Lens Form with Parity
                             val item = editingLens ?: ReferenceLensItem(name = "")
+                            var mountDropdownExpanded by remember { mutableStateOf(false) }
+
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingLens = item.copy(name = it) },
@@ -2187,39 +2189,76 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 OutlinedTextField(
                                     value = item.make ?: "",
                                     onValueChange = { editingLens = item.copy(make = it) },
-                                    label = { Text("Make / Brand (e.g. Canon)") },
+                                    label = { Text("Make / Brand") },
                                     modifier = Modifier.weight(1f)
                                 )
                                 OutlinedTextField(
-                                    value = item.focalLength ?: "50mm",
-                                    onValueChange = { editingLens = item.copy(focalLength = it) },
-                                    label = { Text("Focal Length") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                OutlinedTextField(
-                                    value = item.maxAperture ?: "f/1.4",
-                                    onValueChange = { editingLens = item.copy(maxAperture = it) },
-                                    label = { Text("Max Aperture") },
+                                    value = item.model ?: "",
+                                    onValueChange = { editingLens = item.copy(model = it) },
+                                    label = { Text("Model Number (Optional)") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
-                                    value = item.mount ?: "",
-                                    onValueChange = { editingLens = item.copy(mount = it) },
-                                    label = { Text("Mount (e.g. Canon FD, Leica M)") },
+                                    value = item.focalLength ?: "50mm",
+                                    onValueChange = { editingLens = item.copy(focalLength = it) },
+                                    label = { Text("Focal Length (e.g. 50mm)") },
                                     modifier = Modifier.weight(1f)
                                 )
                                 OutlinedTextField(
+                                    value = item.maxAperture ?: "f/1.4",
+                                    onValueChange = { editingLens = item.copy(maxAperture = it) },
+                                    label = { Text("Max Aperture (e.g. f/1.4)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.mount ?: "",
+                                        onValueChange = { editingLens = item.copy(mount = it) },
+                                        label = { Text("Lens Mount (e.g. EF, F, M)") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { mountDropdownExpanded = !mountDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = mountDropdownExpanded && cameras.isNotEmpty(),
+                                        onDismissRequest = { mountDropdownExpanded = false }
+                                    ) {
+                                        cameras.mapNotNull { it.mount }.distinct().forEach { mountOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(mountOpt) },
+                                                onClick = {
+                                                    editingLens = item.copy(mount = mountOpt)
+                                                    mountDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                                OutlinedTextField(
                                     value = item.serialNumber ?: "",
                                     onValueChange = { editingLens = item.copy(serialNumber = it) },
-                                    label = { Text("Serial Number") },
+                                    label = { Text("Serial Number (Optional)") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
                         }
-                        2 -> { // Film
+                        2 -> { // Film Form with Dropdowns and Chemistry Parity
                             val item = editingFilm ?: ReferenceFilmItem(name = "")
+                            var filmTypeDropdownExpanded by remember { mutableStateOf(false) }
+                            var filmFormatDropdownExpanded by remember { mutableStateOf(false) }
+                            var exposuresDropdownExpanded by remember { mutableStateOf(false) }
+
+                            val filmTypes = listOf("Color Negative", "Black & White Negative", "Color Slide / Reversal", "B&W Slide", "Infrared")
+                            val filmFormats = listOf("35mm", "120", "Sheet", "110", "APS")
+                            val exposureOptions = listOf("36", "24", "12", "16", "10")
+
                             Box(modifier = Modifier.fillMaxWidth()) {
                                 OutlinedTextField(
                                     value = item.name,
@@ -2227,11 +2266,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         editingFilm = item.copy(name = it)
                                         isPresetDropdownExpanded = true
                                     },
-                                    label = { Text("Film Name (Type to Search Preset Catalogue)") },
+                                    label = { Text("Film Name") },
                                     modifier = Modifier.fillMaxWidth(),
                                     trailingIcon = {
                                         IconButton(onClick = { isPresetDropdownExpanded = !isPresetDropdownExpanded }) {
-                                            Icon(Icons.Default.Search, contentDescription = "Search Preset Catalogue")
+                                            Icon(Icons.Default.Search, contentDescription = "Preset Catalogue Search")
                                         }
                                     }
                                 )
@@ -2260,29 +2299,92 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 OutlinedTextField(
                                     value = item.abbreviation,
                                     onValueChange = { editingFilm = item.copy(abbreviation = it) },
-                                    label = { Text("Abbreviation") },
+                                    label = { Text("Abbreviation (e.g. HP5)") },
                                     modifier = Modifier.weight(1f)
                                 )
-                                OutlinedTextField(
-                                    value = item.expectedExposures.toString(),
-                                    onValueChange = { editingFilm = item.copy(expectedExposures = it.toIntOrNull() ?: 36) },
-                                    label = { Text("Exposures") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.expectedExposures.toString(),
+                                        onValueChange = { editingFilm = item.copy(expectedExposures = it.toIntOrNull() ?: 36) },
+                                        label = { Text("Exposures") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { exposuresDropdownExpanded = !exposuresDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = exposuresDropdownExpanded,
+                                        onDismissRequest = { exposuresDropdownExpanded = false }
+                                    ) {
+                                        exposureOptions.forEach { expOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text("$expOpt Exposures") },
+                                                onClick = {
+                                                    editingFilm = item.copy(expectedExposures = expOpt.toIntOrNull() ?: 36)
+                                                    exposuresDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.type,
-                                    onValueChange = { editingFilm = item.copy(type = it) },
-                                    label = { Text("Type (Color Neg, B&W, Slide)") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                OutlinedTextField(
-                                    value = item.format,
-                                    onValueChange = { editingFilm = item.copy(format = it) },
-                                    label = { Text("Format (35mm, 120, Sheet)") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.type,
+                                        onValueChange = { editingFilm = item.copy(type = it) },
+                                        label = { Text("Film Type") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { filmTypeDropdownExpanded = !filmTypeDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = filmTypeDropdownExpanded,
+                                        onDismissRequest = { filmTypeDropdownExpanded = false }
+                                    ) {
+                                        filmTypes.forEach { typeOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(typeOpt) },
+                                                onClick = {
+                                                    editingFilm = item.copy(type = typeOpt)
+                                                    filmTypeDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.format,
+                                        onValueChange = { editingFilm = item.copy(format = it) },
+                                        label = { Text("Film Format") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { filmFormatDropdownExpanded = !filmFormatDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = filmFormatDropdownExpanded,
+                                        onDismissRequest = { filmFormatDropdownExpanded = false }
+                                    ) {
+                                        filmFormats.forEach { formatOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(formatOpt) },
+                                                onClick = {
+                                                    editingFilm = item.copy(format = formatOpt)
+                                                    filmFormatDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                         3 -> { // Desktop Kit Builder with Parent Relational Dropdowns
@@ -2367,8 +2469,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                         }
-                        4 -> { // Teleconverter
+                        4 -> { // Teleconverter Form with Parity
                             val item = editingTeleconverter ?: ReferenceTeleconverterItem(name = "")
+                            var magDropdownExpanded by remember { mutableStateOf(false) }
+                            val magOptions = listOf("1.4x", "2x", "3x")
+
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingTeleconverter = item.copy(name = it) },
@@ -2379,25 +2484,52 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 OutlinedTextField(
                                     value = item.make ?: "",
                                     onValueChange = { editingTeleconverter = item.copy(make = it) },
-                                    label = { Text("Make / Brand (e.g. Canon)") },
+                                    label = { Text("Make / Brand") },
                                     modifier = Modifier.weight(1f)
                                 )
-                                OutlinedTextField(
-                                    value = item.magnification,
-                                    onValueChange = { editingTeleconverter = item.copy(magnification = it) },
-                                    label = { Text("Magnification (e.g. 2x, 1.4x)") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.magnification,
+                                        onValueChange = { editingTeleconverter = item.copy(magnification = it) },
+                                        label = { Text("Magnification") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { magDropdownExpanded = !magDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = magDropdownExpanded,
+                                        onDismissRequest = { magDropdownExpanded = false }
+                                    ) {
+                                        magOptions.forEach { mOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(mOpt) },
+                                                onClick = {
+                                                    editingTeleconverter = item.copy(magnification = mOpt)
+                                                    magDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 OutlinedTextField(
                                     value = item.mount ?: "",
                                     onValueChange = { editingTeleconverter = item.copy(mount = it) },
-                                    label = { Text("Mount (e.g. Canon FD)") },
+                                    label = { Text("Lens Mount") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
                         }
-                        5 -> { // Filter
+                        5 -> { // Filter Form with Parity
                             val item = editingFilter ?: ReferenceFilterItem(name = "")
+                            var threadDropdownExpanded by remember { mutableStateOf(false) }
+                            var filterTypeDropdownExpanded by remember { mutableStateOf(false) }
+
+                            val threadSizes = listOf("49mm", "52mm", "55mm", "58mm", "62mm", "67mm", "72mm", "77mm", "82mm", "Bayonet")
+                            val filterTypes = listOf("Yellow Y2/8", "Red R2/25", "Green", "Orange", "CPL (Circular Polariser)", "ND (Neutral Density)", "UV / Skylight")
+
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingFilter = item.copy(name = it) },
@@ -2405,22 +2537,67 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.threadSize,
-                                    onValueChange = { editingFilter = item.copy(threadSize = it) },
-                                    label = { Text("Thread Size (e.g. 52mm, 77mm)") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                OutlinedTextField(
-                                    value = item.filterType,
-                                    onValueChange = { editingFilter = item.copy(filterType = it) },
-                                    label = { Text("Filter Type (Yellow, Red, CPL, ND)") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.threadSize,
+                                        onValueChange = { editingFilter = item.copy(threadSize = it) },
+                                        label = { Text("Thread Size") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { threadDropdownExpanded = !threadDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = threadDropdownExpanded,
+                                        onDismissRequest = { threadDropdownExpanded = false }
+                                    ) {
+                                        threadSizes.forEach { tOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(tOpt) },
+                                                onClick = {
+                                                    editingFilter = item.copy(threadSize = tOpt)
+                                                    threadDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.filterType,
+                                        onValueChange = { editingFilter = item.copy(filterType = it) },
+                                        label = { Text("Filter Type") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { filterTypeDropdownExpanded = !filterTypeDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = filterTypeDropdownExpanded,
+                                        onDismissRequest = { filterTypeDropdownExpanded = false }
+                                    ) {
+                                        filterTypes.forEach { ftOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(ftOpt) },
+                                                onClick = {
+                                                    editingFilter = item.copy(filterType = ftOpt)
+                                                    filterTypeDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
-                        6 -> { // Flash
+                        6 -> { // Flash Form with Parity
                             val item = editingFlash ?: ReferenceFlashItem(name = "")
+                            var syncTypeDropdownExpanded by remember { mutableStateOf(false) }
+                            val syncTypes = listOf("Hotshoe", "Coldshoe", "PC Sync Cord", "Bulb Sync")
+
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingFlash = item.copy(name = it) },
@@ -2431,19 +2608,45 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 OutlinedTextField(
                                     value = item.guideNumber,
                                     onValueChange = { editingFlash = item.copy(guideNumber = it) },
-                                    label = { Text("Guide Number (e.g. GN 28)") },
+                                    label = { Text("Guide Number (ISO 100)") },
                                     modifier = Modifier.weight(1f)
                                 )
-                                OutlinedTextField(
-                                    value = item.syncType,
-                                    onValueChange = { editingFlash = item.copy(syncType = it) },
-                                    label = { Text("Sync Type (Hotshoe, PC Sync)") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.syncType,
+                                        onValueChange = { editingFlash = item.copy(syncType = it) },
+                                        label = { Text("Sync Type") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { syncTypeDropdownExpanded = !syncTypeDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = syncTypeDropdownExpanded,
+                                        onDismissRequest = { syncTypeDropdownExpanded = false }
+                                    ) {
+                                        syncTypes.forEach { sOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(sOpt) },
+                                                onClick = {
+                                                    editingFlash = item.copy(syncType = sOpt)
+                                                    syncTypeDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
-                        7 -> { // Viewfinder
+                        7 -> { // Viewfinder Form with Parity
                             val item = editingViewfinder ?: ReferenceViewfinderItem(name = "")
+                            var vfTypeDropdownExpanded by remember { mutableStateOf(false) }
+                            var cameraDropdownExpanded by remember { mutableStateOf(false) }
+
+                            val vfTypes = listOf("Eye-Level Prism", "Waist-Level Finder", "Action Finder", "Right-Angle Finder", "Magnifier / Diopter")
+
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingViewfinder = item.copy(name = it) },
@@ -2451,18 +2654,60 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.type,
-                                    onValueChange = { editingViewfinder = item.copy(type = it) },
-                                    label = { Text("Type (Prism, Waist Level, Magnifier)") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                OutlinedTextField(
-                                    value = item.compatibleCamera ?: "",
-                                    onValueChange = { editingViewfinder = item.copy(compatibleCamera = it) },
-                                    label = { Text("Compatible Camera Body") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.type,
+                                        onValueChange = { editingViewfinder = item.copy(type = it) },
+                                        label = { Text("Viewfinder Type") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { vfTypeDropdownExpanded = !vfTypeDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = vfTypeDropdownExpanded,
+                                        onDismissRequest = { vfTypeDropdownExpanded = false }
+                                    ) {
+                                        vfTypes.forEach { vOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(vOpt) },
+                                                onClick = {
+                                                    editingViewfinder = item.copy(type = vOpt)
+                                                    vfTypeDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.compatibleCamera ?: "",
+                                        onValueChange = { editingViewfinder = item.copy(compatibleCamera = it) },
+                                        label = { Text("Compatible Camera Body") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { cameraDropdownExpanded = !cameraDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = cameraDropdownExpanded && cameras.isNotEmpty(),
+                                        onDismissRequest = { cameraDropdownExpanded = false }
+                                    ) {
+                                        cameras.forEach { cam ->
+                                            DropdownMenuItem(
+                                                text = { Text("${cam.name} (${cam.type})") },
+                                                onClick = {
+                                                    editingViewfinder = item.copy(compatibleCamera = cam.name)
+                                                    cameraDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                         8 -> { // Supplier
