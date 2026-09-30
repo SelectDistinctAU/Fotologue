@@ -39,9 +39,9 @@ fun AddEditTeleconverterScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             if (viewModel.teleconverterId == null) 
-                                stringResource(R.string.add_teleconverter) 
+                                "Add Teleconverter / Extension Ring" 
                             else 
-                                stringResource(R.string.edit_teleconverter)
+                                "Edit Teleconverter / Extension Ring"
                         )
                     }
                 },
@@ -108,32 +108,95 @@ fun AddEditTeleconverterScreen(
                 }
             }
 
+            Text(
+                "Note: Teleconverters and Extension Rings attach behind interchangeable lenses (SLRs / Rangefinders). For TLRs and fixed-lens cameras, front aux lenses should be logged under Filters / Front Attachments.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
 
+            var converterTypeExpanded by remember { mutableStateOf(false) }
+            val converterTypes = listOf("Teleconverter", "Extension Ring / Macro Tube", "Speed Booster / Focal Reducer")
+            var selectedConverterType by remember { mutableStateOf(converterTypes[0]) }
+
+            ExposedDropdownMenuBox(
+                expanded = converterTypeExpanded,
+                onExpandedChange = { converterTypeExpanded = it },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = selectedConverterType,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Converter Type") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = converterTypeExpanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = converterTypeExpanded,
+                    onDismissRequest = { converterTypeExpanded = false }
+                ) {
+                    converterTypes.forEach { typeOpt ->
+                        DropdownMenuItem(
+                            text = { Text(typeOpt) },
+                            onClick = {
+                                selectedConverterType = typeOpt
+                                converterTypeExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
             OutlinedTextField(
                 value = uiState.name,
                 onValueChange = viewModel::onNameChange,
-                label = { Text(stringResource(R.string.label_tc_name_hint)) },
+                label = { Text("Converter / Extension Ring Name (e.g. Canon FD 2x-A)") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 value = uiState.magnification,
                 onValueChange = viewModel::onMagnificationChange,
-                label = { Text(stringResource(R.string.label_magnification_hint)) },
+                label = { Text("Magnification / Extension (e.g. 1.4x, 2x, 25mm)") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
             )
 
-            OutlinedTextField(
-                value = uiState.lightLossStops,
-                onValueChange = viewModel::onLightLossStopsChange,
-                label = { Text(stringResource(R.string.label_light_loss_hint)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
+            var lightLossExpanded by remember { mutableStateOf(false) }
+            val lightLossOptions = listOf("0.0", "0.5", "1.0", "1.5", "2.0")
+
+            ExposedDropdownMenuBox(
+                expanded = lightLossExpanded,
+                onExpandedChange = { lightLossExpanded = it },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = "${uiState.lightLossStops} Stops",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Light Loss (Stops)") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = lightLossExpanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = lightLossExpanded,
+                    onDismissRequest = { lightLossExpanded = false }
+                ) {
+                    lightLossOptions.forEach { lossOpt ->
+                        DropdownMenuItem(
+                            text = { Text("$lossOpt Stops") },
+                            onClick = {
+                                viewModel.onLightLossStopsChange(lossOpt)
+                                lightLossExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
             
             Button(
                 onClick = { viewModel.saveTeleconverter(onSuccess) },

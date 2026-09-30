@@ -44,7 +44,8 @@ class AddEditTeleconverterViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             repository.allCameras.collect { cameras ->
-                _uiState.update { it.copy(cameras = cameras) }
+                val interchangeable = cameras.filter { it.type.isInterchangeable && it.mount != "Fixed" }
+                _uiState.update { it.copy(cameras = interchangeable) }
             }
         }
         loadTeleconverter()
