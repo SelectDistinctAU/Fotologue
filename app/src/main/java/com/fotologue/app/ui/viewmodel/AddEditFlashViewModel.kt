@@ -20,6 +20,9 @@ data class AddEditFlashUiState(
     val make: String = "",
     val model: String = "",
     val guideNumber: String = "",
+    val syncType: String = "Hotshoe",
+    val serialNumber: String = "",
+    val syncTypes: List<String> = listOf("Hotshoe", "Coldshoe", "PC Sync Cord", "Bulb Sync"),
     val cameras: List<Camera> = emptyList(),
     val selectedCameraIds: Set<Long> = emptySet()
 )
@@ -89,6 +92,16 @@ class AddEditFlashViewModel @Inject constructor(
     fun onGuideNumberChange(value: String) {
         savedStateHandle["guideNumber"] = value
         _uiState.update { it.copy(guideNumber = value) }
+    }
+
+    fun onSyncTypeChange(value: String) {
+        savedStateHandle["syncType"] = value
+        _uiState.update { it.copy(syncType = value) }
+    }
+
+    fun onSerialNumberChange(value: String) {
+        savedStateHandle["serialNumber"] = value
+        _uiState.update { it.copy(serialNumber = value) }
     }
 
     fun onCameraToggled(cameraId: Long) {

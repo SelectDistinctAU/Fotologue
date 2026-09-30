@@ -129,9 +129,47 @@ fun AddEditFlashScreen(
             OutlinedTextField(
                 value = uiState.guideNumber,
                 onValueChange = viewModel::onGuideNumberChange,
-                label = { Text(stringResource(R.string.label_guide_number_hint)) },
+                label = { Text("Guide Number (ISO 100, meters)") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+
+            var syncTypeExpanded by remember { mutableStateOf(false) }
+
+            ExposedDropdownMenuBox(
+                expanded = syncTypeExpanded,
+                onExpandedChange = { syncTypeExpanded = it },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = uiState.syncType,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Sync Type") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = syncTypeExpanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = syncTypeExpanded,
+                    onDismissRequest = { syncTypeExpanded = false }
+                ) {
+                    uiState.syncTypes.forEach { syncOpt ->
+                        DropdownMenuItem(
+                            text = { Text(syncOpt) },
+                            onClick = {
+                                viewModel.onSyncTypeChange(syncOpt)
+                                syncTypeExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            OutlinedTextField(
+                value = uiState.serialNumber,
+                onValueChange = viewModel::onSerialNumberChange,
+                label = { Text("Serial Number (Optional)") },
+                modifier = Modifier.fillMaxWidth()
             )
             
             Button(

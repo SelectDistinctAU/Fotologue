@@ -2963,22 +2963,58 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                         }
-                        6 -> { // Flash Form with Parity
+                        6 -> { // Flash Form with 1-to-1 Mobile Parity
                             val item = editingFlash ?: ReferenceFlashItem(name = "")
+                            var selectedAssociatedCameraIds by remember { mutableStateOf(setOf<Int>()) }
                             var syncTypeDropdownExpanded by remember { mutableStateOf(false) }
                             val syncTypes = listOf("Hotshoe", "Coldshoe", "PC Sync Cord", "Bulb Sync")
 
-                            OutlinedTextField(
-                                value = item.name,
-                                onValueChange = { editingFlash = item.copy(name = it) },
-                                label = { Text("Flash Name (e.g. Vivitar 283)") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            // Section 1: Associated Cameras (All Cameras including TLRs)
+                            Text("Associated Cameras", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                            if (cameras.isEmpty()) {
+                                Text("No cameras found. Please add a camera first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                            } else {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    cameras.forEach { camera ->
+                                        val isSelected = selectedAssociatedCameraIds.contains(camera.id)
+                                        FilterChip(
+                                            selected = isSelected,
+                                            onClick = {
+                                                selectedAssociatedCameraIds = if (isSelected) selectedAssociatedCameraIds - camera.id else selectedAssociatedCameraIds + camera.id
+                                            },
+                                            label = { Text(camera.name, style = MaterialTheme.typography.labelSmall) },
+                                            leadingIcon = if (isSelected) { { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp)) } } else null
+                                        )
+                                    }
+                                }
+                            }
+
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                            // Section 2: Form Controls
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.name.substringBefore(" ").ifBlank { "Nikon" },
+                                    onValueChange = { mkg -> editingFlash = item.copy(name = "$mkg ${item.guideNumber}".trim()) },
+                                    label = { Text("Make / Brand (e.g. Nikon)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.name,
+                                    onValueChange = { editingFlash = item.copy(name = it) },
+                                    label = { Text("Model Name (e.g. SB-700, 283)") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
                                     value = item.guideNumber,
                                     onValueChange = { editingFlash = item.copy(guideNumber = it) },
-                                    label = { Text("Guide Number (ISO 100)") },
+                                    label = { Text("Guide Number (ISO 100, meters)") },
                                     modifier = Modifier.weight(1f)
                                 )
                                 Box(modifier = Modifier.weight(1f)) {
@@ -3009,6 +3045,13 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                     }
                                 }
                             }
+
+                            OutlinedTextField(
+                                value = item.serialNumber ?: "",
+                                onValueChange = { editingFlash = item.copy(serialNumber = it) },
+                                label = { Text("Serial Number (Optional)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                         7 -> { // Viewfinder Form with Parity
                             val item = editingViewfinder ?: ReferenceViewfinderItem(name = "")
