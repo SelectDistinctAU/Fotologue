@@ -2846,20 +2846,48 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
                         }
-                        5 -> { // Filter Form with Parity
+                        5 -> { // Filter Form with 1-to-1 Mobile Parity
                             val item = editingFilter ?: ReferenceFilterItem(name = "")
+                            var selectedAssociatedCameraIds by remember { mutableStateOf(setOf<Int>()) }
                             var threadDropdownExpanded by remember { mutableStateOf(false) }
                             var filterTypeDropdownExpanded by remember { mutableStateOf(false) }
 
-                            val threadSizes = listOf("49mm", "52mm", "55mm", "58mm", "62mm", "67mm", "72mm", "77mm", "82mm", "Bayonet")
-                            val filterTypes = listOf("Yellow Y2/8", "Red R2/25", "Green", "Orange", "CPL (Circular Polariser)", "ND (Neutral Density)", "UV / Skylight")
+                            val threadSizes = listOf("49mm", "52mm", "55mm", "58mm", "62mm", "67mm", "72mm", "77mm", "82mm", "Bayonet I", "Bayonet II", "Bayonet III")
+                            val filterTypes = listOf("ND (Neutral Density)", "Yellow Y2/8", "Red R2/25", "Green", "Orange", "CPL (Circular Polariser)", "UV / Skylight", "Specialty")
 
+                            // Section 1: Associated Cameras (All Cameras including TLRs / Fixed Lens)
+                            Text("Associated Cameras", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                            if (cameras.isEmpty()) {
+                                Text("No cameras found. Please add a camera first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                            } else {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    cameras.forEach { camera ->
+                                        val isSelected = selectedAssociatedCameraIds.contains(camera.id)
+                                        FilterChip(
+                                            selected = isSelected,
+                                            onClick = {
+                                                selectedAssociatedCameraIds = if (isSelected) selectedAssociatedCameraIds - camera.id else selectedAssociatedCameraIds + camera.id
+                                            },
+                                            label = { Text(camera.name, style = MaterialTheme.typography.labelSmall) },
+                                            leadingIcon = if (isSelected) { { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp)) } } else null
+                                        )
+                                    }
+                                }
+                            }
+
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                            // Section 2: Form Controls
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingFilter = item.copy(name = it) },
-                                label = { Text("Filter Name (e.g. Hoya 52mm Yellow 8)") },
+                                label = { Text("Filter Name (e.g. Hoya 52mm ND8)") },
                                 modifier = Modifier.fillMaxWidth()
                             )
+
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
@@ -2915,6 +2943,15 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
+                            }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.serialNumber ?: "0.0",
+                                    onValueChange = { editingFilter = item.copy(serialNumber = it) },
+                                    label = { Text("Compensation (Stops, e.g. 3.0)") },
+                                    modifier = Modifier.weight(1f)
+                                )
                             }
                         }
                         6 -> { // Flash Form with Parity
