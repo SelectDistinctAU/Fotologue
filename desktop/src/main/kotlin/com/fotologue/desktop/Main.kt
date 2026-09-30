@@ -2024,12 +2024,38 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 editingConsumable = null
                 editingLabEquipment = null
             },
-            title = { Text(if ((editingCamera?.id ?: 0) > 0 || (editingLens?.id ?: 0) > 0 || (editingFilm?.id ?: 0) > 0 || (editingKit?.id ?: 0) > 0 || (editingAccessory?.id ?: 0) > 0 || (editingSupplier?.id ?: 0) > 0 || (editingConsumable?.id ?: 0) > 0 || (editingLabEquipment?.id ?: 0) > 0) "Edit Reference Item" else "Add Reference Item", fontWeight = FontWeight.Bold) },
+            title = {
+                val action = if ((editingCamera?.id ?: 0) > 0 || (editingLens?.id ?: 0) > 0 || (editingFilm?.id ?: 0) > 0 || (editingKit?.id ?: 0) > 0 || (editingTeleconverter?.id ?: 0) > 0 || (editingFilter?.id ?: 0) > 0 || (editingFlash?.id ?: 0) > 0 || (editingViewfinder?.id ?: 0) > 0 || (editingSupplier?.id ?: 0) > 0 || (editingConsumable?.id ?: 0) > 0 || (editingLabEquipment?.id ?: 0) > 0 || (editingStorageLocation?.id ?: 0) > 0 || (editingCustodyInteraction?.id ?: 0) > 0) "Edit" else "Add"
+                val categoryName = when (selectedCategory) {
+                    0 -> "Camera"
+                    1 -> "Lens"
+                    2 -> "Film"
+                    3 -> "Camera Kit"
+                    4 -> "Teleconverter"
+                    5 -> "Filter"
+                    6 -> "Flash"
+                    7 -> "Viewfinder"
+                    8 -> "Supplier"
+                    9 -> "Consumable"
+                    10 -> "Lab Equipment"
+                    11 -> "Storage Location"
+                    12 -> "Pre-Arrival Order"
+                    13 -> "Custody Interaction"
+                    else -> "Item"
+                }
+                Text("$action $categoryName", fontWeight = FontWeight.Bold)
+            },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     when (selectedCategory) {
-                        0 -> { // Camera
+                        0 -> { // Camera Form with 1-to-1 Parity
                             val item = editingCamera ?: ReferenceCameraItem(name = "")
+                            var cameraTypeDropdownExpanded by remember { mutableStateOf(false) }
+                            var filmFormatDropdownExpanded by remember { mutableStateOf(false) }
+
+                            val cameraTypes = listOf("Film SLR", "Rangefinder", "TLR", "Point & Shoot", "Compact", "Medium Format SLR", "Large Format")
+                            val filmFormats = listOf("35mm", "120", "Sheet", "Half-Frame")
+
                             Box(modifier = Modifier.fillMaxWidth()) {
                                 OutlinedTextField(
                                     value = item.name,
@@ -2037,11 +2063,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         editingCamera = item.copy(name = it)
                                         isPresetDropdownExpanded = true
                                     },
-                                    label = { Text("Camera Name (Type to Search Preset Catalogue)") },
+                                    label = { Text("Camera Name") },
                                     modifier = Modifier.fillMaxWidth(),
                                     trailingIcon = {
                                         IconButton(onClick = { isPresetDropdownExpanded = !isPresetDropdownExpanded }) {
-                                            Icon(Icons.Default.Search, contentDescription = "Search Preset Catalogue")
+                                            Icon(Icons.Default.Search, contentDescription = "Preset Catalogue Search")
                                         }
                                     }
                                 )
@@ -2064,36 +2090,90 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 OutlinedTextField(
                                     value = item.modelNumber ?: "",
                                     onValueChange = { editingCamera = item.copy(modelNumber = it) },
-                                    label = { Text("Model Number") },
+                                    label = { Text("Model Number (Optional)") },
                                     modifier = Modifier.weight(1f)
                                 )
                                 OutlinedTextField(
                                     value = item.serialNumber ?: "",
                                     onValueChange = { editingCamera = item.copy(serialNumber = it) },
-                                    label = { Text("Serial Number") },
+                                    label = { Text("Serial Number (Optional)") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.type,
-                                    onValueChange = { editingCamera = item.copy(type = it) },
-                                    label = { Text("Type (SLR, Compact, TLR)") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.type,
+                                        onValueChange = { editingCamera = item.copy(type = it) },
+                                        label = { Text("Camera Type") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { cameraTypeDropdownExpanded = !cameraTypeDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = cameraTypeDropdownExpanded,
+                                        onDismissRequest = { cameraTypeDropdownExpanded = false }
+                                    ) {
+                                        cameraTypes.forEach { typeOption ->
+                                            DropdownMenuItem(
+                                                text = { Text(typeOption) },
+                                                onClick = {
+                                                    editingCamera = item.copy(type = typeOption)
+                                                    cameraTypeDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 OutlinedTextField(
                                     value = item.mount ?: "",
                                     onValueChange = { editingCamera = item.copy(mount = it) },
-                                    label = { Text("Mount (e.g. K-Mount, EF)") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                OutlinedTextField(
-                                    value = item.format,
-                                    onValueChange = { editingCamera = item.copy(format = it) },
-                                    label = { Text("Format (35mm, 120)") },
+                                    label = { Text("Lens Mount (e.g. EF, F, M)") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                OutlinedTextField(
+                                    value = item.format,
+                                    onValueChange = { editingCamera = item.copy(format = it) },
+                                    label = { Text("Film Format") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    trailingIcon = {
+                                        IconButton(onClick = { filmFormatDropdownExpanded = !filmFormatDropdownExpanded }) {
+                                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                        }
+                                    }
+                                )
+                                DropdownMenu(
+                                    expanded = filmFormatDropdownExpanded,
+                                    onDismissRequest = { filmFormatDropdownExpanded = false }
+                                ) {
+                                    filmFormats.forEach { formatOption ->
+                                        DropdownMenuItem(
+                                            text = { Text(formatOption) },
+                                            onClick = {
+                                                editingCamera = item.copy(format = formatOption)
+                                                filmFormatDropdownExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                            Text(
+                                "Hint: If your camera uses multiple film formats (e.g. interchangeable backs), add it once for each format.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            OutlinedTextField(
+                                value = item.shutterSpeeds ?: "",
+                                onValueChange = { editingCamera = item.copy(shutterSpeeds = it) },
+                                label = { Text("Shutter Speeds (comma separated)") },
+                                placeholder = { Text("1/1000, 1/500, 1/250, 1/125...") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                         1 -> { // Lens
                             val item = editingLens ?: ReferenceLensItem(name = "")
