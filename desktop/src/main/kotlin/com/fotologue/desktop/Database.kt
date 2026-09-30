@@ -149,7 +149,13 @@ object FoundationConsumablesTable : IntIdTable("foundation_consumables") {
     val category = varchar("category", 100).default("Chemistry")
     val type = varchar("type", 100).nullable()
     val dilution = varchar("dilution", 50).nullable()
-    val defaultUnit = varchar("default_unit", 50).default("ml")
+    val containerAmount = double("container_amount").default(1.0)
+    val containerUnit = varchar("container_unit", 50).default("L")
+    val innerYieldTotal = integer("inner_yield_total").default(1000)
+    val innerUnit = varchar("inner_unit", 50).default("mL")
+    val defaultUnit = varchar("default_unit", 50).default("mL")
+    val supplierName = varchar("supplier_name", 255).nullable()
+    val storageLocationName = varchar("storage_location_name", 255).nullable()
     val isHazardous = bool("is_hazardous").default(false)
     val safetyNotes = text("safety_notes").nullable()
 }
@@ -161,7 +167,13 @@ class FoundationConsumableEntity(id: EntityID<Int>) : IntEntity(id) {
     var category by FoundationConsumablesTable.category
     var type by FoundationConsumablesTable.type
     var dilution by FoundationConsumablesTable.dilution
+    var containerAmount by FoundationConsumablesTable.containerAmount
+    var containerUnit by FoundationConsumablesTable.containerUnit
+    var innerYieldTotal by FoundationConsumablesTable.innerYieldTotal
+    var innerUnit by FoundationConsumablesTable.innerUnit
     var defaultUnit by FoundationConsumablesTable.defaultUnit
+    var supplierName by FoundationConsumablesTable.supplierName
+    var storageLocationName by FoundationConsumablesTable.storageLocationName
     var isHazardous by FoundationConsumablesTable.isHazardous
     var safetyNotes by FoundationConsumablesTable.safetyNotes
 }
@@ -227,7 +239,13 @@ data class ReferenceConsumableItem(
     val category: String = "Chemistry",
     val type: String? = null,
     val dilution: String? = null,
-    val defaultUnit: String = "ml",
+    val containerAmount: Double = 1.0,
+    val containerUnit: String = "L",
+    val innerYieldTotal: Int = 1000,
+    val innerUnit: String = "mL",
+    val defaultUnit: String = "mL",
+    val supplierName: String? = null,
+    val storageLocationName: String? = null,
     val isHazardous: Boolean = false,
     val safetyNotes: String? = null
 )

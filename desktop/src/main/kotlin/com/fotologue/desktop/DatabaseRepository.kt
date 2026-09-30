@@ -307,7 +307,13 @@ object DatabaseRepository {
                     category = it.category,
                     type = it.type,
                     dilution = it.dilution,
+                    containerAmount = it.containerAmount,
+                    containerUnit = it.containerUnit,
+                    innerYieldTotal = it.innerYieldTotal,
+                    innerUnit = it.innerUnit,
                     defaultUnit = it.defaultUnit,
+                    supplierName = it.supplierName,
+                    storageLocationName = it.storageLocationName,
                     isHazardous = it.isHazardous,
                     safetyNotes = it.safetyNotes
                 )
@@ -324,7 +330,13 @@ object DatabaseRepository {
                     category = item.category
                     type = item.type
                     dilution = item.dilution
+                    containerAmount = item.containerAmount
+                    containerUnit = item.containerUnit
+                    innerYieldTotal = item.innerYieldTotal
+                    innerUnit = item.innerUnit
                     defaultUnit = item.defaultUnit
+                    supplierName = item.supplierName
+                    storageLocationName = item.storageLocationName
                     isHazardous = item.isHazardous
                     safetyNotes = item.safetyNotes
                 }
@@ -335,7 +347,13 @@ object DatabaseRepository {
                     category = item.category
                     type = item.type
                     dilution = item.dilution
+                    containerAmount = item.containerAmount
+                    containerUnit = item.containerUnit
+                    innerYieldTotal = item.innerYieldTotal
+                    innerUnit = item.innerUnit
                     defaultUnit = item.defaultUnit
+                    supplierName = item.supplierName
+                    storageLocationName = item.storageLocationName
                     isHazardous = item.isHazardous
                     safetyNotes = item.safetyNotes
                 }

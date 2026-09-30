@@ -3151,14 +3151,23 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        8 -> { // Supplier
+                        8 -> { // Supplier Form with 1-to-1 Mobile Parity
                             val item = editingSupplier ?: ReferenceSupplierItem(name = "")
+                            var isSupplierActive by remember { mutableStateOf(true) }
+
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingSupplier = item.copy(name = it) },
                                 label = { Text("Supplier Name") },
                                 modifier = Modifier.fillMaxWidth()
                             )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = isSupplierActive,
+                                    onCheckedChange = { isSupplierActive = it }
+                                )
+                                Text("In Use (Active Supplier - Appears in purchase dropdowns)", style = MaterialTheme.typography.bodySmall)
+                            }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
                                     value = item.website ?: "",
@@ -3199,43 +3208,248 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 label = { Text("Physical Address / Store Location") },
                                 modifier = Modifier.fillMaxWidth()
                             )
+                            OutlinedTextField(
+                                value = item.notes ?: "",
+                                onValueChange = { editingSupplier = item.copy(notes = it) },
+                                label = { Text("Supplier Notes") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
-                        9 -> { // Consumable
+                        9 -> { // Consumable Form with 1-to-1 Mobile Parity
                             val item = editingConsumable ?: ReferenceConsumableItem(name = "")
+                            var categoryDropdownExpanded by remember { mutableStateOf(false) }
+                            var mfgDropdownExpanded by remember { mutableStateOf(false) }
+                            var containerUnitExpanded by remember { mutableStateOf(false) }
+                            var innerUnitExpanded by remember { mutableStateOf(false) }
+                            var supplierDropdownExpanded by remember { mutableStateOf(false) }
+                            var locationDropdownExpanded by remember { mutableStateOf(false) }
+
+                            val categories = listOf("Chemistry", "Paper", "Film Stock", "Safety Gear", "Supplies")
+                            val manufacturers = listOf("Ilford", "Kodak", "Adox", "Foma", "CineStill", "Paterson", "Ansell", "Agfa", "Bergger", "Arista")
+                            val containerUnits = listOf("L", "mL", "bottle", "box", "pack", "gal")
+                            val innerUnits = listOf("mL", "sheets", "rolls", "items")
+
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                Button(
+                                    onClick = { isPresetDropdownExpanded = true },
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
+                                    colors = ButtonDefaults.filledTonalButtonColors()
+                                ) {
+                                    Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                                }
+                                DropdownMenu(
+                                    expanded = isPresetDropdownExpanded && DatabaseRepository.searchPresetConsumables(item.name).isNotEmpty(),
+                                    onDismissRequest = { isPresetDropdownExpanded = false }
+                                ) {
+                                    DatabaseRepository.searchPresetConsumables(item.name).take(5).forEach { preset ->
+                                        DropdownMenuItem(
+                                            text = { Text("${preset.name} (${preset.manufacturer ?: "Generic"})") },
+                                            onClick = {
+                                                editingConsumable = preset
+                                                isPresetDropdownExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.category,
+                                        onValueChange = { editingConsumable = item.copy(category = it) },
+                                        label = { Text("Category") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { categoryDropdownExpanded = !categoryDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = categoryDropdownExpanded,
+                                        onDismissRequest = { categoryDropdownExpanded = false }
+                                    ) {
+                                        categories.forEach { cOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(cOpt) },
+                                                onClick = {
+                                                    editingConsumable = item.copy(category = cOpt)
+                                                    categoryDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.manufacturer ?: "",
+                                        onValueChange = { editingConsumable = item.copy(manufacturer = it) },
+                                        label = { Text("Manufacturer / Brand") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { mfgDropdownExpanded = !mfgDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = mfgDropdownExpanded,
+                                        onDismissRequest = { mfgDropdownExpanded = false }
+                                    ) {
+                                        manufacturers.forEach { mOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(mOpt) },
+                                                onClick = {
+                                                    editingConsumable = item.copy(manufacturer = mOpt)
+                                                    mfgDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingConsumable = item.copy(name = it) },
-                                label = { Text("Consumable Product Name") },
+                                label = { Text("Consumable Product Name (e.g. Kodak D-76)") },
                                 modifier = Modifier.fillMaxWidth()
                             )
+
+                            // Major Container Size
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
-                                    value = item.manufacturer ?: "",
-                                    onValueChange = { editingConsumable = item.copy(manufacturer = it) },
-                                    label = { Text("Manufacturer (Kodak, Ilford)") },
+                                    value = item.containerAmount.toString(),
+                                    onValueChange = { editingConsumable = item.copy(containerAmount = it.toDoubleOrNull() ?: 1.0) },
+                                    label = { Text("Container Amount (Major)") },
                                     modifier = Modifier.weight(1f)
                                 )
-                                OutlinedTextField(
-                                    value = item.category,
-                                    onValueChange = { editingConsumable = item.copy(category = it) },
-                                    label = { Text("Category (Chemistry, Paper)") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.containerUnit,
+                                        onValueChange = { editingConsumable = item.copy(containerUnit = it) },
+                                        label = { Text("Container Unit") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { containerUnitExpanded = !containerUnitExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = containerUnitExpanded,
+                                        onDismissRequest = { containerUnitExpanded = false }
+                                    ) {
+                                        containerUnits.forEach { uOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(uOpt) },
+                                                onClick = {
+                                                    editingConsumable = item.copy(containerUnit = uOpt)
+                                                    containerUnitExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
+
+                            // Minor Inner Yield
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
-                                    value = item.dilution ?: "",
-                                    onValueChange = { editingConsumable = item.copy(dilution = it) },
-                                    label = { Text("Dilution (1+1, Stock)") },
+                                    value = item.innerYieldTotal.toString(),
+                                    onValueChange = { editingConsumable = item.copy(innerYieldTotal = it.toIntOrNull() ?: 1000) },
+                                    label = { Text("Yield Total (Minor)") },
                                     modifier = Modifier.weight(1f)
                                 )
-                                OutlinedTextField(
-                                    value = item.defaultUnit,
-                                    onValueChange = { editingConsumable = item.copy(defaultUnit = it) },
-                                    label = { Text("Unit (ml, g, sheets)") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.innerUnit,
+                                        onValueChange = { editingConsumable = item.copy(innerUnit = it) },
+                                        label = { Text("Yield Unit") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { innerUnitExpanded = !innerUnitExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = innerUnitExpanded,
+                                        onDismissRequest = { innerUnitExpanded = false }
+                                    ) {
+                                        innerUnits.forEach { iOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(iOpt) },
+                                                onClick = {
+                                                    editingConsumable = item.copy(innerUnit = iOpt)
+                                                    innerUnitExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.supplierName ?: "",
+                                        onValueChange = { editingConsumable = item.copy(supplierName = it) },
+                                        label = { Text("Supplier / Vendor") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { supplierDropdownExpanded = !supplierDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = supplierDropdownExpanded && suppliers.isNotEmpty(),
+                                        onDismissRequest = { supplierDropdownExpanded = false }
+                                    ) {
+                                        suppliers.forEach { sup ->
+                                            DropdownMenuItem(
+                                                text = { Text(sup.name) },
+                                                onClick = {
+                                                    editingConsumable = item.copy(supplierName = sup.name)
+                                                    supplierDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.storageLocationName ?: "",
+                                        onValueChange = { editingConsumable = item.copy(storageLocationName = it) },
+                                        label = { Text("Storage Location") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { locationDropdownExpanded = !locationDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = locationDropdownExpanded && storageLocations.isNotEmpty(),
+                                        onDismissRequest = { locationDropdownExpanded = false }
+                                    ) {
+                                        storageLocations.forEach { loc ->
+                                            DropdownMenuItem(
+                                                text = { Text("📦 ${loc.name}") },
+                                                onClick = {
+                                                    editingConsumable = item.copy(storageLocationName = loc.name)
+                                                    locationDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Checkbox(
                                     checked = item.isHazardous,
@@ -3244,39 +3458,123 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 Text("Hazardous Material / Safety Handling Required", style = MaterialTheme.typography.bodySmall)
                             }
                         }
-                        10 -> { // Equipment
+                        10 -> { // Lab Equipment Form with 1-to-1 Mobile Parity
                             val item = editingLabEquipment ?: ReferenceLabEquipmentItem(name = "")
-                            OutlinedTextField(
-                                value = item.name,
-                                onValueChange = { editingLabEquipment = item.copy(name = it) },
-                                label = { Text("Equipment Name") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            var categoryDropdownExpanded by remember { mutableStateOf(false) }
+                            var conditionDropdownExpanded by remember { mutableStateOf(false) }
+
+                            val categories = listOf("Enlarger", "Enlarger Lens", "Dev Tank", "Tray", "Light Table", "Squeegee & Drying", "Scanner / Digitiser", "General")
+                            val conditions = listOf("Excellent", "Good", "Fair", "Maintenance")
+
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                Button(
+                                    onClick = { isPresetDropdownExpanded = true },
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
+                                    colors = ButtonDefaults.filledTonalButtonColors()
+                                ) {
+                                    Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                                }
+                                DropdownMenu(
+                                    expanded = isPresetDropdownExpanded && DatabaseRepository.searchPresetEquipment(item.name).isNotEmpty(),
+                                    onDismissRequest = { isPresetDropdownExpanded = false }
+                                ) {
+                                    DatabaseRepository.searchPresetEquipment(item.name).take(5).forEach { preset ->
+                                        DropdownMenuItem(
+                                            text = { Text("${preset.name} (${preset.manufacturer ?: "Generic"})") },
+                                            onClick = {
+                                                editingLabEquipment = preset
+                                                isPresetDropdownExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.name,
+                                    onValueChange = { editingLabEquipment = item.copy(name = it) },
+                                    label = { Text("Equipment Name (e.g. Beseler 23C II)") },
+                                    modifier = Modifier.weight(1f)
+                                )
                                 OutlinedTextField(
                                     value = item.manufacturer ?: "",
                                     onValueChange = { editingLabEquipment = item.copy(manufacturer = it) },
-                                    label = { Text("Manufacturer") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                OutlinedTextField(
-                                    value = item.modelNumber ?: "",
-                                    onValueChange = { editingLabEquipment = item.copy(modelNumber = it) },
-                                    label = { Text("Model Number") },
+                                    label = { Text("Manufacturer / Brand") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.category,
+                                        onValueChange = { editingLabEquipment = item.copy(category = it) },
+                                        label = { Text("Equipment Category") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { categoryDropdownExpanded = !categoryDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = categoryDropdownExpanded,
+                                        onDismissRequest = { categoryDropdownExpanded = false }
+                                    ) {
+                                        categories.forEach { cOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(cOpt) },
+                                                onClick = {
+                                                    editingLabEquipment = item.copy(category = cOpt)
+                                                    categoryDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.condition,
+                                        onValueChange = { editingLabEquipment = item.copy(condition = it) },
+                                        label = { Text("Condition") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { conditionDropdownExpanded = !conditionDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = conditionDropdownExpanded,
+                                        onDismissRequest = { conditionDropdownExpanded = false }
+                                    ) {
+                                        conditions.forEach { condOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(condOpt) },
+                                                onClick = {
+                                                    editingLabEquipment = item.copy(condition = condOpt)
+                                                    conditionDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
-                                    value = item.category,
-                                    onValueChange = { editingLabEquipment = item.copy(category = it) },
-                                    label = { Text("Category (Enlarger, Tank, Tray)") },
+                                    value = item.modelNumber ?: "",
+                                    onValueChange = { editingLabEquipment = item.copy(modelNumber = it) },
+                                    label = { Text("Model Number (Optional)") },
                                     modifier = Modifier.weight(1f)
                                 )
                                 OutlinedTextField(
-                                    value = item.condition,
-                                    onValueChange = { editingLabEquipment = item.copy(condition = it) },
-                                    label = { Text("Condition (Good, Fair, Maintenance)") },
+                                    value = item.serialNumber ?: "",
+                                    onValueChange = { editingLabEquipment = item.copy(serialNumber = it) },
+                                    label = { Text("Serial Number (Optional)") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
