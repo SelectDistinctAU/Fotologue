@@ -1972,6 +1972,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var showReviewQueueDialog by remember { mutableStateOf(false) }
     var isPresetDropdownExpanded by remember { mutableStateOf(false) }
     var editingCamera by remember { mutableStateOf<ReferenceCameraItem?>(null) }
+    var fixedLensName by remember { mutableStateOf("") }
+    var fixedLensFocalLength by remember { mutableStateOf("80mm") }
+    var fixedLensMaxAperture by remember { mutableStateOf("f/3.5") }
+    var fixedLensFilterSize by remember { mutableStateOf("Bay I") }
     var editingLens by remember { mutableStateOf<ReferenceLensItem?>(null) }
     var editingFilm by remember { mutableStateOf<ReferenceFilmItem?>(null) }
     var editingKit by remember { mutableStateOf<ReferenceKitItem?>(null) }
@@ -2048,7 +2052,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     when (selectedCategory) {
-                        0 -> { // Camera Form with 1-to-1 Parity
+                        0 -> { // Camera Form with TLR & Fixed Lens Interaction Parity
                             val item = editingCamera ?: ReferenceCameraItem(name = "")
                             var cameraTypeDropdownExpanded by remember { mutableStateOf(false) }
                             var filmFormatDropdownExpanded by remember { mutableStateOf(false) }
@@ -2079,7 +2083,16 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         DropdownMenuItem(
                                             text = { Text("${preset.name} (${preset.type} • ${preset.mount ?: "Mount"})") },
                                             onClick = {
-                                                editingCamera = preset
+                                                val isTlrOrFixed = preset.type == "TLR" || preset.type == "Point & Shoot" || preset.type == "Compact"
+                                                val formatAuto = if (preset.type == "TLR" || preset.type == "Medium Format SLR") "120" else preset.format
+                                                val mountAuto = if (isTlrOrFixed) "Fixed" else preset.mount
+                                                editingCamera = preset.copy(format = formatAuto, mount = mountAuto)
+                                                if (isTlrOrFixed || preset.name.contains("Yashica", ignoreCase = true)) {
+                                                    fixedLensName = "${preset.name} Taking Lens"
+                                                    fixedLensFocalLength = "80mm"
+                                                    fixedLensMaxAperture = "f/3.5"
+                                                    fixedLensFilterSize = "Bay I"
+                                                }
                                                 isPresetDropdownExpanded = false
                                             }
                                         )
@@ -2104,7 +2117,15 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.type,
-                                        onValueChange = { editingCamera = item.copy(type = it) },
+                                        onValueChange = { selectedType ->
+                                            val isTlrOrFixed = selectedType == "TLR" || selectedType == "Point & Shoot" || selectedType == "Compact"
+                                            val newFormat = if (selectedType == "TLR" || selectedType == "Medium Format SLR") "120" else item.format
+                                            val newMount = if (isTlrOrFixed) "Fixed" else item.mount
+                                            editingCamera = item.copy(type = selectedType, format = newFormat, mount = newMount)
+                                            if (isTlrOrFixed && fixedLensName.isBlank()) {
+                                                fixedLensName = "${item.name} Taking Lens".trim()
+                                            }
+                                        },
                                         label = { Text("Camera Type") },
                                         modifier = Modifier.fillMaxWidth(),
                                         trailingIcon = {
@@ -2121,7 +2142,13 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                             DropdownMenuItem(
                                                 text = { Text(typeOption) },
                                                 onClick = {
-                                                    editingCamera = item.copy(type = typeOption)
+                                                    val isTlrOrFixed = typeOption == "TLR" || typeOption == "Point & Shoot" || typeOption == "Compact"
+                                                    val newFormat = if (typeOption == "TLR" || typeOption == "Medium Format SLR") "120" else item.format
+                                                    val newMount = if (isTlrOrFixed) "Fixed" else item.mount
+                                                    editingCamera = item.copy(type = typeOption, format = newFormat, mount = newMount)
+                                                    if (isTlrOrFixed && fixedLensName.isBlank()) {
+                                                        fixedLensName = "${item.name} Taking Lens".trim()
+                                                    }
                                                     cameraTypeDropdownExpanded = false
                                                 }
                                             )
@@ -2167,6 +2194,46 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+
+                            // Inline Taking Lens Section for TLR / Fixed Lens Cameras
+                            val isFixedCamera = item.type == "TLR" || item.type == "Point & Shoot" || item.type == "Compact" || item.mount == "Fixed"
+                            if (isFixedCamera) {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
+                                ) {
+                                    Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                        Text("📷 Integrated Taking Lens Specifications", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                                        OutlinedTextField(
+                                            value = fixedLensName,
+                                            onValueChange = { fixedLensName = it },
+                                            label = { Text("Taking Lens Name (e.g. Yashinon 80mm f/3.5)") },
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                            OutlinedTextField(
+                                                value = fixedLensFocalLength,
+                                                onValueChange = { fixedLensFocalLength = it },
+                                                label = { Text("Focal Length") },
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                            OutlinedTextField(
+                                                value = fixedLensMaxAperture,
+                                                onValueChange = { fixedLensMaxAperture = it },
+                                                label = { Text("Max Aperture") },
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                            OutlinedTextField(
+                                                value = fixedLensFilterSize,
+                                                onValueChange = { fixedLensFilterSize = it },
+                                                label = { Text("Filter Size") },
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
                             OutlinedTextField(
                                 value = item.shutterSpeeds ?: "",
                                 onValueChange = { editingCamera = item.copy(shutterSpeeds = it) },
@@ -3124,7 +3191,26 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             confirmButton = {
                 Button(onClick = {
                     when (selectedCategory) {
-                        0 -> editingCamera?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationCamera(it) }
+                        0 -> editingCamera?.let { cam ->
+                            if (cam.name.isNotBlank()) {
+                                DatabaseRepository.saveFoundationCamera(cam)
+                                val isFixedCamera = cam.type == "TLR" || cam.type == "Point & Shoot" || cam.type == "Compact" || cam.mount == "Fixed"
+                                if (isFixedCamera && fixedLensName.isNotBlank()) {
+                                    DatabaseRepository.saveFoundationLens(
+                                        ReferenceLensItem(
+                                            name = fixedLensName,
+                                            make = cam.name,
+                                            model = fixedLensName,
+                                            type = "Prime",
+                                            mount = "Fixed",
+                                            focalLength = fixedLensFocalLength,
+                                            maxAperture = fixedLensMaxAperture,
+                                            filterSize = fixedLensFilterSize
+                                        )
+                                    )
+                                }
+                            }
+                        }
                         1 -> editingLens?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationLens(it) }
                         2 -> editingFilm?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationFilm(it) }
                         3 -> editingKit?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationKit(it) }
