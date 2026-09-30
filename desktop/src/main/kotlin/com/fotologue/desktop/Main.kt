@@ -2175,8 +2175,12 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        1 -> { // Lens Form with 1-to-1 Mobile Parity
+                        1 -> { // Lens Form with Associated Cameras and Preset Catalogue Search
                             val item = editingLens ?: ReferenceLensItem(name = "")
+                            var selectedAssociatedCameraIds by remember { mutableStateOf(setOf<Int>()) }
+                            var lensSearchQuery by remember { mutableStateOf("") }
+                            var isLensSearchDropdownExpanded by remember { mutableStateOf(false) }
+
                             var makeDropdownExpanded by remember { mutableStateOf(false) }
                             var lensTypeDropdownExpanded by remember { mutableStateOf(false) }
                             var mountDropdownExpanded by remember { mutableStateOf(false) }
@@ -2184,6 +2188,67 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                             val commonMakes = listOf("Canon", "Nikon", "Leica", "Carl Zeiss", "Voigtländer", "Sigma", "Tamron", "Pentax", "Olympus", "Minolta", "Fujifilm", "Mamiya", "Hasselblad")
                             val lensTypes = listOf("Prime", "Zoom", "Macro", "Anamorphic", "Tilt-Shift")
 
+                            // Section 1: Associated Cameras
+                            Text("Associated Cameras", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                            if (cameras.isEmpty()) {
+                                Text("No cameras found. Please add a camera first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                            } else {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    cameras.forEach { camera ->
+                                        val isSelected = selectedAssociatedCameraIds.contains(camera.id)
+                                        FilterChip(
+                                            selected = isSelected,
+                                            onClick = {
+                                                selectedAssociatedCameraIds = if (isSelected) selectedAssociatedCameraIds - camera.id else selectedAssociatedCameraIds + camera.id
+                                            },
+                                            label = { Text(camera.name, style = MaterialTheme.typography.labelSmall) },
+                                            leadingIcon = if (isSelected) { { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp)) } } else null
+                                        )
+                                    }
+                                }
+                            }
+
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                            // Section 2: Preset Catalogue Search
+                            Text("Preset Catalogue", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                OutlinedTextField(
+                                    value = lensSearchQuery,
+                                    onValueChange = { 
+                                        lensSearchQuery = it
+                                        isLensSearchDropdownExpanded = true
+                                    },
+                                    label = { Text("Model Number (e.g. EF10028LIS)") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    trailingIcon = {
+                                        IconButton(onClick = { isLensSearchDropdownExpanded = !isLensSearchDropdownExpanded }) {
+                                            Icon(Icons.Default.Search, contentDescription = "Preset Catalogue Search")
+                                        }
+                                    }
+                                )
+                                DropdownMenu(
+                                    expanded = isLensSearchDropdownExpanded && DatabaseRepository.searchPresetLenses(lensSearchQuery).isNotEmpty(),
+                                    onDismissRequest = { isLensSearchDropdownExpanded = false }
+                                ) {
+                                    DatabaseRepository.searchPresetLenses(lensSearchQuery).take(5).forEach { preset ->
+                                        DropdownMenuItem(
+                                            text = { Text("${preset.name} (${preset.focalLength} ${preset.maxAperture} • ${preset.mount})") },
+                                            onClick = {
+                                                editingLens = preset
+                                                isLensSearchDropdownExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                            // Section 3: Manual Entry / Detailed Specs
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(

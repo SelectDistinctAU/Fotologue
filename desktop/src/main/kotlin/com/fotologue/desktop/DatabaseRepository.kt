@@ -873,6 +873,19 @@ object DatabaseRepository {
         return presets.filter { it.name.contains(query, ignoreCase = true) || (it.modelNumber?.contains(query, ignoreCase = true) == true) }
     }
 
+    fun searchPresetLenses(query: String): List<ReferenceLensItem> {
+        val presets = listOf(
+            ReferenceLensItem(name = "Canon EF 100mm f/2.8L Macro IS USM", make = "Canon", model = "EF10028LIS", type = "Macro", mount = "Canon EF", focalLength = "100mm", maxAperture = "f/2.8", minAperture = "f/32", filterSize = "67mm", isImageStabilised = true),
+            ReferenceLensItem(name = "Canon FD 50mm f/1.4", make = "Canon", model = "FD5014", type = "Prime", mount = "Canon FD", focalLength = "50mm", maxAperture = "f/1.4", minAperture = "f/16", filterSize = "52mm", isImageStabilised = false),
+            ReferenceLensItem(name = "Nikkor 50mm f/1.4 AI-S", make = "Nikon", model = "AI-S 50mm", type = "Prime", mount = "Nikon F", focalLength = "50mm", maxAperture = "f/1.4", minAperture = "f/16", filterSize = "52mm", isImageStabilised = false),
+            ReferenceLensItem(name = "Carl Zeiss Planar T* 50mm f/1.4", make = "Carl Zeiss", model = "Planar 50/1.4", type = "Prime", mount = "Contax C/Y", focalLength = "50mm", maxAperture = "f/1.4", minAperture = "f/16", filterSize = "55mm", isImageStabilised = false),
+            ReferenceLensItem(name = "SMC Pentax-M 50mm f/1.4", make = "Pentax", model = "Pentax-M 50/1.4", type = "Prime", mount = "Pentax K", focalLength = "50mm", maxAperture = "f/1.4", minAperture = "f/22", filterSize = "49mm", isImageStabilised = false),
+            ReferenceLensItem(name = "Leica Summicron-M 50mm f/2", make = "Leica", model = "Summicron 50/2", type = "Prime", mount = "Leica M", focalLength = "50mm", maxAperture = "f/2.0", minAperture = "f/16", filterSize = "39mm", isImageStabilised = false)
+        )
+        if (query.isBlank()) return presets
+        return presets.filter { it.name.contains(query, ignoreCase = true) || (it.model?.contains(query, ignoreCase = true) == true) || (it.make?.contains(query, ignoreCase = true) == true) }
+    }
+
     fun searchPresetFilms(query: String): List<ReferenceFilmItem> {
         val presets = listOf(
             ReferenceFilmItem(name = "Ilford HP5 Plus 400", abbreviation = "HP5", iso = 400, type = "Black & White Negative", format = "35mm", expectedExposures = 36),
