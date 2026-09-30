@@ -109,6 +109,12 @@ fun AddEditFilterScreen(
                 }
             }
 
+            Text(
+                "Note: Front auxiliary lenses (e.g. Rolleiflex Mutar, Bayonet close-up diopters, anamorphic adapters) and filters are logged here.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
@@ -119,6 +125,37 @@ fun AddEditFilterScreen(
                 label = { Text(stringResource(R.string.label_filter_name_hint)) },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            var threadSizeExpanded by remember { mutableStateOf(false) }
+
+            ExposedDropdownMenuBox(
+                expanded = threadSizeExpanded,
+                onExpandedChange = { threadSizeExpanded = it },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = uiState.threadSize,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Thread Size") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = threadSizeExpanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = threadSizeExpanded,
+                    onDismissRequest = { threadSizeExpanded = false }
+                ) {
+                    uiState.threadSizes.forEach { threadOpt ->
+                        DropdownMenuItem(
+                            text = { Text(threadOpt) },
+                            onClick = {
+                                viewModel.onThreadSizeChange(threadOpt)
+                                threadSizeExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             ExposedDropdownMenuBox(
                 expanded = typeExpanded,
@@ -151,7 +188,11 @@ fun AddEditFilterScreen(
 
             OutlinedTextField(
                 value = uiState.compensationStops,
-                onValueChange = viewModel::onCompensationStopsChange,
+                onValueChange = { input ->
+                    if (input.isBlank() || input.all { c -> c.isDigit() || c == '.' }) {
+                        viewModel.onCompensationStopsChange(input)
+                    }
+                },
                 label = { Text(stringResource(R.string.label_compensation_stops_hint)) },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)

@@ -2853,7 +2853,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                             var filterTypeDropdownExpanded by remember { mutableStateOf(false) }
 
                             val threadSizes = listOf("49mm", "52mm", "55mm", "58mm", "62mm", "67mm", "72mm", "77mm", "82mm", "Bayonet I", "Bayonet II", "Bayonet III")
-                            val filterTypes = listOf("ND (Neutral Density)", "Yellow Y2/8", "Red R2/25", "Green", "Orange", "CPL (Circular Polariser)", "UV / Skylight", "Specialty")
+                            val filterTypes = listOf("ND (Neutral Density)", "Yellow (Y2/8)", "Red (R2/25)", "Green", "Orange", "CPL (Circular Polariser)", "UV / Skylight", "Front Aux Lens (Mutar / Diopter)", "Specialty")
 
                             // Section 1: Associated Cameras (All Cameras including TLRs / Fixed Lens)
                             Text("Associated Cameras", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
@@ -2877,6 +2877,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                     }
                                 }
                             }
+                            Text(
+                                "Note: Front auxiliary lenses (e.g. Rolleiflex Mutar, Bayonet close-up diopters, anamorphic adapters) and filters are logged here.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
 
                             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
@@ -2948,7 +2953,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
                                     value = item.serialNumber ?: "0.0",
-                                    onValueChange = { editingFilter = item.copy(serialNumber = it) },
+                                    onValueChange = { input ->
+                                        if (input.isBlank() || input.all { c -> c.isDigit() || c == '.' }) {
+                                            editingFilter = item.copy(serialNumber = input)
+                                        }
+                                    },
                                     label = { Text("Compensation (Stops, e.g. 3.0)") },
                                     modifier = Modifier.weight(1f)
                                 )

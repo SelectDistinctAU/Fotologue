@@ -18,9 +18,11 @@ import javax.inject.Inject
 
 data class AddEditFilterUiState(
     val name: String = "",
-    val type: String = "ND",
+    val threadSize: String = "52mm",
+    val type: String = "ND (Neutral Density)",
     val compensationStops: String = "0.0",
-    val filterTypes: List<String> = listOf("ND", "Polarizer", "UV", "Color", "Graduated ND", "Other"),
+    val filterTypes: List<String> = listOf("ND (Neutral Density)", "Yellow (Y2/8)", "Red (R2/25)", "Green", "Orange", "CPL (Circular Polariser)", "UV / Skylight", "Front Aux Lens (Mutar / Diopter)", "Specialty"),
+    val threadSizes: List<String> = listOf("49mm", "52mm", "55mm", "58mm", "62mm", "67mm", "72mm", "77mm", "82mm", "Bayonet I", "Bayonet II", "Bayonet III"),
     val cameras: List<Camera> = emptyList(),
     val selectedCameraIds: Set<Long> = emptySet()
 )
@@ -80,6 +82,11 @@ class AddEditFilterViewModel @Inject constructor(
     fun onNameChange(value: String) {
         savedStateHandle["name"] = value
         _uiState.update { it.copy(name = value) }
+    }
+
+    fun onThreadSizeChange(value: String) {
+        savedStateHandle["threadSize"] = value
+        _uiState.update { it.copy(threadSize = value) }
     }
 
     fun onTypeChange(value: String) {
