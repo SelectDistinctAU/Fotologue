@@ -378,6 +378,7 @@ object DatabaseRepository {
                     serialNumber = it.serialNumber,
                     category = it.category,
                     condition = it.condition,
+                    parentEquipmentName = it.parentEquipmentName,
                     notes = it.notes
                 )
             }.sortedBy { it.name }
@@ -394,6 +395,7 @@ object DatabaseRepository {
                     serialNumber = item.serialNumber
                     category = item.category
                     condition = item.condition
+                    parentEquipmentName = item.parentEquipmentName
                     notes = item.notes
                 }
             } else {
@@ -404,6 +406,7 @@ object DatabaseRepository {
                     serialNumber = item.serialNumber
                     category = item.category
                     condition = item.condition
+                    parentEquipmentName = item.parentEquipmentName
                     notes = item.notes
                 }
             }

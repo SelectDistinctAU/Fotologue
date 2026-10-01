@@ -1972,6 +1972,9 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var showReviewQueueDialog by remember { mutableStateOf(false) }
     var showFilmPresetsDialog by remember { mutableStateOf(false) }
     var selectedFilmManufacturer by remember { mutableStateOf("Kodak") }
+    var showEquipmentPresetsDialog by remember { mutableStateOf(false) }
+    var selectedEquipmentCategoryFilter by remember { mutableStateOf("All") }
+    var equipmentSearchQuery by remember { mutableStateOf("") }
     var isPresetDropdownExpanded by remember { mutableStateOf(false) }
     var editingCamera by remember { mutableStateOf<ReferenceCameraItem?>(null) }
     var fixedLensName by remember { mutableStateOf("") }
@@ -3231,7 +3234,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
 
                             Box(modifier = Modifier.fillMaxWidth()) {
                                 Button(
-                                    onClick = { isPresetDropdownExpanded = true },
+                                    onClick = { showEquipmentPresetsDialog = true },
                                     modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
                                     colors = ButtonDefaults.filledTonalButtonColors()
                                 ) {
@@ -3458,17 +3461,18 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 Text("Hazardous Material / Safety Handling Required", style = MaterialTheme.typography.bodySmall)
                             }
                         }
-                        10 -> { // Lab Equipment Form with 1-to-1 Mobile Parity
+                        10 -> { // Lab Equipment Form with 1-to-1 Mobile Parity & Sub-Equipment Linkage
                             val item = editingLabEquipment ?: ReferenceLabEquipmentItem(name = "")
                             var categoryDropdownExpanded by remember { mutableStateOf(false) }
                             var conditionDropdownExpanded by remember { mutableStateOf(false) }
+                            var parentEquipDropdownExpanded by remember { mutableStateOf(false) }
 
                             val categories = listOf("Enlarger", "Enlarger Lens", "Dev Tank", "Tray", "Light Table", "Squeegee & Drying", "Scanner / Digitiser", "General")
                             val conditions = listOf("Excellent", "Good", "Fair", "Maintenance")
 
                             Box(modifier = Modifier.fillMaxWidth()) {
                                 Button(
-                                    onClick = { isPresetDropdownExpanded = true },
+                                    onClick = { showEquipmentPresetsDialog = true },
                                     modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
                                     colors = ButtonDefaults.filledTonalButtonColors()
                                 ) {
@@ -3560,6 +3564,35 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                                 }
                                             )
                                         }
+                                    }
+                                }
+                            }
+
+                            // Sub-Equipment Parent Linkage
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                OutlinedTextField(
+                                    value = item.parentEquipmentName ?: "",
+                                    onValueChange = { editingLabEquipment = item.copy(parentEquipmentName = it) },
+                                    label = { Text("Parent Equipment (Optional - e.g. Beseler 23C II Enlarger Body)") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    trailingIcon = {
+                                        IconButton(onClick = { parentEquipDropdownExpanded = !parentEquipDropdownExpanded }) {
+                                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                        }
+                                    }
+                                )
+                                DropdownMenu(
+                                    expanded = parentEquipDropdownExpanded && labEquipment.isNotEmpty(),
+                                    onDismissRequest = { parentEquipDropdownExpanded = false }
+                                ) {
+                                    labEquipment.filter { it.category == "Enlarger" || it.id != item.id }.forEach { parentEq ->
+                                        DropdownMenuItem(
+                                            text = { Text("🔧 ${parentEq.name} (${parentEq.category})") },
+                                            onClick = {
+                                                editingLabEquipment = item.copy(parentEquipmentName = parentEq.name)
+                                                parentEquipDropdownExpanded = false
+                                            }
+                                        )
                                     }
                                 }
                             }
@@ -3932,6 +3965,100 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             },
             confirmButton = {
                 Button(onClick = { showFilmPresetsDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    if (showEquipmentPresetsDialog) {
+        val categories = listOf("All", "Enlarger", "Enlarger Lens", "Dev Tank", "Tray", "Light Table", "Squeegee & Drying")
+        AlertDialog(
+            onDismissRequest = { showEquipmentPresetsDialog = false },
+            title = { Text("⚙️ Select Darkroom Equipment from Presets", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth().height(440.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Select a category filter or type to search darkroom equipment presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    
+                    // Category Filter Chips
+                    Row(
+                        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        categories.forEach { cat ->
+                            val isSel = selectedEquipmentCategoryFilter == cat
+                            FilterChip(
+                                selected = isSel,
+                                onClick = { selectedEquipmentCategoryFilter = cat },
+                                label = { Text(cat, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) }
+                            )
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = equipmentSearchQuery,
+                        onValueChange = { equipmentSearchQuery = it },
+                        label = { Text("Search Equipment (Name, Brand)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+                    )
+
+                    HorizontalDivider()
+
+                    val allPresets = DatabaseRepository.searchPresetEquipment(equipmentSearchQuery)
+                    val filteredPresets = if (selectedEquipmentCategoryFilter == "All") {
+                        allPresets
+                    } else {
+                        allPresets.filter { it.category.equals(selectedEquipmentCategoryFilter, ignoreCase = true) }
+                    }
+
+                    if (filteredPresets.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("No equipment presets found for $selectedEquipmentCategoryFilter.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            items(filteredPresets.size) { idx ->
+                                val preset = filteredPresets[idx]
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            editingLabEquipment = preset
+                                            showEquipmentPresetsDialog = false
+                                        },
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(preset.name, fontWeight = FontWeight.Bold)
+                                            Text("Brand: ${preset.manufacturer ?: "Generic"} • Category: ${preset.category} ${if (!preset.notes.isNullOrBlank()) "• ${preset.notes}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                        Button(
+                                            onClick = {
+                                                editingLabEquipment = preset
+                                                showEquipmentPresetsDialog = false
+                                            },
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                                        ) {
+                                            Text("Select", style = MaterialTheme.typography.labelSmall)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showEquipmentPresetsDialog = false }) {
                     Text("Close")
                 }
             }

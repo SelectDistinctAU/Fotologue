@@ -185,6 +185,7 @@ object FoundationLabEquipmentTable : IntIdTable("foundation_lab_equipment") {
     val serialNumber = varchar("serial_number", 255).nullable()
     val category = varchar("category", 100).default("Enlarger")
     val condition = varchar("condition", 50).default("Good")
+    val parentEquipmentName = varchar("parent_equipment_name", 255).nullable()
     val notes = text("notes").nullable()
 }
 
@@ -196,6 +197,7 @@ class FoundationLabEquipmentEntity(id: EntityID<Int>) : IntEntity(id) {
     var serialNumber by FoundationLabEquipmentTable.serialNumber
     var category by FoundationLabEquipmentTable.category
     var condition by FoundationLabEquipmentTable.condition
+    var parentEquipmentName by FoundationLabEquipmentTable.parentEquipmentName
     var notes by FoundationLabEquipmentTable.notes
 }
 
@@ -258,6 +260,7 @@ data class ReferenceLabEquipmentItem(
     val serialNumber: String? = null,
     val category: String = "Enlarger",
     val condition: String = "Good",
+    val parentEquipmentName: String? = null,
     val notes: String? = null
 )
 
