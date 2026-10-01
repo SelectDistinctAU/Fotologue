@@ -1000,12 +1000,46 @@ object DatabaseRepository {
 
     fun searchPresetEquipment(query: String): List<ReferenceLabEquipmentItem> {
         val presets = listOf(
-            ReferenceLabEquipmentItem(name = "Beseler 23C II", manufacturer = "Beseler", modelNumber = "23C II", category = "Enlarger", condition = "Excellent"),
-            ReferenceLabEquipmentItem(name = "Paterson Super System 4 Dev Tank", manufacturer = "Paterson", modelNumber = "System 4", category = "Dev Tank", condition = "Excellent"),
-            ReferenceLabEquipmentItem(name = "Rodenstock Rogenar 50mm f/2.8", manufacturer = "Rodenstock", modelNumber = "Rogenar 50mm", category = "Enlarger Lens", condition = "Excellent")
+            // Enlargers
+            ReferenceLabEquipmentItem(name = "Intrepid Compact Enlarger (35mm / 120)", manufacturer = "Intrepid", category = "Enlarger", condition = "Excellent", notes = "LED Light Source with Color/Multigrade Filters"),
+            ReferenceLabEquipmentItem(name = "Beseler 23C II", manufacturer = "Beseler", modelNumber = "23C II", category = "Enlarger", condition = "Excellent", notes = "Dichro / Condenser Enlarger"),
+            ReferenceLabEquipmentItem(name = "Omega D2 4x5", manufacturer = "Omega", modelNumber = "D2", category = "Enlarger", condition = "Excellent", notes = "Large Format Condenser Enlarger"),
+            ReferenceLabEquipmentItem(name = "Durst M605", manufacturer = "Durst", modelNumber = "M605", category = "Enlarger", condition = "Excellent", notes = "Medium Format Enlarger"),
+            ReferenceLabEquipmentItem(name = "Kaiser VP 6000", manufacturer = "Kaiser", modelNumber = "VP 6000", category = "Enlarger", condition = "Excellent", notes = "B&W / Color Enlarger"),
+            ReferenceLabEquipmentItem(name = "Leitz Focomat V35", manufacturer = "Leitz", modelNumber = "V35", category = "Enlarger", condition = "Excellent", notes = "Autofocus 35mm Enlarger"),
+            ReferenceLabEquipmentItem(name = "Saunders LPL 4500II 4x5", manufacturer = "Saunders LPL", modelNumber = "4500II", category = "Enlarger", condition = "Excellent", notes = "Professional 4x5 Color / B&W Enlarger"),
+            ReferenceLabEquipmentItem(name = "De Vere 504 Dichroic 4x5", manufacturer = "De Vere", modelNumber = "504", category = "Enlarger", condition = "Excellent", notes = "Professional Bench Enlarger"),
+
+            // Enlarger Lenses
+            ReferenceLabEquipmentItem(name = "Rodenstock Rodagon 50mm f/2.8", manufacturer = "Rodenstock", modelNumber = "Rodagon 50mm", category = "Enlarger Lens", condition = "Excellent", notes = "35mm Format Enlarger Lens"),
+            ReferenceLabEquipmentItem(name = "Rodenstock Rodagon 80mm f/4", manufacturer = "Rodenstock", modelNumber = "Rodagon 80mm", category = "Enlarger Lens", condition = "Excellent", notes = "120 Medium Format Enlarger Lens"),
+            ReferenceLabEquipmentItem(name = "Schneider Componon-S 50mm f/2.8", manufacturer = "Schneider", modelNumber = "Componon-S 50mm", category = "Enlarger Lens", condition = "Excellent", notes = "35mm Format Premium Lens"),
+            ReferenceLabEquipmentItem(name = "Schneider Componon-S 80mm f/4", manufacturer = "Schneider", modelNumber = "Componon-S 80mm", category = "Enlarger Lens", condition = "Excellent", notes = "120 Format Premium Lens"),
+            ReferenceLabEquipmentItem(name = "El-Nikkor 50mm f/2.8 N", manufacturer = "Nikon", modelNumber = "50mm f/2.8 N", category = "Enlarger Lens", condition = "Excellent", notes = "Nikkor 35mm Enlarger Lens"),
+            ReferenceLabEquipmentItem(name = "El-Nikkor 80mm f/5.6 N", manufacturer = "Nikon", modelNumber = "80mm f/5.6 N", category = "Enlarger Lens", condition = "Excellent", notes = "Nikkor 120 Enlarger Lens"),
+            ReferenceLabEquipmentItem(name = "Fujinon EX 50mm f/2.8", manufacturer = "Fujifilm", modelNumber = "EX 50mm", category = "Enlarger Lens", condition = "Excellent", notes = "EBC Coated 35mm Enlarger Lens"),
+
+            // Dev Tanks & Reels
+            ReferenceLabEquipmentItem(name = "Paterson Super System 4 (2-Roll Tank)", manufacturer = "Paterson", modelNumber = "System 4", category = "Dev Tank", condition = "Excellent", notes = "Standard Plastic Tank for 2x35mm or 1x120"),
+            ReferenceLabEquipmentItem(name = "Paterson Super System 4 Multi-Reel (5-Roll)", manufacturer = "Paterson", modelNumber = "System 4 Multi", category = "Dev Tank", condition = "Excellent", notes = "Multi-roll developing tank"),
+            ReferenceLabEquipmentItem(name = "AP Compact Developing Tank", manufacturer = "AP", modelNumber = "Compact", category = "Dev Tank", condition = "Excellent", notes = "Auto-load spiral system"),
+            ReferenceLabEquipmentItem(name = "Jobo 1520 Tank System", manufacturer = "Jobo", modelNumber = "1520", category = "Dev Tank", condition = "Excellent", notes = "Rotary & Inversion Tank"),
+            ReferenceLabEquipmentItem(name = "Jobo 2500 System Tank (4x5 Sheet Film)", manufacturer = "Jobo", modelNumber = "2500", category = "Dev Tank", condition = "Excellent", notes = "Sheet Film Tank System"),
+            ReferenceLabEquipmentItem(name = "Kindermann Stainless Steel Tank & Reel", manufacturer = "Kindermann", modelNumber = "SS Tank", category = "Dev Tank", condition = "Excellent", notes = "Single 35mm SS Tank"),
+
+            // Trays, Washers & Light Tables
+            ReferenceLabEquipmentItem(name = "Paterson 8x10 Developing Trays (3-Pack)", manufacturer = "Paterson", modelNumber = "8x10 Trays", category = "Tray", condition = "Excellent", notes = "Color-Coded Darkroom Trays"),
+            ReferenceLabEquipmentItem(name = "Paterson Auto Print Washer", manufacturer = "Paterson", modelNumber = "Auto Washer", category = "Tray", condition = "Excellent", notes = "Flow-Through Print Washer"),
+            ReferenceLabEquipmentItem(name = "Nova Archival Print Washer 12x16", manufacturer = "Nova", modelNumber = "12x16 Slot", category = "Tray", condition = "Excellent", notes = "Vertical Archival Slot Washer"),
+            ReferenceLabEquipmentItem(name = "Kaiser Slimlite Plano LED Light Table", manufacturer = "Kaiser", modelNumber = "Slimlite", category = "Light Table", condition = "Excellent", notes = "5000K Color Balanced Light Table"),
+            ReferenceLabEquipmentItem(name = "Paterson Film Squeegee & Drying Clips", manufacturer = "Paterson", modelNumber = "Squeegee", category = "Squeegee & Drying", condition = "Excellent", notes = "Anti-Scratch Rubber Film Squeegee"),
+
+            // Scanners & Digitisers
+            ReferenceLabEquipmentItem(name = "Epson Perfection V850 Pro", manufacturer = "Epson", modelNumber = "V850 Pro", category = "Scanner / Digitiser", condition = "Excellent", notes = "Dual Lens Film/Flatbed Scanner"),
+            ReferenceLabEquipmentItem(name = "Plustek OpticFilm 8200i AI", manufacturer = "Plustek", modelNumber = "8200i AI", category = "Scanner / Digitiser", condition = "Excellent", notes = "Dedicated 35mm Film Scanner")
         )
         if (query.isBlank()) return presets
-        return presets.filter { it.name.contains(query, ignoreCase = true) || (it.manufacturer?.contains(query, ignoreCase = true) == true) }
+        return presets.filter { it.name.contains(query, ignoreCase = true) || (it.manufacturer?.contains(query, ignoreCase = true) == true) || it.category.contains(query, ignoreCase = true) }
     }
 
     private val jsonFormatter = Json {

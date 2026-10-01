@@ -15,6 +15,8 @@ object LabPresets {
         LabEquipment(name = "Durst M605", category = "Enlarger", notes = "Medium Format Enlarger"),
         LabEquipment(name = "Kaiser VP 6000", category = "Enlarger", notes = "B&W / Color Enlarger"),
         LabEquipment(name = "Leitz Focomat V35", category = "Enlarger", notes = "Autofocus 35mm Enlarger"),
+        LabEquipment(name = "Saunders LPL 4500II 4x5", category = "Enlarger", notes = "Professional 4x5 Color / B&W Enlarger"),
+        LabEquipment(name = "De Vere 504 Dichroic 4x5", category = "Enlarger", notes = "Professional Bench Enlarger"),
 
         // Enlarger Lenses
         LabEquipment(name = "Rodenstock Rodagon 50mm f/2.8", category = "Enlarger Lens", notes = "35mm Format Enlarger Lens"),
@@ -23,13 +25,26 @@ object LabPresets {
         LabEquipment(name = "Schneider Componon-S 80mm f/4", category = "Enlarger Lens", notes = "120 Format Premium Lens"),
         LabEquipment(name = "El-Nikkor 50mm f/2.8 N", category = "Enlarger Lens", notes = "Nikkor 35mm Enlarger Lens"),
         LabEquipment(name = "El-Nikkor 80mm f/5.6 N", category = "Enlarger Lens", notes = "Nikkor 120 Enlarger Lens"),
+        LabEquipment(name = "Fujinon EX 50mm f/2.8", category = "Enlarger Lens", notes = "EBC Coated 35mm Enlarger Lens"),
 
         // Development Tanks & Reels
         LabEquipment(name = "Paterson Super System 4 (2-Roll Tank)", category = "Dev Tank", notes = "Standard Plastic Tank for 2x35mm or 1x120"),
         LabEquipment(name = "Paterson Super System 4 Multi-Reel (5-Roll)", category = "Dev Tank", notes = "Multi-roll developing tank"),
         LabEquipment(name = "AP Compact Developing Tank", category = "Dev Tank", notes = "Auto-load spiral system"),
         LabEquipment(name = "Jobo 1520 Tank System", category = "Dev Tank", notes = "Rotary & Inversion Tank"),
-        LabEquipment(name = "Kindermann Stainless Steel Tank & Reel", category = "Dev Tank", notes = "Single 35mm SS Tank")
+        LabEquipment(name = "Jobo 2500 System Tank (4x5 Sheet Film)", category = "Dev Tank", notes = "Sheet Film Tank System"),
+        LabEquipment(name = "Kindermann Stainless Steel Tank & Reel", category = "Dev Tank", notes = "Single 35mm SS Tank"),
+
+        // Trays, Washers & Light Tables
+        LabEquipment(name = "Paterson 8x10 Developing Trays (3-Pack)", category = "Tray", notes = "Color-Coded Darkroom Trays"),
+        LabEquipment(name = "Paterson Auto Print Washer", category = "Tray", notes = "Flow-Through Print Washer"),
+        LabEquipment(name = "Nova Archival Print Washer 12x16", category = "Tray", notes = "Vertical Archival Slot Washer"),
+        LabEquipment(name = "Kaiser Slimlite Plano LED Light Table", category = "Light Table", notes = "5000K Color Balanced Light Table"),
+        LabEquipment(name = "Paterson Film Squeegee & Drying Clips", category = "Squeegee & Drying", notes = "Anti-Scratch Rubber Film Squeegee"),
+
+        // Scanners & Digitisers
+        LabEquipment(name = "Epson Perfection V850 Pro", category = "Scanner / Digitiser", notes = "Dual Lens Film/Flatbed Scanner"),
+        LabEquipment(name = "Plustek OpticFilm 8200i AI", category = "Scanner / Digitiser", notes = "Dedicated 35mm Film Scanner")
     )
 
     // --- Chemical Pick List ---
