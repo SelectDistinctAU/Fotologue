@@ -1943,7 +1943,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var pendingItems by remember { mutableStateOf(emptyList<FoundationReviewQueueEntity>()) }
@@ -3893,6 +3893,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     if (showFilmPresetsDialog) {
         val manufacturers = listOf("Kodak", "Ilford", "Fujifilm", "Cinestill", "Foma", "Lomography", "AgfaPhoto", "Rollei", "Bergger", "Harman")
         AlertDialog(
+            modifier = Modifier.width(620.dp),
             onDismissRequest = { showFilmPresetsDialog = false },
             title = { Text("⚙️ Select Film Stock from Presets", fontWeight = FontWeight.Bold) },
             text = {
@@ -3902,10 +3903,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 ) {
                     Text("Select a manufacturer to view curated film presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
-                    // Manufacturer Filter Chips
-                    Row(
-                        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    // Manufacturer Filter Chips Wrapped in FlowRow
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         manufacturers.forEach { mfg ->
                             val isSel = selectedFilmManufacturer == mfg
@@ -3974,6 +3976,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     if (showEquipmentPresetsDialog) {
         val categories = listOf("All", "Enlarger", "Enlarger Lens", "Dev Tank", "Tray", "Light Table", "Squeegee & Drying")
         AlertDialog(
+            modifier = Modifier.width(620.dp),
             onDismissRequest = { showEquipmentPresetsDialog = false },
             title = { Text("⚙️ Select Darkroom Equipment from Presets", fontWeight = FontWeight.Bold) },
             text = {
@@ -3983,10 +3986,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 ) {
                     Text("Select a category filter or type to search darkroom equipment presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
-                    // Category Filter Chips
-                    Row(
-                        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    // Category Filter Chips Wrapped in FlowRow
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         categories.forEach { cat ->
                             val isSel = selectedEquipmentCategoryFilter == cat
