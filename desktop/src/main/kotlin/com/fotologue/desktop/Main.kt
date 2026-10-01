@@ -3953,11 +3953,19 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     }
 
     if (showCameraPresetsDialog) {
-        val categories = listOf("All", "Film SLR", "Rangefinder", "TLR", "Medium Format SLR", "Point & Shoot")
+        val categories = listOf("All", "Film SLR", "Rangefinder", "TLR", "Medium Format SLR", "Point & Shoot", "Compact", "DSLR", "Mirrorless")
+        var categoryDropdownExpanded by remember { mutableStateOf(false) }
+
         AlertDialog(
             modifier = Modifier.width(620.dp),
             onDismissRequest = { showCameraPresetsDialog = false },
-            title = { Text("⚙️ Select Camera Body from Presets", fontWeight = FontWeight.Bold) },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.PhotoCamera, contentDescription = null, modifier = Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Select Camera Body from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                }
+            },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth().height(440.dp),
@@ -3965,19 +3973,29 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 ) {
                     Text("Select a category filter or type to search camera body presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
-                    // Category Filter Chips
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        categories.forEach { cat ->
-                            val isSel = selectedCameraTypeFilter == cat
-                            FilterChip(
-                                selected = isSel,
-                                onClick = { selectedCameraTypeFilter = cat },
-                                label = { Text(cat, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) }
-                            )
+                    // Single Source Camera Type Category Filter Dropdown
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = selectedCameraTypeFilter,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Camera Type") },
+                            trailingIcon = { IconButton(onClick = { categoryDropdownExpanded = !categoryDropdownExpanded }) { Icon(Icons.Default.ArrowDropDown, contentDescription = null) } },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        DropdownMenu(
+                            expanded = categoryDropdownExpanded,
+                            onDismissRequest = { categoryDropdownExpanded = false }
+                        ) {
+                            categories.forEach { cat ->
+                                DropdownMenuItem(
+                                    text = { Text(cat, fontWeight = if (cat == selectedCameraTypeFilter) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedCameraTypeFilter = cat
+                                        categoryDropdownExpanded = false
+                                    }
+                                )
+                            }
                         }
                     }
 
@@ -4068,10 +4086,18 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
 
     if (showFilmPresetsDialog) {
         val manufacturers = listOf("Kodak", "Ilford", "Fujifilm", "Cinestill", "Foma", "Lomography", "AgfaPhoto", "Rollei", "Bergger", "Harman")
+        var mfgDropdownExpanded by remember { mutableStateOf(false) }
+
         AlertDialog(
             modifier = Modifier.width(620.dp),
             onDismissRequest = { showFilmPresetsDialog = false },
-            title = { Text("⚙️ Select Film Stock from Presets", fontWeight = FontWeight.Bold) },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Movie, contentDescription = null, modifier = Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Select Film Stock from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                }
+            },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth().height(420.dp),
@@ -4079,19 +4105,29 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 ) {
                     Text("Select a manufacturer to view curated film presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
-                    // Manufacturer Filter Chips Wrapped in FlowRow
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        manufacturers.forEach { mfg ->
-                            val isSel = selectedFilmManufacturer == mfg
-                            FilterChip(
-                                selected = isSel,
-                                onClick = { selectedFilmManufacturer = mfg },
-                                label = { Text(mfg, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) }
-                            )
+                    // Film Manufacturer Category Filter Dropdown
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = selectedFilmManufacturer,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Film Manufacturer") },
+                            trailingIcon = { IconButton(onClick = { mfgDropdownExpanded = !mfgDropdownExpanded }) { Icon(Icons.Default.ArrowDropDown, contentDescription = null) } },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        DropdownMenu(
+                            expanded = mfgDropdownExpanded,
+                            onDismissRequest = { mfgDropdownExpanded = false }
+                        ) {
+                            manufacturers.forEach { mfg ->
+                                DropdownMenuItem(
+                                    text = { Text(mfg, fontWeight = if (mfg == selectedFilmManufacturer) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedFilmManufacturer = mfg
+                                        mfgDropdownExpanded = false
+                                    }
+                                )
+                            }
                         }
                     }
 
@@ -4150,11 +4186,19 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     }
 
     if (showEquipmentPresetsDialog) {
-        val categories = listOf("All", "Enlarger", "Enlarger Lens", "Dev Tank", "Tray", "Light Table", "Squeegee & Drying")
+        val categories = listOf("All", "Enlarger", "Enlarger Lens", "Dev Tank", "Tray", "Light Table", "Squeegee & Drying", "Scanner / Digitiser")
+        var equipCategoryDropdownExpanded by remember { mutableStateOf(false) }
+
         AlertDialog(
             modifier = Modifier.width(620.dp),
             onDismissRequest = { showEquipmentPresetsDialog = false },
-            title = { Text("⚙️ Select Darkroom Equipment from Presets", fontWeight = FontWeight.Bold) },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Build, contentDescription = null, modifier = Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Select Darkroom Equipment from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                }
+            },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth().height(440.dp),
@@ -4162,19 +4206,29 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 ) {
                     Text("Select a category filter or type to search darkroom equipment presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
-                    // Category Filter Chips Wrapped in FlowRow
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        categories.forEach { cat ->
-                            val isSel = selectedEquipmentCategoryFilter == cat
-                            FilterChip(
-                                selected = isSel,
-                                onClick = { selectedEquipmentCategoryFilter = cat },
-                                label = { Text(cat, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) }
-                            )
+                    // Equipment Category Filter Dropdown
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = selectedEquipmentCategoryFilter,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Equipment Category") },
+                            trailingIcon = { IconButton(onClick = { equipCategoryDropdownExpanded = !equipCategoryDropdownExpanded }) { Icon(Icons.Default.ArrowDropDown, contentDescription = null) } },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        DropdownMenu(
+                            expanded = equipCategoryDropdownExpanded,
+                            onDismissRequest = { equipCategoryDropdownExpanded = false }
+                        ) {
+                            categories.forEach { cat ->
+                                DropdownMenuItem(
+                                    text = { Text(cat, fontWeight = if (cat == selectedEquipmentCategoryFilter) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedEquipmentCategoryFilter = cat
+                                        equipCategoryDropdownExpanded = false
+                                    }
+                                )
+                            }
                         }
                     }
 

@@ -37,10 +37,18 @@ fun AddEditCameraScreen(
     var searchQuery by remember { mutableStateOf("") }
 
     if (showCameraPresetsDialog) {
-        val categories = listOf("All", "Film SLR", "Rangefinder", "TLR", "Medium Format SLR", "Point & Shoot")
+        val categories = remember { listOf("All") + CameraType.entries.map { it.displayName } }
+        var categoryDropdownExpanded by remember { mutableStateOf(false) }
+
         AlertDialog(
             onDismissRequest = { showCameraPresetsDialog = false },
-            title = { Text("⚙️ Select Camera Body from Presets", fontWeight = FontWeight.Bold) },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(painterResource(R.drawable.frame_inspect_24px), contentDescription = null, modifier = Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Select Camera Body from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                }
+            },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth().height(420.dp),
@@ -48,19 +56,34 @@ fun AddEditCameraScreen(
                 ) {
                     Text("Select a category filter or type to search camera presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
-                    // Category Filter Chips
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    // Single Source Camera Type Category Filter Dropdown
+                    ExposedDropdownMenuBox(
+                        expanded = categoryDropdownExpanded,
+                        onExpandedChange = { categoryDropdownExpanded = !categoryDropdownExpanded },
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        categories.forEach { cat ->
-                            val isSel = selectedCategoryFilter == cat
-                            FilterChip(
-                                selected = isSel,
-                                onClick = { selectedCategoryFilter = cat },
-                                label = { Text(cat, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) }
-                            )
+                        OutlinedTextField(
+                            value = selectedCategoryFilter,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Camera Type") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryDropdownExpanded) },
+                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = categoryDropdownExpanded,
+                            onDismissRequest = { categoryDropdownExpanded = false }
+                        ) {
+                            categories.forEach { cat ->
+                                DropdownMenuItem(
+                                    text = { Text(cat, fontWeight = if (cat == selectedCategoryFilter) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedCategoryFilter = cat
+                                        categoryDropdownExpanded = false
+                                    }
+                                )
+                            }
                         }
                     }
 
