@@ -2060,7 +2060,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     when (selectedCategory) {
-                        0 -> { // Camera Form with TLR & Fixed Lens Interaction Parity
+                        0 -> { // Camera Form with 1-to-1 Mobile Field Sequence
                             val item = editingCamera ?: ReferenceCameraItem(name = "")
                             var cameraTypeDropdownExpanded by remember { mutableStateOf(false) }
                             var filmFormatDropdownExpanded by remember { mutableStateOf(false) }
@@ -2078,27 +2078,43 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
                             }
 
-                            OutlinedTextField(
-                                value = item.name,
-                                onValueChange = { editingCamera = item.copy(name = it) },
-                                label = { Text("Camera Name") },
-                                placeholder = { Text("e.g. Pentax LX, Leica M3") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            // Field 1 & 2: Brand / Manufacturer & Model Name
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedTextField(
+                                    value = item.name.substringBefore(" ").ifBlank { "Pentax" },
+                                    onValueChange = { mkg -> editingCamera = item.copy(name = "$mkg ${item.modelNumber ?: ""}".trim()) },
+                                    label = { Text("Brand / Manufacturer") },
+                                    placeholder = { Text("e.g. Pentax, Nikon, Canon") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = item.name,
+                                    onValueChange = { editingCamera = item.copy(name = it) },
+                                    label = { Text("Model Name") },
+                                    placeholder = { Text("e.g. LX, ME Super, K1000") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+
+                            // Field 3 & 4: Model Number & Serial Number
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
                                     value = item.modelNumber ?: "",
                                     onValueChange = { editingCamera = item.copy(modelNumber = it) },
                                     label = { Text("Model Number (Optional)") },
+                                    placeholder = { Text("e.g. LX, ME Super") },
                                     modifier = Modifier.weight(1f)
                                 )
                                 OutlinedTextField(
                                     value = item.serialNumber ?: "",
                                     onValueChange = { editingCamera = item.copy(serialNumber = it) },
                                     label = { Text("Serial Number (Optional)") },
+                                    placeholder = { Text("Optional") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
+
+                            // Field 5 & 6: Camera Type & Film Format
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
@@ -2141,37 +2157,31 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
-                                OutlinedTextField(
-                                    value = item.mount ?: "",
-                                    onValueChange = { editingCamera = item.copy(mount = it) },
-                                    label = { Text("Lens Mount (e.g. EF, F, M)") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                            Box(modifier = Modifier.fillMaxWidth()) {
-                                OutlinedTextField(
-                                    value = item.format,
-                                    onValueChange = { editingCamera = item.copy(format = it) },
-                                    label = { Text("Film Format") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    trailingIcon = {
-                                        IconButton(onClick = { filmFormatDropdownExpanded = !filmFormatDropdownExpanded }) {
-                                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                                        }
-                                    }
-                                )
-                                DropdownMenu(
-                                    expanded = filmFormatDropdownExpanded,
-                                    onDismissRequest = { filmFormatDropdownExpanded = false }
-                                ) {
-                                    filmFormats.forEach { formatOption ->
-                                        DropdownMenuItem(
-                                            text = { Text(formatOption) },
-                                            onClick = {
-                                                editingCamera = item.copy(format = formatOption)
-                                                filmFormatDropdownExpanded = false
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.format,
+                                        onValueChange = { editingCamera = item.copy(format = it) },
+                                        label = { Text("Film Format") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { filmFormatDropdownExpanded = !filmFormatDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                                             }
-                                        )
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = filmFormatDropdownExpanded,
+                                        onDismissRequest = { filmFormatDropdownExpanded = false }
+                                    ) {
+                                        filmFormats.forEach { formatOption ->
+                                            DropdownMenuItem(
+                                                text = { Text(formatOption) },
+                                                onClick = {
+                                                    editingCamera = item.copy(format = formatOption)
+                                                    filmFormatDropdownExpanded = false
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -2179,6 +2189,15 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 "Hint: If your camera uses multiple film formats (e.g. interchangeable backs), add it once for each format.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            // Field 7: Lens Mount
+                            OutlinedTextField(
+                                value = item.mount ?: "",
+                                onValueChange = { editingCamera = item.copy(mount = it) },
+                                label = { Text("Lens Mount") },
+                                placeholder = { Text("e.g. Pentax K, Canon FD, Leica M, Fixed") },
+                                modifier = Modifier.fillMaxWidth()
                             )
 
                             // Inline Taking Lens Section for TLR / Fixed Lens Cameras
@@ -2220,12 +2239,18 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
 
+                            // Field 8: Shutter Speeds
                             OutlinedTextField(
                                 value = item.shutterSpeeds ?: "",
                                 onValueChange = { editingCamera = item.copy(shutterSpeeds = it) },
-                                label = { Text("Shutter Speeds (range or comma separated)") },
-                                placeholder = { Text("125s - 1/2000s, B") },
+                                label = { Text("Shutter Speeds") },
+                                placeholder = { Text("1s - 1/1000s, B") },
                                 modifier = Modifier.fillMaxWidth()
+                            )
+                            Text(
+                                "Hint: Enter speeds as a range (e.g. 1s - 1/1000s, B) or comma separated (e.g. 1/1000, 1/500, 1/250, B).",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         1 -> { // Lens Form with Associated Cameras and Preset Catalogue Search

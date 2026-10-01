@@ -30,7 +30,6 @@ fun AddEditCameraScreen(
     onBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val uriHandler = LocalUriHandler.current
     var expanded by remember { mutableStateOf(false) }
     var showCameraPresetsDialog by remember { mutableStateOf(false) }
     var selectedCategoryFilter by remember { mutableStateOf("All") }
@@ -204,78 +203,47 @@ fun AddEditCameraScreen(
                 Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = uiState.name,
-                    onValueChange = viewModel::onNameChange,
-                    label = { Text(stringResource(R.string.camera_name)) },
-                    modifier = Modifier.weight(1f),
-                    isError = !uiState.isNameValid,
-                    supportingText = if (!uiState.isNameValid) {
-                        { Text(stringResource(R.string.error_name_empty)) }
-                    } else null
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                IconButton(
-                    onClick = { 
-                        val query = if (uiState.name.isNotBlank()) uiState.name else uiState.modelNumber
-                        viewModel.searchDatabase(query) 
-                    },
-                    colors = IconButtonDefaults.filledIconButtonColors(),
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Icon(painterResource(R.drawable.ic_search), contentDescription = stringResource(R.string.action_lookup))
-                }
-            }
-
-            if (uiState.isSearching) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-
-            if (uiState.searchResults.isNotEmpty()) {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                ) {
-                    Column(modifier = Modifier.padding(8.dp)) {
-                        Text(stringResource(R.string.online_lookup), style = MaterialTheme.typography.labelLarge)
-                        uiState.searchResults.take(3).forEach { spec ->
-                            ListItem(
-                                headlineContent = { Text(spec.name) },
-                                supportingContent = { Text("${spec.type.displayName} • ${spec.mount}") },
-                                modifier = Modifier.clickable { viewModel.applySpec(spec) }
-                            )
-                        }
-                    }
-                }
-            }
-
+            // Field 1: Brand / Manufacturer
             OutlinedTextField(
-                value = uiState.modelNumber,
-                onValueChange = viewModel::onModelNumberChange,
-                label = { Text(stringResource(R.string.label_model_number_optional)) },
+                value = uiState.make,
+                onValueChange = viewModel::onMakeChange,
+                label = { Text("Brand / Manufacturer") },
+                placeholder = { Text("e.g. Pentax, Nikon, Canon, Leica") },
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Field 2: Model Name
+            OutlinedTextField(
+                value = uiState.name,
+                onValueChange = viewModel::onNameChange,
+                label = { Text("Model Name") },
+                placeholder = { Text("e.g. LX, ME Super, K1000, AE-1 Program") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = !uiState.isNameValid,
+                supportingText = if (!uiState.isNameValid) {
+                    { Text(stringResource(R.string.error_name_empty)) }
+                } else null
+            )
+
+            // Field 3: Model Number (Optional)
+            OutlinedTextField(
+                value = uiState.modelNumber,
+                onValueChange = viewModel::onModelNumberChange,
+                label = { Text("Model Number (Optional)") },
+                placeholder = { Text("e.g. LX, ME Super") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Field 4: Serial Number (Optional)
             OutlinedTextField(
                 value = uiState.serialNumber,
                 onValueChange = viewModel::onSerialNumberChange,
                 label = { Text("Serial Number (Optional)") },
+                placeholder = { Text("Optional") },
                 modifier = Modifier.fillMaxWidth()
             )
 
-            if (uiState.name.length >= 2 && !uiState.isSearching && uiState.searchResults.isEmpty()) {
-                TextButton(
-                    onClick = { uriHandler.openUri("https://www.google.com/search?q=${uiState.name}+camera+specs") }
-                ) {
-                    Icon(painterResource(R.drawable.ic_search), contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.search_web_for_specs))
-                }
-            }
-
+            // Field 5: Camera Type Dropdown
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = !expanded },
@@ -306,15 +274,7 @@ fun AddEditCameraScreen(
                 }
             }
 
-            if (uiState.type.isInterchangeable) {
-                OutlinedTextField(
-                    value = uiState.mount,
-                    onValueChange = viewModel::onMountChange,
-                    label = { Text(stringResource(R.string.label_lens_mount)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
+            // Field 6: Film Format Dropdown
             var formatExpanded by remember { mutableStateOf(false) }
             ExposedDropdownMenuBox(
                 expanded = formatExpanded,
@@ -350,15 +310,34 @@ fun AddEditCameraScreen(
                 text = "Hint: If your camera uses multiple film formats (e.g. interchangeable backs), add it once for each format.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 2.dp)
             )
 
+            // Field 7: Lens Mount
+            if (uiState.type.isInterchangeable) {
+                OutlinedTextField(
+                    value = uiState.mount,
+                    onValueChange = viewModel::onMountChange,
+                    label = { Text("Lens Mount") },
+                    placeholder = { Text("e.g. Pentax K, Canon FD, Leica M, Fixed") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // Field 8: Shutter Speeds
             OutlinedTextField(
                 value = uiState.shutterSpeeds,
                 onValueChange = viewModel::onShutterSpeedsChange,
-                label = { Text(stringResource(R.string.label_shutter_speeds_comma)) },
-                placeholder = { Text(stringResource(R.string.shutter_speeds_placeholder)) },
+                label = { Text("Shutter Speeds") },
+                placeholder = { Text("1s - 1/1000s, B") },
                 modifier = Modifier.fillMaxWidth()
+            )
+
+            Text(
+                text = "Hint: Enter speeds as a range (e.g. 1s - 1/1000s, B) or comma separated (e.g. 1/1000, 1/500, 1/250, B).",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 2.dp)
             )
 
             Button(

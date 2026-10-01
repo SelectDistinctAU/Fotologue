@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class AddEditCameraUiState(
+    val make: String = "Pentax",
     val name: String = "",
     val modelNumber: String = "",
     val serialNumber: String = "",
@@ -83,6 +84,11 @@ class AddEditCameraViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onMakeChange(make: String) {
+        _uiState.update { it.copy(make = make) }
+        savedStateHandle["make"] = make
     }
 
     fun onNameChange(name: String) {
