@@ -2060,7 +2060,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     when (selectedCategory) {
-                        0 -> { // Camera Form with 1-to-1 Mobile Field Sequence
+                        0 -> { // Camera Form with Streamlined 1-to-1 Parity (Model Number Dropped)
                             val item = editingCamera ?: ReferenceCameraItem(name = "")
                             var cameraTypeDropdownExpanded by remember { mutableStateOf(false) }
                             var filmFormatDropdownExpanded by remember { mutableStateOf(false) }
@@ -2078,11 +2078,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
                             }
 
-                            // Field 1 & 2: Brand / Manufacturer & Model Name
+                            // Row 1: Brand / Manufacturer & Model Name
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
                                     value = item.name.substringBefore(" ").ifBlank { "Pentax" },
-                                    onValueChange = { mkg -> editingCamera = item.copy(name = "$mkg ${item.modelNumber ?: ""}".trim()) },
+                                    onValueChange = { mkg -> editingCamera = item.copy(name = "$mkg ${item.name.substringAfter(" ")}".trim()) },
                                     label = { Text("Brand / Manufacturer") },
                                     placeholder = { Text("e.g. Pentax, Nikon, Canon") },
                                     modifier = Modifier.weight(1f)
@@ -2096,15 +2096,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
 
-                            // Field 3 & 4: Model Number & Serial Number
+                            // Row 2: Serial Number & Camera Type
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.modelNumber ?: "",
-                                    onValueChange = { editingCamera = item.copy(modelNumber = it) },
-                                    label = { Text("Model Number (Optional)") },
-                                    placeholder = { Text("e.g. LX, ME Super") },
-                                    modifier = Modifier.weight(1f)
-                                )
                                 OutlinedTextField(
                                     value = item.serialNumber ?: "",
                                     onValueChange = { editingCamera = item.copy(serialNumber = it) },
@@ -2112,10 +2105,6 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                     placeholder = { Text("Optional") },
                                     modifier = Modifier.weight(1f)
                                 )
-                            }
-
-                            // Field 5 & 6: Camera Type & Film Format
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.type,
@@ -2157,6 +2146,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
+                            }
+
+                            // Row 3: Film Format & Lens Mount
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.format,
@@ -2184,20 +2177,18 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
+                                OutlinedTextField(
+                                    value = item.mount ?: "",
+                                    onValueChange = { editingCamera = item.copy(mount = it) },
+                                    label = { Text("Lens Mount") },
+                                    placeholder = { Text("e.g. Pentax K, Canon FD, Fixed") },
+                                    modifier = Modifier.weight(1f)
+                                )
                             }
                             Text(
                                 "Hint: If your camera uses multiple film formats (e.g. interchangeable backs), add it once for each format.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-
-                            // Field 7: Lens Mount
-                            OutlinedTextField(
-                                value = item.mount ?: "",
-                                onValueChange = { editingCamera = item.copy(mount = it) },
-                                label = { Text("Lens Mount") },
-                                placeholder = { Text("e.g. Pentax K, Canon FD, Leica M, Fixed") },
-                                modifier = Modifier.fillMaxWidth()
                             )
 
                             // Inline Taking Lens Section for TLR / Fixed Lens Cameras
@@ -2239,7 +2230,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
 
-                            // Field 8: Shutter Speeds
+                            // Row 4: Shutter Speeds
                             OutlinedTextField(
                                 value = item.shutterSpeeds ?: "",
                                 onValueChange = { editingCamera = item.copy(shutterSpeeds = it) },

@@ -225,16 +225,7 @@ fun AddEditCameraScreen(
                 } else null
             )
 
-            // Field 3: Model Number (Optional)
-            OutlinedTextField(
-                value = uiState.modelNumber,
-                onValueChange = viewModel::onModelNumberChange,
-                label = { Text("Model Number (Optional)") },
-                placeholder = { Text("e.g. LX, ME Super") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // Field 4: Serial Number (Optional)
+            // Field 3: Serial Number (Optional)
             OutlinedTextField(
                 value = uiState.serialNumber,
                 onValueChange = viewModel::onSerialNumberChange,
