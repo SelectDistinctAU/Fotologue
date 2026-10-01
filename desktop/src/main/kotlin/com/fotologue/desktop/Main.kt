@@ -3461,7 +3461,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 Text("Hazardous Material / Safety Handling Required", style = MaterialTheme.typography.bodySmall)
                             }
                         }
-                        10 -> { // Lab Equipment Form with 1-to-1 Mobile Parity & Sub-Equipment Linkage
+                        10 -> { // Lab Equipment Form with Clean Layout & Intuitive Parent Linkage
                             val item = editingLabEquipment ?: ReferenceLabEquipmentItem(name = "")
                             var categoryDropdownExpanded by remember { mutableStateOf(false) }
                             var conditionDropdownExpanded by remember { mutableStateOf(false) }
@@ -3496,27 +3496,31 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
 
+                            // Row 1: Identification
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
                                     value = item.name,
                                     onValueChange = { editingLabEquipment = item.copy(name = it) },
-                                    label = { Text("Equipment Name (e.g. Beseler 23C II)") },
+                                    label = { Text("Equipment Name") },
+                                    placeholder = { Text("e.g. Beseler 23C II") },
                                     modifier = Modifier.weight(1f)
                                 )
                                 OutlinedTextField(
                                     value = item.manufacturer ?: "",
                                     onValueChange = { editingLabEquipment = item.copy(manufacturer = it) },
                                     label = { Text("Manufacturer / Brand") },
+                                    placeholder = { Text("e.g. Beseler, Paterson") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
 
+                            // Row 2: Category & Parent Equipment Linkage
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.category,
                                         onValueChange = { editingLabEquipment = item.copy(category = it) },
-                                        label = { Text("Equipment Category") },
+                                        label = { Text("Category") },
                                         modifier = Modifier.fillMaxWidth(),
                                         trailingIcon = {
                                             IconButton(onClick = { categoryDropdownExpanded = !categoryDropdownExpanded }) {
@@ -3539,6 +3543,45 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.parentEquipmentName ?: "",
+                                        onValueChange = { editingLabEquipment = item.copy(parentEquipmentName = it) },
+                                        label = { Text("Parent Equipment") },
+                                        placeholder = { Text("None (Standalone)") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { parentEquipDropdownExpanded = !parentEquipDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = parentEquipDropdownExpanded && labEquipment.isNotEmpty(),
+                                        onDismissRequest = { parentEquipDropdownExpanded = false }
+                                    ) {
+                                        DropdownMenuItem(
+                                            text = { Text("None (Standalone Equipment)") },
+                                            onClick = {
+                                                editingLabEquipment = item.copy(parentEquipmentName = null)
+                                                parentEquipDropdownExpanded = false
+                                            }
+                                        )
+                                        labEquipment.filter { it.id != item.id }.forEach { parentEq ->
+                                            DropdownMenuItem(
+                                                text = { Text("🔧 ${parentEq.name} (${parentEq.category})") },
+                                                onClick = {
+                                                    editingLabEquipment = item.copy(parentEquipmentName = parentEq.name)
+                                                    parentEquipDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Row 3: Condition & Model
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.condition,
@@ -3566,49 +3609,22 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
-                            }
-
-                            // Sub-Equipment Parent Linkage
-                            Box(modifier = Modifier.fillMaxWidth()) {
                                 OutlinedTextField(
-                                    value = item.parentEquipmentName ?: "",
-                                    onValueChange = { editingLabEquipment = item.copy(parentEquipmentName = it) },
-                                    label = { Text("Parent Equipment (Optional - e.g. Beseler 23C II Enlarger Body)") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    trailingIcon = {
-                                        IconButton(onClick = { parentEquipDropdownExpanded = !parentEquipDropdownExpanded }) {
-                                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                                        }
-                                    }
+                                    value = item.modelNumber ?: "",
+                                    onValueChange = { editingLabEquipment = item.copy(modelNumber = it) },
+                                    label = { Text("Model Number") },
+                                    placeholder = { Text("Optional") },
+                                    modifier = Modifier.weight(1f)
                                 )
-                                DropdownMenu(
-                                    expanded = parentEquipDropdownExpanded && labEquipment.isNotEmpty(),
-                                    onDismissRequest = { parentEquipDropdownExpanded = false }
-                                ) {
-                                    labEquipment.filter { it.category == "Enlarger" || it.id != item.id }.forEach { parentEq ->
-                                        DropdownMenuItem(
-                                            text = { Text("🔧 ${parentEq.name} (${parentEq.category})") },
-                                            onClick = {
-                                                editingLabEquipment = item.copy(parentEquipmentName = parentEq.name)
-                                                parentEquipDropdownExpanded = false
-                                            }
-                                        )
-                                    }
-                                }
                             }
 
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
-                                    value = item.modelNumber ?: "",
-                                    onValueChange = { editingLabEquipment = item.copy(modelNumber = it) },
-                                    label = { Text("Model Number (Optional)") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                OutlinedTextField(
                                     value = item.serialNumber ?: "",
                                     onValueChange = { editingLabEquipment = item.copy(serialNumber = it) },
-                                    label = { Text("Serial Number (Optional)") },
-                                    modifier = Modifier.weight(1f)
+                                    label = { Text("Serial Number") },
+                                    placeholder = { Text("Optional") },
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
                         }
