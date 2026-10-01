@@ -2223,8 +2223,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                             OutlinedTextField(
                                 value = item.shutterSpeeds ?: "",
                                 onValueChange = { editingCamera = item.copy(shutterSpeeds = it) },
-                                label = { Text("Shutter Speeds (comma separated)") },
-                                placeholder = { Text("1/1000, 1/500, 1/250, 1/125...") },
+                                label = { Text("Shutter Speeds (range or comma separated)") },
+                                placeholder = { Text("125s - 1/2000s, B") },
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
