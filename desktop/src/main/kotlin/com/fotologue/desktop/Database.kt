@@ -587,6 +587,26 @@ class FoundationReviewQueueEntity(id: EntityID<Int>) : IntEntity(id) {
     var submissionDateMs by FoundationReviewQueueTable.submissionDateMs
 }
 
+object ReferenceLovsTable : IntIdTable("reference_lovs") {
+    val category = varchar("category", 100) // e.g. "CAMERA_TYPE", "LENS_MOUNT", "EQUIPMENT_CATEGORY"
+    val value = varchar("value", 255)
+    val isUserCustom = bool("is_user_custom").default(true)
+}
+
+class ReferenceLovEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<ReferenceLovEntity>(ReferenceLovsTable)
+    var category by ReferenceLovsTable.category
+    var value by ReferenceLovsTable.value
+    var isUserCustom by ReferenceLovsTable.isUserCustom
+}
+
+data class ReferenceLovItem(
+    val id: Int = 0,
+    val category: String,
+    val value: String,
+    val isUserCustom: Boolean = true
+)
+
 object DatabaseManager {
     val userHome = System.getProperty("user.home")
     val fotologueDir = File(userHome, ".fotologue")
@@ -621,7 +641,8 @@ object DatabaseManager {
                 StorageLocationsTable,
                 CustodyInteractionsTable,
                 ContributorsTable,
-                FoundationReviewQueueTable
+                FoundationReviewQueueTable,
+                ReferenceLovsTable
             )
         }
     }

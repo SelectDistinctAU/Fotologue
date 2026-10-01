@@ -3756,6 +3756,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         0 -> editingCamera?.let { cam ->
                             if (cam.name.isNotBlank()) {
                                 DatabaseRepository.saveFoundationCamera(cam)
+                                DatabaseRepository.saveLovValue("CAMERA_TYPE", cam.type)
+                                cam.mount?.let { mnt -> DatabaseRepository.saveLovValue("LENS_MOUNT", mnt) }
                                 val isFixedCamera = cam.type == "TLR" || cam.type == "Point & Shoot" || cam.type == "Compact" || cam.mount == "Fixed"
                                 if (isFixedCamera && fixedLensName.isNotBlank()) {
                                     DatabaseRepository.saveFoundationLens(
@@ -3773,18 +3775,81 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
                         }
-                        1 -> editingLens?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationLens(it) }
-                        2 -> editingFilm?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationFilm(it) }
+                        1 -> editingLens?.let { l -> 
+                            if (l.name.isNotBlank()) {
+                                DatabaseRepository.saveFoundationLens(l)
+                                DatabaseRepository.saveLovValue("LENS_TYPE", l.type)
+                                l.mount?.let { mnt -> DatabaseRepository.saveLovValue("LENS_MOUNT", mnt) }
+                                l.make?.let { mk -> DatabaseRepository.saveLovValue("MANUFACTURER", mk) }
+                            }
+                        }
+                        2 -> editingFilm?.let { fl -> 
+                            if (fl.name.isNotBlank()) {
+                                DatabaseRepository.saveFoundationFilm(fl)
+                                DatabaseRepository.saveLovValue("FILM_TYPE", fl.type)
+                                DatabaseRepository.saveLovValue("FILM_FORMAT", fl.format)
+                            }
+                        }
                         3 -> editingKit?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationKit(it) }
-                        4 -> editingTeleconverter?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationTeleconverter(it) }
-                        5 -> editingFilter?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationFilter(it) }
-                        6 -> editingFlash?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationFlash(it) }
-                        7 -> editingViewfinder?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationViewfinder(it) }
-                        8 -> editingSupplier?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationSupplier(it) }
-                        9 -> editingConsumable?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationConsumable(it) }
-                        10 -> editingLabEquipment?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationLabEquipment(it) }
-                        11 -> editingStorageLocation?.let { if (it.name.isNotBlank()) DatabaseRepository.saveStorageLocation(it) }
-                        12, 13 -> editingCustodyInteraction?.let { if (it.assetName.isNotBlank()) DatabaseRepository.saveCustodyInteraction(it) }
+                        4 -> editingTeleconverter?.let { tc -> 
+                            if (tc.name.isNotBlank()) {
+                                DatabaseRepository.saveFoundationTeleconverter(tc)
+                                DatabaseRepository.saveLovValue("CONVERTER_TYPE", tc.converterType)
+                            }
+                        }
+                        5 -> editingFilter?.let { flt -> 
+                            if (flt.name.isNotBlank()) {
+                                DatabaseRepository.saveFoundationFilter(flt)
+                                DatabaseRepository.saveLovValue("FILTER_TYPE", flt.filterType)
+                                DatabaseRepository.saveLovValue("THREAD_SIZE", flt.threadSize)
+                            }
+                        }
+                        6 -> editingFlash?.let { fls -> 
+                            if (fls.name.isNotBlank()) {
+                                DatabaseRepository.saveFoundationFlash(fls)
+                                DatabaseRepository.saveLovValue("SYNC_TYPE", fls.syncType)
+                            }
+                        }
+                        7 -> editingViewfinder?.let { vf -> 
+                            if (vf.name.isNotBlank()) {
+                                DatabaseRepository.saveFoundationViewfinder(vf)
+                                DatabaseRepository.saveLovValue("VIEWFINDER_TYPE", vf.type)
+                            }
+                        }
+                        8 -> editingSupplier?.let { sup -> 
+                            if (sup.name.isNotBlank()) {
+                                DatabaseRepository.saveFoundationSupplier(sup)
+                                sup.region?.let { rgn -> DatabaseRepository.saveLovValue("REGION", rgn) }
+                            }
+                        }
+                        9 -> editingConsumable?.let { con -> 
+                            if (con.name.isNotBlank()) {
+                                DatabaseRepository.saveFoundationConsumable(con)
+                                DatabaseRepository.saveLovValue("CONSUMABLE_CATEGORY", con.category)
+                                con.manufacturer?.let { mfg -> DatabaseRepository.saveLovValue("MANUFACTURER", mfg) }
+                            }
+                        }
+                        10 -> editingLabEquipment?.let { eq -> 
+                            if (eq.name.isNotBlank()) {
+                                DatabaseRepository.saveFoundationLabEquipment(eq)
+                                DatabaseRepository.saveLovValue("EQUIPMENT_CATEGORY", eq.category)
+                                DatabaseRepository.saveLovValue("CONDITION", eq.condition)
+                                eq.manufacturer?.let { mfg -> DatabaseRepository.saveLovValue("MANUFACTURER", mfg) }
+                            }
+                        }
+                        11 -> editingStorageLocation?.let { loc -> 
+                            if (loc.name.isNotBlank()) {
+                                DatabaseRepository.saveStorageLocation(loc)
+                                DatabaseRepository.saveLovValue("STORAGE_TYPE", loc.type)
+                            }
+                        }
+                        12, 13 -> editingCustodyInteraction?.let { cust -> 
+                            if (cust.assetName.isNotBlank()) {
+                                DatabaseRepository.saveCustodyInteraction(cust)
+                                DatabaseRepository.saveLovValue("INTERACTION_TYPE", cust.interactionType)
+                                DatabaseRepository.saveLovValue("ORDER_STATUS", cust.orderStatus)
+                            }
+                        }
                     }
                     refreshAllData()
                     showAddEditDialog = false

@@ -860,6 +860,35 @@ object DatabaseRepository {
         }
     }
 
+    // --- DYNAMIC LOV (LIST OF VALUES) HELPERS ---
+    fun loadLovsByCategory(category: String, defaultOptions: List<String>): List<String> {
+        return transaction {
+            val userCustoms = ReferenceLovEntity.find { ReferenceLovsTable.category eq category }.map { it.value }
+            (defaultOptions + userCustoms).distinct().filter { it.isNotBlank() }
+        }
+    }
+
+    fun saveLovValue(category: String, customValue: String) {
+        val catName = category
+        val trimmed = customValue.trim()
+        if (trimmed.isBlank()) return
+        transaction {
+            val existing = ReferenceLovEntity.find { (ReferenceLovsTable.category eq catName) and (ReferenceLovsTable.value eq trimmed) }.firstOrNull()
+            if (existing == null) {
+                val newLov = ReferenceLovEntity.new { }
+                newLov.category = catName
+                newLov.value = trimmed
+                newLov.isUserCustom = true
+            }
+        }
+    }
+
+    fun deleteLov(id: Int) {
+        transaction {
+            ReferenceLovEntity.findById(id)?.delete()
+        }
+    }
+
     // --- CONTRIBUTORS CRUD HELPERS ---
     fun loadContributors(): List<ContributorItem> {
         return transaction {
@@ -1042,6 +1071,19 @@ object DatabaseRepository {
         return presets.filter { it.name.contains(query, ignoreCase = true) || (it.manufacturer?.contains(query, ignoreCase = true) == true) || it.category.contains(query, ignoreCase = true) }
     }
 
+    fun loadAllLovs(): List<ReferenceLovItem> {
+        return transaction {
+            ReferenceLovEntity.all().map {
+                ReferenceLovItem(
+                    id = it.id.value,
+                    category = it.category,
+                    value = it.value,
+                    isUserCustom = it.isUserCustom
+                )
+            }
+        }
+    }
+
     private val jsonFormatter = Json {
         prettyPrint = true
         ignoreUnknownKeys = true
@@ -1063,11 +1105,12 @@ object DatabaseRepository {
         val suppliers = loadFoundationSuppliers()
         val consumables = loadFoundationConsumables()
         val equipment = loadFoundationLabEquipment()
+        val lovs = loadAllLovs()
 
         return jsonFormatter.encodeToString(
             mapOf(
                 "timestamp" to System.currentTimeMillis(),
-                "schemaVersion" to 3,
+                "schemaVersion" to 4,
                 "contributors" to contributors,
                 "cameras" to cameras,
                 "films" to films,
@@ -1082,7 +1125,8 @@ object DatabaseRepository {
                 "custodyInteractions" to custodyInteractions,
                 "labSuppliers" to suppliers,
                 "consumables" to consumables,
-                "labEquipment" to equipment
+                "labEquipment" to equipment,
+                "lovs" to lovs
             )
         )
     }
