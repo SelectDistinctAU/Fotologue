@@ -1,0 +1,92 @@
+[
+  {
+    "id": "equip_intrepid_enlarger",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Intrepid",
+    "name": "Intrepid Compact Enlarger (35mm / 120)",
+    "attributes": {
+      "category": "Enlarger",
+      "condition": "Excellent",
+      "notes": "LED Light Source with Color/Multigrade Filters"
+    }
+  },
+  {
+    "id": "equip_beseler_23c_ii",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Beseler",
+    "name": "Beseler 23C II Enlarger",
+    "modelNumber": "23C II",
+    "attributes": {
+      "category": "Enlarger",
+      "condition": "Excellent",
+      "notes": "Dichro / Condenser Enlarger Body"
+    }
+  },
+  {
+    "id": "equip_omega_d2",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Omega",
+    "name": "Omega D2 4x5 Enlarger",
+    "modelNumber": "D2",
+    "attributes": {
+      "category": "Enlarger",
+      "condition": "Excellent",
+      "notes": "Large Format Condenser Enlarger"
+    }
+  },
+  {
+    "id": "equip_saunders_lpl_4500ii",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Saunders LPL",
+    "name": "Saunders LPL 4500II 4x5 Enlarger",
+    "modelNumber": "4500II",
+    "attributes": {
+      "category": "Enlarger",
+      "condition": "Excellent",
+      "notes": "Professional 4x5 Color / B&W Enlarger"
+    }
+  },
+  {
+    "id": "equip_paterson_sys_4",
+    "category": "EQUIPMENT",
+    "subCategory": "Dev Tank",
+    "brand": "Paterson",
+    "name": "Paterson Super System 4 Dev Tank",
+    "modelNumber": "System 4",
+    "attributes": {
+      "category": "Dev Tank",
+      "condition": "Excellent",
+      "notes": "Standard Plastic Tank for 2x35mm or 1x120"
+    }
+  },
+  {
+    "id": "equip_jobo_1520",
+    "category": "EQUIPMENT",
+    "subCategory": "Dev Tank",
+    "brand": "Jobo",
+    "name": "Jobo 1520 Tank System",
+    "modelNumber": "1520",
+    "attributes": {
+      "category": "Dev Tank",
+      "condition": "Excellent",
+      "notes": "Rotary & Inversion Tank"
+    }
+  },
+  {
+    "id": "equip_epson_v850",
+    "category": "EQUIPMENT",
+    "subCategory": "Scanner / Digitiser",
+    "brand": "Epson",
+    "name": "Epson Perfection V850 Pro Scanner",
+    "modelNumber": "V850 Pro",
+    "attributes": {
+      "category": "Scanner / Digitiser",
+      "condition": "Excellent",
+      "notes": "Dual Lens Film/Flatbed Scanner"
+    }
+  }
+]
