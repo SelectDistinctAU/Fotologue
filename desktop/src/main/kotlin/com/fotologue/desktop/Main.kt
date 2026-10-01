@@ -2177,13 +2177,36 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
-                                OutlinedTextField(
-                                    value = item.mount ?: "",
-                                    onValueChange = { editingCamera = item.copy(mount = it) },
-                                    label = { Text("Lens Mount") },
-                                    placeholder = { Text("e.g. Pentax K, Canon FD, Fixed") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    var mountDropdownExpanded by remember { mutableStateOf(false) }
+                                    val availableMounts = remember { DatabaseRepository.loadLensMountLovs() }
+                                    OutlinedTextField(
+                                        value = item.mount ?: "",
+                                        onValueChange = { editingCamera = item.copy(mount = it) },
+                                        label = { Text("Lens Mount") },
+                                        placeholder = { Text("e.g. Pentax K, Canon FD, Fixed") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { mountDropdownExpanded = !mountDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = mountDropdownExpanded,
+                                        onDismissRequest = { mountDropdownExpanded = false }
+                                    ) {
+                                        availableMounts.forEach { mntOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(mntOpt) },
+                                                onClick = {
+                                                    editingCamera = item.copy(mount = mntOpt)
+                                                    mountDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                             Text(
                                 "Hint: If your camera uses multiple film formats (e.g. interchangeable backs), add it once for each format.",
@@ -2383,6 +2406,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                     }
                                 }
                                 Box(modifier = Modifier.weight(1f)) {
+                                    val availableLensMounts = remember { DatabaseRepository.loadLensMountLovs() }
                                     OutlinedTextField(
                                         value = item.mount ?: "",
                                         onValueChange = { editingLens = item.copy(mount = it) },
@@ -2395,10 +2419,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     )
                                     DropdownMenu(
-                                        expanded = mountDropdownExpanded && cameras.isNotEmpty(),
+                                        expanded = mountDropdownExpanded,
                                         onDismissRequest = { mountDropdownExpanded = false }
                                     ) {
-                                        cameras.mapNotNull { it.mount }.distinct().forEach { mountOpt ->
+                                        availableLensMounts.forEach { mountOpt ->
                                             DropdownMenuItem(
                                                 text = { Text(mountOpt) },
                                                 onClick = {

@@ -306,13 +306,37 @@ fun AddEditCameraScreen(
 
             // Field 7: Lens Mount
             if (uiState.type.isInterchangeable) {
-                OutlinedTextField(
-                    value = uiState.mount,
-                    onValueChange = viewModel::onMountChange,
-                    label = { Text("Lens Mount") },
-                    placeholder = { Text("e.g. Pentax K, Canon FD, Leica M, Fixed") },
+                var mountExpanded by remember { mutableStateOf(false) }
+                val defaultMounts = remember { listOf("Pentax K", "Canon FD", "Nikon F", "Leica M", "Leica L39", "Hasselblad V", "Contax C/Y", "Olympus OM", "Minolta SR/MD", "M42 Thread", "Fixed") }
+
+                ExposedDropdownMenuBox(
+                    expanded = mountExpanded,
+                    onExpandedChange = { mountExpanded = !mountExpanded },
                     modifier = Modifier.fillMaxWidth()
-                )
+                ) {
+                    OutlinedTextField(
+                        value = uiState.mount,
+                        onValueChange = viewModel::onMountChange,
+                        label = { Text("Lens Mount") },
+                        placeholder = { Text("e.g. Pentax K, Canon FD, Fixed") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = mountExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = mountExpanded,
+                        onDismissRequest = { mountExpanded = false }
+                    ) {
+                        defaultMounts.forEach { mnt ->
+                            DropdownMenuItem(
+                                text = { Text(mnt) },
+                                onClick = {
+                                    viewModel.onMountChange(mnt)
+                                    mountExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
 
             // Field 8: Shutter Speeds

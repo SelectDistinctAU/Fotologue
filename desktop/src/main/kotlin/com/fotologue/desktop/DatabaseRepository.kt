@@ -861,6 +861,12 @@ object DatabaseRepository {
     }
 
     // --- DYNAMIC LOV (LIST OF VALUES) HELPERS ---
+    val defaultLensMounts = listOf("Pentax K", "Canon FD", "Nikon F", "Leica M", "Leica L39", "Hasselblad V", "Contax C/Y", "Olympus OM", "Minolta SR/MD", "M42 Thread", "Fixed")
+
+    fun loadLensMountLovs(): List<String> {
+        return loadLovsByCategory("LENS_MOUNT", defaultLensMounts)
+    }
+
     fun loadLovsByCategory(category: String, defaultOptions: List<String>): List<String> {
         return transaction {
             val userCustoms = ReferenceLovEntity.find { ReferenceLovsTable.category eq category }.map { it.value }
