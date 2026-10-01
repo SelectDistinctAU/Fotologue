@@ -1970,6 +1970,9 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
 
     var showAddEditDialog by remember { mutableStateOf(false) }
     var showReviewQueueDialog by remember { mutableStateOf(false) }
+    var showCameraPresetsDialog by remember { mutableStateOf(false) }
+    var selectedCameraTypeFilter by remember { mutableStateOf("All") }
+    var cameraSearchQuery by remember { mutableStateOf("") }
     var showFilmPresetsDialog by remember { mutableStateOf(false) }
     var selectedFilmManufacturer by remember { mutableStateOf("Kodak") }
     var showEquipmentPresetsDialog by remember { mutableStateOf(false) }
@@ -2065,45 +2068,23 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                             val cameraTypes = listOf("Film SLR", "Rangefinder", "TLR", "Point & Shoot", "Compact", "Medium Format SLR", "Large Format")
                             val filmFormats = listOf("35mm", "120", "Sheet", "Half-Frame")
 
-                            Box(modifier = Modifier.fillMaxWidth()) {
-                                OutlinedTextField(
-                                    value = item.name,
-                                    onValueChange = { 
-                                        editingCamera = item.copy(name = it)
-                                        isPresetDropdownExpanded = true
-                                    },
-                                    label = { Text("Camera Name") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    trailingIcon = {
-                                        IconButton(onClick = { isPresetDropdownExpanded = !isPresetDropdownExpanded }) {
-                                            Icon(Icons.Default.Search, contentDescription = "Preset Catalogue Search")
-                                        }
-                                    }
-                                )
-                                DropdownMenu(
-                                    expanded = isPresetDropdownExpanded && DatabaseRepository.searchPresetCameras(item.name).isNotEmpty(),
-                                    onDismissRequest = { isPresetDropdownExpanded = false }
-                                ) {
-                                    DatabaseRepository.searchPresetCameras(item.name).take(5).forEach { preset ->
-                                        DropdownMenuItem(
-                                            text = { Text("${preset.name} (${preset.type} • ${preset.mount ?: "Mount"})") },
-                                            onClick = {
-                                                val isTlrOrFixed = preset.type == "TLR" || preset.type == "Point & Shoot" || preset.type == "Compact"
-                                                val formatAuto = if (preset.type == "TLR" || preset.type == "Medium Format SLR") "120" else preset.format
-                                                val mountAuto = if (isTlrOrFixed) "Fixed" else preset.mount
-                                                editingCamera = preset.copy(format = formatAuto, mount = mountAuto)
-                                                if (isTlrOrFixed || preset.name.contains("Yashica", ignoreCase = true)) {
-                                                    fixedLensName = "${preset.name} Taking Lens"
-                                                    fixedLensFocalLength = "80mm"
-                                                    fixedLensMaxAperture = "f/3.5"
-                                                    fixedLensFilterSize = "Bay I"
-                                                }
-                                                isPresetDropdownExpanded = false
-                                            }
-                                        )
-                                    }
-                                }
+                            Button(
+                                onClick = { showCameraPresetsDialog = true },
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
+                                colors = ButtonDefaults.filledTonalButtonColors()
+                            ) {
+                                Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
                             }
+
+                            OutlinedTextField(
+                                value = item.name,
+                                onValueChange = { editingCamera = item.copy(name = it) },
+                                label = { Text("Camera Name") },
+                                placeholder = { Text("e.g. Pentax LX, Leica M3") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
                                     value = item.modelNumber ?: "",
@@ -3965,6 +3946,120 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             },
             confirmButton = {
                 Button(onClick = { showReviewQueueDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    if (showCameraPresetsDialog) {
+        val categories = listOf("All", "Film SLR", "Rangefinder", "TLR", "Medium Format SLR", "Point & Shoot")
+        AlertDialog(
+            modifier = Modifier.width(620.dp),
+            onDismissRequest = { showCameraPresetsDialog = false },
+            title = { Text("⚙️ Select Camera Body from Presets", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth().height(440.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Select a category filter or type to search camera body presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    
+                    // Category Filter Chips
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        categories.forEach { cat ->
+                            val isSel = selectedCameraTypeFilter == cat
+                            FilterChip(
+                                selected = isSel,
+                                onClick = { selectedCameraTypeFilter = cat },
+                                label = { Text(cat, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) }
+                            )
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = cameraSearchQuery,
+                        onValueChange = { cameraSearchQuery = it },
+                        label = { Text("Search Cameras (Name, Brand, Mount)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+                    )
+
+                    HorizontalDivider()
+
+                    val allPresets = DatabaseRepository.searchPresetCameras(cameraSearchQuery)
+                    val filteredPresets = if (selectedCameraTypeFilter == "All") {
+                        allPresets
+                    } else {
+                        allPresets.filter { it.type.equals(selectedCameraTypeFilter, ignoreCase = true) }
+                    }
+
+                    if (filteredPresets.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("No camera presets found for $selectedCameraTypeFilter.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            items(filteredPresets.size) { idx ->
+                                val preset = filteredPresets[idx]
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            val isTlrOrFixed = preset.type == "TLR" || preset.type == "Point & Shoot" || preset.type == "Compact"
+                                            val formatAuto = if (preset.type == "TLR" || preset.type == "Medium Format SLR") "120" else preset.format
+                                            val mountAuto = if (isTlrOrFixed) "Fixed" else preset.mount
+                                            editingCamera = preset.copy(format = formatAuto, mount = mountAuto)
+                                            if (isTlrOrFixed || preset.name.contains("Yashica", ignoreCase = true)) {
+                                                fixedLensName = "${preset.name} Taking Lens"
+                                                fixedLensFocalLength = "80mm"
+                                                fixedLensMaxAperture = "f/3.5"
+                                                fixedLensFilterSize = "Bay I"
+                                            }
+                                            showCameraPresetsDialog = false
+                                        },
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(preset.name, fontWeight = FontWeight.Bold)
+                                            Text("${preset.type} • Mount: ${preset.mount ?: "Standard"} • Format: ${preset.format} ${if (!preset.shutterSpeeds.isNullOrBlank()) "• ${preset.shutterSpeeds}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                        Button(
+                                            onClick = {
+                                                val isTlrOrFixed = preset.type == "TLR" || preset.type == "Point & Shoot" || preset.type == "Compact"
+                                                val formatAuto = if (preset.type == "TLR" || preset.type == "Medium Format SLR") "120" else preset.format
+                                                val mountAuto = if (isTlrOrFixed) "Fixed" else preset.mount
+                                                editingCamera = preset.copy(format = formatAuto, mount = mountAuto)
+                                                if (isTlrOrFixed || preset.name.contains("Yashica", ignoreCase = true)) {
+                                                    fixedLensName = "${preset.name} Taking Lens"
+                                                    fixedLensFocalLength = "80mm"
+                                                    fixedLensMaxAperture = "f/3.5"
+                                                    fixedLensFilterSize = "Bay I"
+                                                }
+                                                showCameraPresetsDialog = false
+                                            },
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                                        ) {
+                                            Text("Select", style = MaterialTheme.typography.labelSmall)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showCameraPresetsDialog = false }) {
                     Text("Close")
                 }
             }

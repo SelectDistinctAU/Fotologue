@@ -1,0 +1,376 @@
+[
+  {
+    "id": "cam_pentax_lx",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Pentax",
+    "name": "Pentax LX",
+    "modelNumber": "LX",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "shutterSpeeds": "125s - 1/2000s, B"
+    }
+  },
+  {
+    "id": "cam_pentax_me_super",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Pentax",
+    "name": "Pentax ME Super",
+    "modelNumber": "ME Super",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "shutterSpeeds": "4s - 1/2000s, B"
+    }
+  },
+  {
+    "id": "cam_pentax_k1000",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Pentax",
+    "name": "Pentax K1000",
+    "modelNumber": "K1000",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    }
+  },
+  {
+    "id": "cam_canon_ae1p",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon AE-1 Program",
+    "modelNumber": "AE-1P",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "shutterSpeeds": "2s - 1/1000s, B"
+    }
+  },
+  {
+    "id": "cam_canon_f1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon F-1",
+    "modelNumber": "F-1",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "shutterSpeeds": "1s - 1/2000s, B"
+    }
+  },
+  {
+    "id": "cam_nikon_f3",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F3",
+    "modelNumber": "F3",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "shutterSpeeds": "8s - 1/2000s, B"
+    }
+  },
+  {
+    "id": "cam_nikon_fm2",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon FM2",
+    "modelNumber": "FM2",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "shutterSpeeds": "1s - 1/4000s, B"
+    }
+  },
+  {
+    "id": "cam_leica_m3",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M3",
+    "modelNumber": "M3",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "format": "35mm",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    }
+  },
+  {
+    "id": "cam_leica_m6",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M6",
+    "modelNumber": "M6",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "format": "35mm",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    }
+  },
+  {
+    "id": "cam_olympus_om1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Olympus",
+    "name": "Olympus OM-1",
+    "modelNumber": "OM-1",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    }
+  },
+  {
+    "id": "cam_hasselblad_500cm",
+    "category": "CAMERA",
+    "subCategory": "Medium Format SLR",
+    "brand": "Hasselblad",
+    "name": "Hasselblad 500C/M",
+    "modelNumber": "500C/M",
+    "attributes": {
+      "type": "Medium Format SLR",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "shutterSpeeds": "1s - 1/500s, B"
+    }
+  },
+  {
+    "id": "cam_yashica_mat124g",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Yashica",
+    "name": "Yashica Mat-124G",
+    "modelNumber": "Mat-124G",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "format": "120",
+      "shutterSpeeds": "1s - 1/500s, B"
+    }
+  },
+  {
+    "id": "cam_rolleiflex_28f",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Rollei",
+    "name": "Rolleiflex 2.8F",
+    "modelNumber": "2.8F",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "format": "120",
+      "shutterSpeeds": "1s - 1/500s, B"
+    }
+  },
+  {
+    "id": "cam_mamiya_c330",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Mamiya",
+    "name": "Mamiya C330 Professional",
+    "modelNumber": "C330",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Mamiya C",
+      "format": "120",
+      "shutterSpeeds": "1s - 1/500s, B"
+    }
+  },
+  {
+    "id": "lens_canon_ef_100_macro",
+    "category": "LENS",
+    "subCategory": "Macro",
+    "brand": "Canon",
+    "name": "Canon EF 100mm f/2.8L Macro IS USM",
+    "modelNumber": "EF10028LIS",
+    "attributes": {
+      "type": "Macro",
+      "mount": "Canon EF",
+      "focalLength": "100mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/32",
+      "filterSize": "67mm",
+      "isImageStabilised": "true"
+    }
+  },
+  {
+    "id": "lens_canon_fd_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canon FD 50mm f/1.4",
+    "modelNumber": "FD5014",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Canon FD",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/16",
+      "filterSize": "52mm",
+      "isImageStabilised": "false"
+    }
+  },
+  {
+    "id": "lens_nikkor_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Nikon",
+    "name": "Nikkor 50mm f/1.4 AI-S",
+    "modelNumber": "AI-S 50mm",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Nikon F",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/16",
+      "filterSize": "52mm",
+      "isImageStabilised": "false"
+    }
+  },
+  {
+    "id": "lens_zeiss_planar_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Carl Zeiss",
+    "name": "Carl Zeiss Planar T* 50mm f/1.4",
+    "modelNumber": "Planar 50/1.4",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Contax C/Y",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/16",
+      "filterSize": "55mm",
+      "isImageStabilised": "false"
+    }
+  },
+  {
+    "id": "lens_rodenstock_50_28",
+    "category": "LENS",
+    "subCategory": "Enlarger Lens",
+    "brand": "Rodenstock",
+    "name": "Rodenstock Rodagon 50mm f/2.8",
+    "modelNumber": "Rodagon 50mm",
+    "attributes": {
+      "type": "Enlarger Lens",
+      "focalLength": "50mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/16",
+      "filterSize": "40.5mm"
+    }
+  },
+  {
+    "id": "lens_schneider_50_28",
+    "category": "LENS",
+    "subCategory": "Enlarger Lens",
+    "brand": "Schneider",
+    "name": "Schneider Componon-S 50mm f/2.8",
+    "modelNumber": "Componon-S 50mm",
+    "attributes": {
+      "type": "Enlarger Lens",
+      "focalLength": "50mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/16"
+    }
+  },
+  {
+    "id": "film_kodak_portra_400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Kodak Portra 400",
+    "attributes": {
+      "abbreviation": "P400",
+      "iso": "400",
+      "type": "Colour Negative (C-41)",
+      "format": "35mm",
+      "expectedExposures": "36"
+    }
+  },
+  {
+    "id": "film_ilford_hp5",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Ilford HP5 Plus 400",
+    "attributes": {
+      "abbreviation": "HP5",
+      "iso": "400",
+      "type": "Black & White Negative (B&W)",
+      "format": "35mm",
+      "expectedExposures": "36"
+    }
+  },
+  {
+    "id": "film_fujifilm_velvia_50",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Fujifilm",
+    "name": "Fujifilm Velvia 50",
+    "attributes": {
+      "abbreviation": "V50",
+      "iso": "50",
+      "type": "Colour Slide / Reversal (E-6)",
+      "format": "35mm",
+      "expectedExposures": "36"
+    }
+  },
+  {
+    "id": "equip_beseler_23c_ii",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Beseler",
+    "name": "Beseler 23C II Enlarger",
+    "modelNumber": "23C II",
+    "attributes": {
+      "category": "Enlarger",
+      "condition": "Excellent",
+      "notes": "Dichro / Condenser Enlarger Body"
+    }
+  },
+  {
+    "id": "equip_paterson_sys_4",
+    "category": "EQUIPMENT",
+    "subCategory": "Dev Tank",
+    "brand": "Paterson",
+    "name": "Paterson Super System 4 Dev Tank",
+    "modelNumber": "System 4",
+    "attributes": {
+      "category": "Dev Tank",
+      "condition": "Excellent",
+      "notes": "Standard Plastic Tank for 2x35mm or 1x120"
+    }
+  },
+  {
+    "id": "equip_epson_v850",
+    "category": "EQUIPMENT",
+    "subCategory": "Scanner / Digitiser",
+    "brand": "Epson",
+    "name": "Epson Perfection V850 Pro Scanner",
+    "modelNumber": "V850 Pro",
+    "attributes": {
+      "category": "Scanner / Digitiser",
+      "condition": "Excellent",
+      "notes": "Dual Lens Film/Flatbed Scanner"
+    }
+  }
+]
