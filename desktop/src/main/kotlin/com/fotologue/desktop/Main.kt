@@ -118,6 +118,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.useResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -2050,7 +2051,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     5 -> "Filter"
                     6 -> "Flash"
                     7 -> "Viewfinder"
-                    8 -> "Supplier"
+                    8 -> "Contact"
                     9 -> "Consumable"
                     10 -> "Lab Equipment"
                     11 -> "Storage Location"
@@ -4620,10 +4621,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // LEFT VERTICAL CATEGORY RAIL
+                    // LEFT VERTICAL CATEGORY RAIL (210.dp Width to prevent text overflow)
                     Column(
                         modifier = Modifier
-                            .width(180.dp)
+                            .width(210.dp)
                             .fillMaxHeight()
                             .clip(RoundedCornerShape(8.dp))
                             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
@@ -4651,7 +4652,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         gearCategories.forEach { (catTitle, catIdx, catIcon) ->
                             val isSel = selectedCategory == catIdx
                             NavigationDrawerItem(
-                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) },
+                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                                 selected = isSel,
                                 onClick = { selectedCategory = catIdx },
                                 icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
@@ -4664,7 +4665,35 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                             )
                         }
 
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                        Text(
+                            "CONTACTS DIRECTORY",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
+                        )
+
+                        val contactsCategories = listOf(
+                            Triple("Contacts (${suppliers.size})", 8, Icons.Default.Storefront)
+                        )
+                        contactsCategories.forEach { (catTitle, catIdx, catIcon) ->
+                            val isSel = selectedCategory == catIdx
+                            NavigationDrawerItem(
+                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                                selected = isSel,
+                                onClick = { selectedCategory = catIdx },
+                                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                                modifier = Modifier.height(36.dp),
+                                colors = NavigationDrawerItemDefaults.colors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            )
+                        }
+
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
                         Text(
                             "LAB & INVENTORY",
@@ -4674,17 +4703,43 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         )
                         
                         val labCategories = listOf(
-                            Triple("Suppliers (${suppliers.size})", 8, Icons.Default.Storefront),
                             Triple("Consumables (${consumables.size})", 9, Icons.Default.Science),
                             Triple("Equipment (${labEquipment.size})", 10, Icons.Default.Build),
-                            Triple("Storage Locations (${storageLocations.size})", 11, Icons.Default.Home),
-                            Triple("Pre-Arrival Orders (${custodyInteractions.count { it.interactionType == "PURCHASE_ORDER" && !it.isReturned }})", 12, Icons.Default.Info),
-                            Triple("Custody Ledger (${custodyInteractions.count { it.interactionType != "PURCHASE_ORDER" }})", 13, Icons.AutoMirrored.Filled.List)
+                            Triple("Storage Locations (${storageLocations.size})", 11, Icons.Default.Home)
                         )
                         labCategories.forEach { (catTitle, catIdx, catIcon) ->
                             val isSel = selectedCategory == catIdx
                             NavigationDrawerItem(
-                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) },
+                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                                selected = isSel,
+                                onClick = { selectedCategory = catIdx },
+                                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                                modifier = Modifier.height(36.dp),
+                                colors = NavigationDrawerItemDefaults.colors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            )
+                        }
+
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                        Text(
+                            "CUSTODY & TRANSACTIONS",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
+                        )
+                        
+                        val transactionCategories = listOf(
+                            Triple("Pre-Arrival Orders (${custodyInteractions.count { it.interactionType == "PURCHASE_ORDER" && !it.isReturned }})", 12, Icons.Default.Info),
+                            Triple("Custody Ledger (${custodyInteractions.count { it.interactionType != "PURCHASE_ORDER" }})", 13, Icons.AutoMirrored.Filled.List)
+                        )
+                        transactionCategories.forEach { (catTitle, catIdx, catIcon) ->
+                            val isSel = selectedCategory == catIdx
+                            NavigationDrawerItem(
+                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                                 selected = isSel,
                                 onClick = { selectedCategory = catIdx },
                                 icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
