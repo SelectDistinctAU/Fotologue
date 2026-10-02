@@ -1971,6 +1971,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
 
     var showAddEditDialog by remember { mutableStateOf(false) }
     var showReviewQueueDialog by remember { mutableStateOf(false) }
+    var selectedAssociatedCameraIds by remember { mutableStateOf(setOf<Int>()) }
     var showCameraPresetsDialog by remember { mutableStateOf(false) }
     var selectedCameraTypeFilter by remember { mutableStateOf("All") }
     var cameraSearchQuery by remember { mutableStateOf("") }
@@ -3845,6 +3846,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         1 -> editingLens?.let { l -> 
                             if (l.name.isNotBlank()) {
                                 DatabaseRepository.saveFoundationLens(l)
+                                val savedId = if (l.id > 0) l.id else (DatabaseRepository.loadFoundationLenses().find { it.name == l.name }?.id ?: 0)
+                                if (savedId > 0) {
+                                    DatabaseRepository.saveCameraLensAssociations(savedId, selectedAssociatedCameraIds)
+                                }
                                 DatabaseRepository.saveLovValue("LENS_TYPE", l.type)
                                 l.mount?.let { mnt -> DatabaseRepository.saveLovValue("LENS_MOUNT", mnt) }
                                 l.make?.let { mk -> DatabaseRepository.saveLovValue("MANUFACTURER", mk) }
@@ -4825,6 +4830,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                                     IconButton(onClick = {
                                                         editingLens = lens
+                                                        selectedAssociatedCameraIds = DatabaseRepository.loadCameraIdsForLens(lens.id)
                                                         showAddEditDialog = true
                                                     }) {
                                                         Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))

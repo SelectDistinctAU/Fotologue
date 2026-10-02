@@ -4,6 +4,7 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -312,6 +313,12 @@ class FoundationLensEntity(id: EntityID<Int>) : IntEntity(id) {
     var minFocusMeters by FoundationLensesTable.minFocusMeters
     var maxMagnification by FoundationLensesTable.maxMagnification
     var serialNumber by FoundationLensesTable.serialNumber
+}
+
+object FoundationCameraLensesTable : Table("foundation_camera_lenses") {
+    val cameraId = integer("camera_id")
+    val lensId = integer("lens_id")
+    override val primaryKey = PrimaryKey(cameraId, lensId)
 }
 
 object FoundationAccessoriesTable : IntIdTable("foundation_accessories") {
@@ -645,7 +652,8 @@ object DatabaseManager {
                 CustodyInteractionsTable,
                 ContributorsTable,
                 FoundationReviewQueueTable,
-                ReferenceLovsTable
+                ReferenceLovsTable,
+                FoundationCameraLensesTable
             )
         }
     }

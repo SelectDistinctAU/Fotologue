@@ -108,7 +108,17 @@ fun LabHomeScreen(
         }
     }
 
-    var currentView by rememberSaveable { mutableStateOf(LabView.MAIN_MENU) }
+    var currentView by rememberSaveable {
+        mutableStateOf(
+            when (initialTab) {
+                1 -> LabView.SUPPLIERS
+                2 -> LabView.INVENTORY
+                3 -> LabView.EQUIPMENT
+                4 -> LabView.STORAGE_LOCATIONS
+                else -> LabView.MAIN_MENU
+            }
+        )
+    }
     var activeInventoryCategory by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedSupplierFilter by remember { mutableStateOf("Active Only") }
     var showSafelightExitDialog by remember { mutableStateOf(false) }
@@ -255,37 +265,6 @@ fun LabHomeScreen(
                                 color = safelightPrimary,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(start = 12.dp, top = 8.dp, bottom = 4.dp)
-                            )
-                        }
-
-                        // 1. CONTACTS DIRECTORY (Vendors, Labs, Techs, Borrowers, Friends)
-                        item(key = "nav_suppliers") {
-                            NavigationDrawerItem(
-                                colors = drawerItemColors,
-                                label = {
-                                    Column {
-                                        Text("Contacts Directory", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
-                                        Text("Vendors, Labs, Repair Techs, Borrowers & Friends", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
-                                    }
-                                },
-                                selected = false,
-                                onClick = { currentView = LabView.SUPPLIERS },
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.warehouse_24px),
-                                        contentDescription = null,
-                                        tint = safelightPrimary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                },
-                                badge = {
-                                    Badge(
-                                        containerColor = badgeBg,
-                                        contentColor = badgeFg
-                                    ) {
-                                        Text("${supplierList.size} contacts", color = badgeFg)
-                                    }
-                                }
                             )
                         }
 

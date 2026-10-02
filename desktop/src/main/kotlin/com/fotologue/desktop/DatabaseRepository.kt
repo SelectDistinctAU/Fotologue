@@ -1,6 +1,11 @@
 package com.fotologue.desktop
 
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import kotlinx.serialization.json.Json
@@ -486,7 +491,30 @@ object DatabaseRepository {
 
     fun deleteFoundationLens(id: Int) {
         transaction {
+            FoundationCameraLensesTable.deleteWhere { FoundationCameraLensesTable.lensId eq id }
             FoundationLensEntity.findById(id)?.delete()
+        }
+    }
+
+    fun loadCameraIdsForLens(lensId: Int): Set<Int> {
+        return transaction {
+            FoundationCameraLensesTable
+                .selectAll()
+                .where { FoundationCameraLensesTable.lensId eq lensId }
+                .map { it[FoundationCameraLensesTable.cameraId] }
+                .toSet()
+        }
+    }
+
+    fun saveCameraLensAssociations(lensId: Int, cameraIds: Set<Int>) {
+        transaction {
+            FoundationCameraLensesTable.deleteWhere { FoundationCameraLensesTable.lensId eq lensId }
+            cameraIds.forEach { camId ->
+                FoundationCameraLensesTable.insert {
+                    it[FoundationCameraLensesTable.cameraId] = camId
+                    it[FoundationCameraLensesTable.lensId] = lensId
+                }
+            }
         }
     }
 

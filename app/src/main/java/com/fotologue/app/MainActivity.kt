@@ -90,6 +90,7 @@ class MainActivity : ComponentActivity() {
                                         isSafelightActive = isSafelightActive,
                                         onToggleSafelight = { mainViewModel.toggleSafelight() },
                                         onNavigateToField = { backStack.add(Route.Timeline) },
+                                        onNavigateToContacts = { backStack.add(Route.Lab(initialTab = 1)) },
                                         onNavigateToLab = { backStack.add(Route.Lab()) },
                                         onNavigateToStation = { backStack.add(Route.ContactSheet()) },
                                         onNavigateToArchive = { backStack.add(Route.ArchiveVault) },
