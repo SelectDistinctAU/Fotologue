@@ -1,24 +1,34 @@
 package com.fotologue.feature.lab
 
+import android.provider.ContactsContract
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,13 +41,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fotologue.core.data.lab.LabSupplier
 import com.fotologue.core.designsystem.R
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddEditSupplierScreen(
     supplierId: Long? = null,
@@ -46,6 +57,7 @@ fun AddEditSupplierScreen(
     onSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val supplierList by viewModel.supplierList.collectAsState()
     val initialSupplier = supplierList.find { it.id == supplierId }
 
@@ -58,13 +70,42 @@ fun AddEditSupplierScreen(
     var isUsed by remember { mutableStateOf(initialSupplier?.isUsed ?: true) }
     var notes by remember { mutableStateOf(initialSupplier?.notes ?: "") }
 
+    var selectedRoles by remember {
+        mutableStateOf(
+            if (initialSupplier == null) setOf("#Supplier")
+            else setOf("#Supplier")
+        )
+    }
+    val roleTags = listOf("#Supplier", "#Lab", "#RepairTech", "#Borrower", "#Friend")
+
+    // Privacy-First Native Android Contact Picker (Zero Address Book Harvesting)
+    val contactPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickContact()
+    ) { uri ->
+        if (uri != null) {
+            val cursor = context.contentResolver.query(uri, null, null, null, null)
+            cursor?.use {
+                if (it.moveToFirst()) {
+                    val nameIdx = it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
+                    if (nameIdx >= 0) {
+                        val contactName = it.getString(nameIdx) ?: ""
+                        if (contactName.isNotBlank()) {
+                            name = contactName
+                            selectedRoles = selectedRoles + "#Borrower" + "#Friend"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = if (initialSupplier == null) "Add Supplier" else "Edit Supplier",
+                        text = if (initialSupplier == null) "Add Contact" else "Edit Contact",
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -87,14 +128,44 @@ fun AddEditSupplierScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Privacy-First Import Button
+            OutlinedButton(
+                onClick = { contactPickerLauncher.launch(null) },
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+            ) {
+                Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Import from Phone Contacts", fontWeight = FontWeight.Bold)
+            }
+
+            // Field 1: Contact Name
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Supplier Name") },
-                placeholder = { Text("e.g. Rewind Photo Lab") },
+                label = { Text("Contact Name") },
+                placeholder = { Text("e.g. Rewind Photo Lab, Dave Smith") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            // Field 2: Role Tags Chips
+            Text("Contact Roles", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.primary)
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                roleTags.forEach { role ->
+                    val isSel = selectedRoles.contains(role)
+                    FilterChip(
+                        selected = isSel,
+                        onClick = {
+                            selectedRoles = if (isSel) selectedRoles - role else selectedRoles + role
+                        },
+                        label = { Text(role, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) }
+                    )
+                }
+            }
 
             // Active Supplier Checkbox
             Row(

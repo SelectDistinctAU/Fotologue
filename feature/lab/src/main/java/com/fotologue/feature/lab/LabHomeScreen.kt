@@ -258,14 +258,14 @@ fun LabHomeScreen(
                             )
                         }
 
-                        // 1. SUPPLIERS (FIRST AS NEEDED FOR STOCK)
+                        // 1. CONTACTS DIRECTORY (Vendors, Labs, Techs, Borrowers, Friends)
                         item(key = "nav_suppliers") {
                             NavigationDrawerItem(
                                 colors = drawerItemColors,
                                 label = {
                                     Column {
-                                        Text("Suppliers", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
-                                        Text("Vendor contacts & active supply sources", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
+                                        Text("Contacts Directory", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                                        Text("Vendors, Labs, Repair Techs, Borrowers & Friends", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
                                     }
                                 },
                                 selected = false,

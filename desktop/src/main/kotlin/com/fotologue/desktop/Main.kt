@@ -3199,16 +3199,37 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        8 -> { // Supplier Form with 1-to-1 Mobile Parity
+                        8 -> { // Contact Directory Form with Role Tags
                             val item = editingSupplier ?: ReferenceSupplierItem(name = "")
                             var isSupplierActive by remember { mutableStateOf(true) }
+                            var selectedRoles by remember { mutableStateOf(setOf("#Supplier")) }
+                            val roleTags = listOf("#Supplier", "#Lab", "#RepairTech", "#Borrower", "#Friend")
 
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingSupplier = item.copy(name = it) },
-                                label = { Text("Supplier Name") },
+                                label = { Text("Contact Name (e.g. Rewind Photo Lab, Dave Smith)") },
                                 modifier = Modifier.fillMaxWidth()
                             )
+
+                            // Contact Role Tags
+                            Text("Contact Roles", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.primary)
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                roleTags.forEach { role ->
+                                    val isSel = selectedRoles.contains(role)
+                                    FilterChip(
+                                        selected = isSel,
+                                        onClick = {
+                                            selectedRoles = if (isSel) selectedRoles - role else selectedRoles + role
+                                        },
+                                        label = { Text(role, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) }
+                                    )
+                                }
+                            }
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Checkbox(
                                     checked = isSupplierActive,
