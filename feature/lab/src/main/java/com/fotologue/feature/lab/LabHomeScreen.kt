@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
@@ -66,7 +67,7 @@ import com.fotologue.core.data.lab.StockLot
 import com.fotologue.core.designsystem.R
 
 enum class LabView {
-    MAIN_MENU, SUPPLIERS, INVENTORY, INVENTORY_CATEGORY_ITEMS, EQUIPMENT
+    MAIN_MENU, SUPPLIERS, INVENTORY, INVENTORY_CATEGORY_ITEMS, EQUIPMENT, STORAGE_LOCATIONS, CUSTODY_LOANS, PRE_ARRIVAL_ORDERS
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -142,6 +143,9 @@ fun LabHomeScreen(
         LabView.INVENTORY -> "Lab • Consumables"
         LabView.INVENTORY_CATEGORY_ITEMS -> "Lab • ${activeInventoryCategory ?: "Consumables"}"
         LabView.EQUIPMENT -> "Lab • Lab Equipment"
+        LabView.STORAGE_LOCATIONS -> "Lab • Storage Locations"
+        LabView.CUSTODY_LOANS -> "Lab • Custody & Loans"
+        LabView.PRE_ARRIVAL_ORDERS -> "Lab • Pre-Arrival Orders"
     }
 
     // PURE DARKROOM SAFELIGHT RED COLORS (ZERO WHITE LIGHT!)
@@ -342,6 +346,37 @@ fun LabHomeScreen(
                                         contentColor = badgeFg
                                     ) {
                                         Text("${equipmentList.size} items", color = badgeFg)
+                                    }
+                                }
+                            )
+                        }
+
+                        // 4. STORAGE LOCATIONS
+                        item(key = "nav_locations") {
+                            NavigationDrawerItem(
+                                colors = drawerItemColors,
+                                label = {
+                                    Column {
+                                        Text("Storage Locations", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                                        Text("Dry Cabinets, Studio Shelves, Camera Bags, Paper Safes", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
+                                    }
+                                },
+                                selected = false,
+                                onClick = { currentView = LabView.STORAGE_LOCATIONS },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.warehouse_24px),
+                                        contentDescription = null,
+                                        tint = safelightPrimary,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                },
+                                badge = {
+                                    Badge(
+                                        containerColor = badgeBg,
+                                        contentColor = badgeFg
+                                    ) {
+                                        Text("${locationList.size} locations", color = badgeFg)
                                     }
                                 }
                             )
@@ -645,6 +680,25 @@ fun LabHomeScreen(
                                 }
                             }
                         }
+                    }
+                }
+
+                LabView.STORAGE_LOCATIONS -> {
+                    StorageLocationsScreen(
+                        viewModel = viewModel,
+                        onBack = { currentView = LabView.MAIN_MENU }
+                    )
+                }
+
+                LabView.CUSTODY_LOANS -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Custody & Loans Ledger", style = MaterialTheme.typography.titleMedium)
+                    }
+                }
+
+                LabView.PRE_ARRIVAL_ORDERS -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Pre-Arrival Orders Ledger", style = MaterialTheme.typography.titleMedium)
                     }
                 }
             }

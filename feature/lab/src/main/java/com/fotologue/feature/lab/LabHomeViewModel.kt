@@ -321,6 +321,14 @@ class LabHomeViewModel @Inject constructor(
         }
     }
 
+    fun addStorageLocation(location: LabStorageLocation) {
+        if (location.name.isBlank()) return
+        viewModelScope.launch {
+            storageLocationDao.insertStorageLocation(location)
+            settingsRepository.setLocalFoundationChangesPending(true)
+        }
+    }
+
     fun updateStorageLocation(location: LabStorageLocation) {
         viewModelScope.launch {
             storageLocationDao.updateStorageLocation(location)
