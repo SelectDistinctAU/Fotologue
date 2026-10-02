@@ -179,11 +179,11 @@ fun AddEditSupplierScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
-                        text = "In Use (Active Supplier)",
+                        text = "In Use (Active Contact)",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
                     Text(
-                        text = "Active suppliers appear in your stock purchase dropdowns.",
+                        text = "Active contacts appear in stock purchase, loan, and repair dropdowns.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -239,7 +239,7 @@ fun AddEditSupplierScreen(
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Supplier Notes") },
+                label = { Text("Contact Notes") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -273,7 +273,7 @@ fun AddEditSupplierScreen(
             ) {
                 Icon(Icons.Default.Check, contentDescription = null)
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Save Supplier", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                Text("Save Contact", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
             }
         }
     }

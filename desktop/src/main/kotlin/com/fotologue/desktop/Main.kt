@@ -3237,7 +3237,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                     checked = isSupplierActive,
                                     onCheckedChange = { isSupplierActive = it }
                                 )
-                                Text("In Use (Active Supplier - Appears in purchase dropdowns)", style = MaterialTheme.typography.bodySmall)
+                                Text("In Use (Active Contact - Appears in purchase, loan & repair dropdowns)", style = MaterialTheme.typography.bodySmall)
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
@@ -3282,7 +3282,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                             OutlinedTextField(
                                 value = item.notes ?: "",
                                 onValueChange = { editingSupplier = item.copy(notes = it) },
-                                label = { Text("Supplier Notes") },
+                                label = { Text("Contact Notes") },
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
