@@ -285,6 +285,7 @@ object FoundationLensesTable : IntIdTable("foundation_lenses") {
     val model = varchar("model", 255).nullable()
     val type = varchar("type", 50).default("Prime")
     val mount = varchar("mount", 50).nullable()
+    val adapterUsed = varchar("adapter_used", 255).nullable()
     val focalLength = varchar("focal_length", 100).nullable()
     val maxAperture = varchar("max_aperture", 50).nullable()
     val minAperture = varchar("min_aperture", 50).nullable()
@@ -302,6 +303,7 @@ class FoundationLensEntity(id: EntityID<Int>) : IntEntity(id) {
     var model by FoundationLensesTable.model
     var type by FoundationLensesTable.type
     var mount by FoundationLensesTable.mount
+    var adapterUsed by FoundationLensesTable.adapterUsed
     var focalLength by FoundationLensesTable.focalLength
     var maxAperture by FoundationLensesTable.maxAperture
     var minAperture by FoundationLensesTable.minAperture
@@ -427,6 +429,7 @@ data class ReferenceLensItem(
     val model: String? = null,
     val type: String = "Prime",
     val mount: String? = null,
+    val adapterUsed: String? = null,
     val focalLength: String? = "50mm",
     val maxAperture: String? = "f/1.4",
     val minAperture: String? = "f/16",

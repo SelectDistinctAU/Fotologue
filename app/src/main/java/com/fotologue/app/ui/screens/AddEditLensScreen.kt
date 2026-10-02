@@ -2,6 +2,7 @@ package com.fotologue.app.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -31,6 +32,128 @@ fun AddEditLensScreen(
     val scrollState = rememberScrollState()
     val commonMakes = listOf("Canon", "Nikon", "Sony", "Fujifilm", "Olympus", "Panasonic", "Leica", "Pentax", "Sigma", "Tamron", "Tokina", "Zeiss", "Voigtländer", "Other...")
     var makeExpanded by remember { mutableStateOf(false) }
+    var showLensPresetsDialog by remember { mutableStateOf(false) }
+    var selectedLensMountFilter by remember { mutableStateOf("All") }
+    var lensSearchQueryText by remember { mutableStateOf("") }
+
+    if (showLensPresetsDialog) {
+        val mounts = remember { listOf("All", "Pentax K", "Canon FD", "Nikon F", "Leica M", "Leica L39", "Hasselblad V", "Contax C/Y", "Olympus OM", "Minolta SR/MD", "M42 Thread", "Fixed") }
+
+        AlertDialog(
+            onDismissRequest = { showLensPresetsDialog = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(painterResource(R.drawable.lensd), contentDescription = null, modifier = Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Select Lens from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth().height(420.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Select camera mount filter or type to search lens presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    
+                    var mountDropdownExpanded by remember { mutableStateOf(false) }
+                    ExposedDropdownMenuBox(
+                        expanded = mountDropdownExpanded,
+                        onExpandedChange = { mountDropdownExpanded = !mountDropdownExpanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = selectedLensMountFilter,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Lens Mount") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = mountDropdownExpanded) },
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = mountDropdownExpanded,
+                            onDismissRequest = { mountDropdownExpanded = false }
+                        ) {
+                            mounts.forEach { mnt ->
+                                DropdownMenuItem(
+                                    text = { Text(mnt, fontWeight = if (mnt == selectedLensMountFilter) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedLensMountFilter = mnt
+                                        mountDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = lensSearchQueryText,
+                        onValueChange = { 
+                            lensSearchQueryText = it
+                            viewModel.onSearch(it)
+                        },
+                        label = { Text("Search Lenses") },
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
+                    )
+
+                    HorizontalDivider()
+
+                    val allPresets = uiState.searchResults
+                    val filteredPresets = if (selectedLensMountFilter == "All") {
+                        allPresets
+                    } else {
+                        allPresets.filter { it.mount.equals(selectedLensMountFilter, ignoreCase = true) }
+                    }
+
+                    if (filteredPresets.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("No lens presets found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            items(filteredPresets.size) { idx ->
+                                val spec = filteredPresets[idx]
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            viewModel.onSelectSpec(spec)
+                                            showLensPresetsDialog = false
+                                        },
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text("${spec.make} ${spec.model}", fontWeight = FontWeight.Bold)
+                                            Text("${spec.type} • Mount: ${spec.mount}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                        Button(
+                                            onClick = {
+                                                viewModel.onSelectSpec(spec)
+                                                showLensPresetsDialog = false
+                                            },
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                                        ) {
+                                            Text("Select", style = MaterialTheme.typography.labelSmall)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showLensPresetsDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -65,6 +188,18 @@ fun AddEditLensScreen(
                 .padding(bottom = innerPadding.calculateBottomPadding() + 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Button(
+                onClick = {
+                    viewModel.onSearch("")
+                    showLensPresetsDialog = true
+                },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
+                colors = ButtonDefaults.filledTonalButtonColors()
+            ) {
+                Icon(painterResource(R.drawable.lensd), contentDescription = null, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+            }
             Text(
                 stringResource(R.string.associated_cameras),
                 style = MaterialTheme.typography.titleMedium,

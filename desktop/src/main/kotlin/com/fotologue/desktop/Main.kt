@@ -1973,6 +1973,9 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var showCameraPresetsDialog by remember { mutableStateOf(false) }
     var selectedCameraTypeFilter by remember { mutableStateOf("All") }
     var cameraSearchQuery by remember { mutableStateOf("") }
+    var showLensPresetsDialog by remember { mutableStateOf(false) }
+    var selectedLensMountFilter by remember { mutableStateOf("All") }
+    var lensSearchQueryText by remember { mutableStateOf("") }
     var showFilmPresetsDialog by remember { mutableStateOf(false) }
     var selectedFilmManufacturer by remember { mutableStateOf("Kodak") }
     var showEquipmentPresetsDialog by remember { mutableStateOf(false) }
@@ -2305,37 +2308,14 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
 
                             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
-                            // Section 2: Preset Catalogue Search
-                            Text("Preset Catalogue", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
-                            Box(modifier = Modifier.fillMaxWidth()) {
-                                OutlinedTextField(
-                                    value = lensSearchQuery,
-                                    onValueChange = { 
-                                        lensSearchQuery = it
-                                        isLensSearchDropdownExpanded = true
-                                    },
-                                    label = { Text("Model Number (e.g. EF10028LIS)") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    trailingIcon = {
-                                        IconButton(onClick = { isLensSearchDropdownExpanded = !isLensSearchDropdownExpanded }) {
-                                            Icon(Icons.Default.Search, contentDescription = "Preset Catalogue Search")
-                                        }
-                                    }
-                                )
-                                DropdownMenu(
-                                    expanded = isLensSearchDropdownExpanded && DatabaseRepository.searchPresetLenses(lensSearchQuery).isNotEmpty(),
-                                    onDismissRequest = { isLensSearchDropdownExpanded = false }
-                                ) {
-                                    DatabaseRepository.searchPresetLenses(lensSearchQuery).take(5).forEach { preset ->
-                                        DropdownMenuItem(
-                                            text = { Text("${preset.name} (${preset.focalLength} ${preset.maxAperture} • ${preset.mount})") },
-                                            onClick = {
-                                                editingLens = preset
-                                                isLensSearchDropdownExpanded = false
-                                            }
-                                        )
-                                    }
-                                }
+                            Button(
+                                onClick = { showLensPresetsDialog = true },
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
+                                colors = ButtonDefaults.filledTonalButtonColors()
+                            ) {
+                                Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
                             }
 
                             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
@@ -2434,6 +2414,14 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                     }
                                 }
                             }
+
+                            OutlinedTextField(
+                                value = item.adapterUsed ?: "",
+                                onValueChange = { editingLens = item.copy(adapterUsed = it) },
+                                label = { Text("Lens Mount Adapter Used (Optional)") },
+                                placeholder = { Text("e.g. M42 to Canon FD Adapter, Leica L39 to M") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
 
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
@@ -4118,6 +4106,125 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             },
             confirmButton = {
                 Button(onClick = { showCameraPresetsDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    if (showLensPresetsDialog) {
+        val mounts = remember { listOf("All") + DatabaseRepository.loadLensMountLovs() }
+
+        AlertDialog(
+            modifier = Modifier.width(620.dp),
+            onDismissRequest = { showLensPresetsDialog = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Select Lens from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth().height(440.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Select camera mount filter or type to search lens presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    
+                    var mountDropdownExpanded by remember { mutableStateOf(false) }
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = selectedLensMountFilter,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Lens Mount") },
+                            trailingIcon = { IconButton(onClick = { mountDropdownExpanded = !mountDropdownExpanded }) { Icon(Icons.Default.ArrowDropDown, contentDescription = null) } },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        DropdownMenu(
+                            expanded = mountDropdownExpanded,
+                            onDismissRequest = { mountDropdownExpanded = false }
+                        ) {
+                            mounts.forEach { mnt ->
+                                DropdownMenuItem(
+                                    text = { Text(mnt, fontWeight = if (mnt == selectedLensMountFilter) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedLensMountFilter = mnt
+                                        mountDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = lensSearchQueryText,
+                        onValueChange = { lensSearchQueryText = it },
+                        label = { Text("Search Lenses (Name, Make, Mount)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+                    )
+
+                    HorizontalDivider()
+
+                    val allPresets = DatabaseRepository.searchPresetLenses(lensSearchQueryText)
+                    val filteredPresets = if (selectedLensMountFilter == "All") {
+                        allPresets
+                    } else {
+                        allPresets.filter { it.mount.equals(selectedLensMountFilter, ignoreCase = true) }
+                    }
+
+                    if (filteredPresets.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("No lens presets found for $selectedLensMountFilter.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            items(filteredPresets.size) { idx ->
+                                val preset = filteredPresets[idx]
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            val adapterAuto = if (selectedLensMountFilter != "All" && preset.mount != selectedLensMountFilter && !preset.mount.isNullOrBlank()) {
+                                                "${preset.mount} to $selectedLensMountFilter Adapter"
+                                            } else preset.adapterUsed
+                                            editingLens = preset.copy(adapterUsed = adapterAuto)
+                                            showLensPresetsDialog = false
+                                        },
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(preset.name, fontWeight = FontWeight.Bold)
+                                            Text("${preset.type} • Mount: ${preset.mount ?: "Standard"} • FL: ${preset.focalLength ?: "50mm"} ${preset.maxAperture ?: "f/1.4"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                        Button(
+                                            onClick = {
+                                                val adapterAuto = if (selectedLensMountFilter != "All" && preset.mount != selectedLensMountFilter && !preset.mount.isNullOrBlank()) {
+                                                    "${preset.mount} to $selectedLensMountFilter Adapter"
+                                                } else preset.adapterUsed
+                                                editingLens = preset.copy(adapterUsed = adapterAuto)
+                                                showLensPresetsDialog = false
+                                            },
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                                        ) {
+                                            Text("Select", style = MaterialTheme.typography.labelSmall)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showLensPresetsDialog = false }) {
                     Text("Close")
                 }
             }

@@ -430,6 +430,7 @@ object DatabaseRepository {
                     model = it.model,
                     type = it.type,
                     mount = it.mount,
+                    adapterUsed = it.adapterUsed,
                     focalLength = it.focalLength,
                     maxAperture = it.maxAperture,
                     minAperture = it.minAperture,
@@ -452,6 +453,7 @@ object DatabaseRepository {
                     model = item.model
                     type = item.type
                     mount = item.mount
+                    adapterUsed = item.adapterUsed
                     focalLength = item.focalLength
                     maxAperture = item.maxAperture
                     minAperture = item.minAperture
@@ -468,6 +470,7 @@ object DatabaseRepository {
                     model = item.model
                     type = item.type
                     mount = item.mount
+                    adapterUsed = item.adapterUsed
                     focalLength = item.focalLength
                     maxAperture = item.maxAperture
                     minAperture = item.minAperture
