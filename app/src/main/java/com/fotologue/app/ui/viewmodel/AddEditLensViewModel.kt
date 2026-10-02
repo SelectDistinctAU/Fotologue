@@ -75,7 +75,15 @@ class AddEditLensViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             repository.allCameras.collect { camerasList ->
-                _uiState.update { it.copy(cameras = camerasList) }
+                val lensesList = repository.allLenses.firstOrNull() ?: emptyList()
+                val filteredCameras = camerasList.filter { c ->
+                    val isInterchangeable = c.type.isInterchangeable && c.mount != "Fixed"
+                    if (isInterchangeable) true
+                    else {
+                        lensesList.none { l -> l.make.contains(c.name, ignoreCase = true) || l.model.contains(c.name, ignoreCase = true) }
+                    }
+                }
+                _uiState.update { it.copy(cameras = filteredCameras) }
             }
         }
         viewModelScope.launch {

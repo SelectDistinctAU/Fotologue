@@ -207,6 +207,12 @@ fun AddEditLensScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
+            Text(
+                "Note: Only cameras with interchangeable lens mounts (or fixed-lens bodies missing their taking lens record) are listed.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
             if (uiState.cameras.isEmpty()) {
                 Text(
                     stringResource(R.string.error_no_cameras),

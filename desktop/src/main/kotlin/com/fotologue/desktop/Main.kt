@@ -2283,16 +2283,23 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                             val commonMakes = listOf("Canon", "Nikon", "Leica", "Carl Zeiss", "Voigtländer", "Sigma", "Tamron", "Pentax", "Olympus", "Minolta", "Fujifilm", "Mamiya", "Hasselblad")
                             val lensTypes = listOf("Prime", "Zoom", "Macro", "Anamorphic", "Tilt-Shift")
 
-                            // Section 1: Associated Cameras
+                            // Section 1: Associated Cameras (Interchangeable Lens Bodies Only, Unless Fixed Camera is Missing Taking Lens)
                             Text("Associated Cameras", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
-                            if (cameras.isEmpty()) {
-                                Text("No cameras found. Please add a camera first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                            val compatibleLensCameras = cameras.filter { cam ->
+                                val isInterchangeable = cam.mount != "Fixed" && cam.type != "TLR" && cam.type != "Point & Shoot" && cam.type != "Compact"
+                                if (isInterchangeable) true
+                                else {
+                                    lenses.none { l -> l.name.contains(cam.name, ignoreCase = true) || (l.make?.contains(cam.name, ignoreCase = true) == true) }
+                                }
+                            }
+                            if (compatibleLensCameras.isEmpty()) {
+                                Text("No compatible cameras found. Please add an SLR, Rangefinder, or Medium Format camera first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                             } else {
                                 Row(
                                     modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
-                                    cameras.forEach { camera ->
+                                    compatibleLensCameras.forEach { camera ->
                                         val isSelected = selectedAssociatedCameraIds.contains(camera.id)
                                         FilterChip(
                                             selected = isSelected,
@@ -2305,6 +2312,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                     }
                                 }
                             }
+                            Text(
+                                "Note: Only cameras with interchangeable lens mounts (or fixed-lens bodies missing their taking lens record) are listed.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
 
                             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
@@ -2975,11 +2987,14 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                         }
-                        6 -> { // Flash Form with 1-to-1 Mobile Parity
+                        6 -> { // Flash Form with 1-to-1 Mobile Parity & Ring Flash Support
                             val item = editingFlash ?: ReferenceFlashItem(name = "")
                             var selectedAssociatedCameraIds by remember { mutableStateOf(setOf<Int>()) }
                             var syncTypeDropdownExpanded by remember { mutableStateOf(false) }
-                            val syncTypes = listOf("Hotshoe", "Coldshoe", "PC Sync Cord", "Bulb Sync")
+                            var flashTypeDropdownExpanded by remember { mutableStateOf(false) }
+
+                            val flashTypes = listOf("Speedlight / Shoe Mount", "Macro Ring Flash / Ring Lite", "Macro Twin Flash / Commander", "Bracket / Handle Mount")
+                            val syncTypes = listOf("Hotshoe", "Coldshoe", "PC Sync Cord", "Bulb Sync", "Wireless Optical / TTL")
 
                             // Section 1: Associated Cameras (All Cameras including TLRs)
                             Text("Associated Cameras", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
@@ -3017,18 +3032,12 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 OutlinedTextField(
                                     value = item.name,
                                     onValueChange = { editingFlash = item.copy(name = it) },
-                                    label = { Text("Model Name (e.g. SB-700, 283)") },
+                                    label = { Text("Model Name (e.g. SB-700, MR-14EX)") },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
 
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.guideNumber,
-                                    onValueChange = { editingFlash = item.copy(guideNumber = it) },
-                                    label = { Text("Guide Number (ISO 100, meters)") },
-                                    modifier = Modifier.weight(1f)
-                                )
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.syncType,
@@ -3051,6 +3060,33 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                                 onClick = {
                                                     editingFlash = item.copy(syncType = sOpt)
                                                     syncTypeDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.serialNumber ?: "Speedlight / Shoe Mount",
+                                        onValueChange = { editingFlash = item.copy(serialNumber = it) },
+                                        label = { Text("Flash Type") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { flashTypeDropdownExpanded = !flashTypeDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = flashTypeDropdownExpanded,
+                                        onDismissRequest = { flashTypeDropdownExpanded = false }
+                                    ) {
+                                        flashTypes.forEach { fOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(fOpt) },
+                                                onClick = {
+                                                    editingFlash = item.copy(serialNumber = fOpt)
+                                                    flashTypeDropdownExpanded = false
                                                 }
                                             )
                                         }

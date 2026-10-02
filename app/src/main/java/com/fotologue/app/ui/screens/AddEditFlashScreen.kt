@@ -134,6 +134,37 @@ fun AddEditFlashScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
+            var flashTypeExpanded by remember { mutableStateOf(false) }
+
+            ExposedDropdownMenuBox(
+                expanded = flashTypeExpanded,
+                onExpandedChange = { flashTypeExpanded = !flashTypeExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = uiState.flashType,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Flash Type") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = flashTypeExpanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = flashTypeExpanded,
+                    onDismissRequest = { flashTypeExpanded = false }
+                ) {
+                    uiState.flashTypes.forEach { fTypeOpt ->
+                        DropdownMenuItem(
+                            text = { Text(fTypeOpt) },
+                            onClick = {
+                                viewModel.onFlashTypeChange(fTypeOpt)
+                                flashTypeExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
             var syncTypeExpanded by remember { mutableStateOf(false) }
 
             ExposedDropdownMenuBox(

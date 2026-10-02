@@ -20,8 +20,10 @@ data class AddEditFlashUiState(
     val make: String = "",
     val model: String = "",
     val guideNumber: String = "",
+    val flashType: String = "Speedlight / Shoe Mount",
     val syncType: String = "Hotshoe",
     val serialNumber: String = "",
+    val flashTypes: List<String> = listOf("Speedlight / Shoe Mount", "Macro Ring Flash / Ring Lite", "Macro Twin Flash / Commander", "Bracket / Handle Mount"),
     val syncTypes: List<String> = listOf("Hotshoe", "Coldshoe", "PC Sync Cord", "Bulb Sync"),
     val cameras: List<Camera> = emptyList(),
     val selectedCameraIds: Set<Long> = emptySet()
@@ -92,6 +94,11 @@ class AddEditFlashViewModel @Inject constructor(
     fun onGuideNumberChange(value: String) {
         savedStateHandle["guideNumber"] = value
         _uiState.update { it.copy(guideNumber = value) }
+    }
+
+    fun onFlashTypeChange(value: String) {
+        savedStateHandle["flashType"] = value
+        _uiState.update { it.copy(flashType = value) }
     }
 
     fun onSyncTypeChange(value: String) {
