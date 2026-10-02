@@ -258,76 +258,11 @@ fun AddEditLensScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                stringResource(R.string.online_lookup),
+                stringResource(R.string.manual_entry),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = uiState.modelNumber,
-                    onValueChange = viewModel::onModelNumberChange,
-                    label = { Text(stringResource(R.string.label_lens_model_hint)) },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                IconButton(
-                    onClick = { viewModel.onSearch(uiState.modelNumber) },
-                    colors = IconButtonDefaults.filledIconButtonColors()
-                ) {
-                    Icon(painterResource(R.drawable.ic_search), contentDescription = stringResource(R.string.action_lookup))
-                }
-            }
-
-            if (uiState.isSearching) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
-            }
-
-            if (uiState.showSearchResults) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                ) {
-                    Column(modifier = Modifier.padding(8.dp)) {
-                        Text(
-                            stringResource(R.string.online_lookup),
-                            style = MaterialTheme.typography.labelLarge,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        uiState.searchResults.take(5).forEach { spec ->
-                            ListItem(
-                                headlineContent = { Text("${spec.make} ${spec.model}") },
-                                supportingContent = { Text("${spec.modelNumber} • ${spec.type} • ${spec.mount}") },
-                                modifier = Modifier.clickable { viewModel.onSelectSpec(spec) },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                            )
-                        }
-                    }
-                }
-            } else if (uiState.modelNumber.length >= 2 && !uiState.isSearching) {
-                val uriHandler = LocalUriHandler.current
-                TextButton(
-                    onClick = { uriHandler.openUri("https://www.google.com/search?q=${uiState.modelNumber}+lens+specs") },
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Icon(painterResource(R.drawable.ic_search), contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.search_web_for_specs))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
 
