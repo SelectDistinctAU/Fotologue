@@ -923,8 +923,8 @@ fun SupplierCard(
             Row {
                 IconButton(onClick = onViewIssues) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_handyman),
-                        contentDescription = "View Order Issues & Interaction Logs",
+                        painter = painterResource(R.drawable.ic_call_log),
+                        contentDescription = "Vendor Issue & Call Tracker",
                         tint = safelightPrimary
                     )
                 }

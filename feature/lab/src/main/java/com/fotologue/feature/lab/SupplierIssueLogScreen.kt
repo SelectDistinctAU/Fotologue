@@ -75,10 +75,18 @@ fun SupplierIssueLogScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Vendor Issue & Call Tracker",
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_call_log),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Vendor Issue & Call Tracker",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
