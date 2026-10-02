@@ -17,6 +17,7 @@ class AddEditLensViewModelTest {
 
     private lateinit var viewModel: AddEditLensViewModel
     private val repository: FotologueRepository = mockk()
+    private val settingsRepository: SettingsRepository = mockk(relaxed = true)
     private val savedStateHandle = SavedStateHandle()
 
     private val testDispatcher = StandardTestDispatcher()
@@ -26,9 +27,10 @@ class AddEditLensViewModelTest {
         Dispatchers.setMain(testDispatcher)
         
         every { repository.allCameras } returns flowOf(emptyList())
+        every { repository.allLenses } returns flowOf(emptyList())
         every { repository.allCameraLensCrossRefs } returns flowOf(emptyList())
         
-        viewModel = AddEditLensViewModel(repository, savedStateHandle)
+        viewModel = AddEditLensViewModel(repository, settingsRepository, savedStateHandle)
     }
 
     @After
@@ -41,7 +43,7 @@ class AddEditLensViewModelTest {
         val camera = Camera(id = 1L, name = "Nikon F3", type = CameraType.FILM_SLR)
         
         every { repository.allCameras } returns flowOf(listOf(camera))
-        viewModel = AddEditLensViewModel(repository, SavedStateHandle())
+        viewModel = AddEditLensViewModel(repository, settingsRepository, SavedStateHandle())
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.onCameraToggled(1L)
@@ -55,7 +57,7 @@ class AddEditLensViewModelTest {
         val slr = Camera(id = 2L, name = "Nikon F3", type = CameraType.FILM_SLR)
         
         every { repository.allCameras } returns flowOf(listOf(compact, slr))
-        viewModel = AddEditLensViewModel(repository, SavedStateHandle())
+        viewModel = AddEditLensViewModel(repository, settingsRepository, SavedStateHandle())
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.onCameraToggled(2L) // Select SLR
@@ -71,7 +73,7 @@ class AddEditLensViewModelTest {
         val camera = Camera(id = 1L, name = "Nikon F3", type = CameraType.FILM_SLR)
         every { repository.allCameras } returns flowOf(listOf(camera))
         
-        viewModel = AddEditLensViewModel(repository, SavedStateHandle())
+        viewModel = AddEditLensViewModel(repository, settingsRepository, SavedStateHandle())
         testDispatcher.scheduler.advanceUntilIdle()
 
         var successCalled = false
