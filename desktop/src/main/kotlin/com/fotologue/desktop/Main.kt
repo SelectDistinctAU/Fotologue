@@ -2060,7 +2060,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     when (selectedCategory) {
-                        0 -> { // Camera Form with Streamlined 1-to-1 Parity (Model Number Dropped)
+                        0 -> { // Camera Form with Streamlined 1-to-1 Parity (Serial Number Moved to End)
                             val item = editingCamera ?: ReferenceCameraItem(name = "")
                             var cameraTypeDropdownExpanded by remember { mutableStateOf(false) }
                             var filmFormatDropdownExpanded by remember { mutableStateOf(false) }
@@ -2096,15 +2096,8 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
 
-                            // Row 2: Serial Number & Camera Type
+                            // Row 2: Camera Type & Film Format
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.serialNumber ?: "",
-                                    onValueChange = { editingCamera = item.copy(serialNumber = it) },
-                                    label = { Text("Serial Number (Optional)") },
-                                    placeholder = { Text("Optional") },
-                                    modifier = Modifier.weight(1f)
-                                )
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.type,
@@ -2146,10 +2139,6 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
-                            }
-
-                            // Row 3: Film Format & Lens Mount
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.format,
@@ -2177,6 +2166,15 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
+                            }
+                            Text(
+                                "Hint: If your camera uses multiple film formats (e.g. interchangeable backs), add it once for each format.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            // Row 3: Lens Mount & Shutter Speeds
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     var mountDropdownExpanded by remember { mutableStateOf(false) }
                                     val availableMounts = remember { DatabaseRepository.loadLensMountLovs() }
@@ -2207,9 +2205,16 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                         }
                                     }
                                 }
+                                OutlinedTextField(
+                                    value = item.shutterSpeeds ?: "",
+                                    onValueChange = { editingCamera = item.copy(shutterSpeeds = it) },
+                                    label = { Text("Shutter Speeds") },
+                                    placeholder = { Text("1s - 1/1000s, B") },
+                                    modifier = Modifier.weight(1f)
+                                )
                             }
                             Text(
-                                "Hint: If your camera uses multiple film formats (e.g. interchangeable backs), add it once for each format.",
+                                "Hint: Enter speeds as a range (e.g. 1s - 1/1000s, B) or comma separated (e.g. 1/1000, 1/500, 1/250, B).",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -2253,18 +2258,13 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
 
-                            // Row 4: Shutter Speeds
+                            // Row 4 (LAST): Serial Number (Optional)
                             OutlinedTextField(
-                                value = item.shutterSpeeds ?: "",
-                                onValueChange = { editingCamera = item.copy(shutterSpeeds = it) },
-                                label = { Text("Shutter Speeds") },
-                                placeholder = { Text("1s - 1/1000s, B") },
+                                value = item.serialNumber ?: "",
+                                onValueChange = { editingCamera = item.copy(serialNumber = it) },
+                                label = { Text("Serial Number (Optional)") },
+                                placeholder = { Text("Optional") },
                                 modifier = Modifier.fillMaxWidth()
-                            )
-                            Text(
-                                "Hint: Enter speeds as a range (e.g. 1s - 1/1000s, B) or comma separated (e.g. 1/1000, 1/500, 1/250, B).",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         1 -> { // Lens Form with Associated Cameras and Preset Catalogue Search

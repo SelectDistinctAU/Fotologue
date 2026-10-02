@@ -225,16 +225,7 @@ fun AddEditCameraScreen(
                 } else null
             )
 
-            // Field 3: Serial Number (Optional)
-            OutlinedTextField(
-                value = uiState.serialNumber,
-                onValueChange = viewModel::onSerialNumberChange,
-                label = { Text("Serial Number (Optional)") },
-                placeholder = { Text("Optional") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // Field 5: Camera Type Dropdown
+            // Field 3: Camera Type Dropdown
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = !expanded },
@@ -353,6 +344,15 @@ fun AddEditCameraScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 2.dp)
+            )
+
+            // Field 8 (LAST): Serial Number (Optional)
+            OutlinedTextField(
+                value = uiState.serialNumber,
+                onValueChange = viewModel::onSerialNumberChange,
+                label = { Text("Serial Number (Optional)") },
+                placeholder = { Text("Optional") },
+                modifier = Modifier.fillMaxWidth()
             )
 
             Button(
