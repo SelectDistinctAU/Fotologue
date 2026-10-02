@@ -1,10 +1,21 @@
 # Autonomous Quality Assurance & Verification Protocol
 
-This document establishes the **Autonomous Quality Assurance (QA) & Verification Protocol** for Fotologue, shifting quality verification away from user manual testing to automated, proactive agent inspection before task completion.
+This document establishes the **Autonomous Quality Assurance (QA) & Verification Protocol** for Fotologue, shifting quality verification away from user manual testing to automated, proactive agent inspection and **100% transparent test reporting**.
 
 ---
 
-## 1. Why Visual & Wiring Bugs Escaped Unit Tests
+## 1. Complete Test Transparency Directive
+
+> [!IMPORTANT]
+> **Mandatory Transparency Rule**:
+> Whenever a test run, build task, or linter encounters a failure during development:
+> 1. **Never Hide or Silently Patch Failures**: The agent MUST explicitly report the initial test failure in the user-facing chat response.
+> 2. **Report Root Cause & Regression**: State the exact test class, failing test case, and root cause (*e.g., "Adding camera-first lens filtering caused `AddEditLensViewModel` to call `repository.allLenses`, breaking 4 tests in `AddEditLensViewModelTest` due to unmocked flow"*).
+> 3. **Document Fix & Final Re-run**: Show the exact mock/test fix applied and confirm the final green re-run status (*58/58 Passed*).
+
+---
+
+## 2. Why Visual & Wiring Bugs Escaped Unit Tests
 
 Unit tests (`:app:testDebugUnitTest`, `:feature:lab:testDebugUnitTest`) verify isolated Kotlin ViewModel and Repository logic (*"Does seedPresets() invoke insertSupplier()?"*). They cannot detect:
 1. **Unwired Navigation Lambdas**: An `onClick` lambda assigned to `{}` in navigation hosts (`MainActivity.kt`).
@@ -14,14 +25,14 @@ Unit tests (`:app:testDebugUnitTest`, `:feature:lab:testDebugUnitTest`) verify i
 
 ---
 
-## 2. The 4-Step Autonomous Verification Protocol
+## 3. The 4-Step Autonomous Verification Protocol
 
 Before declaring any feature or refactoring `COMPLETED`, the agent MUST execute the following 4-step verification sequence:
 
 ```
 [ STEP 1: LOGIC & UNIT TESTING ] ──> [ STEP 2: WIRING & STATE HYDRATION ]
   ./gradlew testDebugUnitTest            Verify onClick lambdas in MainActivity.kt
-  (58/58 Tests Passed)                   Verify Edit forms hydrate ALL relational IDs
+  (Report failures & fixes)              Verify Edit forms hydrate ALL relational IDs
 
                │                                       │
                ▼                                       ▼
@@ -38,7 +49,7 @@ Before declaring any feature or refactoring `COMPLETED`, the agent MUST execute 
 
 ---
 
-## 3. High-Leverage Prompting Phrases for the User
+## 4. High-Leverage Prompting Phrases for the User
 
 You do NOT need to change your prompting style or perform manual QA. When requesting new features or changes, including any of these phrases will activate maximum verification rigor:
 
@@ -51,4 +62,4 @@ You do NOT need to change your prompting style or perform manual QA. When reques
 
 ---
 
-*Protocol established: March 2026 for Fotologue v3.0 Quality Assurance.*
+*Protocol updated: March 2026 for Fotologue v3.0 Quality Assurance.*
