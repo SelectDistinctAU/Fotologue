@@ -132,6 +132,13 @@ fun LabHomeScreen(
                     onBack()
                 }
             }
+            LabView.SUPPLIERS -> {
+                if (initialTab == 1) {
+                    onBack()
+                } else {
+                    currentView = LabView.MAIN_MENU
+                }
+            }
             LabView.INVENTORY_CATEGORY_ITEMS -> currentView = LabView.INVENTORY
             else -> currentView = LabView.MAIN_MENU
         }
