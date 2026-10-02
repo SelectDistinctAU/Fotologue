@@ -40,8 +40,8 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 - **Platform**: Fotologue Mobile (`app` / `MainActivity.kt`)
 - **Reported**: March 2026
 - **Symptom**: Tapping `←` on Contacts Directory navigated to `LabHomeScreen` instead of returning to the Staging Portal (`HubScreen` / `"Home"`).
-- **Root Cause**: `onBack` handler in `LabHomeScreen` defaulted to `onBack()` which popped back to `LabHomeScreen` when invoked via `Route.Lab(initialTab = 1)`.
-- **Resolution**: Wired `onBack` in `LabHomeScreen.kt` to pop back to `HubScreen` (`"Home"`).
+- **Root Cause**: `handleBackNavigation()` in `LabHomeScreen.kt` was falling through to `else -> currentView = LabView.MAIN_MENU` when `currentView == LabView.SUPPLIERS`, taking the user to `Fotologue Lab` instead of calling `onBack()` to return to `HubScreen`.
+- **Resolution**: Updated `handleBackNavigation()` in `LabHomeScreen.kt` so when `currentView == LabView.SUPPLIERS` and `initialTab == 1`, it executes `onBack()` directly, returning the user straight to `HubScreen` (`"Home"` / Staging Portal).
 - **Regression Test Case**: Tap `CONTACTS DIRECTORY` on Staging Portal $\to$ tap `←` $\to$ verify user returns to `HubScreen`.
 
 ---
