@@ -127,10 +127,10 @@ fun LabHomeScreen(
         }
     }
 
-    val supplierFilters = listOf("Active Only", "All Contacts", "Australia", "USA / Global")
+    val supplierFilters = listOf("Active Contacts", "All Contacts", "Australia", "USA / Global")
     val filteredSuppliers = supplierList.filter { sup ->
         when (selectedSupplierFilter) {
-            "Active Only" -> sup.isUsed
+            "Active Contacts" -> sup.isUsed
             "Australia" -> sup.region.equals("Australia", ignoreCase = true)
             "USA / Global" -> !sup.region.equals("Australia", ignoreCase = true)
             else -> true
@@ -139,7 +139,7 @@ fun LabHomeScreen(
 
     val pageTitle = when (currentView) {
         LabView.MAIN_MENU -> "Fotologue Lab"
-        LabView.SUPPLIERS -> "Lab • Suppliers"
+        LabView.SUPPLIERS -> "Contacts Directory"
         LabView.INVENTORY -> "Lab • Consumables"
         LabView.INVENTORY_CATEGORY_ITEMS -> "Lab • ${activeInventoryCategory ?: "Consumables"}"
         LabView.EQUIPMENT -> "Lab • Lab Equipment"
@@ -453,7 +453,7 @@ fun LabHomeScreen(
                         ) {
                             Icon(Icons.Default.Add, contentDescription = null, tint = if (isSafelightActive) Color(0xFFFF0000) else Color.White)
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Supplier Contact", style = MaterialTheme.typography.labelMedium, color = if (isSafelightActive) Color(0xFFFF0000) else Color.White)
+                            Text("Add Contact", style = MaterialTheme.typography.labelMedium, color = if (isSafelightActive) Color(0xFFFF0000) else Color.White)
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))

@@ -38,6 +38,7 @@ fun HubScreen(
     isSafelightActive: Boolean = false,
     onToggleSafelight: (() -> Unit)? = null,
     onNavigateToField: () -> Unit,
+    onNavigateToContacts: () -> Unit = {},
     onNavigateToLab: () -> Unit,
     onNavigateToStation: () -> Unit,
     onNavigateToArchive: () -> Unit,
@@ -135,6 +136,20 @@ fun HubScreen(
                     subColor = safelightPrimary,
                     descColor = safelightSubFg,
                     onClick = onNavigateToField
+                )
+            }
+
+            item(key = "module_contacts") {
+                HubModuleCard(
+                    title = "CONTACTS DIRECTORY",
+                    subtitle = "People & Vendor Management (Pillar 2)",
+                    description = "Suppliers • Labs • Repair Techs • Borrowers • Friends",
+                    iconRes = R.drawable.warehouse_24px,
+                    cardBg = safelightCardBg,
+                    titleColor = safelightFg,
+                    subColor = safelightPrimary,
+                    descColor = safelightSubFg,
+                    onClick = onNavigateToContacts
                 )
             }
 
