@@ -36,6 +36,56 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-005: Mobile Contacts Back-Navigation Target Discrepancy
+- **Platform**: Fotologue Mobile (`app` / `MainActivity.kt`)
+- **Reported**: March 2026
+- **Symptom**: Tapping `←` on Contacts Directory navigated to `LabHomeScreen` instead of returning to the Staging Portal (`HubScreen` / `"Home"`).
+- **Root Cause**: `onBack` handler in `LabHomeScreen` defaulted to `onBack()` which popped back to `LabHomeScreen` when invoked via `Route.Lab(initialTab = 1)`.
+- **Resolution**: Wired `onBack` in `LabHomeScreen.kt` to pop back to `HubScreen` (`"Home"`).
+- **Regression Test Case**: Tap `CONTACTS DIRECTORY` on Staging Portal $\to$ tap `←` $\to$ verify user returns to `HubScreen`.
+
+---
+
+### BUG-006: Mobile Contacts Header Icon Discrepancy
+- **Platform**: Fotologue Mobile (`feature:lab` / `LabHomeScreen.kt`)
+- **Reported**: March 2026
+- **Symptom**: Mobile Contacts header displayed chemistry flask icon `⚗️` (`experiment_24px`).
+- **Root Cause**: Header icon defaulted to `R.drawable.experiment_24px` for all sub-views.
+- **Resolution**: Replaced icon with `R.drawable.warehouse_24px`.
+- **Regression Test Case**: Open Contacts Directory $\to$ verify TopBar icon is `warehouse_24px`.
+
+---
+
+### BUG-007: Mobile Storage Locations Double Header
+- **Platform**: Fotologue Mobile (`feature:lab` / `StorageLocationsScreen.kt`)
+- **Reported**: March 2026
+- **Symptom**: `StorageLocationsScreen` rendered two stacked header bars (`Lab • Storage Locations`).
+- **Root Cause**: `StorageLocationsScreen.kt` had an internal `Scaffold` and `TopAppBar` while `LabHomeScreen.kt` already provided an outer `Scaffold` and `TopAppBar`.
+- **Resolution**: Removed the inner `Scaffold` and `TopAppBar` from `StorageLocationsScreen.kt`.
+- **Regression Test Case**: Open `Storage Locations` on Mobile $\to$ verify a single header bar renders.
+
+---
+
+### BUG-008: Storage Location Form Parity Mismatch
+- **Platform**: Mobile & Desktop (`StorageLocationsScreen.kt` / `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: Field names differed between Mobile and Desktop; Desktop used a raw text box for Type instead of a dropdown.
+- **Root Cause**: Mismatched Composable field labels and missing dropdown controls on Desktop.
+- **Resolution**: Unified field names and controls 1-to-1 across Mobile and Desktop (`Location Name`, `Storage Type` Dropdown, `Location Notes / Details`).
+- **Regression Test Case**: Open `Add Storage Location` on Desktop & Mobile $\to$ verify fields and dropdowns match 1-to-1.
+
+---
+
+### BUG-009: Raw Text ENUM Inputs for Orders & Custody Forms
+- **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: Desktop `Add Pre-Arrival Order` and `Add Custody Interaction` used raw text fields for `Type` (`PURCHASE_ORDER`) and `Status` (`DELIVERED`).
+- **Root Cause**: Missing controlled dropdown selectors on Desktop form fields.
+- **Resolution**: Converted `Type` and `Status` into **Controlled Dropdown Selectors** (`Purchase Order`, `Loan Out`, `Rental In`, `Service / Repair` & `Waitlisted`, `Packaging`, `In Transit`, `Delivered`).
+- **Regression Test Case**: Open `Add Pre-Arrival Order` on Desktop $\to$ verify `Type` and `Status` are dropdown selectors.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
