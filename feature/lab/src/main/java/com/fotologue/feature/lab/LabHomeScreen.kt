@@ -187,8 +187,14 @@ fun LabHomeScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        val headerIconRes = when (currentView) {
+                            LabView.SUPPLIERS, LabView.STORAGE_LOCATIONS -> R.drawable.warehouse_24px
+                            LabView.EQUIPMENT -> R.drawable.camera_indoor_24px
+                            LabView.INVENTORY, LabView.INVENTORY_CATEGORY_ITEMS -> R.drawable.inventory_24px
+                            else -> R.drawable.experiment_24px
+                        }
                         Icon(
-                            painter = painterResource(R.drawable.experiment_24px),
+                            painter = painterResource(headerIconRes),
                             contentDescription = null,
                             tint = safelightPrimary,
                             modifier = Modifier.size(24.dp)
