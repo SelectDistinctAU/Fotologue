@@ -166,6 +166,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-018: Desktop SQLite Constraint Exception on Duplicate Camera Body Creation
+- **Platform**: Fotologue Desktop (`desktop` / `Database.kt` & `DatabaseRepository.kt`)
+- **Reported**: March 2026
+- **Symptom**: Attempting to add a second camera body of the same model (*Pentax LX*) on Desktop crashed with `org.sqlite.SQLiteException: [SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (foundation_cameras.name)`.
+- **Root Cause**: `FoundationCamerasTable.name` had a `.uniqueIndex()` constraint in Desktop SQLite, preventing photographers from owning multiple camera bodies of the same model.
+- **Resolution**: Removed `.uniqueIndex()` on `name` in `Database.kt` across Desktop reference tables, aligned `saveFoundationCamera()` in `DatabaseRepository.kt` to auto-index duplicate names (*"Pentax LX (2)"*), and wrapped save actions in `try-catch` blocks.
+- **Regression Test Case**: Add a *Pentax LX* camera $\to$ add a second *Pentax LX* camera $\to$ verify the second camera saves cleanly as *Pentax LX (2)*.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
