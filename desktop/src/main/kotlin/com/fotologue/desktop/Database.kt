@@ -82,7 +82,7 @@ class MasterFrameEntity(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object FoundationCamerasTable : IntIdTable("foundation_cameras") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val modelNumber = varchar("model_number", 255).nullable()
     val serialNumber = varchar("serial_number", 255).nullable()
     val type = varchar("type", 50).default("Film SLR")
@@ -103,7 +103,7 @@ class FoundationCameraEntity(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object FoundationFilmsTable : IntIdTable("foundation_films") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val abbreviation = varchar("abbreviation", 50)
     val iso = integer("iso").default(400)
     val type = varchar("type", 50).default("Color Negative")
@@ -122,7 +122,7 @@ class FoundationFilmEntity(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object FoundationSuppliersTable : IntIdTable("foundation_suppliers") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val website = varchar("website", 512).nullable()
     val region = varchar("region", 50).nullable()
     val email = varchar("email", 255).nullable()
@@ -145,7 +145,7 @@ class FoundationSupplierEntity(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object FoundationConsumablesTable : IntIdTable("foundation_consumables") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val manufacturer = varchar("manufacturer", 255).nullable()
     val category = varchar("category", 100).default("Chemistry")
     val type = varchar("type", 100).nullable()
@@ -180,7 +180,7 @@ class FoundationConsumableEntity(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object FoundationLabEquipmentTable : IntIdTable("foundation_lab_equipment") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val manufacturer = varchar("manufacturer", 255).nullable()
     val modelNumber = varchar("model_number", 255).nullable()
     val serialNumber = varchar("serial_number", 255).nullable()
@@ -281,7 +281,7 @@ class ContributorEntity(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object FoundationLensesTable : IntIdTable("foundation_lenses") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val make = varchar("make", 255).nullable()
     val model = varchar("model", 255).nullable()
     val type = varchar("type", 50).default("Prime")
@@ -322,7 +322,7 @@ object FoundationCameraLensesTable : Table("foundation_camera_lenses") {
 }
 
 object FoundationAccessoriesTable : IntIdTable("foundation_accessories") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val type = varchar("type", 50)
     val specs = text("specs").nullable()
 }
@@ -335,7 +335,7 @@ class FoundationAccessoryEntity(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object FoundationTeleconvertersTable : IntIdTable("foundation_teleconverters") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val make = varchar("make", 255).nullable()
     val converterType = varchar("converter_type", 100).default("Teleconverter")
     val magnification = varchar("magnification", 50).default("2x")
@@ -356,7 +356,7 @@ class FoundationTeleconverterEntity(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object FoundationFiltersTable : IntIdTable("foundation_filters") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val threadSize = varchar("thread_size", 50).default("52mm")
     val filterType = varchar("filter_type", 100).default("Yellow 8")
     val serialNumber = varchar("serial_number", 255).nullable()
@@ -371,7 +371,7 @@ class FoundationFilterEntity(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object FoundationFlashesTable : IntIdTable("foundation_flashes") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val guideNumber = varchar("guide_number", 50).default("GN 24")
     val syncType = varchar("sync_type", 100).default("Hotshoe")
     val serialNumber = varchar("serial_number", 255).nullable()
@@ -386,7 +386,7 @@ class FoundationFlashEntity(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object FoundationViewfindersTable : IntIdTable("foundation_viewfinders") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val type = varchar("type", 100).default("Waist Level")
     val compatibleCamera = varchar("compatible_camera", 255).nullable()
     val serialNumber = varchar("serial_number", 255).nullable()
@@ -401,7 +401,7 @@ class FoundationViewfinderEntity(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object FoundationKitsTable : IntIdTable("foundation_kits") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val contributorId = integer("contributor_id").default(1)
     val cameraName = varchar("camera_name", 255)
     val lensNames = varchar("lens_names", 512).nullable()
@@ -501,7 +501,7 @@ data class ReferenceKitItem(
 )
 
 object StorageLocationsTable : IntIdTable("storage_locations") {
-    val name = varchar("name", 255).uniqueIndex()
+    val name = varchar("name", 255)
     val type = varchar("type", 50).default("Cabinet")
     val notes = text("notes").nullable()
 }

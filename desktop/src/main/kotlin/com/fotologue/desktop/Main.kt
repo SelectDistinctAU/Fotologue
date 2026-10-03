@@ -4035,124 +4035,128 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
             },
             confirmButton = {
                 Button(onClick = {
-                    when (selectedCategory) {
-                        0 -> editingCamera?.let { cam ->
-                            if (cam.name.isNotBlank()) {
-                                DatabaseRepository.saveFoundationCamera(cam)
-                                DatabaseRepository.saveLovValue("CAMERA_TYPE", cam.type)
-                                cam.mount?.let { mnt -> DatabaseRepository.saveLovValue("LENS_MOUNT", mnt) }
-                                val isFixedCamera = cam.type == "TLR" || cam.type == "Point & Shoot" || cam.type == "Compact" || cam.mount == "Fixed"
-                                if (isFixedCamera && fixedLensName.isNotBlank()) {
-                                    DatabaseRepository.saveFoundationLens(
-                                        ReferenceLensItem(
-                                            name = fixedLensName,
-                                            make = cam.name,
-                                            model = fixedLensName,
-                                            type = "Prime",
-                                            mount = "Fixed",
-                                            focalLength = fixedLensFocalLength,
-                                            maxAperture = fixedLensMaxAperture,
-                                            filterSize = fixedLensFilterSize
+                    try {
+                        when (selectedCategory) {
+                            0 -> editingCamera?.let { cam ->
+                                if (cam.name.isNotBlank()) {
+                                    DatabaseRepository.saveFoundationCamera(cam)
+                                    DatabaseRepository.saveLovValue("CAMERA_TYPE", cam.type)
+                                    cam.mount?.let { mnt -> DatabaseRepository.saveLovValue("LENS_MOUNT", mnt) }
+                                    val isFixedCamera = cam.type == "TLR" || cam.type == "Point & Shoot" || cam.type == "Compact" || cam.mount == "Fixed"
+                                    if (isFixedCamera && fixedLensName.isNotBlank()) {
+                                        DatabaseRepository.saveFoundationLens(
+                                            ReferenceLensItem(
+                                                name = fixedLensName,
+                                                make = cam.name,
+                                                model = fixedLensName,
+                                                type = "Prime",
+                                                mount = "Fixed",
+                                                focalLength = fixedLensFocalLength,
+                                                maxAperture = fixedLensMaxAperture,
+                                                filterSize = fixedLensFilterSize
+                                            )
                                         )
-                                    )
+                                    }
+                                }
+                            }
+                            1 -> editingLens?.let { l -> 
+                                if (l.name.isNotBlank()) {
+                                    DatabaseRepository.saveFoundationLens(l)
+                                    val savedId = if (l.id > 0) l.id else (DatabaseRepository.loadFoundationLenses().find { it.name == l.name }?.id ?: 0)
+                                    if (savedId > 0) {
+                                        DatabaseRepository.saveCameraLensAssociations(savedId, selectedAssociatedCameraIds)
+                                    }
+                                    DatabaseRepository.saveLovValue("LENS_TYPE", l.type)
+                                    l.mount?.let { mnt -> DatabaseRepository.saveLovValue("LENS_MOUNT", mnt) }
+                                    l.make?.let { mk -> DatabaseRepository.saveLovValue("MANUFACTURER", mk) }
+                                }
+                            }
+                            2 -> editingFilm?.let { fl -> 
+                                if (fl.name.isNotBlank()) {
+                                    DatabaseRepository.saveFoundationFilm(fl)
+                                    DatabaseRepository.saveLovValue("FILM_TYPE", fl.type)
+                                    DatabaseRepository.saveLovValue("FILM_FORMAT", fl.format)
+                                }
+                            }
+                            3 -> editingKit?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationKit(it) }
+                            4 -> editingTeleconverter?.let { tc -> 
+                                if (tc.name.isNotBlank()) {
+                                    DatabaseRepository.saveFoundationTeleconverter(tc)
+                                    DatabaseRepository.saveLovValue("CONVERTER_TYPE", tc.converterType)
+                                }
+                            }
+                            5 -> editingFilter?.let { flt -> 
+                                if (flt.name.isNotBlank()) {
+                                    DatabaseRepository.saveFoundationFilter(flt)
+                                    DatabaseRepository.saveLovValue("FILTER_TYPE", flt.filterType)
+                                    DatabaseRepository.saveLovValue("THREAD_SIZE", flt.threadSize)
+                                }
+                            }
+                            6 -> editingFlash?.let { fls -> 
+                                if (fls.name.isNotBlank()) {
+                                    DatabaseRepository.saveFoundationFlash(fls)
+                                    DatabaseRepository.saveLovValue("SYNC_TYPE", fls.syncType)
+                                }
+                            }
+                            7 -> editingViewfinder?.let { vf -> 
+                                if (vf.name.isNotBlank()) {
+                                    DatabaseRepository.saveFoundationViewfinder(vf)
+                                    DatabaseRepository.saveLovValue("VIEWFINDER_TYPE", vf.type)
+                                }
+                            }
+                            8 -> editingSupplier?.let { sup -> 
+                                if (sup.name.isNotBlank()) {
+                                    DatabaseRepository.saveFoundationSupplier(sup)
+                                    sup.region?.let { rgn -> DatabaseRepository.saveLovValue("REGION", rgn) }
+                                }
+                            }
+                            9 -> editingConsumable?.let { con -> 
+                                if (con.name.isNotBlank()) {
+                                    DatabaseRepository.saveFoundationConsumable(con)
+                                    DatabaseRepository.saveLovValue("CONSUMABLE_CATEGORY", con.category)
+                                    con.manufacturer?.let { mfg -> DatabaseRepository.saveLovValue("MANUFACTURER", mfg) }
+                                }
+                            }
+                            10 -> editingLabEquipment?.let { eq -> 
+                                if (eq.name.isNotBlank()) {
+                                    DatabaseRepository.saveFoundationLabEquipment(eq)
+                                    DatabaseRepository.saveLovValue("EQUIPMENT_CATEGORY", eq.category)
+                                    DatabaseRepository.saveLovValue("CONDITION", eq.condition)
+                                    eq.manufacturer?.let { mfg -> DatabaseRepository.saveLovValue("MANUFACTURER", mfg) }
+                                }
+                            }
+                            11 -> editingStorageLocation?.let { loc -> 
+                                if (loc.name.isNotBlank()) {
+                                    DatabaseRepository.saveStorageLocation(loc)
+                                    DatabaseRepository.saveLovValue("STORAGE_TYPE", loc.type)
+                                }
+                            }
+                            12, 13 -> editingCustodyInteraction?.let { cust -> 
+                                if (cust.assetName.isNotBlank()) {
+                                    DatabaseRepository.saveCustodyInteraction(cust)
+                                    DatabaseRepository.saveLovValue("INTERACTION_TYPE", cust.interactionType)
+                                    DatabaseRepository.saveLovValue("ORDER_STATUS", cust.orderStatus)
                                 }
                             }
                         }
-                        1 -> editingLens?.let { l -> 
-                            if (l.name.isNotBlank()) {
-                                DatabaseRepository.saveFoundationLens(l)
-                                val savedId = if (l.id > 0) l.id else (DatabaseRepository.loadFoundationLenses().find { it.name == l.name }?.id ?: 0)
-                                if (savedId > 0) {
-                                    DatabaseRepository.saveCameraLensAssociations(savedId, selectedAssociatedCameraIds)
-                                }
-                                DatabaseRepository.saveLovValue("LENS_TYPE", l.type)
-                                l.mount?.let { mnt -> DatabaseRepository.saveLovValue("LENS_MOUNT", mnt) }
-                                l.make?.let { mk -> DatabaseRepository.saveLovValue("MANUFACTURER", mk) }
-                            }
-                        }
-                        2 -> editingFilm?.let { fl -> 
-                            if (fl.name.isNotBlank()) {
-                                DatabaseRepository.saveFoundationFilm(fl)
-                                DatabaseRepository.saveLovValue("FILM_TYPE", fl.type)
-                                DatabaseRepository.saveLovValue("FILM_FORMAT", fl.format)
-                            }
-                        }
-                        3 -> editingKit?.let { if (it.name.isNotBlank()) DatabaseRepository.saveFoundationKit(it) }
-                        4 -> editingTeleconverter?.let { tc -> 
-                            if (tc.name.isNotBlank()) {
-                                DatabaseRepository.saveFoundationTeleconverter(tc)
-                                DatabaseRepository.saveLovValue("CONVERTER_TYPE", tc.converterType)
-                            }
-                        }
-                        5 -> editingFilter?.let { flt -> 
-                            if (flt.name.isNotBlank()) {
-                                DatabaseRepository.saveFoundationFilter(flt)
-                                DatabaseRepository.saveLovValue("FILTER_TYPE", flt.filterType)
-                                DatabaseRepository.saveLovValue("THREAD_SIZE", flt.threadSize)
-                            }
-                        }
-                        6 -> editingFlash?.let { fls -> 
-                            if (fls.name.isNotBlank()) {
-                                DatabaseRepository.saveFoundationFlash(fls)
-                                DatabaseRepository.saveLovValue("SYNC_TYPE", fls.syncType)
-                            }
-                        }
-                        7 -> editingViewfinder?.let { vf -> 
-                            if (vf.name.isNotBlank()) {
-                                DatabaseRepository.saveFoundationViewfinder(vf)
-                                DatabaseRepository.saveLovValue("VIEWFINDER_TYPE", vf.type)
-                            }
-                        }
-                        8 -> editingSupplier?.let { sup -> 
-                            if (sup.name.isNotBlank()) {
-                                DatabaseRepository.saveFoundationSupplier(sup)
-                                sup.region?.let { rgn -> DatabaseRepository.saveLovValue("REGION", rgn) }
-                            }
-                        }
-                        9 -> editingConsumable?.let { con -> 
-                            if (con.name.isNotBlank()) {
-                                DatabaseRepository.saveFoundationConsumable(con)
-                                DatabaseRepository.saveLovValue("CONSUMABLE_CATEGORY", con.category)
-                                con.manufacturer?.let { mfg -> DatabaseRepository.saveLovValue("MANUFACTURER", mfg) }
-                            }
-                        }
-                        10 -> editingLabEquipment?.let { eq -> 
-                            if (eq.name.isNotBlank()) {
-                                DatabaseRepository.saveFoundationLabEquipment(eq)
-                                DatabaseRepository.saveLovValue("EQUIPMENT_CATEGORY", eq.category)
-                                DatabaseRepository.saveLovValue("CONDITION", eq.condition)
-                                eq.manufacturer?.let { mfg -> DatabaseRepository.saveLovValue("MANUFACTURER", mfg) }
-                            }
-                        }
-                        11 -> editingStorageLocation?.let { loc -> 
-                            if (loc.name.isNotBlank()) {
-                                DatabaseRepository.saveStorageLocation(loc)
-                                DatabaseRepository.saveLovValue("STORAGE_TYPE", loc.type)
-                            }
-                        }
-                        12, 13 -> editingCustodyInteraction?.let { cust -> 
-                            if (cust.assetName.isNotBlank()) {
-                                DatabaseRepository.saveCustodyInteraction(cust)
-                                DatabaseRepository.saveLovValue("INTERACTION_TYPE", cust.interactionType)
-                                DatabaseRepository.saveLovValue("ORDER_STATUS", cust.orderStatus)
-                            }
-                        }
+                        refreshAllData()
+                        showAddEditDialog = false
+                        editingCamera = null
+                        editingLens = null
+                        editingFilm = null
+                        editingKit = null
+                        editingTeleconverter = null
+                        editingFilter = null
+                        editingFlash = null
+                        editingViewfinder = null
+                        editingSupplier = null
+                        editingConsumable = null
+                        editingLabEquipment = null
+                        editingStorageLocation = null
+                        editingCustodyInteraction = null
+                    } catch (e: Exception) {
+                        println("Save Error: ${e.message}")
                     }
-                    refreshAllData()
-                    showAddEditDialog = false
-                    editingCamera = null
-                    editingLens = null
-                    editingFilm = null
-                    editingKit = null
-                    editingTeleconverter = null
-                    editingFilter = null
-                    editingFlash = null
-                    editingViewfinder = null
-                    editingSupplier = null
-                    editingConsumable = null
-                    editingLabEquipment = null
-                    editingStorageLocation = null
-                    editingCustodyInteraction = null
                 }) {
                     Text("Save")
                 }

@@ -172,6 +172,24 @@ object DatabaseRepository {
 
     fun saveFoundationCamera(item: ReferenceCameraItem) {
         transaction {
+            val existingCameras = FoundationCameraEntity.all().toList()
+            val baseName = item.name.trim()
+
+            val finalName = if (item.id == 0 && existingCameras.any { it.name.equals(baseName, ignoreCase = true) }) {
+                val matching = existingCameras.map { it.name }.filter { it.equals(baseName, ignoreCase = true) || it.startsWith("$baseName (", ignoreCase = true) }
+                var maxCount = 1
+                for (name in matching) {
+                    if (name.equals(baseName, ignoreCase = true)) continue
+                    val suffix = name.substringAfterLast("(", "").substringBefore(")", "").toIntOrNull()
+                    if (suffix != null && suffix >= maxCount) {
+                        maxCount = suffix + 1
+                    }
+                }
+                "$baseName ($maxCount)"
+            } else {
+                baseName
+            }
+
             if (item.id > 0) {
                 FoundationCameraEntity.findById(item.id)?.apply {
                     name = item.name
@@ -184,7 +202,7 @@ object DatabaseRepository {
                 }
             } else {
                 FoundationCameraEntity.new {
-                    name = item.name
+                    name = finalName
                     modelNumber = item.modelNumber
                     serialNumber = item.serialNumber
                     type = item.type
