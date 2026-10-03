@@ -449,6 +449,27 @@ class LabHomeViewModel @Inject constructor(
         }
     }
 
+    fun addOrder(order: OrderHistory) {
+        viewModelScope.launch {
+            orderHistoryDao.insertOrder(order)
+            settingsRepository.setLocalFoundationChangesPending(true)
+        }
+    }
+
+    fun updateOrder(order: OrderHistory) {
+        viewModelScope.launch {
+            orderHistoryDao.updateOrder(order)
+            settingsRepository.setLocalFoundationChangesPending(true)
+        }
+    }
+
+    fun deleteOrder(order: OrderHistory) {
+        viewModelScope.launch {
+            orderHistoryDao.deleteOrder(order)
+            settingsRepository.setLocalFoundationChangesPending(true)
+        }
+    }
+
     fun updateSupplier(supplier: LabSupplier) {
         viewModelScope.launch {
             supplierDao.updateSupplier(supplier)

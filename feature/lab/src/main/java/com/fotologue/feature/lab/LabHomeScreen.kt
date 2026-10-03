@@ -95,6 +95,7 @@ fun LabHomeScreen(
     val lotList by viewModel.lotList.collectAsState()
     val supplierList by viewModel.supplierList.collectAsState()
     val locationList by viewModel.locationList.collectAsState()
+    val orderList by viewModel.orderList.collectAsState()
     val equipmentList by viewModel.equipmentList.collectAsState()
     val performanceLogs by viewModel.performanceLogs.collectAsState()
     val processEvents by viewModel.processEvents.collectAsState()
@@ -369,6 +370,70 @@ fun LabHomeScreen(
                                         contentColor = badgeFg
                                     ) {
                                         Text("${locationList.size} locations", color = badgeFg)
+                                    }
+                                }
+                            )
+                        }
+
+                        // 5. PRE-ARRIVAL ORDERS
+                        item(key = "nav_pre_arrival_orders") {
+                            NavigationDrawerItem(
+                                colors = drawerItemColors,
+                                label = {
+                                    Column {
+                                        Text("Pre-Arrival Orders", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                                        Text("Inbound Packages, Waitlist & Shipping Lifecycle", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
+                                    }
+                                },
+                                selected = false,
+                                onClick = { currentView = LabView.PRE_ARRIVAL_ORDERS },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.warehouse_24px),
+                                        contentDescription = null,
+                                        tint = safelightPrimary,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                },
+                                badge = {
+                                    val inTransitCount = orderList.count { it.status == "IN_TRANSIT" || it.status == "WAITLISTED" }
+                                    Badge(
+                                        containerColor = badgeBg,
+                                        contentColor = badgeFg
+                                    ) {
+                                        Text("$inTransitCount orders", color = badgeFg)
+                                    }
+                                }
+                            )
+                        }
+
+                        // 6. CUSTODY & LOANS LEDGER
+                        item(key = "nav_custody_loans") {
+                            NavigationDrawerItem(
+                                colors = drawerItemColors,
+                                label = {
+                                    Column {
+                                        Text("Custody & Loans Ledger", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                                        Text("Active Loans, Hired Gear, CLA & Camera Repairs", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
+                                    }
+                                },
+                                selected = false,
+                                onClick = { currentView = LabView.CUSTODY_LOANS },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_call_log),
+                                        contentDescription = null,
+                                        tint = safelightPrimary,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                },
+                                badge = {
+                                    val activeCount = orderList.count { it.status in listOf("LOAN_OUT", "RENTAL_IN", "SERVICE_REPAIR") }
+                                    Badge(
+                                        containerColor = badgeBg,
+                                        contentColor = badgeFg
+                                    ) {
+                                        Text("$activeCount active", color = badgeFg)
                                     }
                                 }
                             )
@@ -683,15 +748,17 @@ fun LabHomeScreen(
                 }
 
                 LabView.CUSTODY_LOANS -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Custody & Loans Ledger", style = MaterialTheme.typography.titleMedium)
-                    }
+                    CustodyLedgerScreen(
+                        viewModel = viewModel,
+                        onBack = { currentView = LabView.MAIN_MENU }
+                    )
                 }
 
                 LabView.PRE_ARRIVAL_ORDERS -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Pre-Arrival Orders Ledger", style = MaterialTheme.typography.titleMedium)
-                    }
+                    PreArrivalOrdersScreen(
+                        viewModel = viewModel,
+                        onBack = { currentView = LabView.MAIN_MENU }
+                    )
                 }
             }
 
