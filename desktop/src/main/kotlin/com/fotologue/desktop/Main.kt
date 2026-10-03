@@ -8,6 +8,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -4900,7 +4901,11 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             }
                         )
                     }
+                }
 
+                HorizontalDivider()
+
+                // Action Buttons Bar (Sync to Mobile & Import from Mobile)
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(
                         onClick = onPublishManifest,
@@ -4922,7 +4927,6 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                 }
             }
         }
-    }
 }
 
 @Composable
@@ -5121,6 +5125,7 @@ private fun AdminDataGridContent(
     onDeleteCustodyInteraction: (Int) -> Unit,
     onMarkDelivered: (ReferenceCustodyInteractionItem) -> Unit
 ) {
+    println("DEBUG DESKTOP DATA GRID: selectedCategory=$selectedCategory, camerasCount=${cameras.size}, lensesCount=${lenses.size}, filmsCount=${films.size}")
     when (selectedCategory) {
         0 -> { // Cameras
             if (cameras.isEmpty()) {
@@ -5129,8 +5134,7 @@ private fun AdminDataGridContent(
                 }
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    items(cameras.size) { idx ->
-                        val cam = cameras[idx]
+                    items(items = cameras, key = { it.id }) { cam ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
@@ -5165,8 +5169,7 @@ private fun AdminDataGridContent(
                 }
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    items(lenses.size) { idx ->
-                        val l = lenses[idx]
+                    items(items = lenses, key = { it.id }) { l ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
