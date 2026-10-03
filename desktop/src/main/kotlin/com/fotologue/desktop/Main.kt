@@ -3809,22 +3809,88 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                         }
-                        12, 13 -> { // Custody / Pre-Arrival Order / Loan Ledger with Controlled Title Case Dropdowns
+                        12, 13 -> { // Custody / Pre-Arrival Order / Loan Ledger with Asset Classification & Catalog Picker
                             val item = editingCustodyInteraction ?: ReferenceCustodyInteractionItem(assetName = "", interactionType = if (selectedCategory == 12) "PURCHASE_ORDER" else "LOAN_OUT")
+                            var assetTypeDropdownExpanded by remember { mutableStateOf(false) }
+                            var assetPickerDropdownExpanded by remember { mutableStateOf(false) }
                             var typeDropdownExpanded by remember { mutableStateOf(false) }
                             var statusDropdownExpanded by remember { mutableStateOf(false) }
                             var contactDropdownExpanded by remember { mutableStateOf(false) }
                             var locationDropdownExpanded by remember { mutableStateOf(false) }
 
+                            val categoryOptions = listOf(
+                                "Camera", "Lens", "Film Stock", "Camera Kit",
+                                "Teleconverter", "Filter", "Flash", "Viewfinder",
+                                "Consumable", "Lab Equipment", "Other / General"
+                            )
                             val interactionTypes = listOf("Purchase Order", "Loan Out", "Rental In", "Service / Repair")
                             val statusTypes = listOf("Waitlisted", "Packaging", "In Transit", "Delivered")
 
-                            OutlinedTextField(
-                                value = item.assetName,
-                                onValueChange = { editingCustodyInteraction = item.copy(assetName = it) },
-                                label = { Text("Asset Name (e.g. Leica M3, Hasselblad Lens)") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            if (selectedCategory == 12) {
+                                // Pre-Arrival Order Asset Classification
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Box(modifier = Modifier.weight(1f)) {
+                                        OutlinedTextField(
+                                            value = item.assetType.ifBlank { "Camera" },
+                                            onValueChange = {},
+                                            readOnly = true,
+                                            label = { Text("Asset Classification Category") },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            trailingIcon = {
+                                                IconButton(onClick = { assetTypeDropdownExpanded = !assetTypeDropdownExpanded }) {
+                                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                                }
+                                            }
+                                        )
+                                        DropdownMenu(
+                                            expanded = assetTypeDropdownExpanded,
+                                            onDismissRequest = { assetTypeDropdownExpanded = false }
+                                        ) {
+                                            categoryOptions.forEach { cat ->
+                                                DropdownMenuItem(
+                                                    text = { Text(cat) },
+                                                    onClick = {
+                                                        editingCustodyInteraction = item.copy(assetType = cat)
+                                                        assetTypeDropdownExpanded = false
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                    OutlinedTextField(
+                                        value = item.assetName,
+                                        onValueChange = { editingCustodyInteraction = item.copy(assetName = it) },
+                                        label = { Text("Incoming Asset Name / Model") },
+                                        placeholder = { Text("e.g. Voigtländer 35mm f/1.4") },
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            } else {
+                                // Custody Interaction Registered Catalog Asset Picker
+                                Box(modifier = Modifier.fillMaxWidth()) {
+                                    OutlinedTextField(
+                                        value = item.assetName.ifBlank { "Select Registered Asset / Gear" },
+                                        onValueChange = { editingCustodyInteraction = item.copy(assetName = it) },
+                                        label = { Text("Registered Catalog Asset / Gear Item") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { assetPickerDropdownExpanded = !assetPickerDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = assetPickerDropdownExpanded,
+                                        onDismissRequest = { assetPickerDropdownExpanded = false }
+                                    ) {
+                                        cameras.forEach { cam -> DropdownMenuItem(text = { Text("📷 ${cam.name} (${cam.type})") }, onClick = { editingCustodyInteraction = item.copy(assetName = cam.name, assetType = "Camera"); assetPickerDropdownExpanded = false }) }
+                                        lenses.forEach { l -> DropdownMenuItem(text = { Text("📷 ${l.name} (${l.mount ?: "Lens"})") }, onClick = { editingCustodyInteraction = item.copy(assetName = l.name, assetType = "Lens"); assetPickerDropdownExpanded = false }) }
+                                        kits.forEach { k -> DropdownMenuItem(text = { Text("🧰 ${k.name}") }, onClick = { editingCustodyInteraction = item.copy(assetName = k.name, assetType = "Camera Kit"); assetPickerDropdownExpanded = false }) }
+                                        labEquipment.forEach { eq -> DropdownMenuItem(text = { Text("⚙️ ${eq.name} (${eq.category})") }, onClick = { editingCustodyInteraction = item.copy(assetName = eq.name, assetType = "Lab Equipment"); assetPickerDropdownExpanded = false }) }
+                                        consumables.forEach { con -> DropdownMenuItem(text = { Text("🧪 ${con.name} (${con.type})") }, onClick = { editingCustodyInteraction = item.copy(assetName = con.name, assetType = "Consumable"); assetPickerDropdownExpanded = false }) }
+                                    }
+                                }
+                            }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(

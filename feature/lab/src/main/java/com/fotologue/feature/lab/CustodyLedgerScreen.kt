@@ -54,6 +54,8 @@ fun CustodyLedgerScreen(
     val orderList by viewModel.orderList.collectAsState()
     val supplierList by viewModel.supplierList.collectAsState()
     val locationList by viewModel.locationList.collectAsState()
+    val equipmentList by viewModel.equipmentList.collectAsState()
+    val chemicalList by viewModel.chemicalList.collectAsState()
     val context = LocalContext.current
 
     var selectedTypeFilter by remember { mutableStateOf("All") }
@@ -67,6 +69,7 @@ fun CustodyLedgerScreen(
     var storageLocation by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
 
+    var assetDropdownExpanded by remember { mutableStateOf(false) }
     var typeDropdownExpanded by remember { mutableStateOf(false) }
     var contactDropdownExpanded by remember { mutableStateOf(false) }
     var locationDropdownExpanded by remember { mutableStateOf(false) }
@@ -114,13 +117,44 @@ fun CustodyLedgerScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    OutlinedTextField(
-                        value = assetName,
-                        onValueChange = { assetName = it },
-                        label = { Text("Asset / Gear Name") },
-                        placeholder = { Text("e.g. Leica M3 Body, Pentax 50mm f/1.4") },
+                    // Registered Catalog Asset Picker Dropdown
+                    ExposedDropdownMenuBox(
+                        expanded = assetDropdownExpanded,
+                        onExpandedChange = { assetDropdownExpanded = !assetDropdownExpanded },
                         modifier = Modifier.fillMaxWidth()
-                    )
+                    ) {
+                        OutlinedTextField(
+                            value = assetName.ifBlank { "Select Registered Asset / Gear" },
+                            onValueChange = { assetName = it },
+                            label = { Text("Registered Catalog Asset / Gear") },
+                            placeholder = { Text("Select or type asset name") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = assetDropdownExpanded) },
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = assetDropdownExpanded,
+                            onDismissRequest = { assetDropdownExpanded = false }
+                        ) {
+                            equipmentList.forEach { eq ->
+                                DropdownMenuItem(
+                                    text = { Text("⚙️ ${eq.name} (${eq.category})") },
+                                    onClick = {
+                                        assetName = eq.name
+                                        assetDropdownExpanded = false
+                                    }
+                                )
+                            }
+                            chemicalList.forEach { chem ->
+                                DropdownMenuItem(
+                                    text = { Text("🧪 ${chem.name} (${chem.type})") },
+                                    onClick = {
+                                        assetName = chem.name
+                                        assetDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
 
                     // Interaction Type
                     ExposedDropdownMenuBox(

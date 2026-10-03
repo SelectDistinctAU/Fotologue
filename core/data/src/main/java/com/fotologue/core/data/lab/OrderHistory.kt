@@ -23,8 +23,10 @@ data class OrderHistory(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val supplierId: Long?,
     val orderDate: Long = System.currentTimeMillis(),
-    val status: String = "IN_TRANSIT", // IN_TRANSIT, RECEIVED, CANCELLED
+    val status: String = "IN_TRANSIT", // IN_TRANSIT, DELIVERED, WAITLISTED, PACKAGING, LOAN_OUT, RENTAL_IN, SERVICE_REPAIR
     val totalCost: String = "",
     val trackingNumber: String = "",
-    val notes: String = ""
+    val notes: String = "",
+    val assetCategory: String = "Other",
+    val assetRefId: Long? = null
 )
