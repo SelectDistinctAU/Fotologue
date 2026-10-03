@@ -53,6 +53,7 @@ data class AddLogUiState(
 @HiltViewModel
 class AddLogViewModel @Inject constructor(
     private val repository: FotologueRepository,
+    private val settingsRepository: SettingsRepository,
     private val gearConfigurationManager: GearConfigurationManager,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -430,9 +431,11 @@ class AddLogViewModel @Inject constructor(
             var apertures = ExposureSuggester.commonApertures
 
             if (lens != null) {
-                apertures = apertures.filter { it in lens.minAperture..lens.maxAperture }
-                if (!apertures.contains(lens.minAperture)) apertures += lens.minAperture
-                if (!apertures.contains(lens.maxAperture)) apertures += lens.maxAperture
+                val minAp = minOf(lens.minAperture, lens.maxAperture)
+                val maxAp = maxOf(lens.minAperture, lens.maxAperture)
+                apertures = apertures.filter { it in minAp..maxAp }
+                if (!apertures.contains(minAp)) apertures += minAp
+                if (!apertures.contains(maxAp)) apertures += maxAp
                 apertures = apertures.sorted()
             }
 
@@ -614,79 +617,97 @@ class AddLogViewModel @Inject constructor(
     fun saveLog() {
         val state = _uiState.value
         viewModelScope.launch {
-            val tc = if (state.selectedTeleconverterId != null) repository.getTeleconverterById(state.selectedTeleconverterId).first() else null
-            
-            val effectiveFocalLength = if (tc != null && state.focalLength != null) {
-                state.focalLength * tc.magnification.toFloat()
-            } else {
-                state.focalLength
-            }
-            
-            val effectiveApertureValue = if (tc != null) {
-                val baseAp = state.aperture.replace("f/", "").toDoubleOrNull() ?: 0.0
-                val effectiveAp = baseAp * sqrt(2.0).pow(tc.lightLossStops)
-                "f/${if ((effectiveAp % 1.0) == 0.0) effectiveAp.toInt() else String.format(Locale.US, "%.1f", effectiveAp)}"
-            } else {
-                state.aperture
-            }
+            try {
+                val tc = if (state.selectedTeleconverterId != null) {
+                    try { repository.getTeleconverterById(state.selectedTeleconverterId).first() } catch (_: Exception) { null }
+                } else null
+                
+                val effectiveFocalLength = if (tc != null && state.focalLength != null) {
+                    state.focalLength * tc.magnification.toFloat()
+                } else {
+                    state.focalLength
+                }
+                
+                val effectiveApertureValue = if (tc != null) {
+                    val baseAp = state.aperture.replace("f/", "").toDoubleOrNull() ?: 0.0
+                    val effectiveAp = baseAp * sqrt(2.0).pow(tc.lightLossStops)
+                    "f/${if ((effectiveAp % 1.0) == 0.0) effectiveAp.toInt() else String.format(Locale.US, "%.1f", effectiveAp)}"
+                } else {
+                    state.aperture
+                }
 
-            if (editingLogId != null) {
-                // UPDATE existing entry
-                val existingEntry = repository.getLogEntryById(editingLogId!!).first()
-                existingEntry?.let { entry ->
-                    val updatedEntry = entry.copy(
+                // Verify Foreign Keys exist in database before saving to prevent SQLiteConstraintException
+                val validCameraId = if (allCameras.value.isNotEmpty()) state.selectedCameraId?.takeIf { id -> allCameras.value.any { it.id == id } } else state.selectedCameraId
+                val validLensId = if (allLenses.value.isNotEmpty()) state.selectedLensId?.takeIf { id -> filteredLenses.value.any { it.id == id } || allLenses.value.any { it.id == id } } else state.selectedLensId
+                val validFilmId = if (allFilms.value.isNotEmpty()) state.selectedFilmId?.takeIf { id -> allFilms.value.any { it.id == id } } else state.selectedFilmId
+                val validTcId = if (allTeleconverters.value.isNotEmpty()) state.selectedTeleconverterId?.takeIf { id -> allTeleconverters.value.any { it.id == id } } else state.selectedTeleconverterId
+                val validFilterId = if (allFilters.value.isNotEmpty()) state.selectedFilterId?.takeIf { id -> allFilters.value.any { it.id == id } } else state.selectedFilterId
+                val validFlashId = if (allFlashes.value.isNotEmpty()) state.selectedFlashId?.takeIf { id -> allFlashes.value.any { it.id == id } } else state.selectedFlashId
+                val validVfId = if (allViewfinders.value.isNotEmpty()) state.selectedViewfinderId?.takeIf { id -> allViewfinders.value.any { it.id == id } } else state.selectedViewfinderId
+                val validKitId = if (allCameraKits.value.isNotEmpty()) state.selectedKitId?.takeIf { id -> allCameraKits.value.any { it.id == id } } else state.selectedKitId
+
+                if (editingLogId != null) {
+                    // UPDATE existing entry
+                    val existingEntry = repository.getLogEntryById(editingLogId!!).first()
+                    existingEntry?.let { entry ->
+                        val updatedEntry = entry.copy(
+                            notes = state.notes.trim(),
+                            environmentalConditions = "",
+                            cameraId = validCameraId,
+                            filmId = validFilmId,
+                            lensId = validLensId,
+                            teleconverterId = validTcId,
+                            filterId = validFilterId,
+                            kitId = validKitId,
+                            flashId = validFlashId,
+                            viewfinderId = validVfId,
+                            focalLength = state.focalLength,
+                            effectiveFocalLength = effectiveFocalLength,
+                            effectiveAperture = effectiveApertureValue,
+                            exposureSettings = ExposureSettings(
+                                state.shutterSpeed.trim(),
+                                state.aperture.trim(),
+                                state.iso,
+                                state.thumbnailUri ?: entry.exposureSettings.thumbnailUri,
+                            ),
+                            latitude = state.latitude,
+                            longitude = state.longitude,
+                            filmRoll = state.filmRoll.trim(),
+                        )
+                        repository.updateLogEntry(updatedEntry, state.selectedTagIds.toList())
+                    }
+                } else {
+                    // CREATE new entry
+                    repository.logExposure(
                         notes = state.notes.trim(),
                         environmentalConditions = "",
-                        cameraId = state.selectedCameraId,
-                        filmId = state.selectedFilmId,
-                        lensId = state.selectedLensId,
-                        teleconverterId = state.selectedTeleconverterId,
-                        filterId = state.selectedFilterId,
-                        kitId = state.selectedKitId,
-                        flashId = state.selectedFlashId,
-                        viewfinderId = state.selectedViewfinderId,
+                        cameraId = validCameraId,
+                        filmId = validFilmId,
+                        lensId = validLensId,
+                        teleconverterId = validTcId,
+                        filterId = validFilterId,
+                        kitId = validKitId,
+                        flashId = validFlashId,
+                        viewfinderId = validVfId,
                         focalLength = state.focalLength,
                         effectiveFocalLength = effectiveFocalLength,
                         effectiveAperture = effectiveApertureValue,
-                        exposureSettings = ExposureSettings(
-                            state.shutterSpeed.trim(),
-                            state.aperture.trim(),
-                            state.iso,
-                            state.thumbnailUri ?: entry.exposureSettings.thumbnailUri,
-                        ),
+                        exposureSettings = ExposureSettings(state.shutterSpeed.trim(), state.aperture.trim(), state.iso, state.thumbnailUri),
+                        tagIds = state.selectedTagIds.toList(),
                         latitude = state.latitude,
                         longitude = state.longitude,
                         filmRoll = state.filmRoll.trim(),
                     )
-                    repository.updateLogEntry(updatedEntry, state.selectedTagIds.toList())
+                    
+                    settingsRepository.incrementFrame()
+                    
+                    // Roll check logic for new entries
+                    if (state.currentFrame >= state.expectedExposures) {
+                        _uiState.update { it.copy(showRollFinishedDialog = true) }
+                    }
                 }
-            } else {
-                // CREATE new entry
-                repository.logExposure(
-                    notes = state.notes.trim(),
-                    environmentalConditions = "",
-                    cameraId = state.selectedCameraId,
-                    filmId = state.selectedFilmId,
-                    lensId = state.selectedLensId,
-                    teleconverterId = state.selectedTeleconverterId,
-                    filterId = state.selectedFilterId,
-                    kitId = state.selectedKitId,
-                    flashId = state.selectedFlashId,
-                    viewfinderId = state.selectedViewfinderId,
-                    focalLength = state.focalLength,
-                    effectiveFocalLength = effectiveFocalLength,
-                    effectiveAperture = effectiveApertureValue,
-                    exposureSettings = ExposureSettings(state.shutterSpeed.trim(), state.aperture.trim(), state.iso, state.thumbnailUri),
-                    tagIds = state.selectedTagIds.toList(),
-                    latitude = state.latitude,
-                    longitude = state.longitude,
-                    filmRoll = state.filmRoll.trim(),
-                )
-                
-                // Roll check logic for new entries
-                if (state.currentFrame >= state.expectedExposures) {
-                    _uiState.update { it.copy(showRollFinishedDialog = true) }
-                }
+            } catch (_: Exception) {
+                // Prevent unhandled exception crash
             }
         }
     }
