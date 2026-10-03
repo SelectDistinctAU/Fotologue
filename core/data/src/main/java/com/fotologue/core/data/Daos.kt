@@ -20,6 +20,9 @@ interface CameraDao {
     @Query("SELECT * FROM cameras ORDER BY position ASC, id ASC")
     suspend fun getAllCamerasOnce(): List<Camera>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCameraWithId(camera: Camera): Long
+
     @Insert
     suspend fun insertCamera(camera: Camera): Long
 
@@ -53,6 +56,9 @@ interface FilmDao {
     @Query("SELECT * FROM films ORDER BY position ASC, id ASC")
     suspend fun getAllFilmsOnce(): List<Film>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFilmWithId(film: Film): Long
+
     @Insert
     suspend fun insertFilm(film: Film): Long
 
@@ -85,6 +91,9 @@ interface ViewfinderDao {
 
     @Query("SELECT * FROM viewfinders ORDER BY position ASC, id ASC")
     suspend fun getAllViewfindersOnce(): List<Viewfinder>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertViewfinderWithId(viewfinder: Viewfinder): Long
 
     @Insert
     suspend fun insertViewfinder(viewfinder: Viewfinder): Long
@@ -197,6 +206,9 @@ interface LensDao {
     suspend fun getAllLensesOnce(): List<Lens>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLensWithId(lens: Lens): Long
+
+    @Insert
     suspend fun insertLens(lens: Lens): Long
 
     @Update
@@ -259,6 +271,9 @@ interface TeleconverterDao {
     @Query("SELECT * FROM teleconverters ORDER BY position ASC, id ASC")
     suspend fun getAllTeleconvertersOnce(): List<Teleconverter>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTeleconverterWithId(teleconverter: Teleconverter): Long
+
     @Insert
     suspend fun insertTeleconverter(teleconverter: Teleconverter): Long
 
@@ -307,6 +322,9 @@ interface FilterDao {
     @Query("SELECT * FROM filters ORDER BY position ASC, id ASC")
     suspend fun getAllFiltersOnce(): List<Filter>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFilterWithId(filter: Filter): Long
+
     @Insert
     suspend fun insertFilter(filter: Filter): Long
 
@@ -354,6 +372,9 @@ interface FlashDao {
 
     @Query("SELECT * FROM flashes ORDER BY position ASC, id ASC")
     suspend fun getAllFlashesOnce(): List<Flash>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFlashWithId(flash: Flash): Long
 
     @Insert
     suspend fun insertFlash(flash: Flash): Long
@@ -406,6 +427,12 @@ interface CameraKitDao {
 
     @Query("SELECT * FROM camera_kits ORDER BY position ASC, id ASC")
     suspend fun getAllCameraKitsOnce(): List<CameraKit>
+
+    @Query("SELECT * FROM camera_kits ORDER BY position ASC, id ASC")
+    suspend fun getAllKitsOnce(): List<CameraKit>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertKitWithId(cameraKit: CameraKit): Long
 
     @Insert
     suspend fun insertCameraKit(cameraKit: CameraKit): Long

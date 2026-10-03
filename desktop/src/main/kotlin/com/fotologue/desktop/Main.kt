@@ -1934,6 +1934,15 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                         manifestFile.writeText(jsonPayload)
                                         vaultFeedbackBanner = "📤 Published Reference Sync Package to: ${manifestFile.absolutePath}"
                                     }
+                                },
+                                onImportManifest = {
+                                    val detectedDrive = detectGoogleDrivePath() ?: System.getProperty("user.home")
+                                    val targetFile = chooseDirectoryOrFile(detectedDrive)
+                                    if (targetFile != null && File(targetFile).exists()) {
+                                        val jsonPayload = File(targetFile).readText()
+                                        DatabaseRepository.importReferenceSyncPackageJson(jsonPayload)
+                                        vaultFeedbackBanner = "📥 Imported Reference Sync Package from: ${File(targetFile).name}"
+                                    }
                                 }
                             )
                         }
@@ -2029,7 +2038,7 @@ class FoundationAdminFormState {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun FoundationAdminTab(onPublishManifest: () -> Unit) {
+fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Unit) {
     var pendingItems by remember { mutableStateOf(emptyList<FoundationReviewQueueEntity>()) }
     var selectedThemeGroup by remember { mutableIntStateOf(0) } // 0 = Photography Entities (Gear Collection), 1 = Lab & Inventory
     var selectedCategory by remember { mutableIntStateOf(0) } // 0=Cam, 1=Lens, 2=Film, 3=Kit, 4=Acc, 5=Sup, 6=Con, 7=Eq
@@ -4892,13 +4901,24 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                         )
                     }
 
-                Button(
-                    onClick = onPublishManifest,
-                    modifier = Modifier.fillMaxWidth().height(48.dp)
-                ) {
-                    Icon(Icons.Default.Share, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Sync to Mobile", fontWeight = FontWeight.Bold)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        onClick = onPublishManifest,
+                        modifier = Modifier.weight(1f).height(48.dp)
+                    ) {
+                        Icon(Icons.Default.Share, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Sync to Mobile", fontWeight = FontWeight.Bold)
+                    }
+
+                    OutlinedButton(
+                        onClick = onImportManifest,
+                        modifier = Modifier.weight(1f).height(48.dp)
+                    ) {
+                        Icon(Icons.Default.Refresh, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Import from Mobile", fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }

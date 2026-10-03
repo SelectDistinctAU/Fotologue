@@ -192,12 +192,31 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    suspend fun exportFoundationManifest(outputStream: OutputStream) {
+        try {
+            val configJson = configurationManager.exportFoundationManifest()
+            outputStream.use { it.write(configJson.toByteArray()) }
+            _events.emit(SettingsEvent.BackupSuccess)
+        } catch (e: Exception) {
+            _events.emit(SettingsEvent.Error(e.message ?: "Reference Manifest Export failed"))
+        }
+    }
+
     suspend fun restore(inputStream: InputStream) {
         try {
             configurationManager.importConfig(inputStream)
             _events.emit(SettingsEvent.RestoreSuccess)
         } catch (e: Exception) {
             _events.emit(SettingsEvent.Error(e.message ?: "Restore failed"))
+        }
+    }
+
+    suspend fun importFoundationManifest(inputStream: InputStream) {
+        try {
+            configurationManager.importFoundationManifest(inputStream)
+            _events.emit(SettingsEvent.RestoreSuccess)
+        } catch (e: Exception) {
+            _events.emit(SettingsEvent.Error(e.message ?: "Reference Manifest Import failed"))
         }
     }
 }

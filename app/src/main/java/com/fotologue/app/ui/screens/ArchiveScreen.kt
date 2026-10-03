@@ -106,6 +106,19 @@ fun ArchiveScreen(
         }
     }
 
+    val createReferenceManifestLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        uri?.let {
+            scope.launch {
+                context.contentResolver.openOutputStream(it)?.use { outputStream ->
+                    viewModel.exportFoundationManifest(outputStream)
+                }
+                snackbarHostState.showSnackbar("Reference Sync Manifest Exported!")
+            }
+        }
+    }
+
     // Non-Destructive Merge Import Launcher
     val restoreJsonLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -116,6 +129,19 @@ fun ArchiveScreen(
                     viewModel.restore(inputStream)
                 }
                 snackbarHostState.showSnackbar("Historical Catalogue Merged Successfully!")
+            }
+        }
+    }
+
+    val importReferenceManifestLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let {
+            scope.launch {
+                context.contentResolver.openInputStream(it)?.use { inputStream ->
+                    viewModel.importFoundationManifest(inputStream)
+                }
+                snackbarHostState.showSnackbar("Reference Manifest Imported. Foundation Catalogs Synced!")
             }
         }
     }
@@ -346,6 +372,60 @@ fun ArchiveScreen(
                     }
                 }
             }
+
+            // REFERENCE & FOUNDATION SYNC (OFFLINE)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = safelightCardBg)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "REFERENCE & FOUNDATION SYNC (OFFLINE)",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = safelightPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "True bidirectional offline sync for your Foundation Reference catalogs. Exchanges equipment profiles, LOVs, contacts, and storage locations with Fotologue Desktop without altering your Field Logs.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = safelightSubFg
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = { createReferenceManifestLauncher.launch("fotologue_foundation_manifest.json") },
+                            colors = btnColors,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                        ) {
+                            Icon(Icons.Default.Share, contentDescription = null, tint = btnTextTint)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Export Manifest", style = MaterialTheme.typography.labelSmall, color = btnTextTint, fontWeight = FontWeight.Bold)
+                        }
+
+                        OutlinedButton(
+                            onClick = { importReferenceManifestLauncher.launch(arrayOf("application/json")) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                        ) {
+                            Icon(Icons.Default.Refresh, contentDescription = null, tint = safelightPrimary)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Import Manifest", style = MaterialTheme.typography.labelSmall, color = safelightPrimary)
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

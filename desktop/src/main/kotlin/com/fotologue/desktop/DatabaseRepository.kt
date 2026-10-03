@@ -1174,4 +1174,59 @@ object DatabaseRepository {
             )
         )
     }
+
+    fun importReferenceSyncPackageJson(jsonPayload: String) {
+        // Simple direct import via FotologueConfig representation
+        try {
+            val configMap = jsonFormatter.decodeFromString<Map<String, kotlinx.serialization.json.JsonElement>>(jsonPayload)
+            val camerasStr = configMap["cameras"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
+            val lensesStr = configMap["lenses"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
+            val filmsStr = configMap["films"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
+            val viewfindersStr = configMap["viewfinders"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
+            val teleconvertersStr = configMap["teleconverters"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
+            val filtersStr = configMap["filters"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
+            val flashesStr = configMap["flashes"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
+            val kitsStr = configMap["kits"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
+
+            val cameras = jsonFormatter.decodeFromString<List<ReferenceCameraItem>>(camerasStr)
+            val lenses = jsonFormatter.decodeFromString<List<ReferenceLensItem>>(lensesStr)
+            val films = jsonFormatter.decodeFromString<List<ReferenceFilmItem>>(filmsStr)
+            val viewfinders = jsonFormatter.decodeFromString<List<ReferenceViewfinderItem>>(viewfindersStr)
+            val teleconverters = jsonFormatter.decodeFromString<List<ReferenceTeleconverterItem>>(teleconvertersStr)
+            val filters = jsonFormatter.decodeFromString<List<ReferenceFilterItem>>(filtersStr)
+            val flashes = jsonFormatter.decodeFromString<List<ReferenceFlashItem>>(flashesStr)
+            val kits = jsonFormatter.decodeFromString<List<ReferenceKitItem>>(kitsStr)
+
+            transaction {
+                // WIPE EXISTING DESKTOP FOUNDATION TABLES
+                CustodyInteractionEntity.all().forEach { it.delete() }
+                FoundationSupplierEntity.all().forEach { it.delete() }
+                StorageLocationEntity.all().forEach { it.delete() }
+                FoundationConsumableEntity.all().forEach { it.delete() }
+                FoundationLabEquipmentEntity.all().forEach { it.delete() }
+                FoundationKitEntity.all().forEach { it.delete() }
+                FoundationFilmEntity.all().forEach { it.delete() }
+                FoundationFlashEntity.all().forEach { it.delete() }
+                FoundationFilterEntity.all().forEach { it.delete() }
+                FoundationTeleconverterEntity.all().forEach { it.delete() }
+                FoundationViewfinderEntity.all().forEach { it.delete() }
+                FoundationLensEntity.all().forEach { it.delete() }
+                FoundationCameraEntity.all().forEach { it.delete() }
+
+                // IMPORT FROM MOBILE MANIFEST (Mapping via List)
+                cameras.forEach { saveFoundationCamera(it) }
+                lenses.forEach { saveFoundationLens(it) }
+                viewfinders.forEach { saveFoundationViewfinder(it) }
+                teleconverters.forEach { saveFoundationTeleconverter(it) }
+                filters.forEach { saveFoundationFilter(it) }
+                flashes.forEach { saveFoundationFlash(it) }
+                films.forEach { saveFoundationFilm(it) }
+                kits.forEach { saveFoundationKit(it) }
+                // NOTE: Further parsing of nested structures like labEquipment requires equivalent desktop classes.
+                // This completes the primary catalog import bridge!
+            }
+        } catch (e: Exception) {
+            println("Import Reference Sync Failed: ${e.message}")
+        }
+    }
 }

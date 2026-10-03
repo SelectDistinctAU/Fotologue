@@ -40,7 +40,7 @@ class ConfigurationManager(
         val flashes = database.flashDao().getAllFlashesOnce()
         val cameraFlashCrossRefs = database.flashDao().getAllCameraFlashCrossRefsOnce()
         val films = database.filmDao().getAllFilmsOnce()
-        val kits = database.cameraKitDao().getAllCameraKitsOnce()
+        val kits = database.cameraKitDao().getAllKitsOnce()
         val tags = database.tagDao().getAllTagsOnce()
         val logs = database.logEntryDao().getAllLogEntriesOnce()
         val logEntryTags = database.tagDao().getAllLogEntryTagCrossRefsOnce()
@@ -94,6 +94,97 @@ class ConfigurationManager(
     }
 
     /**
+     * Extracts only the Reference / Foundation tables into a FotologueConfig JSON, bypassing Field Logs and Settings.
+     */
+    suspend fun exportFoundationManifest(): String {
+        val config = FotologueConfig(
+            cameras = database.cameraDao().getAllCamerasOnce(),
+            lenses = database.lensDao().getAllLensesOnce(),
+            cameraLensCrossRefs = database.lensDao().getAllCameraLensCrossRefsOnce(),
+            viewfinders = database.viewfinderDao().getAllViewfindersOnce(),
+            cameraViewfinderCrossRefs = database.viewfinderDao().getAllCameraViewfinderCrossRefsOnce(),
+            teleconverters = database.teleconverterDao().getAllTeleconvertersOnce(),
+            cameraTeleconverterCrossRefs = database.teleconverterDao().getAllCameraTeleconverterCrossRefsOnce(),
+            filters = database.filterDao().getAllFiltersOnce(),
+            cameraFilterCrossRefs = database.filterDao().getAllCameraFilterCrossRefsOnce(),
+            flashes = database.flashDao().getAllFlashesOnce(),
+            cameraFlashCrossRefs = database.flashDao().getAllCameraFlashCrossRefsOnce(),
+            films = database.filmDao().getAllFilmsOnce(),
+            kits = database.cameraKitDao().getAllKitsOnce(),
+            tags = emptyList(), // Omitted
+            logs = emptyList(), // Omitted
+            logEntryTags = emptyList(), // Omitted
+            filmRollSessions = emptyList(), // Omitted
+            labEquipment = database.labEquipmentDao().getAllEquipmentOnce(),
+            labChemicals = database.labChemicalDao().getAllChemicalsOnce(),
+            labSuppliers = database.labSupplierDao().getAllSuppliersOnce(),
+            inventoryItems = database.inventoryItemDao().getAllItemsOnce(),
+            orderHistory = database.orderHistoryDao().getAllOrdersOnce(),
+            performanceLogs = emptyList(), // Omitted
+            labProcessEvents = emptyList(), // Omitted
+            printRecipes = emptyList(), // Omitted
+            labStorageLocations = database.labStorageLocationDao().getAllStorageLocationsOnce(),
+            printOutcomes = emptyList(), // Omitted
+            settings = emptyMap() // Omitted
+        )
+        return json.encodeToString(FotologueConfig.serializer(), config)
+    }
+
+    /**
+     * Reads fotologue_foundation_manifest.json and updates the local Foundation tables without altering Field Logs.
+     */
+    @OptIn(ExperimentalSerializationApi::class)
+    suspend fun importFoundationManifest(inputStream: InputStream) {
+        val config = inputStream.use { stream ->
+            json.decodeFromStream<FotologueConfig>(stream)
+        }
+
+        database.withTransaction {
+            // Wipe Foundation Tables
+            database.orderHistoryDao().deleteAllOrders()
+            database.labSupplierDao().deleteAllSuppliers()
+            database.labStorageLocationDao().deleteAllStorageLocations()
+            database.labChemicalDao().deleteAllChemicals()
+            database.labEquipmentDao().deleteAllEquipment()
+            database.cameraKitDao().deleteAllCameraKits()
+            database.filmDao().deleteAllFilms()
+            database.flashDao().deleteAllCameraFlashCrossRefs()
+            database.flashDao().deleteAllFlashes()
+            database.filterDao().deleteAllCameraFilterCrossRefs()
+            database.filterDao().deleteAllFilters()
+            database.teleconverterDao().deleteAllCameraTeleconverterCrossRefs()
+            database.teleconverterDao().deleteAllTeleconverters()
+            database.viewfinderDao().deleteAllCameraViewfinderCrossRefs()
+            database.viewfinderDao().deleteAllViewfinders()
+            database.lensDao().deleteAllCameraLensCrossRefs()
+            database.lensDao().deleteAllLenses()
+            database.cameraDao().deleteAllCameras()
+
+            // Insert new Foundation Manifest Data
+            config.cameras.forEach { database.cameraDao().insertCameraWithId(it) }
+            config.lenses.forEach { database.lensDao().insertLensWithId(it) }
+            config.cameraLensCrossRefs.forEach { database.lensDao().insertCameraLensCrossRef(it) }
+            config.viewfinders.forEach { database.viewfinderDao().insertViewfinderWithId(it) }
+            config.cameraViewfinderCrossRefs.forEach { database.viewfinderDao().insertCameraViewfinderCrossRef(it) }
+            config.teleconverters.forEach { database.teleconverterDao().insertTeleconverterWithId(it) }
+            config.cameraTeleconverterCrossRefs.forEach { database.teleconverterDao().insertCameraTeleconverterCrossRef(it) }
+            config.filters.forEach { database.filterDao().insertFilterWithId(it) }
+            config.cameraFilterCrossRefs.forEach { database.filterDao().insertCameraFilterCrossRef(it) }
+            config.flashes.forEach { database.flashDao().insertFlashWithId(it) }
+            config.cameraFlashCrossRefs.forEach { database.flashDao().insertCameraFlashCrossRef(it) }
+            config.films.forEach { database.filmDao().insertFilmWithId(it) }
+            config.kits.forEach { database.cameraKitDao().insertKitWithId(it) }
+
+            config.labEquipment.forEach { database.labEquipmentDao().insertEquipment(it) }
+            config.labChemicals.forEach { database.labChemicalDao().insertChemical(it) }
+            config.labSuppliers.forEach { database.labSupplierDao().insertSupplier(it) }
+            config.inventoryItems.forEach { database.inventoryItemDao().insertItem(it) }
+            config.orderHistory.forEach { database.orderHistoryDao().insertOrder(it) }
+            config.labStorageLocations.forEach { database.labStorageLocationDao().insertStorageLocation(it) }
+        }
+    }
+
+    /**
      * Replaces local database with backup JSON config file.
      */
     @OptIn(ExperimentalSerializationApi::class)
@@ -134,20 +225,20 @@ class ConfigurationManager(
             database.filmRollSessionDao().deleteAllSessions()
 
             // Insert new data (including Lab tables)
-            config.cameras.forEach { database.cameraDao().insertCamera(it) }
-            config.lenses.forEach { database.lensDao().insertLens(it) }
+            config.cameras.forEach { database.cameraDao().insertCameraWithId(it) }
+            config.lenses.forEach { database.lensDao().insertLensWithId(it) }
             config.cameraLensCrossRefs.forEach { database.lensDao().insertCameraLensCrossRef(it) }
-            config.viewfinders.forEach { database.viewfinderDao().insertViewfinder(it) }
+            config.viewfinders.forEach { database.viewfinderDao().insertViewfinderWithId(it) }
             config.cameraViewfinderCrossRefs.forEach { database.viewfinderDao().insertCameraViewfinderCrossRef(it) }
-            config.teleconverters.forEach { database.teleconverterDao().insertTeleconverter(it) }
+            config.teleconverters.forEach { database.teleconverterDao().insertTeleconverterWithId(it) }
             config.cameraTeleconverterCrossRefs.forEach { database.teleconverterDao().insertCameraTeleconverterCrossRef(it) }
-            config.filters.forEach { database.filterDao().insertFilter(it) }
+            config.filters.forEach { database.filterDao().insertFilterWithId(it) }
             config.cameraFilterCrossRefs.forEach { database.filterDao().insertCameraFilterCrossRef(it) }
-            config.flashes.forEach { database.flashDao().insertFlash(it) }
+            config.flashes.forEach { database.flashDao().insertFlashWithId(it) }
             config.cameraFlashCrossRefs.forEach { database.flashDao().insertCameraFlashCrossRef(it) }
-            config.films.forEach { database.filmDao().insertFilm(it) }
+            config.films.forEach { database.filmDao().insertFilmWithId(it) }
             config.tags.forEach { database.tagDao().insertTag(it) }
-            config.kits.forEach { database.cameraKitDao().insertCameraKit(it) }
+            config.kits.forEach { database.cameraKitDao().insertKitWithId(it) }
             config.logs.forEach { database.logEntryDao().insertLogEntry(it) }
             config.logEntryTags.forEach { database.tagDao().insertLogEntryTagCrossRef(it) }
             config.filmRollSessions.forEach { database.filmRollSessionDao().insertSession(it) }
@@ -217,20 +308,20 @@ class ConfigurationManager(
 
         database.withTransaction {
             // MERGE MODE: Insert or Update without clearing existing data
-            config.cameras.forEach { database.cameraDao().insertCamera(it) }
-            config.lenses.forEach { database.lensDao().insertLens(it) }
+            config.cameras.forEach { database.cameraDao().insertCameraWithId(it) }
+            config.lenses.forEach { database.lensDao().insertLensWithId(it) }
             config.cameraLensCrossRefs.forEach { database.lensDao().insertCameraLensCrossRef(it) }
-            config.viewfinders.forEach { database.viewfinderDao().insertViewfinder(it) }
+            config.viewfinders.forEach { database.viewfinderDao().insertViewfinderWithId(it) }
             config.cameraViewfinderCrossRefs.forEach { database.viewfinderDao().insertCameraViewfinderCrossRef(it) }
-            config.teleconverters.forEach { database.teleconverterDao().insertTeleconverter(it) }
+            config.teleconverters.forEach { database.teleconverterDao().insertTeleconverterWithId(it) }
             config.cameraTeleconverterCrossRefs.forEach { database.teleconverterDao().insertCameraTeleconverterCrossRef(it) }
-            config.filters.forEach { database.filterDao().insertFilter(it) }
+            config.filters.forEach { database.filterDao().insertFilterWithId(it) }
             config.cameraFilterCrossRefs.forEach { database.filterDao().insertCameraFilterCrossRef(it) }
-            config.flashes.forEach { database.flashDao().insertFlash(it) }
+            config.flashes.forEach { database.flashDao().insertFlashWithId(it) }
             config.cameraFlashCrossRefs.forEach { database.flashDao().insertCameraFlashCrossRef(it) }
-            config.films.forEach { database.filmDao().insertFilm(it) }
+            config.films.forEach { database.filmDao().insertFilmWithId(it) }
             config.tags.forEach { database.tagDao().insertTag(it) }
-            config.kits.forEach { database.cameraKitDao().insertCameraKit(it) }
+            config.kits.forEach { database.cameraKitDao().insertKitWithId(it) }
             config.logs.forEach { database.logEntryDao().insertLogEntry(it) }
             config.logEntryTags.forEach { database.tagDao().insertLogEntryTagCrossRef(it) }
             config.filmRollSessions.forEach { database.filmRollSessionDao().insertSession(it) }
