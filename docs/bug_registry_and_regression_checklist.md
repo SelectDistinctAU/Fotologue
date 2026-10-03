@@ -86,6 +86,56 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-010: Mobile Log Entry Creation Process Crash on Save
+- **Platform**: Fotologue Mobile (`app` / `AddLogViewModel.kt`)
+- **Reported**: March 2026
+- **Symptom**: Mobile app crashed when attempting to save a newly created Exposure Log Entry.
+- **Root Cause**: `onLensSelected` in `AddLogViewModel.kt` attempted to filter apertures using `lens.minAperture..lens.maxAperture` (e.g. `22.0..1.4`). Because `minAperture` (f/22) is numerically greater than `maxAperture` (f/1.4), Kotlin produced an empty inverted float range, clearing `availableApertures` and crashing upon index access.
+- **Resolution**: Updated `AddLogViewModel.kt` to use `minOf(minAperture, maxAperture)..maxOf(minAperture, maxAperture)` to guarantee valid ranges, and added safe foreign key validation in `saveLog()`.
+- **Regression Test Case**: Open `Add Exposure Log` on Mobile $\to$ select a lens $\to$ save log $\to$ verify entry saves cleanly without crashing.
+
+---
+
+### BUG-011: Desktop Empty Data Grid After Reference Sync Import
+- **Platform**: Fotologue Desktop (`desktop` / `DatabaseRepository.kt` & `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: Desktop left rail showed "Cameras (4)" and "Lenses (2)", but the right pane rendered "No reference cameras logged yet".
+- **Root Cause**: Mobile Room JSON exported `shutterSpeeds` as `List<String>`, whereas Desktop's JSON decoder expected `String?`, causing a silent `SerializationException`. Furthermore, `Main.kt` was missing a `refreshAllData()` call after import.
+- **Resolution**: Replaced strict class decoding with an element-by-element JSON parser in `DatabaseRepository.kt` and added an immediate `refreshAllData()` call on Desktop.
+- **Regression Test Case**: Click `Import from Mobile` on Desktop $\to$ select manifest $\to$ verify cameras and lenses render immediately in the data grid.
+
+---
+
+### BUG-012: TLR & Fixed-Lens Cameras Missing Integrated Taking Lens
+- **Platform**: Fotologue Mobile (`app` / `AddEditCameraViewModel.kt`)
+- **Reported**: March 2026
+- **Symptom**: Saving a new TLR (e.g., Yashica Mat-124G) created the camera body but failed to auto-setup its integrated taking lens.
+- **Root Cause**: `AddEditCameraViewModel.kt` only created a fixed lens if a preset defined `fixedLens` attributes, but did not auto-generate a taking lens for non-interchangeable camera types.
+- **Resolution**: Updated `AddEditCameraViewModel.kt` to auto-construct and link a taking lens (`Lens`) upon saving any TLR or fixed-mount camera.
+- **Regression Test Case**: Add a TLR camera (*Yashica Mat-124G*) $\to$ verify its taking lens automatically appears in the user's Lenses list.
+
+---
+
+### BUG-013: Missing TLR Taking Lenses in Preset Catalog
+- **Platform**: Core Data (`core/data` / `master_preset_catalog.json`)
+- **Reported**: March 2026
+- **Symptom**: Searching for "Yashinon" or "Yashica" in Lens Presets returned "No lens presets found".
+- **Root Cause**: `master_preset_catalog.json` lacked taking lens entries for TLR bodies.
+- **Resolution**: Added *Yashinon 80mm f/3.5*, *Zeiss Planar 80mm f/2.8*, and *Olympus Zuiko 35mm f/2.8* to `master_preset_catalog.json`.
+- **Regression Test Case**: Open `Select Lens from Presets` modal $\to$ search "Yashinon" $\to$ verify *Yashinon 80mm f/3.5* appears.
+
+---
+
+### BUG-014: Mobile Lens Form Duplicate "Manual Entry" Header
+- **Platform**: Fotologue Mobile (`app` / `AddEditLensScreen.kt`)
+- **Reported**: March 2026
+- **Symptom**: `AddEditLensScreen.kt` rendered the "Manual Entry" header text twice in stacked succession.
+- **Root Cause**: Duplicate `HorizontalDivider()` and `Text("Manual Entry")` Composables in `AddEditLensScreen.kt`.
+- **Resolution**: Removed the duplicate header block.
+- **Regression Test Case**: Open `Add Lens` on Mobile $\to$ verify only one "Manual Entry" header displays.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
