@@ -136,6 +136,36 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-015: Desktop FoundationAdminTab JVM MethodTooLargeException
+- **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: Desktop Kotlin compiler failed with `MethodTooLargeException: Method too large: FoundationAdminTab$lambda$168`.
+- **Root Cause**: `FoundationAdminTab` held 35+ inline `remember { mutableStateOf(...) }` declarations and a massive inline `when (selectedCategory)` block, exceeding the 64KB JVM method bytecode limit.
+- **Resolution**: Refactored `FoundationAdminTab` by encapsulating form states into `FoundationAdminFormState` and extracting the data grid into `AdminDataGridContent` and left rail into `FoundationAdminLeftRail`.
+- **Regression Test Case**: Run `./gradlew :desktop:compileKotlin` $\to$ verify build completes cleanly without bytecode size errors.
+
+---
+
+### BUG-016: Non-Atomic Destructive Manifest Sync Import (Skullinator Protocol Violation)
+- **Platform**: Fotologue Desktop (`desktop` / `DatabaseRepository.kt`)
+- **Reported**: March 2026
+- **Symptom**: If an imported JSON manifest contained malformed data, Desktop SQLite tables were wiped *before* JSON parsing succeeded, leaving the local database empty upon failure.
+- **Root Cause**: Table deletion (`Entity.all().forEach { it.delete() }`) was performed prior to JSON decoding and validation.
+- **Resolution**: Refactored `importReferenceSyncPackageJson()` to validate and parse the JSON payload *first*, and perform table replacements safely inside a transaction block.
+- **Regression Test Case**: Attempt to import a malformed JSON file on Desktop $\to$ verify existing database tables remain untouched.
+
+---
+
+### BUG-017: Unambiguous Icon Governance Violation on Contacts Screen
+- **Platform**: Fotologue Mobile (`feature:lab` / `LabHomeScreen.kt` & `SupplierIssueLogScreen.kt`)
+- **Reported**: March 2026
+- **Symptom**: The "Handyman" icon (`ic_handyman`) was used for both Darkroom Equipment Maintenance AND the Vendor Issue & Call Tracker on the same screen, violating the single unambiguous icon principle.
+- **Root Cause**: Dual reuse of `ic_handyman` across unrelated domain actions.
+- **Resolution**: Created `ic_call_log.xml` (official Material Symbol phone handset + 3 list bars) for Vendor Issue & Call Tracker, reserving `ic_handyman` exclusively for Darkroom Equipment Maintenance.
+- **Regression Test Case**: Open Contacts Directory on Mobile $\to$ verify action button uses the `📞☰` Call Log icon.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
