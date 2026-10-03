@@ -8,9 +8,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
+import kotlinx.serialization.json.*
 import kotlinx.serialization.encodeToString
 
 object DatabaseRepository {
@@ -1176,29 +1174,11 @@ object DatabaseRepository {
     }
 
     fun importReferenceSyncPackageJson(jsonPayload: String) {
-        // Simple direct import via FotologueConfig representation
         try {
-            val configMap = jsonFormatter.decodeFromString<Map<String, kotlinx.serialization.json.JsonElement>>(jsonPayload)
-            val camerasStr = configMap["cameras"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
-            val lensesStr = configMap["lenses"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
-            val filmsStr = configMap["films"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
-            val viewfindersStr = configMap["viewfinders"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
-            val teleconvertersStr = configMap["teleconverters"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
-            val filtersStr = configMap["filters"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
-            val flashesStr = configMap["flashes"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
-            val kitsStr = configMap["kits"]?.let { jsonFormatter.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it) } ?: "[]"
-
-            val cameras = jsonFormatter.decodeFromString<List<ReferenceCameraItem>>(camerasStr)
-            val lenses = jsonFormatter.decodeFromString<List<ReferenceLensItem>>(lensesStr)
-            val films = jsonFormatter.decodeFromString<List<ReferenceFilmItem>>(filmsStr)
-            val viewfinders = jsonFormatter.decodeFromString<List<ReferenceViewfinderItem>>(viewfindersStr)
-            val teleconverters = jsonFormatter.decodeFromString<List<ReferenceTeleconverterItem>>(teleconvertersStr)
-            val filters = jsonFormatter.decodeFromString<List<ReferenceFilterItem>>(filtersStr)
-            val flashes = jsonFormatter.decodeFromString<List<ReferenceFlashItem>>(flashesStr)
-            val kits = jsonFormatter.decodeFromString<List<ReferenceKitItem>>(kitsStr)
+            val jsonElement = jsonFormatter.parseToJsonElement(jsonPayload).jsonObject
 
             transaction {
-                // WIPE EXISTING DESKTOP FOUNDATION TABLES
+                // WIPE EXISTING DESKTOP FOUNDATION TABLES BEFORE RE-POPULATING
                 CustodyInteractionEntity.all().forEach { it.delete() }
                 FoundationSupplierEntity.all().forEach { it.delete() }
                 StorageLocationEntity.all().forEach { it.delete() }
@@ -1213,20 +1193,168 @@ object DatabaseRepository {
                 FoundationLensEntity.all().forEach { it.delete() }
                 FoundationCameraEntity.all().forEach { it.delete() }
 
-                // IMPORT FROM MOBILE MANIFEST (Mapping via List)
-                cameras.forEach { saveFoundationCamera(it) }
-                lenses.forEach { saveFoundationLens(it) }
-                viewfinders.forEach { saveFoundationViewfinder(it) }
-                teleconverters.forEach { saveFoundationTeleconverter(it) }
-                filters.forEach { saveFoundationFilter(it) }
-                flashes.forEach { saveFoundationFlash(it) }
-                films.forEach { saveFoundationFilm(it) }
-                kits.forEach { saveFoundationKit(it) }
-                // NOTE: Further parsing of nested structures like labEquipment requires equivalent desktop classes.
-                // This completes the primary catalog import bridge!
+                // Extract Cameras
+                jsonElement["cameras"]?.jsonArray?.forEach { el ->
+                    try {
+                        val obj = el.jsonObject
+                        val name = obj["name"]?.jsonPrimitive?.content ?: ""
+                        val model = obj["modelNumber"]?.jsonPrimitive?.contentOrNull
+                        val serial = obj["serialNumber"]?.jsonPrimitive?.contentOrNull
+                        val type = obj["type"]?.jsonPrimitive?.contentOrNull ?: "FILM_SLR"
+                        val mount = obj["mount"]?.jsonPrimitive?.contentOrNull ?: "Standard"
+                        val format = obj["format"]?.jsonPrimitive?.contentOrNull ?: "35mm"
+                        val shutterList = obj["shutterSpeeds"]?.jsonArray?.mapNotNull { it.jsonPrimitive.contentOrNull } ?: emptyList()
+                        if (name.isNotBlank()) {
+                            saveFoundationCamera(
+                                ReferenceCameraItem(
+                                    name = name,
+                                    modelNumber = model,
+                                    serialNumber = serial,
+                                    type = type,
+                                    mount = mount,
+                                    format = format,
+                                    shutterSpeeds = shutterList.joinToString(", ")
+                                )
+                            )
+                        }
+                    } catch (_: Exception) {}
+                }
+
+                // Extract Lenses
+                jsonElement["lenses"]?.jsonArray?.forEach { el ->
+                    try {
+                        val obj = el.jsonObject
+                        val make = obj["make"]?.jsonPrimitive?.contentOrNull ?: "Generic"
+                        val model = obj["model"]?.jsonPrimitive?.contentOrNull ?: "Lens"
+                        val name = obj["name"]?.jsonPrimitive?.contentOrNull ?: "$make $model"
+                        val type = obj["type"]?.jsonPrimitive?.contentOrNull ?: "Prime"
+                        val mount = obj["mount"]?.jsonPrimitive?.contentOrNull ?: "Standard"
+                        val minFocal = obj["minFocalLength"]?.jsonPrimitive?.contentOrNull
+                        val maxFocal = obj["maxFocalLength"]?.jsonPrimitive?.contentOrNull
+                        val focal = if (minFocal != null && maxFocal != null && minFocal != maxFocal) "${minFocal}-${maxFocal}mm" else "${minFocal ?: maxFocal ?: "50"}mm"
+                        val maxAp = obj["maxAperture"]?.jsonPrimitive?.contentOrNull ?: "f/1.4"
+                        val minAp = obj["minAperture"]?.jsonPrimitive?.contentOrNull ?: "f/22"
+                        if (name.isNotBlank()) {
+                            saveFoundationLens(
+                                ReferenceLensItem(
+                                    name = name,
+                                    make = make,
+                                    model = model,
+                                    type = type,
+                                    mount = mount,
+                                    focalLength = focal,
+                                    maxAperture = if (maxAp.startsWith("f/")) maxAp else "f/$maxAp",
+                                    minAperture = if (minAp.startsWith("f/")) minAp else "f/$minAp"
+                                )
+                            )
+                        }
+                    } catch (_: Exception) {}
+                }
+
+                // Extract Films
+                jsonElement["films"]?.jsonArray?.forEach { el ->
+                    try {
+                        val obj = el.jsonObject
+                        val name = obj["name"]?.jsonPrimitive?.content ?: ""
+                        val abbr = obj["abbreviation"]?.jsonPrimitive?.contentOrNull ?: ""
+                        val iso = obj["iso"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: 400
+                        val type = obj["type"]?.jsonPrimitive?.contentOrNull ?: "Color Negative"
+                        val format = obj["format"]?.jsonPrimitive?.contentOrNull ?: "35mm"
+                        val exp = obj["expectedExposures"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: 36
+                        if (name.isNotBlank()) {
+                            saveFoundationFilm(
+                                ReferenceFilmItem(
+                                    name = name,
+                                    abbreviation = abbr,
+                                    iso = iso,
+                                    type = type,
+                                    format = format,
+                                    expectedExposures = exp
+                                )
+                            )
+                        }
+                    } catch (_: Exception) {}
+                }
+
+                // Extract Suppliers
+                jsonElement["labSuppliers"]?.jsonArray?.forEach { el ->
+                    try {
+                        val obj = el.jsonObject
+                        val name = obj["name"]?.jsonPrimitive?.content ?: ""
+                        val region = obj["region"]?.jsonPrimitive?.contentOrNull ?: "Global"
+                        val website = obj["website"]?.jsonPrimitive?.contentOrNull ?: ""
+                        if (name.isNotBlank()) {
+                            saveFoundationSupplier(
+                                ReferenceSupplierItem(
+                                    name = name,
+                                    region = region,
+                                    website = website
+                                )
+                            )
+                        }
+                    } catch (_: Exception) {}
+                }
+
+                // Extract Storage Locations
+                jsonElement["labStorageLocations"]?.jsonArray?.forEach { el ->
+                    try {
+                        val obj = el.jsonObject
+                        val name = obj["name"]?.jsonPrimitive?.content ?: ""
+                        val type = obj["locationType"]?.jsonPrimitive?.contentOrNull ?: obj["type"]?.jsonPrimitive?.contentOrNull ?: "Cabinet"
+                        val notes = obj["notes"]?.jsonPrimitive?.contentOrNull ?: ""
+                        if (name.isNotBlank()) {
+                            saveStorageLocation(
+                                ReferenceStorageLocationItem(
+                                    name = name,
+                                    type = type,
+                                    notes = notes
+                                )
+                            )
+                        }
+                    } catch (_: Exception) {}
+                }
+
+                // Extract Consumables / Lab Chemical
+                jsonElement["labChemicals"]?.jsonArray?.forEach { el ->
+                    try {
+                        val obj = el.jsonObject
+                        val name = obj["name"]?.jsonPrimitive?.content ?: ""
+                        val type = obj["type"]?.jsonPrimitive?.contentOrNull ?: "Chemistry"
+                        val unit = obj["volumeUnit"]?.jsonPrimitive?.contentOrNull ?: "L"
+                        if (name.isNotBlank()) {
+                            saveFoundationConsumable(
+                                ReferenceConsumableItem(
+                                    name = name,
+                                    type = type,
+                                    category = "Chemistry",
+                                    defaultUnit = unit
+                                )
+                            )
+                        }
+                    } catch (_: Exception) {}
+                }
+
+                // Extract Lab Equipment
+                jsonElement["labEquipment"]?.jsonArray?.forEach { el ->
+                    try {
+                        val obj = el.jsonObject
+                        val name = obj["name"]?.jsonPrimitive?.content ?: ""
+                        val category = obj["category"]?.jsonPrimitive?.contentOrNull ?: "Processing Gear"
+                        val condition = obj["condition"]?.jsonPrimitive?.contentOrNull ?: "Good"
+                        if (name.isNotBlank()) {
+                            saveFoundationLabEquipment(
+                                ReferenceLabEquipmentItem(
+                                    name = name,
+                                    category = category,
+                                    condition = condition
+                                )
+                            )
+                        }
+                    } catch (_: Exception) {}
+                }
             }
         } catch (e: Exception) {
-            println("Import Reference Sync Failed: ${e.message}")
+            e.printStackTrace()
         }
     }
 }
