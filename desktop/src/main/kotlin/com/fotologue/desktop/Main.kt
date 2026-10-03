@@ -1944,6 +1944,89 @@ fun DesktopApp(logoPainter: Painter? = null) {
     }
 }
 
+private fun formatOrderStatus(status: String): String {
+    return when (status.uppercase()) {
+        "WAITLISTED" -> "Waitlisted"
+        "PACKAGING" -> "Packaging"
+        "IN_TRANSIT" -> "In Transit"
+        "DELIVERED", "RECEIVED" -> "Delivered"
+        else -> status.replace('_', ' ').lowercase().split(" ").joinToString(" ") { word ->
+            word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        }
+    }
+}
+
+private fun parseOrderStatusToEnum(display: String): String {
+    return when (display) {
+        "Waitlisted" -> "WAITLISTED"
+        "Packaging" -> "PACKAGING"
+        "In Transit" -> "IN_TRANSIT"
+        "Delivered" -> "DELIVERED"
+        else -> display.uppercase().replace(' ', '_')
+    }
+}
+
+private fun formatInteractionType(type: String): String {
+    return when (type.uppercase()) {
+        "LOAN_OUT", "LOAN" -> "Loan Out"
+        "RENTAL_IN", "RENTAL" -> "Rental In"
+        "SERVICE_REPAIR", "REPAIR" -> "Service / Repair"
+        "PURCHASE_ORDER" -> "Purchase Order"
+        else -> type.replace('_', ' ').lowercase().split(" ").joinToString(" ") { word ->
+            word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        }
+    }
+}
+
+private fun parseInteractionTypeToEnum(display: String): String {
+    return when (display) {
+        "Purchase Order" -> "PURCHASE_ORDER"
+        "Loan Out" -> "LOAN_OUT"
+        "Rental In" -> "RENTAL_IN"
+        "Service / Repair" -> "SERVICE_REPAIR"
+        else -> display.uppercase().replace(' ', '_')
+    }
+}
+
+class FoundationAdminFormState {
+    var showAddEditDialog by mutableStateOf(false)
+    var showReviewQueueDialog by mutableStateOf(false)
+    var selectedAssociatedCameraIds by mutableStateOf(setOf<Int>())
+    var showCameraPresetsDialog by mutableStateOf(false)
+    var selectedCameraTypeFilter by mutableStateOf("All")
+    var cameraSearchQuery by mutableStateOf("")
+    var showLensPresetsDialog by mutableStateOf(false)
+    var selectedLensMountFilter by mutableStateOf("All")
+    var lensSearchQueryText by mutableStateOf("")
+    var showFilmPresetsDialog by mutableStateOf(false)
+    var selectedFilmManufacturer by mutableStateOf("Kodak")
+    var showEquipmentPresetsDialog by mutableStateOf(false)
+    var selectedEquipmentCategoryFilter by mutableStateOf("All")
+    var equipmentSearchQuery by mutableStateOf("")
+    var isPresetDropdownExpanded by mutableStateOf(false)
+
+    var editingCamera by mutableStateOf<ReferenceCameraItem?>(null)
+    var fixedLensName by mutableStateOf("")
+    var fixedLensFocalLength by mutableStateOf("80mm")
+    var fixedLensMaxAperture by mutableStateOf("f/3.5")
+    var fixedLensFilterSize by mutableStateOf("Bay I")
+    var editingLens by mutableStateOf<ReferenceLensItem?>(null)
+    var editingFilm by mutableStateOf<ReferenceFilmItem?>(null)
+    var editingKit by mutableStateOf<ReferenceKitItem?>(null)
+    var editingTeleconverter by mutableStateOf<ReferenceTeleconverterItem?>(null)
+    var editingFilter by mutableStateOf<ReferenceFilterItem?>(null)
+    var editingFlash by mutableStateOf<ReferenceFlashItem?>(null)
+    var editingViewfinder by mutableStateOf<ReferenceViewfinderItem?>(null)
+    var editingSupplier by mutableStateOf<ReferenceSupplierItem?>(null)
+    var editingConsumable by mutableStateOf<ReferenceConsumableItem?>(null)
+    var editingLabEquipment by mutableStateOf<ReferenceLabEquipmentItem?>(null)
+    var editingStorageLocation by mutableStateOf<ReferenceStorageLocationItem?>(null)
+    var editingCustodyInteraction by mutableStateOf<ReferenceCustodyInteractionItem?>(null)
+
+    var desktopDeliveryDialogOrder by mutableStateOf<ReferenceCustodyInteractionItem?>(null)
+    var desktopSelectedDeliveryLocation by mutableStateOf("")
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun FoundationAdminTab(onPublishManifest: () -> Unit) {
@@ -1969,39 +2052,43 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
     var storageLocations by remember { mutableStateOf(emptyList<ReferenceStorageLocationItem>()) }
     var custodyInteractions by remember { mutableStateOf(emptyList<ReferenceCustodyInteractionItem>()) }
 
-    var showAddEditDialog by remember { mutableStateOf(false) }
-    var showReviewQueueDialog by remember { mutableStateOf(false) }
-    var selectedAssociatedCameraIds by remember { mutableStateOf(setOf<Int>()) }
-    var showCameraPresetsDialog by remember { mutableStateOf(false) }
-    var selectedCameraTypeFilter by remember { mutableStateOf("All") }
-    var cameraSearchQuery by remember { mutableStateOf("") }
-    var showLensPresetsDialog by remember { mutableStateOf(false) }
-    var selectedLensMountFilter by remember { mutableStateOf("All") }
-    var lensSearchQueryText by remember { mutableStateOf("") }
-    var showFilmPresetsDialog by remember { mutableStateOf(false) }
-    var selectedFilmManufacturer by remember { mutableStateOf("Kodak") }
-    var showEquipmentPresetsDialog by remember { mutableStateOf(false) }
-    var selectedEquipmentCategoryFilter by remember { mutableStateOf("All") }
-    var equipmentSearchQuery by remember { mutableStateOf("") }
-    var isPresetDropdownExpanded by remember { mutableStateOf(false) }
-    var editingCamera by remember { mutableStateOf<ReferenceCameraItem?>(null) }
-    var fixedLensName by remember { mutableStateOf("") }
-    var fixedLensFocalLength by remember { mutableStateOf("80mm") }
-    var fixedLensMaxAperture by remember { mutableStateOf("f/3.5") }
-    var fixedLensFilterSize by remember { mutableStateOf("Bay I") }
-    var editingLens by remember { mutableStateOf<ReferenceLensItem?>(null) }
-    var editingFilm by remember { mutableStateOf<ReferenceFilmItem?>(null) }
-    var editingKit by remember { mutableStateOf<ReferenceKitItem?>(null) }
-    var editingTeleconverter by remember { mutableStateOf<ReferenceTeleconverterItem?>(null) }
-    var editingFilter by remember { mutableStateOf<ReferenceFilterItem?>(null) }
-    var editingFlash by remember { mutableStateOf<ReferenceFlashItem?>(null) }
-    var editingViewfinder by remember { mutableStateOf<ReferenceViewfinderItem?>(null) }
-    var editingAccessory by remember { mutableStateOf<ReferenceAccessoryItem?>(null) }
-    var editingSupplier by remember { mutableStateOf<ReferenceSupplierItem?>(null) }
-    var editingConsumable by remember { mutableStateOf<ReferenceConsumableItem?>(null) }
-    var editingLabEquipment by remember { mutableStateOf<ReferenceLabEquipmentItem?>(null) }
-    var editingStorageLocation by remember { mutableStateOf<ReferenceStorageLocationItem?>(null) }
-    var editingCustodyInteraction by remember { mutableStateOf<ReferenceCustodyInteractionItem?>(null) }
+    val formState = remember { FoundationAdminFormState() }
+
+    var desktopDeliveryDialogOrder by formState::desktopDeliveryDialogOrder
+    var desktopSelectedDeliveryLocation by formState::desktopSelectedDeliveryLocation
+
+    var showAddEditDialog by formState::showAddEditDialog
+    var showReviewQueueDialog by formState::showReviewQueueDialog
+    var selectedAssociatedCameraIds by formState::selectedAssociatedCameraIds
+    var showCameraPresetsDialog by formState::showCameraPresetsDialog
+    var selectedCameraTypeFilter by formState::selectedCameraTypeFilter
+    var cameraSearchQuery by formState::cameraSearchQuery
+    var showLensPresetsDialog by formState::showLensPresetsDialog
+    var selectedLensMountFilter by formState::selectedLensMountFilter
+    var lensSearchQueryText by formState::lensSearchQueryText
+    var showFilmPresetsDialog by formState::showFilmPresetsDialog
+    var selectedFilmManufacturer by formState::selectedFilmManufacturer
+    var showEquipmentPresetsDialog by formState::showEquipmentPresetsDialog
+    var selectedEquipmentCategoryFilter by formState::selectedEquipmentCategoryFilter
+    var equipmentSearchQuery by formState::equipmentSearchQuery
+    var isPresetDropdownExpanded by formState::isPresetDropdownExpanded
+    var editingCamera by formState::editingCamera
+    var fixedLensName by formState::fixedLensName
+    var fixedLensFocalLength by formState::fixedLensFocalLength
+    var fixedLensMaxAperture by formState::fixedLensMaxAperture
+    var fixedLensFilterSize by formState::fixedLensFilterSize
+    var editingLens by formState::editingLens
+    var editingFilm by formState::editingFilm
+    var editingKit by formState::editingKit
+    var editingTeleconverter by formState::editingTeleconverter
+    var editingFilter by formState::editingFilter
+    var editingFlash by formState::editingFlash
+    var editingViewfinder by formState::editingViewfinder
+    var editingSupplier by formState::editingSupplier
+    var editingConsumable by formState::editingConsumable
+    var editingLabEquipment by formState::editingLabEquipment
+    var editingStorageLocation by formState::editingStorageLocation
+    var editingCustodyInteraction by formState::editingCustodyInteraction
 
     fun refreshAllData() {
         transaction {
@@ -2036,7 +2123,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                 editingLens = null
                 editingFilm = null
                 editingKit = null
-                editingAccessory = null
+                editingTeleconverter = null
+                editingFilter = null
+                editingFlash = null
+                editingViewfinder = null
                 editingSupplier = null
                 editingConsumable = null
                 editingLabEquipment = null
@@ -3719,10 +3809,15 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 )
                             }
                         }
-                        12, 13 -> { // Custody / Pre-Arrival Order / Loan Ledger with Relational Dropdowns
+                        12, 13 -> { // Custody / Pre-Arrival Order / Loan Ledger with Controlled Title Case Dropdowns
                             val item = editingCustodyInteraction ?: ReferenceCustodyInteractionItem(assetName = "", interactionType = if (selectedCategory == 12) "PURCHASE_ORDER" else "LOAN_OUT")
+                            var typeDropdownExpanded by remember { mutableStateOf(false) }
+                            var statusDropdownExpanded by remember { mutableStateOf(false) }
                             var contactDropdownExpanded by remember { mutableStateOf(false) }
                             var locationDropdownExpanded by remember { mutableStateOf(false) }
+
+                            val interactionTypes = listOf("Purchase Order", "Loan Out", "Rental In", "Service / Repair")
+                            val statusTypes = listOf("Waitlisted", "Packaging", "In Transit", "Delivered")
 
                             OutlinedTextField(
                                 value = item.assetName,
@@ -3731,12 +3826,34 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.interactionType,
-                                    onValueChange = { editingCustodyInteraction = item.copy(interactionType = it) },
-                                    label = { Text("Interaction Type") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = formatInteractionType(item.interactionType),
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text("Interaction Type") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { typeDropdownExpanded = !typeDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = typeDropdownExpanded,
+                                        onDismissRequest = { typeDropdownExpanded = false }
+                                    ) {
+                                        interactionTypes.forEach { iType ->
+                                            DropdownMenuItem(
+                                                text = { Text(iType) },
+                                                onClick = {
+                                                    editingCustodyInteraction = item.copy(interactionType = parseInteractionTypeToEnum(iType))
+                                                    typeDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.contactName ?: "",
@@ -3766,12 +3883,34 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 }
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.orderStatus,
-                                    onValueChange = { editingCustodyInteraction = item.copy(orderStatus = it) },
-                                    label = { Text("Order Lifecycle Status") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = formatOrderStatus(item.orderStatus),
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text("Order Lifecycle Status") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { statusDropdownExpanded = !statusDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = statusDropdownExpanded,
+                                        onDismissRequest = { statusDropdownExpanded = false }
+                                    ) {
+                                        statusTypes.forEach { sType ->
+                                            DropdownMenuItem(
+                                                text = { Text(sType) },
+                                                onClick = {
+                                                    editingCustodyInteraction = item.copy(orderStatus = parseOrderStatusToEnum(sType))
+                                                    statusDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
                                         value = item.storageLocationName ?: "",
@@ -4627,743 +4766,65 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // LEFT VERTICAL CATEGORY RAIL (210.dp Width to prevent text overflow)
-                    Column(
-                        modifier = Modifier
-                            .width(210.dp)
-                            .fillMaxHeight()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                            .padding(6.dp)
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(
-                            "GEAR COLLECTION",
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
-                        )
-                        
-                        val gearCategories = listOf(
-                            Triple("Kits (${kits.size})", 3, Icons.Default.Inventory2),
-                            Triple("Cameras (${cameras.size})", 0, Icons.Default.PhotoCamera),
-                            Triple("Lenses (${lenses.size})", 1, Icons.Default.Camera),
-                            Triple("Films (${films.size})", 2, Icons.Default.CameraRoll),
-                            Triple("Teleconverters (${teleconverters.size})", 4, Icons.Default.CenterFocusStrong),
-                            Triple("Filters (${filters.size})", 5, Icons.Default.Filter),
-                            Triple("Flashes (${flashes.size})", 6, Icons.Default.FlashOn),
-                            Triple("Viewfinders (${viewfinders.size})", 7, Icons.Default.Visibility)
-                        )
-                        gearCategories.forEach { (catTitle, catIdx, catIcon) ->
-                            val isSel = selectedCategory == catIdx
-                            NavigationDrawerItem(
-                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                                selected = isSel,
-                                onClick = { selectedCategory = catIdx },
-                                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                                modifier = Modifier.height(36.dp),
-                                colors = NavigationDrawerItemDefaults.colors(
-                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
-                                )
-                            )
-                        }
-
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-
-                        Text(
-                            "CONTACTS DIRECTORY",
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
-                        )
-
-                        val contactsCategories = listOf(
-                            Triple("Contacts (${suppliers.size})", 8, Icons.Default.Storefront)
-                        )
-                        contactsCategories.forEach { (catTitle, catIdx, catIcon) ->
-                            val isSel = selectedCategory == catIdx
-                            NavigationDrawerItem(
-                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                                selected = isSel,
-                                onClick = { selectedCategory = catIdx },
-                                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                                modifier = Modifier.height(36.dp),
-                                colors = NavigationDrawerItemDefaults.colors(
-                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
-                                )
-                            )
-                        }
-
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-
-                        Text(
-                            "LAB & INVENTORY",
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
-                        )
-                        
-                        val labCategories = listOf(
-                            Triple("Consumables (${consumables.size})", 9, Icons.Default.Science),
-                            Triple("Equipment (${labEquipment.size})", 10, Icons.Default.Build),
-                            Triple("Storage Locations (${storageLocations.size})", 11, Icons.Default.Home)
-                        )
-                        labCategories.forEach { (catTitle, catIdx, catIcon) ->
-                            val isSel = selectedCategory == catIdx
-                            NavigationDrawerItem(
-                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                                selected = isSel,
-                                onClick = { selectedCategory = catIdx },
-                                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                                modifier = Modifier.height(36.dp),
-                                colors = NavigationDrawerItemDefaults.colors(
-                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
-                                )
-                            )
-                        }
-
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-
-                        Text(
-                            "CUSTODY & TRANSACTIONS",
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
-                        )
-                        
-                        val transactionCategories = listOf(
-                            Triple("Pre-Arrival Orders (${custodyInteractions.count { it.interactionType == "PURCHASE_ORDER" && !it.isReturned }})", 12, Icons.Default.Info),
-                            Triple("Custody Ledger (${custodyInteractions.count { it.interactionType != "PURCHASE_ORDER" }})", 13, Icons.AutoMirrored.Filled.List)
-                        )
-                        transactionCategories.forEach { (catTitle, catIdx, catIcon) ->
-                            val isSel = selectedCategory == catIdx
-                            NavigationDrawerItem(
-                                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                                selected = isSel,
-                                onClick = { selectedCategory = catIdx },
-                                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                                modifier = Modifier.height(36.dp),
-                                colors = NavigationDrawerItemDefaults.colors(
-                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
-                                )
-                            )
-                        }
-                    }
+                    FoundationAdminLeftRail(
+                        selectedCategory = selectedCategory,
+                        onSelectCategory = { selectedCategory = it },
+                        kitsCount = kits.size,
+                        camerasCount = cameras.size,
+                        lensesCount = lenses.size,
+                        filmsCount = films.size,
+                        teleconvertersCount = teleconverters.size,
+                        filtersCount = filters.size,
+                        flashesCount = flashes.size,
+                        viewfindersCount = viewfinders.size,
+                        suppliersCount = suppliers.size,
+                        consumablesCount = consumables.size,
+                        labEquipmentCount = labEquipment.size,
+                        storageLocationsCount = storageLocations.size,
+                        pendingPreArrivalOrdersCount = custodyInteractions.count { it.interactionType == "PURCHASE_ORDER" && !it.isReturned },
+                        custodyInteractionsCount = custodyInteractions.count { it.interactionType != "PURCHASE_ORDER" }
+                    )
 
                     // RIGHT MAIN CONTENT: DATA GRID FOR SELECTED CATEGORY
                     Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                        when (selectedCategory) {
-                        0 -> { // Cameras
-                            if (cameras.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No reference cameras logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(cameras.size) { idx ->
-                                        val cam = cameras[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    Text(cam.name, fontWeight = FontWeight.Bold)
-                                                    Text("${cam.type} • Format: ${cam.format} • Mount: ${cam.mount ?: "Standard"}${if (!cam.modelNumber.isNullOrBlank()) " • Model: ${cam.modelNumber}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingCamera = cam
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationCamera(cam.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                        AdminDataGridContent(
+                            selectedCategory = selectedCategory,
+                            cameras = cameras, lenses = lenses, films = films, kits = kits,
+                            teleconverters = teleconverters, filters = filters, flashes = flashes, viewfinders = viewfinders,
+                            suppliers = suppliers, consumables = consumables, labEquipment = labEquipment,
+                            storageLocations = storageLocations, custodyInteractions = custodyInteractions,
+                            onEditCamera = { editingCamera = it; showAddEditDialog = true },
+                            onDeleteCamera = { DatabaseRepository.deleteFoundationCamera(it); refreshAllData() },
+                            onEditLens = { editingLens = it; selectedAssociatedCameraIds = DatabaseRepository.loadCameraIdsForLens(it.id); showAddEditDialog = true },
+                            onDeleteLens = { DatabaseRepository.deleteFoundationLens(it); refreshAllData() },
+                            onEditFilm = { editingFilm = it; showAddEditDialog = true },
+                            onDeleteFilm = { DatabaseRepository.deleteFoundationFilm(it); refreshAllData() },
+                            onEditKit = { editingKit = it; showAddEditDialog = true },
+                            onDeleteKit = { DatabaseRepository.deleteFoundationKit(it); refreshAllData() },
+                            onEditTeleconverter = { editingTeleconverter = it; showAddEditDialog = true },
+                            onDeleteTeleconverter = { DatabaseRepository.deleteFoundationTeleconverter(it); refreshAllData() },
+                            onEditFilter = { editingFilter = it; showAddEditDialog = true },
+                            onDeleteFilter = { DatabaseRepository.deleteFoundationFilter(it); refreshAllData() },
+                            onEditFlash = { editingFlash = it; showAddEditDialog = true },
+                            onDeleteFlash = { DatabaseRepository.deleteFoundationFlash(it); refreshAllData() },
+                            onEditViewfinder = { editingViewfinder = it; showAddEditDialog = true },
+                            onDeleteViewfinder = { DatabaseRepository.deleteFoundationViewfinder(it); refreshAllData() },
+                            onEditSupplier = { editingSupplier = it; showAddEditDialog = true },
+                            onDeleteSupplier = { DatabaseRepository.deleteFoundationSupplier(it); refreshAllData() },
+                            onEditConsumable = { editingConsumable = it; showAddEditDialog = true },
+                            onDeleteConsumable = { DatabaseRepository.deleteFoundationConsumable(it); refreshAllData() },
+                            onEditLabEquipment = { editingLabEquipment = it; showAddEditDialog = true },
+                            onDeleteLabEquipment = { DatabaseRepository.deleteFoundationLabEquipment(it); refreshAllData() },
+                            onEditStorageLocation = { editingStorageLocation = it; showAddEditDialog = true },
+                            onDeleteStorageLocation = { DatabaseRepository.deleteStorageLocation(it); refreshAllData() },
+                            onEditCustodyInteraction = { editingCustodyInteraction = it; showAddEditDialog = true },
+                            onDeleteCustodyInteraction = { DatabaseRepository.deleteCustodyInteraction(it); refreshAllData() },
+                            onMarkDelivered = { ord ->
+                                desktopSelectedDeliveryLocation = storageLocations.firstOrNull()?.name ?: ""
+                                desktopDeliveryDialogOrder = ord
                             }
-                        }
-                        1 -> { // Lenses
-                            if (lenses.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No reference lenses logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(lenses.size) { idx ->
-                                        val lens = lenses[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    val isBadge = if (lens.isImageStabilised) " • 🟢 IS" else ""
-                                                    val filterBadge = if (!lens.filterSize.isNullOrBlank()) " • Filter: ${lens.filterSize}" else ""
-                                                    Text(if (lens.name.isNotBlank()) lens.name else "${lens.make ?: ""} ${lens.model ?: "Lens"}".trim(), fontWeight = FontWeight.Bold)
-                                                    Text("${lens.type} • ${lens.focalLength ?: "50mm"} ${lens.maxAperture ?: "f/1.4"}/${lens.minAperture ?: "f/22"} • Mount: ${lens.mount ?: "Standard"}$filterBadge$isBadge", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingLens = lens
-                                                        selectedAssociatedCameraIds = DatabaseRepository.loadCameraIdsForLens(lens.id)
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationLens(lens.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        2 -> { // Films
-                            if (films.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No reference films logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(films.size) { idx ->
-                                        val film = films[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    Text(film.name, fontWeight = FontWeight.Bold)
-                                                    Text("${film.type} • ${film.format} • ISO ${film.iso} • ${film.expectedExposures} exp • Abbr: ${film.abbreviation}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingFilm = film
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationFilm(film.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        3 -> { // Kits (Desktop Kit Builder)
-                            if (kits.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No camera kits assembled yet. Tap '+ Add New' to assemble a Kit!", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(kits.size) { idx ->
-                                        val kit = kits[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    Text("🧰 ${kit.name}", fontWeight = FontWeight.Bold)
-                                                    Text("Body: ${kit.cameraName} • Lenses: ${kit.lensNames ?: "None"} • Default Film: ${kit.defaultFilmName ?: "Any"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingKit = kit
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationKit(kit.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        4 -> { // Teleconverters
-                            if (teleconverters.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No reference teleconverters logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(teleconverters.size) { idx ->
-                                        val tc = teleconverters[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    Text(tc.name, fontWeight = FontWeight.Bold)
-                                                    Text("${tc.converterType} • Mag/Extension: ${tc.magnification} • Light Loss: ${tc.lightLossStops} • Mount: ${tc.mount ?: "Standard"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingTeleconverter = tc
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationTeleconverter(tc.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        5 -> { // Filters
-                            if (filters.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No reference filters logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(filters.size) { idx ->
-                                        val ft = filters[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    Text(ft.name, fontWeight = FontWeight.Bold)
-                                                    Text("Thread: ${ft.threadSize} • Type: ${ft.filterType}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingFilter = ft
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationFilter(ft.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        6 -> { // Flashes
-                            if (flashes.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No reference flashes logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(flashes.size) { idx ->
-                                        val fl = flashes[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    Text(fl.name, fontWeight = FontWeight.Bold)
-                                                    Text("Guide No: ${fl.guideNumber} • Sync: ${fl.syncType}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingFlash = fl
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationFlash(fl.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        7 -> { // Viewfinders
-                            if (viewfinders.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No reference viewfinders logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(viewfinders.size) { idx ->
-                                        val vf = viewfinders[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    Text(vf.name, fontWeight = FontWeight.Bold)
-                                                    Text("Type: ${vf.type} • Fits: ${vf.compatibleCamera ?: "Universal"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingViewfinder = vf
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationViewfinder(vf.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        8 -> { // Suppliers
-                            if (suppliers.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No reference suppliers logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(suppliers.size) { idx ->
-                                        val sup = suppliers[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    val stars = "★".repeat(sup.reliabilityRating.coerceIn(1, 5))
-                                                    Text(sup.name, fontWeight = FontWeight.Bold)
-                                                    Text("${sup.region ?: "Global"} • Rating: $stars • ${sup.website ?: "No Website"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingSupplier = sup
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationSupplier(sup.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        9 -> { // Consumables
-                            if (consumables.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No reference consumables logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(consumables.size) { idx ->
-                                        val con = consumables[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    val hazBadge = if (con.isHazardous) " ⚠️ HAZARDOUS" else ""
-                                                    Text(con.name, fontWeight = FontWeight.Bold)
-                                                    Text("${con.manufacturer ?: "Generic"} • ${con.category} (${con.type ?: "General"}) • Dilution: ${con.dilution ?: "Stock"} • Unit: ${con.defaultUnit}$hazBadge", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingConsumable = con
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationConsumable(con.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        10 -> { // Lab Equipment
-                            if (labEquipment.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No reference lab equipment logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(labEquipment.size) { idx ->
-                                        val eq = labEquipment[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    Text(eq.name, fontWeight = FontWeight.Bold)
-                                                    Text("${eq.manufacturer ?: "Generic"} ${eq.modelNumber ?: ""} • Category: ${eq.category} • Condition: ${eq.condition}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingLabEquipment = eq
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteFoundationLabEquipment(eq.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        11 -> { // Storage Locations
-                            if (storageLocations.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No storage locations created yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(storageLocations.size) { idx ->
-                                        val loc = storageLocations[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    Text("📦 ${loc.name}", fontWeight = FontWeight.Bold)
-                                                    Text("Type: ${loc.type} ${if (!loc.notes.isNullOrBlank()) "• Notes: ${loc.notes}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingStorageLocation = loc
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteStorageLocation(loc.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        12 -> { // Pre-Arrival Orders
-                            val orders = custodyInteractions.filter { it.interactionType == "PURCHASE_ORDER" }
-                            if (orders.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No pre-arrival asset orders or waitlisted items currently pending.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(orders.size) { idx ->
-                                        val ord = orders[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    Text("🚚 ${ord.assetName}", fontWeight = FontWeight.Bold)
-                                                    Text("Status: ${ord.orderStatus} • Vendor: ${ord.contactName ?: "Store"} ${if (!ord.trackingNumber.isNullOrBlank()) "• Tracking: ${ord.trackingNumber}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    Button(
-                                                        onClick = {
-                                                            DatabaseRepository.saveCustodyInteraction(ord.copy(orderStatus = "DELIVERED", isReturned = true))
-                                                            refreshAllData()
-                                                        },
-                                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
-                                                        contentPadding = PaddingValues(horizontal = 8.dp)
-                                                    ) {
-                                                        Text("Mark Delivered", style = MaterialTheme.typography.labelSmall)
-                                                    }
-                                                    IconButton(onClick = {
-                                                        editingCustodyInteraction = ord
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        13 -> { // Custody Ledger
-                            val loansAndRentals = custodyInteractions.filter { it.interactionType != "PURCHASE_ORDER" }
-                            if (loansAndRentals.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text("No active gear loans, rentals, or repair interactions logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    items(loansAndRentals.size) { idx ->
-                                        val cust = loansAndRentals[idx]
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column(modifier = Modifier.weight(1f)) {
-                                                    val statusText = if (cust.isReturned) "COMPLETED" else "ACTIVE (${cust.interactionType})"
-                                                    Text("${cust.assetName} ➞ ${cust.contactName ?: "Party"}", fontWeight = FontWeight.Bold)
-                                                    Text("Status: $statusText • Location: ${cust.storageLocationName ?: "In Storage"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                    IconButton(onClick = {
-                                                        editingCustodyInteraction = cust
-                                                        showAddEditDialog = true
-                                                    }) {
-                                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
-                                                    }
-                                                    IconButton(onClick = {
-                                                        DatabaseRepository.deleteCustodyInteraction(cust.id)
-                                                        refreshAllData()
-                                                    }) {
-                                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        )
                     }
-                }
-            }
 
                 Button(
                     onClick = onPublishManifest,
@@ -5376,3 +4837,721 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
             }
         }
     }
+}
+
+@Composable
+private fun FoundationAdminLeftRail(
+    selectedCategory: Int,
+    onSelectCategory: (Int) -> Unit,
+    kitsCount: Int,
+    camerasCount: Int,
+    lensesCount: Int,
+    filmsCount: Int,
+    teleconvertersCount: Int,
+    filtersCount: Int,
+    flashesCount: Int,
+    viewfindersCount: Int,
+    suppliersCount: Int,
+    consumablesCount: Int,
+    labEquipmentCount: Int,
+    storageLocationsCount: Int,
+    pendingPreArrivalOrdersCount: Int,
+    custodyInteractionsCount: Int
+) {
+    Column(
+        modifier = Modifier
+            .width(210.dp)
+            .fillMaxHeight()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            .padding(6.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            "GEAR COLLECTION",
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
+        )
+        
+        val gearCategories = listOf(
+            Triple("Kits ($kitsCount)", 3, Icons.Default.Inventory2),
+            Triple("Cameras ($camerasCount)", 0, Icons.Default.PhotoCamera),
+            Triple("Lenses ($lensesCount)", 1, Icons.Default.Camera),
+            Triple("Films ($filmsCount)", 2, Icons.Default.CameraRoll),
+            Triple("Teleconverters ($teleconvertersCount)", 4, Icons.Default.CenterFocusStrong),
+            Triple("Filters ($filtersCount)", 5, Icons.Default.Filter),
+            Triple("Flashes ($flashesCount)", 6, Icons.Default.FlashOn),
+            Triple("Viewfinders ($viewfindersCount)", 7, Icons.Default.Visibility)
+        )
+        gearCategories.forEach { (catTitle, catIdx, catIcon) ->
+            val isSel = selectedCategory == catIdx
+            NavigationDrawerItem(
+                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                selected = isSel,
+                onClick = { onSelectCategory(catIdx) },
+                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                modifier = Modifier.height(36.dp),
+                colors = NavigationDrawerItemDefaults.colors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+        Text(
+            "CONTACTS DIRECTORY",
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
+        )
+
+        val contactsCategories = listOf(
+            Triple("Contacts ($suppliersCount)", 8, Icons.Default.Storefront)
+        )
+        contactsCategories.forEach { (catTitle, catIdx, catIcon) ->
+            val isSel = selectedCategory == catIdx
+            NavigationDrawerItem(
+                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                selected = isSel,
+                onClick = { onSelectCategory(catIdx) },
+                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                modifier = Modifier.height(36.dp),
+                colors = NavigationDrawerItemDefaults.colors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+        Text(
+            "LAB & INVENTORY",
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
+        )
+        
+        val labCategories = listOf(
+            Triple("Consumables ($consumablesCount)", 9, Icons.Default.Science),
+            Triple("Equipment ($labEquipmentCount)", 10, Icons.Default.Build),
+            Triple("Storage Locations ($storageLocationsCount)", 11, Icons.Default.Home)
+        )
+        labCategories.forEach { (catTitle, catIdx, catIcon) ->
+            val isSel = selectedCategory == catIdx
+            NavigationDrawerItem(
+                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                selected = isSel,
+                onClick = { onSelectCategory(catIdx) },
+                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                modifier = Modifier.height(36.dp),
+                colors = NavigationDrawerItemDefaults.colors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+        Text(
+            "CUSTODY & TRANSACTIONS",
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
+        )
+        
+        val transactionCategories = listOf(
+            Triple("Pre-Arrival Orders ($pendingPreArrivalOrdersCount)", 12, Icons.Default.Info),
+            Triple("Custody Ledger ($custodyInteractionsCount)", 13, Icons.AutoMirrored.Filled.List)
+        )
+        transactionCategories.forEach { (catTitle, catIdx, catIcon) ->
+            val isSel = selectedCategory == catIdx
+            NavigationDrawerItem(
+                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                selected = isSel,
+                onClick = { onSelectCategory(catIdx) },
+                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                modifier = Modifier.height(36.dp),
+                colors = NavigationDrawerItemDefaults.colors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AdminDataGridContent(
+    selectedCategory: Int,
+    cameras: List<ReferenceCameraItem>,
+    lenses: List<ReferenceLensItem>,
+    films: List<ReferenceFilmItem>,
+    kits: List<ReferenceKitItem>,
+    teleconverters: List<ReferenceTeleconverterItem>,
+    filters: List<ReferenceFilterItem>,
+    flashes: List<ReferenceFlashItem>,
+    viewfinders: List<ReferenceViewfinderItem>,
+    suppliers: List<ReferenceSupplierItem>,
+    consumables: List<ReferenceConsumableItem>,
+    labEquipment: List<ReferenceLabEquipmentItem>,
+    storageLocations: List<ReferenceStorageLocationItem>,
+    custodyInteractions: List<ReferenceCustodyInteractionItem>,
+    onEditCamera: (ReferenceCameraItem) -> Unit,
+    onDeleteCamera: (Int) -> Unit,
+    onEditLens: (ReferenceLensItem) -> Unit,
+    onDeleteLens: (Int) -> Unit,
+    onEditFilm: (ReferenceFilmItem) -> Unit,
+    onDeleteFilm: (Int) -> Unit,
+    onEditKit: (ReferenceKitItem) -> Unit,
+    onDeleteKit: (Int) -> Unit,
+    onEditTeleconverter: (ReferenceTeleconverterItem) -> Unit,
+    onDeleteTeleconverter: (Int) -> Unit,
+    onEditFilter: (ReferenceFilterItem) -> Unit,
+    onDeleteFilter: (Int) -> Unit,
+    onEditFlash: (ReferenceFlashItem) -> Unit,
+    onDeleteFlash: (Int) -> Unit,
+    onEditViewfinder: (ReferenceViewfinderItem) -> Unit,
+    onDeleteViewfinder: (Int) -> Unit,
+    onEditSupplier: (ReferenceSupplierItem) -> Unit,
+    onDeleteSupplier: (Int) -> Unit,
+    onEditConsumable: (ReferenceConsumableItem) -> Unit,
+    onDeleteConsumable: (Int) -> Unit,
+    onEditLabEquipment: (ReferenceLabEquipmentItem) -> Unit,
+    onDeleteLabEquipment: (Int) -> Unit,
+    onEditStorageLocation: (ReferenceStorageLocationItem) -> Unit,
+    onDeleteStorageLocation: (Int) -> Unit,
+    onEditCustodyInteraction: (ReferenceCustodyInteractionItem) -> Unit,
+    onDeleteCustodyInteraction: (Int) -> Unit,
+    onMarkDelivered: (ReferenceCustodyInteractionItem) -> Unit
+) {
+    when (selectedCategory) {
+        0 -> { // Cameras
+            if (cameras.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No reference cameras logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(cameras.size) { idx ->
+                        val cam = cameras[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(cam.name, fontWeight = FontWeight.Bold)
+                                    Text("${cam.type} • Format: ${cam.format} • Mount: ${cam.mount ?: "Standard"}${if (!cam.modelNumber.isNullOrBlank()) " • Model: ${cam.modelNumber}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditCamera(cam) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteCamera(cam.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        1 -> { // Lenses
+            if (lenses.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No reference lenses logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(lenses.size) { idx ->
+                        val l = lenses[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    val isBadge = if (l.isImageStabilised) " • 🟢 IS" else ""
+                                    val filterBadge = if (!l.filterSize.isNullOrBlank()) " • Filter: ${l.filterSize}" else ""
+                                    Text(if (l.name.isNotBlank()) l.name else "${l.make ?: ""} ${l.model ?: "Lens"}".trim(), fontWeight = FontWeight.Bold)
+                                    Text("${l.type} • ${l.focalLength ?: "50mm"} ${l.maxAperture ?: "f/1.4"}/${l.minAperture ?: "f/22"} • Mount: ${l.mount ?: "Standard"}$filterBadge$isBadge", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditLens(l) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteLens(l.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        2 -> { // Films
+            if (films.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No reference film stocks logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(films.size) { idx ->
+                        val fl = films[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(fl.name, fontWeight = FontWeight.Bold)
+                                    Text("${fl.type} • Format: ${fl.format} • ISO: ${fl.iso} • Exp: ${fl.expectedExposures} [${fl.abbreviation}]", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditFilm(fl) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteFilm(fl.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        3 -> { // Kits
+            if (kits.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No camera kits logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(kits.size) { idx ->
+                        val kt = kits[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(kt.name, fontWeight = FontWeight.Bold)
+                                    Text("Camera: ${kt.cameraName} • Lenses: ${kt.lensNames ?: "None"} • Default Film: ${kt.defaultFilmName ?: "None"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditKit(kt) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteKit(kt.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        4 -> { // Teleconverters
+            if (teleconverters.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No teleconverters or extension rings logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(teleconverters.size) { idx ->
+                        val tc = teleconverters[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(tc.name, fontWeight = FontWeight.Bold)
+                                    Text("Type: ${tc.converterType} • Mag: ${tc.magnification} • Light Loss: ${tc.lightLossStops} • Mount: ${tc.mount ?: "Standard"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditTeleconverter(tc) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteTeleconverter(tc.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        5 -> { // Filters
+            if (filters.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No filters or front auxiliary attachments logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(filters.size) { idx ->
+                        val flt = filters[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(flt.name, fontWeight = FontWeight.Bold)
+                                    Text("Thread: ${flt.threadSize} • Type: ${flt.filterType}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditFilter(flt) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteFilter(flt.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        6 -> { // Flashes
+            if (flashes.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No flashes or ring lites logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(flashes.size) { idx ->
+                        val fls = flashes[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(fls.name, fontWeight = FontWeight.Bold)
+                                    Text("Guide No: ${fls.guideNumber} • Sync: ${fls.syncType}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditFlash(fls) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteFlash(fls.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        7 -> { // Viewfinders
+            if (viewfinders.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No viewfinders or waist-level finders logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(viewfinders.size) { idx ->
+                        val vf = viewfinders[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(vf.name, fontWeight = FontWeight.Bold)
+                                    Text("Type: ${vf.type} ${if (!vf.compatibleCamera.isNullOrBlank()) "• Fits: ${vf.compatibleCamera}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditViewfinder(vf) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteViewfinder(vf.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        8 -> { // Suppliers
+            if (suppliers.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No suppliers logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(suppliers.size) { idx ->
+                        val sup = suppliers[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    val stars = "★".repeat(sup.reliabilityRating.coerceIn(1, 5))
+                                    Text(sup.name, fontWeight = FontWeight.Bold)
+                                    Text("${sup.region ?: "Global"} • Rating: $stars • ${sup.website ?: "No Website"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditSupplier(sup) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteSupplier(sup.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        9 -> { // Consumables
+            if (consumables.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No consumables logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(consumables.size) { idx ->
+                        val con = consumables[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    val hazBadge = if (con.isHazardous) " • ⚠️ Hazardous" else ""
+                                    Text(con.name, fontWeight = FontWeight.Bold)
+                                    Text("${con.manufacturer ?: "Generic"} • ${con.category} (${con.type ?: "General"}) • Dilution: ${con.dilution ?: "Stock"} • Unit: ${con.defaultUnit}$hazBadge", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditConsumable(con) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteConsumable(con.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        10 -> { // Lab Equipment
+            if (labEquipment.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No lab equipment logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(labEquipment.size) { idx ->
+                        val eq = labEquipment[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(eq.name, fontWeight = FontWeight.Bold)
+                                    Text("${eq.manufacturer ?: "Generic"} ${eq.modelNumber ?: ""} • Category: ${eq.category} • Condition: ${eq.condition}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditLabEquipment(eq) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteLabEquipment(eq.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        11 -> { // Storage Locations
+            if (storageLocations.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No storage locations created yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(storageLocations.size) { idx ->
+                        val loc = storageLocations[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text("📦 ${loc.name}", fontWeight = FontWeight.Bold)
+                                    Text("Type: ${loc.type} ${if (!loc.notes.isNullOrBlank()) "• Notes: ${loc.notes}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditStorageLocation(loc) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteStorageLocation(loc.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        12 -> { // Pre-Arrival Orders
+            val orders = custodyInteractions.filter { it.interactionType == "PURCHASE_ORDER" }
+            if (orders.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No pre-arrival asset orders or waitlisted items currently pending.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(orders.size) { idx ->
+                        val ord = orders[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text("🚚 ${ord.assetName}", fontWeight = FontWeight.Bold)
+                                    Text("Status: ${formatOrderStatus(ord.orderStatus)} • Vendor: ${ord.contactName ?: "Store"} ${if (!ord.trackingNumber.isNullOrBlank()) "• Tracking: ${ord.trackingNumber}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    if (ord.orderStatus != "DELIVERED" && ord.orderStatus != "RECEIVED") {
+                                        Button(
+                                            onClick = { onMarkDelivered(ord) },
+                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
+                                            contentPadding = PaddingValues(horizontal = 8.dp)
+                                        ) {
+                                            Text("Mark Delivered", style = MaterialTheme.typography.labelSmall)
+                                        }
+                                    }
+                                    IconButton(onClick = { onEditCustodyInteraction(ord) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        13 -> { // Custody Ledger
+            val loansAndRentals = custodyInteractions.filter { it.interactionType != "PURCHASE_ORDER" }
+            if (loansAndRentals.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No active gear loans, rentals, or repair interactions logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(loansAndRentals.size) { idx ->
+                        val cust = loansAndRentals[idx]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    val statusText = if (cust.isReturned) "Returned" else "Active (${formatInteractionType(cust.interactionType)})"
+                                    Text("${cust.assetName} ➞ ${cust.contactName ?: "Party"}", fontWeight = FontWeight.Bold)
+                                    Text("Status: $statusText • Location: ${cust.storageLocationName ?: "In Storage"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { onEditCustodyInteraction(cust) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = { onDeleteCustodyInteraction(cust.id) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
