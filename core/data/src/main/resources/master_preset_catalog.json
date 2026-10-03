@@ -196,6 +196,54 @@
     }
   },
   {
+    "id": "lens_yashinon_80_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Yashica",
+    "name": "Yashinon 80mm f/3.5",
+    "modelNumber": "Mat-124G Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "focalLength": "80mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/32",
+      "filterSize": "Bay I"
+    }
+  },
+  {
+    "id": "lens_zeiss_planar_80_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Carl Zeiss",
+    "name": "Zeiss Planar 80mm f/2.8",
+    "modelNumber": "Rolleiflex 2.8F Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "focalLength": "80mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22",
+      "filterSize": "Bay III"
+    }
+  },
+  {
+    "id": "lens_olympus_zuiko_35_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Olympus",
+    "name": "Olympus Zuiko 35mm f/2.8",
+    "modelNumber": "Mju-II Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "focalLength": "35mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/16",
+      "filterSize": ""
+    }
+  },
+  {
     "id": "lens_canon_ef_100_macro",
     "category": "LENS",
     "subCategory": "Macro",

@@ -228,7 +228,7 @@ class AddEditCameraViewModel @Inject constructor(
                 cameraId!!
             }
 
-            // Auto-populate fixed lens entry if camera has a fixedLens spec
+            // Auto-populate fixed lens entry if camera has a fixedLens spec or is a non-interchangeable type
             val fixedSpec = currentState.fixedLens
             if (fixedSpec != null) {
                 val fixedLensObj = Lens(
@@ -247,6 +247,23 @@ class AddEditCameraViewModel @Inject constructor(
                     maxFocalLength = fixedSpec.maxFocalLength
                 )
                 repository.insertLens(fixedLensObj, listOf(newCamId))
+            } else if (!currentState.type.isInterchangeable || currentState.mount.equals("Fixed", ignoreCase = true)) {
+                // Generates a generic fixed taking lens if the preset didn't define one
+                val genericFixedLens = Lens(
+                    make = currentState.name.substringBefore(" "),
+                    model = "Taking Lens",
+                    mount = "Fixed",
+                    type = "Prime",
+                    maxAperture = 3.5,
+                    minAperture = 22.0,
+                    minFocalLength = 80,
+                    maxFocalLength = 80,
+                    filterSize = 0,
+                    isStabilized = false,
+                    minFocusDistance = 1.0,
+                    maxMagnification = 0.0
+                )
+                repository.insertLens(genericFixedLens, listOf(newCamId))
             }
 
             onSuccess()

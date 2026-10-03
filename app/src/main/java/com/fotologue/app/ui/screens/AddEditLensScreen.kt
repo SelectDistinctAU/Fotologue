@@ -263,14 +263,6 @@ fun AddEditLensScreen(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                stringResource(R.string.manual_entry),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
 
             // Make (Dropdown)
             ExposedDropdownMenuBox(
