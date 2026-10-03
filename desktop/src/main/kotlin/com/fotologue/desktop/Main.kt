@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -39,6 +42,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Filter
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -4952,135 +4957,216 @@ private fun FoundationAdminLeftRail(
     pendingPreArrivalOrdersCount: Int,
     custodyInteractionsCount: Int
 ) {
-    Column(
-        modifier = Modifier
-            .width(210.dp)
-            .fillMaxHeight()
-            .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-            .padding(6.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(
-            "GEAR COLLECTION",
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
-        )
-        
-        val gearCategories = listOf(
-            Triple("Kits ($kitsCount)", 3, Icons.Default.Inventory2),
-            Triple("Cameras ($camerasCount)", 0, Icons.Default.PhotoCamera),
-            Triple("Lenses ($lensesCount)", 1, Icons.Default.Camera),
-            Triple("Films ($filmsCount)", 2, Icons.Default.CameraRoll),
-            Triple("Teleconverters ($teleconvertersCount)", 4, Icons.Default.CenterFocusStrong),
-            Triple("Filters ($filtersCount)", 5, Icons.Default.Filter),
-            Triple("Flashes ($flashesCount)", 6, Icons.Default.FlashOn),
-            Triple("Viewfinders ($viewfindersCount)", 7, Icons.Default.Visibility)
-        )
-        gearCategories.forEach { (catTitle, catIdx, catIcon) ->
-            val isSel = selectedCategory == catIdx
-            NavigationDrawerItem(
-                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                selected = isSel,
-                onClick = { onSelectCategory(catIdx) },
-                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                modifier = Modifier.height(36.dp),
-                colors = NavigationDrawerItemDefaults.colors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
+    var isGearExpanded by remember { mutableStateOf(true) }
+    var isContactsExpanded by remember { mutableStateOf(true) }
+    var isLabExpanded by remember { mutableStateOf(true) }
+    var isTransactionsExpanded by remember { mutableStateOf(true) }
+
+    val railScrollState = rememberScrollState()
+
+    Box(modifier = Modifier.width(210.dp).fillMaxHeight()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                .padding(6.dp)
+                .verticalScroll(railScrollState),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            // Header 1: GEAR COLLECTION
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isGearExpanded = !isGearExpanded }
+                    .padding(start = 6.dp, top = 6.dp, bottom = 4.dp, end = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "GEAR COLLECTION",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
                 )
-            )
+                Icon(
+                    if (isGearExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            
+            if (isGearExpanded) {
+                val gearCategories = listOf(
+                    Triple("Kits ($kitsCount)", 3, Icons.Default.Inventory2),
+                    Triple("Cameras ($camerasCount)", 0, Icons.Default.PhotoCamera),
+                    Triple("Lenses ($lensesCount)", 1, Icons.Default.Camera),
+                    Triple("Films ($filmsCount)", 2, Icons.Default.CameraRoll),
+                    Triple("Teleconverters ($teleconvertersCount)", 4, Icons.Default.CenterFocusStrong),
+                    Triple("Filters ($filtersCount)", 5, Icons.Default.Filter),
+                    Triple("Flashes ($flashesCount)", 6, Icons.Default.FlashOn),
+                    Triple("Viewfinders ($viewfindersCount)", 7, Icons.Default.Visibility)
+                )
+                gearCategories.forEach { (catTitle, catIdx, catIcon) ->
+                    val isSel = selectedCategory == catIdx
+                    NavigationDrawerItem(
+                        label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        selected = isSel,
+                        onClick = { onSelectCategory(catIdx) },
+                        icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                        modifier = Modifier.height(36.dp),
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                            selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+            // Header 2: CONTACTS DIRECTORY
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isContactsExpanded = !isContactsExpanded }
+                    .padding(start = 6.dp, top = 6.dp, bottom = 4.dp, end = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "CONTACTS DIRECTORY",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Icon(
+                    if (isContactsExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            if (isContactsExpanded) {
+                val contactsCategories = listOf(
+                    Triple("Contacts ($suppliersCount)", 8, Icons.Default.Storefront)
+                )
+                contactsCategories.forEach { (catTitle, catIdx, catIcon) ->
+                    val isSel = selectedCategory == catIdx
+                    NavigationDrawerItem(
+                        label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        selected = isSel,
+                        onClick = { onSelectCategory(catIdx) },
+                        icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                        modifier = Modifier.height(36.dp),
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                            selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+            // Header 3: LAB & INVENTORY
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isLabExpanded = !isLabExpanded }
+                    .padding(start = 6.dp, top = 6.dp, bottom = 4.dp, end = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "LAB & INVENTORY",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Icon(
+                    if (isLabExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            if (isLabExpanded) {
+                val labCategories = listOf(
+                    Triple("Consumables ($consumablesCount)", 9, Icons.Default.Science),
+                    Triple("Equipment ($labEquipmentCount)", 10, Icons.Default.Build),
+                    Triple("Storage Locations ($storageLocationsCount)", 11, Icons.Default.Home)
+                )
+                labCategories.forEach { (catTitle, catIdx, catIcon) ->
+                    val isSel = selectedCategory == catIdx
+                    NavigationDrawerItem(
+                        label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        selected = isSel,
+                        onClick = { onSelectCategory(catIdx) },
+                        icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                        modifier = Modifier.height(36.dp),
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                            selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+            // Header 4: CUSTODY & TRANSACTIONS
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isTransactionsExpanded = !isTransactionsExpanded }
+                    .padding(start = 6.dp, top = 6.dp, bottom = 4.dp, end = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "CUSTODY & TRANSACTIONS",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Icon(
+                    if (isTransactionsExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            if (isTransactionsExpanded) {
+                val transactionCategories = listOf(
+                    Triple("Pre-Arrival Orders ($pendingPreArrivalOrdersCount)", 12, Icons.Default.Info),
+                    Triple("Custody Ledger ($custodyInteractionsCount)", 13, Icons.AutoMirrored.Filled.List)
+                )
+                transactionCategories.forEach { (catTitle, catIdx, catIcon) ->
+                    val isSel = selectedCategory == catIdx
+                    NavigationDrawerItem(
+                        label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        selected = isSel,
+                        onClick = { onSelectCategory(catIdx) },
+                        icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                        modifier = Modifier.height(36.dp),
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                            selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                }
+            }
         }
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-
-        Text(
-            "CONTACTS DIRECTORY",
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
+        VerticalScrollbar(
+            adapter = rememberScrollbarAdapter(railScrollState),
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
         )
-
-        val contactsCategories = listOf(
-            Triple("Contacts ($suppliersCount)", 8, Icons.Default.Storefront)
-        )
-        contactsCategories.forEach { (catTitle, catIdx, catIcon) ->
-            val isSel = selectedCategory == catIdx
-            NavigationDrawerItem(
-                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                selected = isSel,
-                onClick = { onSelectCategory(catIdx) },
-                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                modifier = Modifier.height(36.dp),
-                colors = NavigationDrawerItemDefaults.colors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        }
-
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-
-        Text(
-            "LAB & INVENTORY",
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
-        )
-        
-        val labCategories = listOf(
-            Triple("Consumables ($consumablesCount)", 9, Icons.Default.Science),
-            Triple("Equipment ($labEquipmentCount)", 10, Icons.Default.Build),
-            Triple("Storage Locations ($storageLocationsCount)", 11, Icons.Default.Home)
-        )
-        labCategories.forEach { (catTitle, catIdx, catIcon) ->
-            val isSel = selectedCategory == catIdx
-            NavigationDrawerItem(
-                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                selected = isSel,
-                onClick = { onSelectCategory(catIdx) },
-                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                modifier = Modifier.height(36.dp),
-                colors = NavigationDrawerItemDefaults.colors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        }
-
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-
-        Text(
-            "CUSTODY & TRANSACTIONS",
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 2.dp)
-        )
-        
-        val transactionCategories = listOf(
-            Triple("Pre-Arrival Orders ($pendingPreArrivalOrdersCount)", 12, Icons.Default.Info),
-            Triple("Custody Ledger ($custodyInteractionsCount)", 13, Icons.AutoMirrored.Filled.List)
-        )
-        transactionCategories.forEach { (catTitle, catIdx, catIcon) ->
-            val isSel = selectedCategory == catIdx
-            NavigationDrawerItem(
-                label = { Text(catTitle, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                selected = isSel,
-                onClick = { onSelectCategory(catIdx) },
-                icon = { Icon(catIcon, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                modifier = Modifier.height(36.dp),
-                colors = NavigationDrawerItemDefaults.colors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        }
     }
 }
 
@@ -5129,15 +5215,17 @@ private fun AdminDataGridContent(
     onDeleteCustodyInteraction: (Int) -> Unit,
     onMarkDelivered: (ReferenceCustodyInteractionItem) -> Unit
 ) {
-    println("DEBUG DESKTOP DATA GRID: selectedCategory=$selectedCategory, camerasCount=${cameras.size}, lensesCount=${lenses.size}, filmsCount=${films.size}")
-    when (selectedCategory) {
+    val gridListState = rememberLazyListState()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (selectedCategory) {
         0 -> { // Cameras
             if (cameras.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("No reference cameras logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
-                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                LazyColumn(state = gridListState, modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     items(items = cameras, key = { it.id }) { cam ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
@@ -5172,7 +5260,7 @@ private fun AdminDataGridContent(
                     Text("No reference lenses logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
-                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                LazyColumn(state = gridListState, modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     items(items = lenses, key = { it.id }) { l ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
@@ -5646,5 +5734,11 @@ private fun AdminDataGridContent(
                 }
             }
         }
+    }
+
+        VerticalScrollbar(
+            adapter = rememberScrollbarAdapter(gridListState),
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
+        )
     }
 }
