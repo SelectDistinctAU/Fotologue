@@ -23,6 +23,27 @@ import androidx.compose.ui.unit.dp
 import com.fotologue.core.data.lab.OrderHistory
 import com.fotologue.core.designsystem.R
 
+private fun formatInteractionType(type: String): String {
+    return when (type.uppercase()) {
+        "LOAN_OUT", "LOAN" -> "Loan Out"
+        "RENTAL_IN", "RENTAL" -> "Rental In"
+        "SERVICE_REPAIR", "REPAIR" -> "Service / Repair"
+        "PURCHASE_ORDER" -> "Purchase Order"
+        else -> type.replace('_', ' ').lowercase().split(" ").joinToString(" ") { word ->
+            word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        }
+    }
+}
+
+private fun parseInteractionTypeToEnum(display: String): String {
+    return when (display) {
+        "Loan Out" -> "LOAN_OUT"
+        "Rental In" -> "RENTAL_IN"
+        "Service / Repair" -> "SERVICE_REPAIR"
+        else -> display.uppercase().replace(' ', '_')
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustodyLedgerScreen(
@@ -67,7 +88,7 @@ fun CustodyLedgerScreen(
         }
     }
 
-    val typeOptions = listOf("LOAN_OUT", "RENTAL_IN", "SERVICE_REPAIR")
+    val typeOptions = listOf("Loan Out", "Rental In", "Service / Repair")
 
     fun openAddEditDialog(order: OrderHistory? = null) {
         editingOrder = order
@@ -108,7 +129,7 @@ fun CustodyLedgerScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         OutlinedTextField(
-                            value = interactionType,
+                            value = formatInteractionType(interactionType),
                             onValueChange = {},
                             readOnly = true,
                             label = { Text("Interaction Type") },
@@ -123,7 +144,7 @@ fun CustodyLedgerScreen(
                                 DropdownMenuItem(
                                     text = { Text(t) },
                                     onClick = {
-                                        interactionType = t
+                                        interactionType = parseInteractionTypeToEnum(t)
                                         typeDropdownExpanded = false
                                     }
                                 )
@@ -316,7 +337,7 @@ fun CustodyLedgerScreen(
                                     )
                                 }
                                 Badge(containerColor = if (isCompleted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer) {
-                                    Text(if (isCompleted) "RETURNED" else item.status, style = MaterialTheme.typography.labelSmall)
+                                    Text(if (isCompleted) "Returned" else formatInteractionType(item.status), style = MaterialTheme.typography.labelSmall)
                                 }
                             }
 

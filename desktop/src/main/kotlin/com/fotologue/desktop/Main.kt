@@ -3734,7 +3734,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 OutlinedTextField(
                                     value = item.interactionType,
                                     onValueChange = { editingCustodyInteraction = item.copy(interactionType = it) },
-                                    label = { Text("Type (PURCHASE_ORDER, LOAN_OUT, RENTAL_IN, REPAIR)") },
+                                    label = { Text("Interaction Type") },
                                     modifier = Modifier.weight(1f)
                                 )
                                 Box(modifier = Modifier.weight(1f)) {
@@ -3769,7 +3769,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit) {
                                 OutlinedTextField(
                                     value = item.orderStatus,
                                     onValueChange = { editingCustodyInteraction = item.copy(orderStatus = it) },
-                                    label = { Text("Status (WAITLISTED, PACKAGING, IN_TRANSIT, DELIVERED)") },
+                                    label = { Text("Order Lifecycle Status") },
                                     modifier = Modifier.weight(1f)
                                 )
                                 Box(modifier = Modifier.weight(1f)) {

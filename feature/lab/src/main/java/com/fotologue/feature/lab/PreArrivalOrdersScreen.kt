@@ -20,6 +20,30 @@ import androidx.compose.ui.unit.dp
 import com.fotologue.core.data.lab.OrderHistory
 import com.fotologue.core.designsystem.R
 
+private fun formatOrderStatus(status: String): String {
+    return when (status.uppercase()) {
+        "WAITLISTED" -> "Waitlisted"
+        "PACKAGING" -> "Packaging"
+        "IN_TRANSIT" -> "In Transit"
+        "DELIVERED", "RECEIVED" -> "Delivered"
+        else -> status.replace('_', ' ').lowercase().split(" ").joinToString(" ") { word ->
+            word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        }
+    }
+}
+
+private fun parseOrderStatusToEnum(display: String): String {
+    return when (display) {
+        "Waitlisted" -> "Waitlisted"
+        "Packaging" -> "Packaging"
+        "In Transit" -> "In Transit"
+        "Delivered" -> "Delivered"
+        else -> display.replace('_', ' ').lowercase().split(" ").joinToString(" ") { word ->
+            word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreArrivalOrdersScreen(
@@ -50,7 +74,7 @@ fun PreArrivalOrdersScreen(
     var selectedDeliveryLocation by remember { mutableStateOf("") }
     var locationDropdownExpanded by remember { mutableStateOf(false) }
 
-    val statusOptions = listOf("WAITLISTED", "PACKAGING", "IN_TRANSIT", "DELIVERED")
+    val statusOptions = listOf("Waitlisted", "Packaging", "In Transit", "Delivered")
 
     fun openAddEditDialog(order: OrderHistory? = null) {
         editingOrder = order
@@ -114,7 +138,7 @@ fun PreArrivalOrdersScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         OutlinedTextField(
-                            value = status,
+                            value = formatOrderStatus(status),
                             onValueChange = {},
                             readOnly = true,
                             label = { Text("Order Lifecycle Status") },
@@ -129,7 +153,7 @@ fun PreArrivalOrdersScreen(
                                 DropdownMenuItem(
                                     text = { Text(st) },
                                     onClick = {
-                                        status = st
+                                        status = parseOrderStatusToEnum(st)
                                         statusDropdownExpanded = false
                                     }
                                 )
@@ -327,8 +351,8 @@ fun PreArrivalOrdersScreen(
                                         style = MaterialTheme.typography.titleMedium
                                     )
                                 }
-                                Badge(containerColor = if (order.status == "DELIVERED") MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer) {
-                                    Text(order.status, style = MaterialTheme.typography.labelSmall)
+                                Badge(containerColor = if (order.status == "DELIVERED" || order.status == "Delivered") MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer) {
+                                    Text(formatOrderStatus(order.status), style = MaterialTheme.typography.labelSmall)
                                 }
                             }
 
