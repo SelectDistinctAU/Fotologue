@@ -127,8 +127,8 @@
     <string name="film_type">Film Type</string>
     <string name="error_invalid_film_type">Please select a standard film type</string>
     <string name="presets">Presets</string>
-    <string name="common_films">Common Films</string>
-    <string name="select_manufacturer">Select a manufacturer:</string>
+    <string name="common_films">Select Film Stock from Presets</string>
+    <string name="select_manufacturer">Select a brand to view curated film presets:</string>
     <string name="save_film">Save Film</string>
 
     <string name="lens_details">Lens Details</string>

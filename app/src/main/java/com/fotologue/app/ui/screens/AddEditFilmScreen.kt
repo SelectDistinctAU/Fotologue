@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -234,56 +235,139 @@ fun FilmPresetsDialog(
     onDismiss: () -> Unit,
     onPresetSelected: (FilmPreset) -> Unit
 ) {
+    val masterFilmBrands = remember {
+        listOf("All") + FilmPresets.manufacturers.sorted()
+    }
+    var selectedBrandFilter by remember { mutableStateOf("Kodak") }
+    var brandDropdownExpanded by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredPresets = remember(selectedBrandFilter, searchQuery) {
+        FilmPresets.presets.filter { preset ->
+            val matchesBrand = selectedBrandFilter == "All" || preset.manufacturer.equals(selectedBrandFilter, ignoreCase = true)
+            val matchesQuery = searchQuery.isBlank() || (
+                preset.name.contains(searchQuery, ignoreCase = true) ||
+                preset.manufacturer.contains(searchQuery, ignoreCase = true) ||
+                preset.abbreviation.contains(searchQuery, ignoreCase = true)
+            )
+            matchesBrand && matchesQuery
+        }
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.common_films)) },
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(R.drawable.frame_inspect_24px),
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Select Film Stock from Presets",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        },
         text = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 400.dp)
+                    .height(420.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                var selectedManufacturer by remember { mutableStateOf<String?>(null) }
-                
-                if (selectedManufacturer == null) {
-                    Text(stringResource(R.string.select_manufacturer), style = MaterialTheme.typography.labelLarge)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    LazyColumn {
-                        items(FilmPresets.manufacturers) { manufacturer ->
-                            ListItem(
-                                headlineContent = { Text(manufacturer) },
-                                modifier = Modifier.clickable { 
-                                    selectedManufacturer = manufacturer 
-                                }
-                            )
-                        }
-                    }
-                } else {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { selectedManufacturer = null }) {
-                            Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.action_back))
-                        }
-                        Text(selectedManufacturer!!, style = MaterialTheme.typography.titleMedium)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    LazyColumn {
-                        items(FilmPresets.getFilmsForManufacturer(selectedManufacturer!!)) { preset ->
-                            ListItem(
-                                headlineContent = { Text(preset.name) },
-                                supportingContent = { Text("ISO ${preset.iso} • ${preset.type}") },
-                                modifier = Modifier.clickable { 
-                                    onPresetSelected(preset)
+                Text(
+                    text = "Select a brand to view curated film presets:",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                // Filter by Film Brand Dropdown
+                ExposedDropdownMenuBox(
+                    expanded = brandDropdownExpanded,
+                    onExpandedChange = { brandDropdownExpanded = !brandDropdownExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = selectedBrandFilter,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Filter by Film Brand") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandDropdownExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = brandDropdownExpanded,
+                        onDismissRequest = { brandDropdownExpanded = false }
+                    ) {
+                        masterFilmBrands.forEach { b ->
+                            DropdownMenuItem(
+                                text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
+                                onClick = {
+                                    selectedBrandFilter = b
+                                    brandDropdownExpanded = false
                                 }
                             )
                         }
                     }
                 }
+
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Search Film Stocks") },
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
+                )
+
+                HorizontalDivider()
+
+                if (filteredPresets.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("No film presets found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        items(filteredPresets, key = { "preset_film_${it.manufacturer}_${it.name}" }) { preset ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(10.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(preset.displayName, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
+                                        Text(
+                                            text = "${preset.type} • ISO ${preset.iso} • ${preset.expectedExposures} exp • Abbr: ${preset.abbreviation}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    Button(
+                                        onClick = { onPresetSelected(preset) },
+                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                                    ) {
+                                        Text("Select", style = MaterialTheme.typography.labelMedium)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
-        confirmButton = {},
-        dismissButton = {
+        confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
+                Text("Close")
             }
         }
     )

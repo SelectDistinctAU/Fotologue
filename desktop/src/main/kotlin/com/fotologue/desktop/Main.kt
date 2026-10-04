@@ -4592,7 +4592,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
     }
 
     if (showFilmPresetsDialog) {
-        val manufacturers = listOf("Kodak", "Ilford", "Fujifilm", "Cinestill", "Foma", "Lomography", "AgfaPhoto", "Rollei", "Bergger", "Harman")
+        val masterFilmBrands = listOf("Adox", "AgfaPhoto", "Bergger", "Cinestill", "Ferrania", "Foma", "Fujifilm", "Harman", "Ilford", "Kodak", "Lomography", "Orwo", "Polaroid", "Rollei", "Shanghai", "Ultrafine", "Yashica")
         var mfgDropdownExpanded by remember { mutableStateOf(false) }
 
         AlertDialog(
@@ -4610,15 +4610,15 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                     modifier = Modifier.fillMaxWidth().height(420.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Select a manufacturer to view curated film presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Select a brand to view curated film presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
-                    // Film Manufacturer Category Filter Dropdown
+                    // Film Brand Category Filter Dropdown
                     Box(modifier = Modifier.fillMaxWidth()) {
                         OutlinedTextField(
                             value = selectedFilmManufacturer,
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text("Filter by Film Manufacturer") },
+                            label = { Text("Filter by Film Brand") },
                             trailingIcon = { IconButton(onClick = { mfgDropdownExpanded = !mfgDropdownExpanded }) { Icon(Icons.Default.ArrowDropDown, contentDescription = null) } },
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -4626,7 +4626,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             expanded = mfgDropdownExpanded,
                             onDismissRequest = { mfgDropdownExpanded = false }
                         ) {
-                            manufacturers.forEach { mfg ->
+                            masterFilmBrands.forEach { mfg ->
                                 DropdownMenuItem(
                                     text = { Text(mfg, fontWeight = if (mfg == selectedFilmManufacturer) FontWeight.Bold else FontWeight.Normal) },
                                     onClick = {
