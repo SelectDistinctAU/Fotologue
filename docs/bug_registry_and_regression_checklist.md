@@ -286,6 +286,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-030: Mobile Presets Uninitialized & Missing Fallback Pre-Fill Action
+- **Platform**: Mobile & Desktop (`MasterPresetEngine.kt`, `AddEditCameraScreen.kt`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Mobile camera preset dialog returned `"No camera presets found."` when initialized because `MasterPresetEngine` was uninitialized. Additionally, selecting a Brand in the preset modal did not offer a 1-click way to pre-fill custom models into the main form.
+- **Root Cause**: `MasterPresetEngine` lacked stream auto-loading logic when empty.
+- **Resolution**: Updated `MasterPresetEngine` to auto-load `master_preset_catalog.json` from resource streams. Added prominent **`[ ➕ Add New {SelectedBrand} Camera ]`** fallback action buttons in preset modals across Mobile and Desktop, pre-filling Brand and Type into the main form upon click.
+- **Regression Test Case**: Open preset modal $\to$ select *Hasselblad* $\to$ tap `[ ➕ Add New Hasselblad Camera ]` $\to$ verify modal closes and main form has Brand (*Hasselblad*) and Type (*Medium Format SLR*) pre-filled.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
