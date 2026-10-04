@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -65,10 +63,13 @@ fun AddEquipmentScreen(
     var customName by remember { mutableStateOf(initialEquipment?.name ?: "") }
     var customCategory by remember { mutableStateOf(initialEquipment?.category ?: "Enlarger") }
     var customNotes by remember { mutableStateOf(initialEquipment?.notes ?: "") }
+    var selectedParentEnlargerName by remember { mutableStateOf(initialEquipment?.notes?.substringAfter("Parent: ", "")?.substringBefore(" • ") ?: "None") }
+    
     var categoryExpanded by remember { mutableStateOf(false) }
+    var parentExpanded by remember { mutableStateOf(false) }
 
-    val categories = listOf("All", "Enlarger", "Enlarger Lens", "Dev Tank", "Tray", "Light Table", "Squeegee & Drying")
-    val editableCategories = listOf("Enlarger", "Enlarger Lens", "Dev Tank", "Tray", "Light Table", "Squeegee & Drying", "General")
+    val categories = listOf("All", "Enlarger", "Enlarger Lens", "Dev Tank", "Tray", "Light Table", "Squeegee & Drying", "Scanner / Digitiser")
+    val editableCategories = listOf("Enlarger", "Enlarger Lens", "Dev Tank", "Tray", "Light Table", "Squeegee & Drying", "Scanner / Digitiser", "General")
 
     val filteredPresets = remember(searchQuery, selectedCategoryFilter) {
         LabPresets.equipmentPresets.filter { item ->
@@ -150,7 +151,7 @@ fun AddEquipmentScreen(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
                         label = { Text("Search Equipment") },
-                        placeholder = { Text("e.g. Intrepid, Paterson") },
+                        placeholder = { Text("e.g. Intrepid, Paterson, Epson") },
                         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
@@ -234,6 +235,47 @@ fun AddEquipmentScreen(
                         }
                     }
 
+                    // Smart Parent Unit Selector (Filters so Enlarger Lenses ONLY see Enlarger Bodies!)
+                    if (customCategory == "Enlarger Lens") {
+                        val enlargerBodies = equipmentList.filter { it.category == "Enlarger" }
+                        ExposedDropdownMenuBox(
+                            expanded = parentExpanded,
+                            onExpandedChange = { parentExpanded = !parentExpanded }
+                        ) {
+                            OutlinedTextField(
+                                value = selectedParentEnlargerName.ifBlank { "None (Standalone)" },
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Parent Enlarger Body Unit") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = parentExpanded) },
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = parentExpanded,
+                                onDismissRequest = { parentExpanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("None (Standalone)") },
+                                    onClick = {
+                                        selectedParentEnlargerName = "None"
+                                        parentExpanded = false
+                                    }
+                                )
+                                enlargerBodies.forEach { enlarger ->
+                                    DropdownMenuItem(
+                                        text = { Text("⚡ ${enlarger.name}") },
+                                        onClick = {
+                                            selectedParentEnlargerName = enlarger.name
+                                            parentExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
                     OutlinedTextField(
                         value = customNotes,
                         onValueChange = { customNotes = it },
@@ -246,21 +288,23 @@ fun AddEquipmentScreen(
 
                     Button(
                         onClick = {
-                            if (initialEquipment != null) {
-                                viewModel.updateEquipment(initialEquipment.copy(name = customName.trim(), category = customCategory, notes = customNotes.trim()))
+                            val notesFormatted = if (customCategory == "Enlarger Lens" && selectedParentEnlargerName.isNotBlank() && selectedParentEnlargerName != "None") {
+                                "Parent: $selectedParentEnlargerName • ${customNotes.trim()}".trim(' ', '•')
                             } else {
-                                viewModel.addCustomEquipment(customName.trim(), customCategory, customNotes.trim())
+                                customNotes.trim()
+                            }
+
+                            if (initialEquipment != null) {
+                                viewModel.updateEquipment(initialEquipment.copy(name = customName.trim(), category = customCategory, notes = notesFormatted))
+                            } else {
+                                viewModel.addCustomEquipment(customName.trim(), customCategory, notesFormatted)
                             }
                             onSuccess()
                         },
                         enabled = customName.isNotBlank(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.Check, contentDescription = null)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Save Equipment", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                        Text(if (initialEquipment == null) "Save Equipment" else "Update Equipment")
                     }
                 }
             }

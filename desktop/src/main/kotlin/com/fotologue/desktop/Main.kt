@@ -3717,20 +3717,29 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                     }
                                 }
                                 Box(modifier = Modifier.weight(1f)) {
+                                    val isEnlargerLens = item.category == "Enlarger Lens"
+                                    val isTopLevelParent = item.category == "Enlarger"
+                                    val validParents = labEquipment.filter { parentEq ->
+                                        parentEq.id != item.id && (if (isEnlargerLens) parentEq.category == "Enlarger" else parentEq.category == "Enlarger" || parentEq.category == "Scanner / Digitiser")
+                                    }
+
                                     OutlinedTextField(
-                                        value = item.parentEquipmentName ?: "",
-                                        onValueChange = { editingLabEquipment = item.copy(parentEquipmentName = it) },
+                                        value = if (isTopLevelParent) "None (Top-Level Parent Unit)" else (item.parentEquipmentName ?: "None (Standalone)"),
+                                        onValueChange = { if (!isTopLevelParent) editingLabEquipment = item.copy(parentEquipmentName = it) },
+                                        readOnly = isTopLevelParent,
                                         label = { Text("Parent Equipment") },
                                         placeholder = { Text("None (Standalone)") },
                                         modifier = Modifier.fillMaxWidth(),
                                         trailingIcon = {
-                                            IconButton(onClick = { parentEquipDropdownExpanded = !parentEquipDropdownExpanded }) {
-                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            if (!isTopLevelParent) {
+                                                IconButton(onClick = { parentEquipDropdownExpanded = !parentEquipDropdownExpanded }) {
+                                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                                }
                                             }
                                         }
                                     )
                                     DropdownMenu(
-                                        expanded = parentEquipDropdownExpanded && labEquipment.isNotEmpty(),
+                                        expanded = parentEquipDropdownExpanded && validParents.isNotEmpty() && !isTopLevelParent,
                                         onDismissRequest = { parentEquipDropdownExpanded = false }
                                     ) {
                                         DropdownMenuItem(
@@ -3740,9 +3749,9 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                                 parentEquipDropdownExpanded = false
                                             }
                                         )
-                                        labEquipment.filter { it.id != item.id }.forEach { parentEq ->
+                                        validParents.forEach { parentEq ->
                                             DropdownMenuItem(
-                                                text = { Text("🔧 ${parentEq.name} (${parentEq.category})") },
+                                                text = { Text("⚡ ${parentEq.name} (${parentEq.category})") },
                                                 onClick = {
                                                     editingLabEquipment = item.copy(parentEquipmentName = parentEq.name)
                                                     parentEquipDropdownExpanded = false
@@ -4630,7 +4639,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Build, contentDescription = null, modifier = Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Select Darkroom Equipment from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                    Text("Select Lab Equipment from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                 }
             },
             text = {
@@ -4638,7 +4647,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                     modifier = Modifier.fillMaxWidth().height(440.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Select a category filter or type to search darkroom equipment presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Select a category filter or type to search lab equipment presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
                     // Equipment Category Filter Dropdown
                     Box(modifier = Modifier.fillMaxWidth()) {
