@@ -266,6 +266,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-028: Reduced Camera Presets Catalog on Mobile & Static Hardcoded List
+- **Platform**: Fotologue Mobile (`app` / `AddEditCameraScreen.kt`)
+- **Reported**: March 2026
+- **Symptom**: Mobile's `Select Camera Body from Presets` dialog displayed a small 11-camera hardcoded list, lacking full catalog parity with Desktop's master preset engine.
+- **Root Cause**: `AddEditCameraScreen.kt` relied on a static local list instead of querying `MasterPresetEngine`.
+- **Resolution**: Connected Mobile's `AddEditCameraScreen.kt` directly to `MasterPresetEngine.getPresetsByCategory("CAMERA")`, restoring 1-to-1 master catalog search parity across Mobile and Desktop.
+- **Regression Test Case**: Open `Add Camera` on Mobile $\to$ tap `[ ⚙️ Select from Presets ]` $\to$ verify master camera list loads with Canon, Nikon, Pentax, Leica, Hasselblad, Yashica, etc.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
