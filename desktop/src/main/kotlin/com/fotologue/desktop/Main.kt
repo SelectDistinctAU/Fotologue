@@ -3301,9 +3301,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             Text("Associated Cameras (Interchangeable Viewfinders Only)", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
                             val interchangeableFinderCameras = cameras.filter { camera ->
                                 val nameLower = camera.name.lowercase()
-                                val isRemovableFinderSLR = nameLower.contains("lx") || nameLower.contains("f3") || nameLower.contains("f2") || nameLower.contains("f4") || nameLower.contains("f5") || nameLower.contains("f-1") || nameLower.contains("500c") || nameLower.contains("500cm") || nameLower.contains("exakta")
-                                val isColdshoeFinderBody = camera.type == "Rangefinder" || camera.type == "Medium Format SLR" || camera.type == "TLR" || camera.type == "Large Format" || nameLower.contains("leica")
-                                isRemovableFinderSLR || isColdshoeFinderBody
+                                val isFixedHoodTlr = nameLower.contains("yashica") || nameLower.contains("mat") || nameLower.contains("rolleicord") || nameLower.contains("flexaret")
+                                val isRemovableFinderSLR = nameLower.contains("lx") || nameLower.contains("f3") || nameLower.contains("f2") || nameLower.contains("f4") || nameLower.contains("f5") || nameLower.contains("f-1") || nameLower.contains("500c") || nameLower.contains("500cm") || nameLower.contains("exakta") || nameLower.contains("mamiya c")
+                                val isColdshoeFinderBody = camera.type == "Rangefinder" || camera.type == "Medium Format SLR" || camera.type == "Large Format" || nameLower.contains("leica")
+                                !isFixedHoodTlr && (isRemovableFinderSLR || isColdshoeFinderBody)
                             }
                             if (interchangeableFinderCameras.isEmpty()) {
                                 Text("No camera bodies supporting interchangeable viewfinders found.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
