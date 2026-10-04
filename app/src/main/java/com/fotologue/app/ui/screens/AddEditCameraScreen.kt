@@ -147,6 +147,24 @@ fun AddEditCameraScreen(
                         trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
                     )
 
+                    // Fallback Action Button: Pre-fill selections and return to main form
+                    val fallbackButtonLabel = if (selectedBrandFilter != "All") "➕ Add New $selectedBrandFilter Camera" else "➕ Add New Custom Camera"
+                    OutlinedButton(
+                        onClick = {
+                            if (selectedBrandFilter != "All") {
+                                viewModel.onMakeChange(selectedBrandFilter)
+                            }
+                            if (selectedCategoryFilter != "All") {
+                                val selectedTypeEnum = CameraType.entries.find { it.displayName.equals(selectedCategoryFilter, ignoreCase = true) }
+                                selectedTypeEnum?.let { viewModel.onTypeChange(it) }
+                            }
+                            showCameraPresetsDialog = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                    }
+
                     HorizontalDivider()
 
                     val filteredPresets = remember(selectedBrandFilter, selectedCategoryFilter, searchQuery) {

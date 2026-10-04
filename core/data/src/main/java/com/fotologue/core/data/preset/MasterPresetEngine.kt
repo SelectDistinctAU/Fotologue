@@ -26,6 +26,22 @@ object MasterPresetEngine {
 
     private var cachedPresets: List<MasterPresetItem> = emptyList()
 
+    private fun initializeIfNeeded() {
+        if (cachedPresets.isNotEmpty()) return
+        try {
+            val stream = javaClass.classLoader?.getResourceAsStream("master_preset_catalog.json")
+                ?: Thread.currentThread().contextClassLoader?.getResourceAsStream("master_preset_catalog.json")
+                ?: javaClass.getResourceAsStream("/master_preset_catalog.json")
+            
+            stream?.use {
+                val jsonString = it.bufferedReader().readText()
+                cachedPresets = json.decodeFromString(jsonString)
+            }
+        } catch (_: Exception) {
+            // Safe fallback
+        }
+    }
+
     fun initialize(jsonContent: String) {
         try {
             cachedPresets = json.decodeFromString(jsonContent)
@@ -35,6 +51,7 @@ object MasterPresetEngine {
     }
 
     fun getPresetsByCategory(category: String): List<MasterPresetItem> {
+        initializeIfNeeded()
         return cachedPresets.filter { it.category.equals(category, ignoreCase = true) }
     }
 

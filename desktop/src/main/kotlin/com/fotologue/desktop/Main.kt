@@ -4478,6 +4478,30 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                         trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
                     )
 
+                    // Fallback Action Button: Pre-fill selections into Desktop camera form
+                    val fallbackButtonLabel = if (selectedBrandFilter != "All") "➕ Add New $selectedBrandFilter Camera" else "➕ Add New Custom Camera"
+                    OutlinedButton(
+                        onClick = {
+                            val currentItem = editingCamera ?: ReferenceCameraItem(name = "")
+                            val newBrand = if (selectedBrandFilter != "All") selectedBrandFilter else currentItem.name.substringBefore(" ")
+                            val newType = if (selectedCameraTypeFilter != "All") selectedCameraTypeFilter else currentItem.type
+                            val isTlrOrFixed = newType == "TLR" || newType == "Point & Shoot" || newType == "Compact"
+                            val formatAuto = if (newType == "TLR" || newType == "Medium Format SLR") "120" else currentItem.format
+                            val mountAuto = if (isTlrOrFixed) "Fixed" else currentItem.mount
+
+                            editingCamera = currentItem.copy(
+                                name = "$newBrand ".trimStart(),
+                                type = newType,
+                                format = formatAuto,
+                                mount = mountAuto
+                            )
+                            showCameraPresetsDialog = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                    }
+
                     HorizontalDivider()
 
                     val allPresets = DatabaseRepository.searchPresetCameras(cameraSearchQuery)
