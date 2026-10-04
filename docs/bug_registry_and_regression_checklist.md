@@ -206,6 +206,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-022: Missing Dropdown Indicator on Desktop Camera Form Brand Field
+- **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: Desktop `Add Camera` / `Edit Camera` dialog rendered `Brand` as an unassisted text field without a trailing dropdown arrow (`▼`) icon.
+- **Root Cause**: `Brand` field in `Main.kt` was missing its `trailingIcon` and `DropdownMenu` wrapper.
+- **Resolution**: Wrapped Desktop Camera `Brand` input in a `Box` with an `IconButton(Icons.Default.ArrowDropDown)` and connected an alphabetical `DropdownMenu` selector (*Alpa*, *Arca-Swiss*, *Arax*, ..., *Yashica*, + *"Other..."*).
+- **Regression Test Case**: Open `Add Camera` on Desktop $\to$ verify `Brand` displays a trailing `▼` dropdown arrow and opens an alphabetical brand menu on click.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
