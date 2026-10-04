@@ -3810,8 +3810,12 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                 )
                             }
                         }
-                        11 -> { // Storage Location
-                            val item = editingStorageLocation ?: ReferenceStorageLocationItem(name = "")
+                        11 -> { // Storage Location Controlled Dropdown LOV
+                            val item = editingStorageLocation ?: ReferenceStorageLocationItem(name = "", type = "Cabinet")
+                            var storageTypeDropdownExpanded by remember { mutableStateOf(false) }
+
+                            val storageTypes = listOf("Cabinet", "Shelf", "Bag", "Studio", "Paper Safe", "Drawer", "Vault")
+
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingStorageLocation = item.copy(name = it) },
@@ -3819,12 +3823,33 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                 modifier = Modifier.fillMaxWidth()
                             )
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.type,
-                                    onValueChange = { editingStorageLocation = item.copy(type = it) },
-                                    label = { Text("Type (Cabinet, Shelf, Bag, Studio)") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.type.ifBlank { "Cabinet" },
+                                        onValueChange = { editingStorageLocation = item.copy(type = it) },
+                                        label = { Text("Storage Type") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { storageTypeDropdownExpanded = !storageTypeDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = storageTypeDropdownExpanded,
+                                        onDismissRequest = { storageTypeDropdownExpanded = false }
+                                    ) {
+                                        storageTypes.forEach { sType ->
+                                            DropdownMenuItem(
+                                                text = { Text(sType) },
+                                                onClick = {
+                                                    editingStorageLocation = item.copy(type = sType)
+                                                    storageTypeDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 OutlinedTextField(
                                     value = item.notes ?: "",
                                     onValueChange = { editingStorageLocation = item.copy(notes = it) },
