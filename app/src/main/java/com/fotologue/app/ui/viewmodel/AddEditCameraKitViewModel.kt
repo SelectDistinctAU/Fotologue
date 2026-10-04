@@ -79,8 +79,20 @@ class AddEditCameraKitViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.allCameras.collect { cameras -> 
-                _uiState.update { it.copy(allCameras = cameras) }
+            combine(
+                repository.allCameras,
+                allLenses,
+                crossRefs
+            ) { cameras, lenses, refs ->
+                // Rule 1: Only suggest cameras that have at least 1 registered lens or are fixed-lens bodies
+                cameras.filter { camera ->
+                    val hasAssociatedLens = refs.any { it.cameraId == camera.id }
+                    val hasMountLens = camera.mount.isNotBlank() && lenses.any { it.mount.equals(camera.mount, ignoreCase = true) }
+                    val isFixedLens = !camera.type.isInterchangeable || camera.mount.equals("Fixed", ignoreCase = true)
+                    hasAssociatedLens || hasMountLens || isFixedLens
+                }
+            }.collect { eligibleCameras ->
+                _uiState.update { it.copy(allCameras = eligibleCameras) }
                 updateFilteredLenses()
             }
         }
@@ -220,7 +232,15 @@ class AddEditCameraKitViewModel @Inject constructor(
             }
             false
         }
-        _uiState.update { it.copy(filteredLenses = filtered) }
+
+        // Rule 2: Single-Lens Auto-Default Rule: If exactly 1 compatible lens exists, auto-select it!
+        val autoSelectedLensId = if (filtered.size == 1) filtered.first().id else _uiState.value.lensId
+
+        _uiState.update { it.copy(
+            filteredLenses = filtered,
+            lensId = autoSelectedLensId,
+            isLensValid = autoSelectedLensId != null || it.isLensValid
+        ) }
     }
 
     fun onNameChange(newName: String) {

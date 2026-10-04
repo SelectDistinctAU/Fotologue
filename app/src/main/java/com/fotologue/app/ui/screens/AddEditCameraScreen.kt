@@ -22,6 +22,7 @@ import com.fotologue.core.data.Film
 import com.fotologue.app.ui.viewmodel.AddEditCameraViewModel
 import com.fotologue.app.R
 import com.fotologue.core.data.CameraSpec
+import com.fotologue.core.data.preset.MasterPresetEngine
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -96,24 +97,21 @@ fun AddEditCameraScreen(
 
                     HorizontalDivider()
 
-                    val allPresets = listOf(
-                        CameraSpec("Pentax LX", "LX", CameraType.FILM_SLR, "Pentax K", listOf("125s - 1/2000s, B")),
-                        CameraSpec("Pentax ME Super", "ME Super", CameraType.FILM_SLR, "Pentax K", listOf("4s - 1/2000s, B")),
-                        CameraSpec("Pentax K1000", "K1000", CameraType.FILM_SLR, "Pentax K", listOf("1s - 1/1000s, B")),
-                        CameraSpec("Canon AE-1 Program", "AE-1P", CameraType.FILM_SLR, "Canon FD", listOf("2s - 1/1000s, B")),
-                        CameraSpec("Canon F-1", "F-1", CameraType.FILM_SLR, "Canon FD", listOf("1s - 1/2000s, B")),
-                        CameraSpec("Nikon F3", "F3", CameraType.FILM_SLR, "Nikon F", listOf("8s - 1/2000s, B")),
-                        CameraSpec("Nikon FM2", "FM2", CameraType.FILM_SLR, "Nikon F", listOf("1s - 1/4000s, B")),
-                        CameraSpec("Leica M3", "M3", CameraType.RANGEFINDER, "Leica M", listOf("1s - 1/1000s, B")),
-                        CameraSpec("Leica M6", "M6", CameraType.RANGEFINDER, "Leica M", listOf("1s - 1/1000s, B")),
-                        CameraSpec("Hasselblad 500C/M", "500C/M", CameraType.MEDIUM_FORMAT, "Hasselblad V", listOf("1s - 1/500s, B")),
-                        CameraSpec("Yashica Mat-124G", "Mat-124G", CameraType.TLR, "Fixed", listOf("1s - 1/500s, B"))
-                    )
+                    val masterPresetItems = remember {
+                        MasterPresetEngine.getPresetsByCategory("CAMERA")
+                    }
 
-                    val filteredPresets = if (selectedCategoryFilter == "All") {
-                        allPresets
-                    } else {
-                        allPresets.filter { it.type.displayName.contains(selectedCategoryFilter, ignoreCase = true) }
+                    val filteredPresets = remember(selectedCategoryFilter, searchQuery) {
+                        masterPresetItems.filter { item ->
+                            val subCat = item.subCategory ?: item.attributes["type"] ?: ""
+                            val matchesType = selectedCategoryFilter == "All" || subCat.contains(selectedCategoryFilter, ignoreCase = true)
+                            val matchesQuery = searchQuery.isBlank() || (
+                                item.name.contains(searchQuery, ignoreCase = true) ||
+                                item.brand.contains(searchQuery, ignoreCase = true) ||
+                                (item.modelNumber?.contains(searchQuery, ignoreCase = true) == true)
+                            )
+                            matchesType && matchesQuery
+                        }
                     }
 
                     if (filteredPresets.isEmpty()) {
@@ -123,7 +121,17 @@ fun AddEditCameraScreen(
                     } else {
                         LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             items(filteredPresets.size) { idx ->
-                                val spec = filteredPresets[idx]
+                                val presetItem = filteredPresets[idx]
+                                val subCatStr = presetItem.subCategory ?: presetItem.attributes["type"] ?: "Film SLR"
+                                val cType = CameraType.entries.find { it.displayName.equals(subCatStr, ignoreCase = true) } ?: CameraType.FILM_SLR
+                                val spec = CameraSpec(
+                                    name = presetItem.name,
+                                    modelNumber = presetItem.modelNumber ?: presetItem.name,
+                                    type = cType,
+                                    mount = presetItem.attributes["mount"] ?: "Standard",
+                                    shutterSpeeds = listOf(presetItem.attributes["shutterSpeeds"] ?: "1s - 1/1000s, B")
+                                )
+
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()

@@ -12,6 +12,7 @@ import com.fotologue.core.data.GearDatabase
 import com.fotologue.core.data.Lens
 import com.fotologue.core.data.LensSpec
 import com.fotologue.core.data.SettingsRepository
+import com.fotologue.core.data.preset.MasterPresetEngine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -87,7 +88,26 @@ class AddEditCameraViewModel @Inject constructor(
     }
 
     fun onMakeChange(make: String) {
-        _uiState.update { it.copy(make = make) }
+        val matchingPresets = MasterPresetEngine.getPresetsByCategory("CAMERA")
+            .filter { it.brand.equals(make.trim(), ignoreCase = true) }
+        
+        val distinctTypes = matchingPresets.mapNotNull { preset ->
+            val subCat = preset.subCategory ?: preset.attributes["type"]
+            CameraType.entries.find { it.displayName.equals(subCat, ignoreCase = true) }
+        }.distinct()
+
+        val autoSelectedType = if (distinctTypes.size == 1) distinctTypes.first() else null
+
+        _uiState.update { state ->
+            val newType = autoSelectedType ?: state.type
+            val newFormat = if (newType == CameraType.MEDIUM_FORMAT || newType == CameraType.TLR) Film.FORMAT_120 else state.format
+            state.copy(
+                make = make,
+                type = newType,
+                format = newFormat,
+                mount = if (!newType.isInterchangeable) "Fixed" else state.mount
+            )
+        }
         savedStateHandle["make"] = make
     }
 
