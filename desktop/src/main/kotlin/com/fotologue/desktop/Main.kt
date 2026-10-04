@@ -4382,8 +4382,24 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
     }
 
     if (showCameraPresetsDialog) {
-        val categories = listOf("All", "Film SLR", "Rangefinder", "TLR", "Medium Format SLR", "Point & Shoot", "Compact", "DSLR", "Mirrorless")
+        val allBrands = remember { masterBrands }
+        
+        var selectedBrandFilter by remember { mutableStateOf("All") }
+        var brandDropdownExpanded by remember { mutableStateOf(false) }
         var categoryDropdownExpanded by remember { mutableStateOf(false) }
+
+        val availableTypesForBrand = remember(selectedBrandFilter) {
+            val matching = DatabaseRepository.searchPresetCameras("")
+            val filtered = if (selectedBrandFilter == "All") matching else matching.filter { it.name.startsWith(selectedBrandFilter, ignoreCase = true) }
+            val types = filtered.map { it.type }.distinct().sorted()
+            
+            if (types.size == 1) {
+                selectedCameraTypeFilter = types.first()
+            } else if (!types.contains(selectedCameraTypeFilter)) {
+                selectedCameraTypeFilter = "All"
+            }
+            listOf("All") + types
+        }
 
         AlertDialog(
             modifier = Modifier.width(620.dp),
@@ -4400,9 +4416,35 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                     modifier = Modifier.fillMaxWidth().height(440.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Select a category filter or type to search camera body presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Select brand and type filters to search camera body presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
-                    // Single Source Camera Type Category Filter Dropdown
+                    // 1. FILTER BY CAMERA BRAND (Top Dropdown)
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = selectedBrandFilter,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Camera Brand") },
+                            trailingIcon = { IconButton(onClick = { brandDropdownExpanded = !brandDropdownExpanded }) { Icon(Icons.Default.ArrowDropDown, contentDescription = null) } },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        DropdownMenu(
+                            expanded = brandDropdownExpanded,
+                            onDismissRequest = { brandDropdownExpanded = false }
+                        ) {
+                            allBrands.forEach { b ->
+                                DropdownMenuItem(
+                                    text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedBrandFilter = b
+                                        brandDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // 2. FILTER BY CAMERA TYPE (Second Dropdown, Restricted by Brand)
                     Box(modifier = Modifier.fillMaxWidth()) {
                         OutlinedTextField(
                             value = selectedCameraTypeFilter,
@@ -4416,7 +4458,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             expanded = categoryDropdownExpanded,
                             onDismissRequest = { categoryDropdownExpanded = false }
                         ) {
-                            categories.forEach { cat ->
+                            availableTypesForBrand.forEach { cat ->
                                 DropdownMenuItem(
                                     text = { Text(cat, fontWeight = if (cat == selectedCameraTypeFilter) FontWeight.Bold else FontWeight.Normal) },
                                     onClick = {
@@ -4439,15 +4481,15 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                     HorizontalDivider()
 
                     val allPresets = DatabaseRepository.searchPresetCameras(cameraSearchQuery)
-                    val filteredPresets = if (selectedCameraTypeFilter == "All") {
-                        allPresets
-                    } else {
-                        allPresets.filter { it.type.equals(selectedCameraTypeFilter, ignoreCase = true) }
+                    val filteredPresets = allPresets.filter { preset ->
+                        val matchesBrand = selectedBrandFilter == "All" || preset.name.startsWith(selectedBrandFilter, ignoreCase = true)
+                        val matchesType = selectedCameraTypeFilter == "All" || preset.type.equals(selectedCameraTypeFilter, ignoreCase = true)
+                        matchesBrand && matchesType
                     }
 
                     if (filteredPresets.isEmpty()) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("No camera presets found for $selectedCameraTypeFilter.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("No camera presets found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     } else {
                         LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {

@@ -33,12 +33,35 @@ fun AddEditCameraScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var expanded by remember { mutableStateOf(false) }
     var showCameraPresetsDialog by remember { mutableStateOf(false) }
-    var selectedCategoryFilter by remember { mutableStateOf("All") }
     var searchQuery by remember { mutableStateOf("") }
 
     if (showCameraPresetsDialog) {
-        val categories = remember { listOf("All") + CameraType.entries.map { it.displayName } }
-        var categoryDropdownExpanded by remember { mutableStateOf(false) }
+        val masterPresetItems = remember { MasterPresetEngine.getPresetsByCategory("CAMERA") }
+        val allBrands = remember { listOf("All") + masterPresetItems.map { it.brand }.distinct().sorted() }
+        
+        var selectedBrandFilter by remember { mutableStateOf(if (uiState.make.isNotBlank() && allBrands.contains(uiState.make)) uiState.make else "All") }
+        var selectedCategoryFilter by remember { mutableStateOf("All") }
+
+        var brandDropdownExpanded by remember { mutableStateOf(false) }
+        var typeDropdownExpanded by remember { mutableStateOf(false) }
+
+        // Dynamic Camera Types available for selected Brand
+        val availableTypesForBrand = remember(selectedBrandFilter) {
+            val matchingItems = if (selectedBrandFilter == "All") {
+                masterPresetItems
+            } else {
+                masterPresetItems.filter { it.brand.equals(selectedBrandFilter, ignoreCase = true) }
+            }
+            val types = matchingItems.mapNotNull { it.subCategory ?: it.attributes["type"] }.distinct().sorted()
+            
+            // Auto-select type if brand produces only 1 type
+            if (types.size == 1) {
+                selectedCategoryFilter = types.first()
+            } else if (!types.contains(selectedCategoryFilter)) {
+                selectedCategoryFilter = "All"
+            }
+            listOf("All") + types
+        }
 
         AlertDialog(
             onDismissRequest = { showCameraPresetsDialog = false },
@@ -51,15 +74,45 @@ fun AddEditCameraScreen(
             },
             text = {
                 Column(
-                    modifier = Modifier.fillMaxWidth().height(420.dp),
+                    modifier = Modifier.fillMaxWidth().height(440.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Select a category filter or type to search camera presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Select brand and type filters to search camera presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
-                    // Single Source Camera Type Category Filter Dropdown
+                    // 1. FILTER BY CAMERA BRAND (Top Dropdown)
                     ExposedDropdownMenuBox(
-                        expanded = categoryDropdownExpanded,
-                        onExpandedChange = { categoryDropdownExpanded = !categoryDropdownExpanded },
+                        expanded = brandDropdownExpanded,
+                        onExpandedChange = { brandDropdownExpanded = !brandDropdownExpanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = selectedBrandFilter,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Camera Brand") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandDropdownExpanded) },
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = brandDropdownExpanded,
+                            onDismissRequest = { brandDropdownExpanded = false }
+                        ) {
+                            allBrands.forEach { b ->
+                                DropdownMenuItem(
+                                    text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedBrandFilter = b
+                                        brandDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // 2. FILTER BY CAMERA TYPE (Second Dropdown, Restricted by Brand)
+                    ExposedDropdownMenuBox(
+                        expanded = typeDropdownExpanded,
+                        onExpandedChange = { typeDropdownExpanded = !typeDropdownExpanded },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         OutlinedTextField(
@@ -67,20 +120,19 @@ fun AddEditCameraScreen(
                             onValueChange = {},
                             readOnly = true,
                             label = { Text("Filter by Camera Type") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryDropdownExpanded) },
-                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeDropdownExpanded) },
                             modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
                         )
                         ExposedDropdownMenu(
-                            expanded = categoryDropdownExpanded,
-                            onDismissRequest = { categoryDropdownExpanded = false }
+                            expanded = typeDropdownExpanded,
+                            onDismissRequest = { typeDropdownExpanded = false }
                         ) {
-                            categories.forEach { cat ->
+                            availableTypesForBrand.forEach { cat ->
                                 DropdownMenuItem(
                                     text = { Text(cat, fontWeight = if (cat == selectedCategoryFilter) FontWeight.Bold else FontWeight.Normal) },
                                     onClick = {
                                         selectedCategoryFilter = cat
-                                        categoryDropdownExpanded = false
+                                        typeDropdownExpanded = false
                                     }
                                 )
                             }
@@ -97,12 +149,9 @@ fun AddEditCameraScreen(
 
                     HorizontalDivider()
 
-                    val masterPresetItems = remember {
-                        MasterPresetEngine.getPresetsByCategory("CAMERA")
-                    }
-
-                    val filteredPresets = remember(selectedCategoryFilter, searchQuery) {
+                    val filteredPresets = remember(selectedBrandFilter, selectedCategoryFilter, searchQuery) {
                         masterPresetItems.filter { item ->
+                            val matchesBrand = selectedBrandFilter == "All" || item.brand.equals(selectedBrandFilter, ignoreCase = true)
                             val subCat = item.subCategory ?: item.attributes["type"] ?: ""
                             val matchesType = selectedCategoryFilter == "All" || subCat.contains(selectedCategoryFilter, ignoreCase = true)
                             val matchesQuery = searchQuery.isBlank() || (
@@ -110,7 +159,7 @@ fun AddEditCameraScreen(
                                 item.brand.contains(searchQuery, ignoreCase = true) ||
                                 (item.modelNumber?.contains(searchQuery, ignoreCase = true) == true)
                             )
-                            matchesType && matchesQuery
+                            matchesBrand && matchesType && matchesQuery
                         }
                     }
 
