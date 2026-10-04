@@ -216,6 +216,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-023: Mobile Film Preset Dialog Design Discrepancy & Lexicon Mismatch
+- **Platform**: Mobile & Desktop (`AddEditFilmScreen.kt` & `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: Mobile's film preset dialog used a basic popup list titled `"Common Films"` with manufacturer text buttons, lacking visual and functional parity with Desktop's rich Material 3 `"Select Film Stock from Presets"` dialog.
+- **Root Cause**: `FilmPresetsDialog` on Mobile was never upgraded to match Desktop's M3 card list and dropdown filter design.
+- **Resolution**: Upgraded `FilmPresetsDialog` on Mobile 1-to-1 with Desktop: added **`"Select Film Stock from Presets"`** header, **`"Filter by Film Brand"`** dropdown with alphabetically sorted film brands, search field, and preset cards with **`[ Select ]`** buttons.
+- **Regression Test Case**: Open `Add Film` on Mobile $\to$ tap `[ ⚙️ Select from Presets ]` $\to$ verify the M3 dialog displays with **`Filter by Film Brand`** dropdown and preset cards.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
