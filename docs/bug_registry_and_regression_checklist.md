@@ -196,6 +196,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-021: Non-Standardized Brand Field Labels Across Mobile & Desktop Forms
+- **Platform**: Mobile & Desktop (`strings.xml`, `AddEditCameraScreen.kt`, `AddEditLensScreen.kt`, `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: Field labels for brand/manufacturer varied inconsistency (`"Make"`, `"Make / Brand"`, `"Manufacturer"`, `"Brand / Manufacturer"`), causing visual and domain confusion.
+- **Root Cause**: Uncoordinated label strings across form composables.
+- **Resolution**: Unified all forms across Mobile and Desktop to use the single canonical Lexicon term **`"Brand"`**, backed by an alphabetically sorted controlled dropdown selector (*Alpa*, *Arca-Swiss*, *Arax*, ..., *Yashica*, + *"Other..."*).
+- **Regression Test Case**: Inspect `Add Camera` and `Add Lens` forms on Mobile and Desktop $\to$ verify the field label is consistently **`"Brand"`** and displays an alphabetical dropdown.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
