@@ -276,6 +276,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-029: Preset Selection Dialog Lacked Brand-First Cascading
+- **Platform**: Mobile & Desktop (`AddEditCameraScreen.kt` & `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Select Camera Body from Presets` dialog filtered by `Camera Type` as the top dropdown instead of filtering by `Brand` first, forcing users to browse un-grouped camera models.
+- **Root Cause**: Preset modal filtering workflow was not structured brand-first.
+- **Resolution**: Re-architected preset dialogs across Mobile and Desktop: added **`Filter by Camera Brand`** as top dropdown, dynamically restricted **`Filter by Camera Type`** options to those made by the selected brand, and added automatic pre-selection when a brand produces only 1 camera type (*Hasselblad* $\to$ *Medium Format SLR*).
+- **Regression Test Case**: Open `Select Camera Body from Presets` on Mobile or Desktop $\to$ select *Hasselblad* $\to$ verify `Filter by Camera Type` automatically pre-selects *Medium Format SLR*.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
