@@ -2441,9 +2441,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             if (compatibleLensCameras.isEmpty()) {
                                 Text("No compatible cameras found. Please add an SLR, Rangefinder, or Medium Format camera first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                             } else {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                FlowRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
                                     compatibleLensCameras.forEach { camera ->
                                         val isSelected = selectedAssociatedCameraIds.contains(camera.id)
@@ -2798,23 +2799,25 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                 }
                             }
                         }
-                        3 -> { // Desktop Kit Builder with Parent Relational Dropdowns
-                            val item = editingKit ?: ReferenceKitItem(name = "", cameraName = cameras.firstOrNull()?.name ?: "Canon AE-1 Program")
+                        3 -> { // Desktop Kit Builder with Single-Choice Controlled Dropdowns (1-to-1 Mobile Parity)
+                            val item = editingKit ?: ReferenceKitItem(name = "", cameraName = cameras.firstOrNull()?.name ?: "")
                             var cameraDropdownExpanded by remember { mutableStateOf(false) }
+                            var lensDropdownExpanded by remember { mutableStateOf(false) }
                             var filmDropdownExpanded by remember { mutableStateOf(false) }
 
                             OutlinedTextField(
                                 value = item.name,
                                 onValueChange = { editingKit = item.copy(name = it) },
-                                label = { Text("Kit Name (e.g. Street Kit #1)") },
+                                label = { Text("Kit Name (e.g. Street Kit, Landscape Setup)") },
                                 modifier = Modifier.fillMaxWidth()
                             )
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
-                                        value = item.cameraName,
-                                        onValueChange = { editingKit = item.copy(cameraName = it) },
-                                        label = { Text("Primary Camera Body") },
+                                        value = item.cameraName.ifBlank { "Select Camera" },
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text("Camera") },
                                         modifier = Modifier.fillMaxWidth(),
                                         trailingIcon = {
                                             IconButton(onClick = { cameraDropdownExpanded = !cameraDropdownExpanded }) {
@@ -2828,7 +2831,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                     ) {
                                         cameras.forEach { cam ->
                                             DropdownMenuItem(
-                                                text = { Text("${cam.name} (${cam.type})") },
+                                                text = { Text("📷 ${cam.name} (${cam.type})") },
                                                 onClick = {
                                                     editingKit = item.copy(cameraName = cam.name)
                                                     cameraDropdownExpanded = false
@@ -2837,19 +2840,49 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                         }
                                     }
                                 }
-                                OutlinedTextField(
-                                    value = item.lensNames ?: "",
-                                    onValueChange = { editingKit = item.copy(lensNames = it) },
-                                    label = { Text("Lenses (comma separated)") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.lensNames?.ifBlank { "Select Lens" } ?: "Select Lens",
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text("Lens") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { lensDropdownExpanded = !lensDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = lensDropdownExpanded && lenses.isNotEmpty(),
+                                        onDismissRequest = { lensDropdownExpanded = false }
+                                    ) {
+                                        DropdownMenuItem(
+                                            text = { Text("None (Fixed-Lens or Body Only)") },
+                                            onClick = {
+                                                editingKit = item.copy(lensNames = null)
+                                                lensDropdownExpanded = false
+                                            }
+                                        )
+                                        lenses.forEach { l ->
+                                            DropdownMenuItem(
+                                                text = { Text("📷 ${l.name} (${l.mount ?: "Lens"})") },
+                                                onClick = {
+                                                    editingKit = item.copy(lensNames = l.name)
+                                                    lensDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Box(modifier = Modifier.weight(1f)) {
                                     OutlinedTextField(
-                                        value = item.defaultFilmName ?: "",
-                                        onValueChange = { editingKit = item.copy(defaultFilmName = it) },
-                                        label = { Text("Default Film Stock") },
+                                        value = item.defaultFilmName?.ifBlank { "Select Film" } ?: "Select Film",
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text("Film") },
                                         modifier = Modifier.fillMaxWidth(),
                                         trailingIcon = {
                                             IconButton(onClick = { filmDropdownExpanded = !filmDropdownExpanded }) {
@@ -2861,9 +2894,16 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                         expanded = filmDropdownExpanded && films.isNotEmpty(),
                                         onDismissRequest = { filmDropdownExpanded = false }
                                     ) {
+                                        DropdownMenuItem(
+                                            text = { Text("None") },
+                                            onClick = {
+                                                editingKit = item.copy(defaultFilmName = null)
+                                                filmDropdownExpanded = false
+                                            }
+                                        )
                                         films.forEach { fl ->
                                             DropdownMenuItem(
-                                                text = { Text("${fl.name} (ISO ${fl.iso})") },
+                                                text = { Text("🎞️ ${fl.name} (ISO ${fl.iso})") },
                                                 onClick = {
                                                     editingKit = item.copy(defaultFilmName = fl.name)
                                                     filmDropdownExpanded = false
@@ -2898,9 +2938,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             if (interchangeableCameras.isEmpty()) {
                                 Text("No interchangeable lens cameras found. Please add an SLR or Rangefinder camera first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                             } else {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                FlowRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
                                     interchangeableCameras.forEach { camera ->
                                         val isSelected = selectedAssociatedCameraIds.contains(camera.id)
@@ -3030,9 +3071,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             if (cameras.isEmpty()) {
                                 Text("No cameras found. Please add a camera first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                             } else {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                FlowRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
                                     cameras.forEach { camera ->
                                         val isSelected = selectedAssociatedCameraIds.contains(camera.id)
@@ -3147,9 +3189,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             if (cameras.isEmpty()) {
                                 Text("No cameras found. Please add a camera first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                             } else {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                FlowRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
                                     cameras.forEach { camera ->
                                         val isSelected = selectedAssociatedCameraIds.contains(camera.id)
@@ -3257,21 +3300,18 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             // Section 1: Associated Cameras (Filtered to bodies supporting removable/external finders)
                             Text("Associated Cameras (Interchangeable Viewfinders Only)", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
                             val interchangeableFinderCameras = cameras.filter { camera ->
-                                camera.name.contains("Pentax LX", ignoreCase = true) ||
-                                camera.name.contains("Nikon F", ignoreCase = true) ||
-                                camera.name.contains("Hasselblad", ignoreCase = true) ||
-                                camera.name.contains("Leica", ignoreCase = true) ||
-                                camera.name.contains("Mamiya", ignoreCase = true) ||
-                                camera.name.contains("Canon F-1", ignoreCase = true) ||
-                                camera.name.contains("Exakta", ignoreCase = true) ||
-                                (camera.type != "TLR" && camera.type != "Point & Shoot" && camera.type != "Compact" && camera.mount != "Fixed")
+                                val nameLower = camera.name.lowercase()
+                                val isRemovableFinderSLR = nameLower.contains("lx") || nameLower.contains("f3") || nameLower.contains("f2") || nameLower.contains("f4") || nameLower.contains("f5") || nameLower.contains("f-1") || nameLower.contains("500c") || nameLower.contains("500cm") || nameLower.contains("exakta")
+                                val isColdshoeFinderBody = camera.type == "Rangefinder" || camera.type == "Medium Format SLR" || camera.type == "TLR" || camera.type == "Large Format" || nameLower.contains("leica")
+                                isRemovableFinderSLR || isColdshoeFinderBody
                             }
                             if (interchangeableFinderCameras.isEmpty()) {
                                 Text("No camera bodies supporting interchangeable viewfinders found.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                             } else {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                FlowRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
                                     interchangeableFinderCameras.forEach { camera ->
                                         val isSelected = selectedAssociatedCameraIds.contains(camera.id)
