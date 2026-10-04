@@ -256,6 +256,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-027: Fixed-Hood TLR Listed in Viewfinder Association Form
+- **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: `Add Viewfinder` on Desktop listed the *Yashica Mat-124G* TLR body, which has an integrated, permanently attached waist-level hood.
+- **Root Cause**: Viewfinder filter logic on Desktop grouped all TLRs together, failing to distinguish between removable-finder TLRs (*Mamiya C330*) and fixed-hood TLRs (*Yashica Mat-124G*).
+- **Resolution**: Refined `interchangeableFinderCameras` filter logic in `Main.kt` (Case 7) to explicitly exclude fixed-hood TLR models (*Yashica Mat*, *Rolleicord*), bringing Desktop into 1-to-1 domain parity with Mobile.
+- **Regression Test Case**: Open `Add Viewfinder` on Desktop $\to$ verify *Yashica Mat-124G* is absent from associated camera chips.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
