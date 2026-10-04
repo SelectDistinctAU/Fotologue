@@ -226,6 +226,36 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-024: Desktop Camera Kit Form Parity Mismatch
+- **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: Desktop `Add/Edit Camera Kit` dialog used comma-separated text strings for lenses, whereas Mobile Kit form used controlled single-choice dropdown selectors.
+- **Root Cause**: Unaligned form layout on Desktop Kit Builder.
+- **Resolution**: Re-architected Desktop Kit form 1-to-1 with Mobile: converted `Camera`, `Lens`, and `Default Film` into single-choice controlled dropdown selectors (`Select Camera`, `Select Lens`, `Select Film`).
+- **Regression Test Case**: Open `Add Kit` on Desktop $\to$ verify `Camera`, `Lens`, and `Film` are controlled dropdown selectors matching Mobile.
+
+---
+
+### BUG-025: Invalid Camera Listing in Viewfinder Association Form
+- **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: `Add Viewfinder` listed fixed-prism 35mm SLRs (*Canon AE-1 Program*, *Nikon FM2*, *Olympus OM-1*) despite the prompt restricting viewfinders to removable or coldshoe finder bodies.
+- **Root Cause**: `interchangeableFinderCameras` filter logic evaluated `type != "TLR"` to `true` for all 35mm SLRs.
+- **Resolution**: Updated `interchangeableFinderCameras` filter logic: strictly excluded fixed-prism SLRs and restricted viewfinders to bodies with removable finders (*Pentax LX*, *Nikon F3*, *Hasselblad 500C/M*) or coldshoe finders (*Rangefinders*, *TLRs*, *Large Format*).
+- **Regression Test Case**: Open `Add Viewfinder` on Desktop $\to$ verify fixed-prism SLRs (*AE-1*, *FM2*, *OM-1*) are absent from associated camera chips.
+
+---
+
+### BUG-026: Horizontal Text Clipping on Desktop Associated Camera Chips
+- **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: Associated camera chips in Desktop forms overflowed horizontally off the right edge of the card, clipping text.
+- **Root Cause**: Chips were placed inside a single-line `Row` with `horizontalScroll`.
+- **Resolution**: Replaced single-line `Row`s with responsive multi-line `FlowRow`s across Filters, Lenses, Teleconverters, Viewfinders, and Flashes.
+- **Regression Test Case**: Open `Add Filter` on Desktop $\to$ verify camera chips wrap onto multiple lines without text clipping.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
