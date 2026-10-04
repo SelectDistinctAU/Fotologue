@@ -8,7 +8,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-001: Mobile Contacts Portal Card Non-Responsive
 - **Platform**: Fotologue Mobile (`app` / `HubScreen.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Tapping the `CONTACTS DIRECTORY` portal card on the main Application Staging Portal screen (`HubScreen.kt`) was non-responsive and did not navigate.
 - **Root Cause**: `onNavigateToContacts` parameter in `HubScreen.kt` was initialized with an empty lambda `{}` and not wired in `AppNavHost.kt`.
 - **Resolution**: Wired `onNavigateToContacts` in `AppNavHost.kt` to launch `NavRoutes.Lab.Contacts` directly.
@@ -18,7 +18,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-002: Residual Contacts Directory Listing inside Mobile LAB Menu
 - **Platform**: Fotologue Mobile (`feature:lab` / `LabHomeScreen.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: `Contacts Directory` was still listed inside `LAB`'s internal menu list under `Lab • Suppliers`.
 - **Root Cause**: Legacy `nav_suppliers` menu item was not removed from `LabHomeScreen.kt` after `Contacts Directory` was elevated to the top-level Staging Portal.
 - **Resolution**: Removed `Contacts Directory` from `LabHomeScreen.kt` menu list completely.
@@ -28,7 +28,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-003: Desktop Lens Form Losing Connection to Associated Cameras on Edit
 - **Platform**: Fotologue Desktop (`desktop` / `Main.kt` & `DatabaseRepository.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Clicking `Edit Lens` on Desktop opened the lens form with `selectedAssociatedCameraIds` empty, unchecking its associated camera chips.
 - **Root Cause**: Camera-lens cross-reference relationships were stored on Mobile Room DB, but Desktop's `Main.kt` was not initializing `selectedAssociatedCameraIds` on Edit or persisting them to `FoundationCameraLensesTable` on Save.
 - **Resolution**: Created `FoundationCameraLensesTable` in Exposed SQLite, added `loadCameraIdsForLens` and `saveCameraLensAssociations` in `DatabaseRepository.kt`, and initialized `selectedAssociatedCameraIds` when editing a lens in `Main.kt`.
@@ -38,7 +38,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-005: Mobile Contacts Back-Navigation Target Discrepancy
 - **Platform**: Fotologue Mobile (`app` / `MainActivity.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Tapping `←` on Contacts Directory navigated to `LabHomeScreen` instead of returning to the Staging Portal (`HubScreen` / `"Home"`).
 - **Root Cause**: `handleBackNavigation()` in `LabHomeScreen.kt` was falling through to `else -> currentView = LabView.MAIN_MENU` when `currentView == LabView.SUPPLIERS`, taking the user to `Fotologue Lab` instead of calling `onBack()` to return to `HubScreen`.
 - **Resolution**: Updated `handleBackNavigation()` in `LabHomeScreen.kt` so when `currentView == LabView.SUPPLIERS` and `initialTab == 1`, it executes `onBack()` directly, returning the user straight to `HubScreen` (`"Home"` / Staging Portal).
@@ -48,7 +48,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-006: Mobile Contacts Header Icon Discrepancy
 - **Platform**: Fotologue Mobile (`feature:lab` / `LabHomeScreen.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Mobile Contacts header displayed chemistry flask icon `⚗️` (`experiment_24px`).
 - **Root Cause**: Header icon defaulted to `R.drawable.experiment_24px` for all sub-views.
 - **Resolution**: Replaced icon with `R.drawable.warehouse_24px`.
@@ -58,7 +58,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-007: Mobile Storage Locations Double Header
 - **Platform**: Fotologue Mobile (`feature:lab` / `StorageLocationsScreen.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: `StorageLocationsScreen` rendered two stacked header bars (`Lab • Storage Locations`).
 - **Root Cause**: `StorageLocationsScreen.kt` had an internal `Scaffold` and `TopAppBar` while `LabHomeScreen.kt` already provided an outer `Scaffold` and `TopAppBar`.
 - **Resolution**: Removed the inner `Scaffold` and `TopAppBar` from `StorageLocationsScreen.kt`.
@@ -68,7 +68,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-008: Storage Location Form Parity Mismatch
 - **Platform**: Mobile & Desktop (`StorageLocationsScreen.kt` / `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Field names differed between Mobile and Desktop; Desktop used a raw text box for Type instead of a dropdown.
 - **Root Cause**: Mismatched Composable field labels and missing dropdown controls on Desktop.
 - **Resolution**: Unified field names and controls 1-to-1 across Mobile and Desktop (`Location Name`, `Storage Type` Dropdown, `Location Notes / Details`).
@@ -78,7 +78,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-009: Raw Text ENUM Inputs for Orders & Custody Forms
 - **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Desktop `Add Pre-Arrival Order` and `Add Custody Interaction` used raw text fields for `Type` (`PURCHASE_ORDER`) and `Status` (`DELIVERED`).
 - **Root Cause**: Missing controlled dropdown selectors on Desktop form fields.
 - **Resolution**: Converted `Type` and `Status` into **Controlled Dropdown Selectors** (`Purchase Order`, `Loan Out`, `Rental In`, `Service / Repair` & `Waitlisted`, `Packaging`, `In Transit`, `Delivered`).
@@ -88,7 +88,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-010: Mobile Log Entry Creation Process Crash on Save
 - **Platform**: Fotologue Mobile (`app` / `AddLogViewModel.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Mobile app crashed when attempting to save a newly created Exposure Log Entry.
 - **Root Cause**: `onLensSelected` in `AddLogViewModel.kt` attempted to filter apertures using `lens.minAperture..lens.maxAperture` (e.g. `22.0..1.4`). Because `minAperture` (f/22) is numerically greater than `maxAperture` (f/1.4), Kotlin produced an empty inverted float range, clearing `availableApertures` and crashing upon index access.
 - **Resolution**: Updated `AddLogViewModel.kt` to use `minOf(minAperture, maxAperture)..maxOf(minAperture, maxAperture)` to guarantee valid ranges, and added safe foreign key validation in `saveLog()`.
@@ -98,7 +98,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-011: Desktop Empty Data Grid After Reference Sync Import
 - **Platform**: Fotologue Desktop (`desktop` / `DatabaseRepository.kt` & `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Desktop left rail showed "Cameras (4)" and "Lenses (2)", but the right pane rendered "No reference cameras logged yet".
 - **Root Cause**: Mobile Room JSON exported `shutterSpeeds` as `List<String>`, whereas Desktop's JSON decoder expected `String?`, causing a silent `SerializationException`. Furthermore, `Main.kt` was missing a `refreshAllData()` call after import.
 - **Resolution**: Replaced strict class decoding with an element-by-element JSON parser in `DatabaseRepository.kt` and added an immediate `refreshAllData()` call on Desktop.
@@ -108,7 +108,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-012: TLR & Fixed-Lens Cameras Missing Integrated Taking Lens
 - **Platform**: Fotologue Mobile (`app` / `AddEditCameraViewModel.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Saving a new TLR (e.g., Yashica Mat-124G) created the camera body but failed to auto-setup its integrated taking lens.
 - **Root Cause**: `AddEditCameraViewModel.kt` only created a fixed lens if a preset defined `fixedLens` attributes, but did not auto-generate a taking lens for non-interchangeable camera types.
 - **Resolution**: Updated `AddEditCameraViewModel.kt` to auto-construct and link a taking lens (`Lens`) upon saving any TLR or fixed-mount camera.
@@ -118,7 +118,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-013: Missing TLR Taking Lenses in Preset Catalog
 - **Platform**: Core Data (`core/data` / `master_preset_catalog.json`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Searching for "Yashinon" or "Yashica" in Lens Presets returned "No lens presets found".
 - **Root Cause**: `master_preset_catalog.json` lacked taking lens entries for TLR bodies.
 - **Resolution**: Added *Yashinon 80mm f/3.5*, *Zeiss Planar 80mm f/2.8*, and *Olympus Zuiko 35mm f/2.8* to `master_preset_catalog.json`.
@@ -128,7 +128,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-014: Mobile Lens Form Duplicate "Manual Entry" Header
 - **Platform**: Fotologue Mobile (`app` / `AddEditLensScreen.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: `AddEditLensScreen.kt` rendered the "Manual Entry" header text twice in stacked succession.
 - **Root Cause**: Duplicate `HorizontalDivider()` and `Text("Manual Entry")` Composables in `AddEditLensScreen.kt`.
 - **Resolution**: Removed the duplicate header block.
@@ -138,7 +138,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-015: Desktop FoundationAdminTab JVM MethodTooLargeException
 - **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Desktop Kotlin compiler failed with `MethodTooLargeException: Method too large: FoundationAdminTab$lambda$168`.
 - **Root Cause**: `FoundationAdminTab` held 35+ inline `remember { mutableStateOf(...) }` declarations and a massive inline `when (selectedCategory)` block, exceeding the 64KB JVM method bytecode limit.
 - **Resolution**: Refactored `FoundationAdminTab` by encapsulating form states into `FoundationAdminFormState` and extracting the data grid into `AdminDataGridContent` and left rail into `FoundationAdminLeftRail`.
@@ -148,7 +148,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-016: Non-Atomic Destructive Manifest Sync Import (Skullinator Protocol Violation)
 - **Platform**: Fotologue Desktop (`desktop` / `DatabaseRepository.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: If an imported JSON manifest contained malformed data, Desktop SQLite tables were wiped *before* JSON parsing succeeded, leaving the local database empty upon failure.
 - **Root Cause**: Table deletion (`Entity.all().forEach { it.delete() }`) was performed prior to JSON decoding and validation.
 - **Resolution**: Refactored `importReferenceSyncPackageJson()` to validate and parse the JSON payload *first*, and perform table replacements safely inside a transaction block.
@@ -158,7 +158,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-017: Unambiguous Icon Governance Violation on Contacts Screen
 - **Platform**: Fotologue Mobile (`feature:lab` / `LabHomeScreen.kt` & `SupplierIssueLogScreen.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: The "Handyman" icon (`ic_handyman`) was used for both Darkroom Equipment Maintenance AND the Vendor Issue & Call Tracker on the same screen, violating the single unambiguous icon principle.
 - **Root Cause**: Dual reuse of `ic_handyman` across unrelated domain actions.
 - **Resolution**: Created `ic_call_log.xml` (official Material Symbol phone handset + 3 list bars) for Vendor Issue & Call Tracker, reserving `ic_handyman` exclusively for Darkroom Equipment Maintenance.
@@ -168,7 +168,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-018: Desktop SQLite Constraint Exception on Duplicate Camera Body Creation
 - **Platform**: Fotologue Desktop (`desktop` / `Database.kt` & `DatabaseRepository.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Attempting to add a second camera body of the same model (*Pentax LX*) on Desktop crashed with `org.sqlite.SQLiteException: [SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (foundation_cameras.name)`.
 - **Root Cause**: `FoundationCamerasTable.name` had a `.uniqueIndex()` constraint in Desktop SQLite, preventing photographers from owning multiple camera bodies of the same model.
 - **Resolution**: Removed `.uniqueIndex()` on `name` in `Database.kt` across Desktop reference tables, aligned `saveFoundationCamera()` in `DatabaseRepository.kt` to auto-index duplicate names (*"Pentax LX (2)"*), and wrapped save actions in `try-catch` blocks.
@@ -178,7 +178,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-019: Invalid Parent Equipment Relationships in Lab Equipment Forms
 - **Platform**: Mobile & Desktop (`AddEquipmentScreen.kt` & `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Editing an *Enlarger Lens* (e.g. *El-Nikkor 50mm f/2.8 N*) showed a `Parent Equipment` dropdown containing other enlarger lenses (e.g. *Rodenstock Rodagon 80mm f/4*), allowing physically invalid parent-child relationships.
 - **Root Cause**: `Parent Equipment` dropdowns lacked domain category filtering and permitted any equipment item to be selected as a parent.
 - **Resolution**: Implemented smart category filtering on `Parent Equipment` dropdowns across Mobile and Desktop: *Enlarger Lenses* can **only** select top-level *Enlarger* bodies as parents, and top-level *Enlargers* default to `None (Top-Level Parent Unit)`. Added missing `Scanner / Digitiser` preset filter chip on Mobile.
@@ -188,7 +188,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-020: Raw Text Entry for Desktop Storage Location Type Input (Skullinator Protocol Violation)
 - **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Desktop `Add Storage Location` dialog used a raw text input for `Type`, permitting string drift and violating the zero raw text entry rule.
 - **Root Cause**: `Type` input field was implemented as an unconstrained `OutlinedTextField`.
 - **Resolution**: Converted Desktop `Storage Location Type` field to a **Controlled Dropdown Selector** populated from `STORAGE_TYPE` LOVs (`Cabinet`, `Shelf`, `Bag`, `Studio`, `Paper Safe`, `Drawer`, `Vault`).
@@ -198,7 +198,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-021: Non-Standardized Brand Field Labels Across Mobile & Desktop Forms
 - **Platform**: Mobile & Desktop (`strings.xml`, `AddEditCameraScreen.kt`, `AddEditLensScreen.kt`, `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Field labels for brand/manufacturer varied inconsistency (`"Make"`, `"Make / Brand"`, `"Manufacturer"`, `"Brand / Manufacturer"`), causing visual and domain confusion.
 - **Root Cause**: Uncoordinated label strings across form composables.
 - **Resolution**: Unified all forms across Mobile and Desktop to use the single canonical Lexicon term **`"Brand"`**, backed by an alphabetically sorted controlled dropdown selector (*Alpa*, *Arca-Swiss*, *Arax*, ..., *Yashica*, + *"Other..."*).
@@ -208,7 +208,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-022: Missing Dropdown Indicator on Desktop Camera Form Brand Field
 - **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Desktop `Add Camera` / `Edit Camera` dialog rendered `Brand` as an unassisted text field without a trailing dropdown arrow (`▼`) icon.
 - **Root Cause**: `Brand` field in `Main.kt` was missing its `trailingIcon` and `DropdownMenu` wrapper.
 - **Resolution**: Wrapped Desktop Camera `Brand` input in a `Box` with an `IconButton(Icons.Default.ArrowDropDown)` and connected an alphabetical `DropdownMenu` selector (*Alpa*, *Arca-Swiss*, *Arax*, ..., *Yashica*, + *"Other..."*).
@@ -218,7 +218,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-023: Mobile Film Preset Dialog Design Discrepancy & Lexicon Mismatch
 - **Platform**: Mobile & Desktop (`AddEditFilmScreen.kt` & `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Mobile's film preset dialog used a basic popup list titled `"Common Films"` with manufacturer text buttons, lacking visual and functional parity with Desktop's rich Material 3 `"Select Film Stock from Presets"` dialog.
 - **Root Cause**: `FilmPresetsDialog` on Mobile was never upgraded to match Desktop's M3 card list and dropdown filter design.
 - **Resolution**: Upgraded `FilmPresetsDialog` on Mobile 1-to-1 with Desktop: added **`"Select Film Stock from Presets"`** header, **`"Filter by Film Brand"`** dropdown with alphabetically sorted film brands, search field, and preset cards with **`[ Select ]`** buttons.
@@ -228,7 +228,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-024: Desktop Camera Kit Form Parity Mismatch
 - **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Desktop `Add/Edit Camera Kit` dialog used comma-separated text strings for lenses, whereas Mobile Kit form used controlled single-choice dropdown selectors.
 - **Root Cause**: Unaligned form layout on Desktop Kit Builder.
 - **Resolution**: Re-architected Desktop Kit form 1-to-1 with Mobile: converted `Camera`, `Lens`, and `Default Film` into single-choice controlled dropdown selectors (`Select Camera`, `Select Lens`, `Select Film`).
@@ -238,7 +238,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-025: Invalid Camera Listing in Viewfinder Association Form
 - **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: `Add Viewfinder` listed fixed-prism 35mm SLRs (*Canon AE-1 Program*, *Nikon FM2*, *Olympus OM-1*) despite the prompt restricting viewfinders to removable or coldshoe finder bodies.
 - **Root Cause**: `interchangeableFinderCameras` filter logic evaluated `type != "TLR"` to `true` for all 35mm SLRs.
 - **Resolution**: Updated `interchangeableFinderCameras` filter logic: strictly excluded fixed-prism SLRs and restricted viewfinders to bodies with removable finders (*Pentax LX*, *Nikon F3*, *Hasselblad 500C/M*) or coldshoe finders (*Rangefinders*, *TLRs*, *Large Format*).
@@ -248,7 +248,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-026: Horizontal Text Clipping on Desktop Associated Camera Chips
 - **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Associated camera chips in Desktop forms overflowed horizontally off the right edge of the card, clipping text.
 - **Root Cause**: Chips were placed inside a single-line `Row` with `horizontalScroll`.
 - **Resolution**: Replaced single-line `Row`s with responsive multi-line `FlowRow`s across Filters, Lenses, Teleconverters, Viewfinders, and Flashes.
@@ -258,7 +258,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-027: Fixed-Hood TLR Listed in Viewfinder Association Form
 - **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: `Add Viewfinder` on Desktop listed the *Yashica Mat-124G* TLR body, which has an integrated, permanently attached waist-level hood.
 - **Root Cause**: Viewfinder filter logic on Desktop grouped all TLRs together, failing to distinguish between removable-finder TLRs (*Mamiya C330*) and fixed-hood TLRs (*Yashica Mat-124G*).
 - **Resolution**: Refined `interchangeableFinderCameras` filter logic in `Main.kt` (Case 7) to explicitly exclude fixed-hood TLR models (*Yashica Mat*, *Rolleicord*), bringing Desktop into 1-to-1 domain parity with Mobile.
@@ -268,7 +268,7 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ### BUG-028: Reduced Camera Presets Catalog on Mobile & Static Hardcoded List
 - **Platform**: Fotologue Mobile (`app` / `AddEditCameraScreen.kt`)
-- **Reported**: March 2026
+- **Reported**: October 2026
 - **Symptom**: Mobile's `Select Camera Body from Presets` dialog displayed a small 11-camera hardcoded list, lacking full catalog parity with Desktop's master preset engine.
 - **Root Cause**: `AddEditCameraScreen.kt` relied on a static local list instead of querying `MasterPresetEngine`.
 - **Resolution**: Connected Mobile's `AddEditCameraScreen.kt` directly to `MasterPresetEngine.getPresetsByCategory("CAMERA")`, restoring 1-to-1 master catalog search parity across Mobile and Desktop.
