@@ -2045,6 +2045,14 @@ class FoundationAdminFormState {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Unit) {
+    val masterBrands = remember {
+        listOf(
+            "Alpa", "Arca-Swiss", "Arax", "Bronica", "Canon", "Chamonix", "Chroma", "Contax",
+            "Fujifilm", "Hasselblad", "Intrepid", "Kodak", "Konica", "Leica", "Linhof",
+            "Lomography", "Mamiya", "Minolta", "Nikon", "Olympus", "Pentax", "Phase One",
+            "Plaubel", "Ricoh", "Rollei", "Shen Hao", "Sinar", "Toyo", "Voigtländer", "Yashica", "Other..."
+        )
+    }
     var pendingItems by remember { mutableStateOf(emptyList<FoundationReviewQueueEntity>()) }
     var selectedThemeGroup by remember { mutableIntStateOf(0) } // 0 = Photography Entities (Gear Collection), 1 = Lab & Inventory
     var selectedCategory by remember { mutableIntStateOf(0) } // 0=Cam, 1=Lens, 2=Film, 3=Kit, 4=Acc, 5=Sup, 6=Con, 7=Eq
@@ -2188,15 +2196,41 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                 Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
                             }
 
+                            var cameraBrandDropdownExpanded by remember { mutableStateOf(false) }
+
                             // Row 1: Brand & Model Name
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(
-                                    value = item.name.substringBefore(" ").ifBlank { "Pentax" },
-                                    onValueChange = { mkg -> editingCamera = item.copy(name = "$mkg ${item.name.substringAfter(" ")}".trim()) },
-                                    label = { Text("Brand") },
-                                    placeholder = { Text("e.g. Pentax, Nikon, Canon") },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    OutlinedTextField(
+                                        value = item.name.substringBefore(" ").ifBlank { "Pentax" },
+                                        onValueChange = { mkg -> editingCamera = item.copy(name = "$mkg ${if (item.name.contains(" ")) item.name.substringAfter(" ") else ""}".trim()) },
+                                        label = { Text("Brand") },
+                                        placeholder = { Text("e.g. Pentax, Nikon, Canon") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        trailingIcon = {
+                                            IconButton(onClick = { cameraBrandDropdownExpanded = !cameraBrandDropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    )
+                                    DropdownMenu(
+                                        expanded = cameraBrandDropdownExpanded,
+                                        onDismissRequest = { cameraBrandDropdownExpanded = false }
+                                    ) {
+                                        masterBrands.forEach { brandOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(brandOpt) },
+                                                onClick = {
+                                                    if (brandOpt != "Other...") {
+                                                        val modelPart = if (item.name.contains(" ")) item.name.substringAfter(" ") else item.name
+                                                        editingCamera = item.copy(name = "$brandOpt $modelPart".trim())
+                                                    }
+                                                    cameraBrandDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 OutlinedTextField(
                                     value = item.name,
                                     onValueChange = { editingCamera = item.copy(name = it) },
