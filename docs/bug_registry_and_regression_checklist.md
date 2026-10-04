@@ -176,6 +176,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-019: Invalid Parent Equipment Relationships in Lab Equipment Forms
+- **Platform**: Mobile & Desktop (`AddEquipmentScreen.kt` & `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: Editing an *Enlarger Lens* (e.g. *El-Nikkor 50mm f/2.8 N*) showed a `Parent Equipment` dropdown containing other enlarger lenses (e.g. *Rodenstock Rodagon 80mm f/4*), allowing physically invalid parent-child relationships.
+- **Root Cause**: `Parent Equipment` dropdowns lacked domain category filtering and permitted any equipment item to be selected as a parent.
+- **Resolution**: Implemented smart category filtering on `Parent Equipment` dropdowns across Mobile and Desktop: *Enlarger Lenses* can **only** select top-level *Enlarger* bodies as parents, and top-level *Enlargers* default to `None (Top-Level Parent Unit)`. Added missing `Scanner / Digitiser` preset filter chip on Mobile.
+- **Regression Test Case**: Edit an *Enlarger Lens* on Desktop or Mobile $\to$ open `Parent Equipment` dropdown $\to$ verify it **only** lists *Enlarger* body units.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
