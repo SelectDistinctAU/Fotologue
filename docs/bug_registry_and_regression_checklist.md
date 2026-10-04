@@ -186,6 +186,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-020: Raw Text Entry for Desktop Storage Location Type Input (Skullinator Protocol Violation)
+- **Platform**: Fotologue Desktop (`desktop` / `Main.kt`)
+- **Reported**: March 2026
+- **Symptom**: Desktop `Add Storage Location` dialog used a raw text input for `Type`, permitting string drift and violating the zero raw text entry rule.
+- **Root Cause**: `Type` input field was implemented as an unconstrained `OutlinedTextField`.
+- **Resolution**: Converted Desktop `Storage Location Type` field to a **Controlled Dropdown Selector** populated from `STORAGE_TYPE` LOVs (`Cabinet`, `Shelf`, `Bag`, `Studio`, `Paper Safe`, `Drawer`, `Vault`).
+- **Regression Test Case**: Open `Add Storage Location` on Desktop $\to$ verify `Storage Type` is a controlled dropdown selector listing canonical storage types.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
