@@ -137,7 +137,7 @@
     <string name="error_select_at_least_one_camera">Please select at least one associated camera.</string>
     <string name="label_lens_model_hint">Model Number (e.g. EF10028LIS)</string>
     <string name="manual_entry">Manual Entry</string>
-    <string name="label_make">Make</string>
+    <string name="label_make">Brand</string>
     <string name="label_model_name">Model Name</string>
     <string name="label_type">Type</string>
     <string name="label_mount">Mount</string>
@@ -186,7 +186,7 @@
 
     <string name="add_flash">Add Flash</string>
     <string name="edit_flash">Edit Flash</string>
-    <string name="label_make_hint">Make (e.g. Nikon)</string>
+    <string name="label_make_hint">Brand (e.g. Nikon)</string>
     <string name="label_model_hint">Model (e.g. SB-700)</string>
     <string name="label_guide_number_hint">Guide Number (ISO 100, meters)</string>
     <string name="save_flash">Save Flash</string>

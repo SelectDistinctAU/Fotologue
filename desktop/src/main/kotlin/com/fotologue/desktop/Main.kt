@@ -2188,12 +2188,12 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                 Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
                             }
 
-                            // Row 1: Brand / Manufacturer & Model Name
+                            // Row 1: Brand & Model Name
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 OutlinedTextField(
                                     value = item.name.substringBefore(" ").ifBlank { "Pentax" },
                                     onValueChange = { mkg -> editingCamera = item.copy(name = "$mkg ${item.name.substringAfter(" ")}".trim()) },
-                                    label = { Text("Brand / Manufacturer") },
+                                    label = { Text("Brand") },
                                     placeholder = { Text("e.g. Pentax, Nikon, Canon") },
                                     modifier = Modifier.weight(1f)
                                 )
@@ -2387,7 +2387,12 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             var lensTypeDropdownExpanded by remember { mutableStateOf(false) }
                             var mountDropdownExpanded by remember { mutableStateOf(false) }
 
-                            val commonMakes = listOf("Canon", "Nikon", "Leica", "Carl Zeiss", "Voigtländer", "Sigma", "Tamron", "Pentax", "Olympus", "Minolta", "Fujifilm", "Mamiya", "Hasselblad")
+                            val commonMakes = listOf(
+                                "Alpa", "Arca-Swiss", "Arax", "Bronica", "Canon", "Chamonix", "Chroma", "Contax",
+                                "Fujifilm", "Hasselblad", "Intrepid", "Kodak", "Konica", "Leica", "Linhof",
+                                "Lomography", "Mamiya", "Minolta", "Nikon", "Olympus", "Pentax", "Phase One",
+                                "Plaubel", "Ricoh", "Rollei", "Shen Hao", "Sinar", "Toyo", "Voigtländer", "Yashica", "Other..."
+                            )
                             val lensTypes = listOf("Prime", "Zoom", "Macro", "Anamorphic", "Tilt-Shift")
 
                             // Section 1: Associated Cameras (Interchangeable Lens Bodies Only, Unless Fixed Camera is Missing Taking Lens)
@@ -2445,7 +2450,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                     OutlinedTextField(
                                         value = item.make ?: "",
                                         onValueChange = { editingLens = item.copy(make = it, name = "${it} ${item.model ?: ""}".trim()) },
-                                        label = { Text("Make / Brand") },
+                                        label = { Text("Brand") },
                                         modifier = Modifier.fillMaxWidth(),
                                         trailingIcon = {
                                             IconButton(onClick = { makeDropdownExpanded = !makeDropdownExpanded }) {
@@ -3133,7 +3138,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                 OutlinedTextField(
                                     value = item.name.substringBefore(" ").ifBlank { "Nikon" },
                                     onValueChange = { mkg -> editingFlash = item.copy(name = "$mkg ${item.guideNumber}".trim()) },
-                                    label = { Text("Make / Brand (e.g. Nikon)") },
+                                    label = { Text("Brand") },
                                     modifier = Modifier.weight(1f)
                                 )
                                 OutlinedTextField(
@@ -3463,7 +3468,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                     OutlinedTextField(
                                         value = item.manufacturer ?: "",
                                         onValueChange = { editingConsumable = item.copy(manufacturer = it) },
-                                        label = { Text("Manufacturer / Brand") },
+                                        label = { Text("Brand") },
                                         modifier = Modifier.fillMaxWidth(),
                                         trailingIcon = {
                                             IconButton(onClick = { mfgDropdownExpanded = !mfgDropdownExpanded }) {
@@ -3681,7 +3686,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                 OutlinedTextField(
                                     value = item.manufacturer ?: "",
                                     onValueChange = { editingLabEquipment = item.copy(manufacturer = it) },
-                                    label = { Text("Manufacturer / Brand") },
+                                    label = { Text("Brand") },
                                     placeholder = { Text("e.g. Beseler, Paterson") },
                                     modifier = Modifier.weight(1f)
                                 )

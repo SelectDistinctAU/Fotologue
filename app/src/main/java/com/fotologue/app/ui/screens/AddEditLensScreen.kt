@@ -30,7 +30,14 @@ fun AddEditLensScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
-    val commonMakes = listOf("Canon", "Nikon", "Sony", "Fujifilm", "Olympus", "Panasonic", "Leica", "Pentax", "Sigma", "Tamron", "Tokina", "Zeiss", "Voigtländer", "Other...")
+    val masterBrands = remember {
+        listOf(
+            "Alpa", "Arca-Swiss", "Arax", "Bronica", "Canon", "Chamonix", "Chroma", "Contax",
+            "Fujifilm", "Hasselblad", "Intrepid", "Kodak", "Konica", "Leica", "Linhof",
+            "Lomography", "Mamiya", "Minolta", "Nikon", "Olympus", "Pentax", "Phase One",
+            "Plaubel", "Ricoh", "Rollei", "Shen Hao", "Sinar", "Toyo", "Voigtländer", "Yashica", "Other..."
+        )
+    }
     var makeExpanded by remember { mutableStateOf(false) }
     var showLensPresetsDialog by remember { mutableStateOf(false) }
     var selectedLensMountFilter by remember { mutableStateOf("All") }
@@ -282,7 +289,7 @@ fun AddEditLensScreen(
                     expanded = makeExpanded,
                     onDismissRequest = { makeExpanded = false }
                 ) {
-                    commonMakes.forEach { make ->
+                    masterBrands.forEach { make ->
                         DropdownMenuItem(
                             text = { Text(make) },
                             onClick = {

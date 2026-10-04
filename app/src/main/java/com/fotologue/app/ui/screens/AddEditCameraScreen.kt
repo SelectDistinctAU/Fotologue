@@ -203,14 +203,47 @@ fun AddEditCameraScreen(
                 Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
             }
 
-            // Field 1: Brand / Manufacturer
-            OutlinedTextField(
-                value = uiState.make,
-                onValueChange = viewModel::onMakeChange,
-                label = { Text("Brand / Manufacturer") },
-                placeholder = { Text("e.g. Pentax, Nikon, Canon, Leica") },
+            val masterBrands = remember {
+                listOf(
+                    "Alpa", "Arca-Swiss", "Arax", "Bronica", "Canon", "Chamonix", "Chroma", "Contax",
+                    "Fujifilm", "Hasselblad", "Intrepid", "Kodak", "Konica", "Leica", "Linhof",
+                    "Lomography", "Mamiya", "Minolta", "Nikon", "Olympus", "Pentax", "Phase One",
+                    "Plaubel", "Ricoh", "Rollei", "Shen Hao", "Sinar", "Toyo", "Voigtländer", "Yashica", "Other..."
+                )
+            }
+            var brandExpanded by remember { mutableStateOf(false) }
+
+            // Field 1: Brand (Controlled Dropdown Selector)
+            ExposedDropdownMenuBox(
+                expanded = brandExpanded,
+                onExpandedChange = { brandExpanded = !brandExpanded },
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                OutlinedTextField(
+                    value = uiState.make,
+                    onValueChange = viewModel::onMakeChange,
+                    label = { Text("Brand") },
+                    placeholder = { Text("Select or type Brand") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandExpanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = brandExpanded,
+                    onDismissRequest = { brandExpanded = false }
+                ) {
+                    masterBrands.forEach { brand ->
+                        DropdownMenuItem(
+                            text = { Text(brand) },
+                            onClick = {
+                                if (brand != "Other...") {
+                                    viewModel.onMakeChange(brand)
+                                }
+                                brandExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             // Field 2: Model Name
             OutlinedTextField(
