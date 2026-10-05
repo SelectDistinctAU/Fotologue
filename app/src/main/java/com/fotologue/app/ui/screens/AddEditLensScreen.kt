@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fotologue.core.data.Lens
+import com.fotologue.core.data.LensSpec
+import com.fotologue.core.data.preset.MasterPresetEngine
 import com.fotologue.app.ui.viewmodel.AddEditLensViewModel
 import com.fotologue.app.R
 
@@ -40,11 +42,32 @@ fun AddEditLensScreen(
     }
     var makeExpanded by remember { mutableStateOf(false) }
     var showLensPresetsDialog by remember { mutableStateOf(false) }
-    var selectedLensMountFilter by remember { mutableStateOf("All") }
-    var lensSearchQueryText by remember { mutableStateOf("") }
 
     if (showLensPresetsDialog) {
-        val mounts = remember { listOf("All", "Pentax K", "Canon FD", "Nikon F", "Leica M", "Leica L39", "Hasselblad V", "Contax C/Y", "Olympus OM", "Minolta SR/MD", "M42 Thread", "Fixed") }
+        val masterLensItems = remember { MasterPresetEngine.getPresetsByCategory("LENS") }
+        val allBrands = remember { listOf("All") + masterLensItems.map { it.brand }.distinct().sorted() }
+
+        var selectedBrandFilter by remember { mutableStateOf(if (uiState.make.isNotBlank() && allBrands.contains(uiState.make)) uiState.make else "All") }
+        var selectedLensMountFilter by remember { mutableStateOf("All") }
+        var lensSearchQueryText by remember { mutableStateOf("") }
+
+        var brandDropdownExpanded by remember { mutableStateOf(false) }
+        var mountDropdownExpanded by remember { mutableStateOf(false) }
+
+        val availableMountsForBrand = remember(selectedBrandFilter) {
+            val matchingItems = if (selectedBrandFilter == "All") {
+                masterLensItems
+            } else {
+                masterLensItems.filter { it.brand.equals(selectedBrandFilter, ignoreCase = true) }
+            }
+            val mounts = matchingItems.mapNotNull { it.attributes["mount"] }.distinct().sorted()
+            if (mounts.size == 1) {
+                selectedLensMountFilter = mounts.first()
+            } else if (!mounts.contains(selectedLensMountFilter)) {
+                selectedLensMountFilter = "All"
+            }
+            listOf("All") + mounts
+        }
 
         AlertDialog(
             onDismissRequest = { showLensPresetsDialog = false },
@@ -57,12 +80,42 @@ fun AddEditLensScreen(
             },
             text = {
                 Column(
-                    modifier = Modifier.fillMaxWidth().height(420.dp),
+                    modifier = Modifier.fillMaxWidth().height(440.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Select camera mount filter or type to search lens presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Select brand and mount filters to search lens presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
-                    var mountDropdownExpanded by remember { mutableStateOf(false) }
+                    // 1. FILTER BY LENS BRAND
+                    ExposedDropdownMenuBox(
+                        expanded = brandDropdownExpanded,
+                        onExpandedChange = { brandDropdownExpanded = !brandDropdownExpanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = selectedBrandFilter,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Brand") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandDropdownExpanded) },
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = brandDropdownExpanded,
+                            onDismissRequest = { brandDropdownExpanded = false }
+                        ) {
+                            allBrands.forEach { b ->
+                                DropdownMenuItem(
+                                    text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedBrandFilter = b
+                                        brandDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // 2. FILTER BY LENS MOUNT
                     ExposedDropdownMenuBox(
                         expanded = mountDropdownExpanded,
                         onExpandedChange = { mountDropdownExpanded = !mountDropdownExpanded },
@@ -80,7 +133,7 @@ fun AddEditLensScreen(
                             expanded = mountDropdownExpanded,
                             onDismissRequest = { mountDropdownExpanded = false }
                         ) {
-                            mounts.forEach { mnt ->
+                            availableMountsForBrand.forEach { mnt ->
                                 DropdownMenuItem(
                                     text = { Text(mnt, fontWeight = if (mnt == selectedLensMountFilter) FontWeight.Bold else FontWeight.Normal) },
                                     onClick = {
@@ -94,22 +147,43 @@ fun AddEditLensScreen(
 
                     OutlinedTextField(
                         value = lensSearchQueryText,
-                        onValueChange = { 
-                            lensSearchQueryText = it
-                            viewModel.onSearch(it)
-                        },
+                        onValueChange = { lensSearchQueryText = it },
                         label = { Text("Search Lenses") },
                         modifier = Modifier.fillMaxWidth(),
                         trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
                     )
 
+                    // Fallback Action Button
+                    val fallbackButtonLabel = if (selectedBrandFilter != "All") "➕ Add New $selectedBrandFilter Lens" else "➕ Add New Custom Lens"
+                    OutlinedButton(
+                        onClick = {
+                            if (selectedBrandFilter != "All") {
+                                viewModel.onMakeChange(selectedBrandFilter)
+                            }
+                            if (selectedLensMountFilter != "All") {
+                                viewModel.onMountChange(selectedLensMountFilter)
+                            }
+                            showLensPresetsDialog = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                    }
+
                     HorizontalDivider()
 
-                    val allPresets = uiState.searchResults
-                    val filteredPresets = if (selectedLensMountFilter == "All") {
-                        allPresets
-                    } else {
-                        allPresets.filter { it.mount.equals(selectedLensMountFilter, ignoreCase = true) }
+                    val filteredPresets = remember(selectedBrandFilter, selectedLensMountFilter, lensSearchQueryText) {
+                        masterLensItems.filter { item ->
+                            val matchesBrand = selectedBrandFilter == "All" || item.brand.equals(selectedBrandFilter, ignoreCase = true)
+                            val mnt = item.attributes["mount"] ?: ""
+                            val matchesMount = selectedLensMountFilter == "All" || mnt.contains(selectedLensMountFilter, ignoreCase = true)
+                            val matchesQuery = lensSearchQueryText.isBlank() || (
+                                item.name.contains(lensSearchQueryText, ignoreCase = true) ||
+                                item.brand.contains(lensSearchQueryText, ignoreCase = true) ||
+                                (item.modelNumber?.contains(lensSearchQueryText, ignoreCase = true) == true)
+                            )
+                            matchesBrand && matchesMount && matchesQuery
+                        }
                     }
 
                     if (filteredPresets.isEmpty()) {
@@ -119,7 +193,23 @@ fun AddEditLensScreen(
                     } else {
                         LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             items(filteredPresets.size) { idx ->
-                                val spec = filteredPresets[idx]
+                                val presetItem = filteredPresets[idx]
+                                val spec = LensSpec(
+                                    make = presetItem.brand,
+                                    model = presetItem.name,
+                                    modelNumber = presetItem.modelNumber ?: "",
+                                    type = presetItem.subCategory ?: presetItem.attributes["type"] ?: "Prime",
+                                    mount = presetItem.attributes["mount"] ?: "Standard",
+                                    filterSize = presetItem.attributes["filterSize"]?.replace("mm", "")?.toIntOrNull() ?: 52,
+                                    isStabilized = false,
+                                    minFocusDistance = 0.5,
+                                    maxMagnification = 0.15,
+                                    minAperture = presetItem.attributes["minAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 22.0,
+                                    maxAperture = presetItem.attributes["maxAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 1.4,
+                                    minFocalLength = presetItem.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50,
+                                    maxFocalLength = presetItem.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50
+                                )
+
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -135,8 +225,8 @@ fun AddEditLensScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Column(modifier = Modifier.weight(1f)) {
-                                            Text("${spec.make} ${spec.model}", fontWeight = FontWeight.Bold)
-                                            Text("${spec.type} • Mount: ${spec.mount}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                            Text(presetItem.name, fontWeight = FontWeight.Bold)
+                                            Text("${spec.type} • Mount: ${spec.mount} • ${presetItem.attributes["focalLength"] ?: "50mm"} ${presetItem.attributes["maxAperture"] ?: "f/1.4"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                         }
                                         Button(
                                             onClick = {

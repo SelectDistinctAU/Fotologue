@@ -4580,7 +4580,24 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
     }
 
     if (showLensPresetsDialog) {
-        val mounts = remember { listOf("All") + DatabaseRepository.loadLensMountLovs() }
+        val allBrands = remember { masterBrands }
+        
+        var selectedLensBrandFilter by remember { mutableStateOf("All") }
+        var brandDropdownExpanded by remember { mutableStateOf(false) }
+        var mountDropdownExpanded by remember { mutableStateOf(false) }
+
+        val availableMountsForBrand = remember(selectedLensBrandFilter) {
+            val matching = DatabaseRepository.searchPresetLenses("")
+            val filtered = if (selectedLensBrandFilter == "All") matching else matching.filter { (it.make?.contains(selectedLensBrandFilter, ignoreCase = true) == true) || it.name.contains(selectedLensBrandFilter, ignoreCase = true) }
+            val mounts = filtered.mapNotNull { it.mount }.distinct().sorted()
+            
+            if (mounts.size == 1) {
+                selectedLensMountFilter = mounts.first()
+            } else if (!mounts.contains(selectedLensMountFilter)) {
+                selectedLensMountFilter = "All"
+            }
+            listOf("All") + mounts
+        }
 
         AlertDialog(
             modifier = Modifier.width(620.dp),
@@ -4597,9 +4614,35 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                     modifier = Modifier.fillMaxWidth().height(440.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Select camera mount filter or type to search lens presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Select brand and mount filters to search lens presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
-                    var mountDropdownExpanded by remember { mutableStateOf(false) }
+                    // 1. FILTER BY LENS BRAND
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = selectedLensBrandFilter,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Brand") },
+                            trailingIcon = { IconButton(onClick = { brandDropdownExpanded = !brandDropdownExpanded }) { Icon(Icons.Default.ArrowDropDown, contentDescription = null) } },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        DropdownMenu(
+                            expanded = brandDropdownExpanded,
+                            onDismissRequest = { brandDropdownExpanded = false }
+                        ) {
+                            allBrands.forEach { b ->
+                                DropdownMenuItem(
+                                    text = { Text(b, fontWeight = if (b == selectedLensBrandFilter) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedLensBrandFilter = b
+                                        brandDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // 2. FILTER BY LENS MOUNT
                     Box(modifier = Modifier.fillMaxWidth()) {
                         OutlinedTextField(
                             value = selectedLensMountFilter,
@@ -4613,7 +4656,7 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             expanded = mountDropdownExpanded,
                             onDismissRequest = { mountDropdownExpanded = false }
                         ) {
-                            mounts.forEach { mnt ->
+                            availableMountsForBrand.forEach { mnt ->
                                 DropdownMenuItem(
                                     text = { Text(mnt, fontWeight = if (mnt == selectedLensMountFilter) FontWeight.Bold else FontWeight.Normal) },
                                     onClick = {
@@ -4633,18 +4676,38 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                         trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
                     )
 
+                    // Fallback Action Button
+                    val fallbackButtonLabel = if (selectedLensBrandFilter != "All") "➕ Add New $selectedLensBrandFilter Lens" else "➕ Add New Custom Lens"
+                    OutlinedButton(
+                        onClick = {
+                            val currentItem = editingLens ?: ReferenceLensItem(name = "")
+                            val newBrand = if (selectedLensBrandFilter != "All") selectedLensBrandFilter else currentItem.make
+                            val newMount = if (selectedLensMountFilter != "All") selectedLensMountFilter else currentItem.mount
+
+                            editingLens = currentItem.copy(
+                                make = newBrand,
+                                mount = newMount,
+                                name = "$newBrand ".trimStart()
+                            )
+                            showLensPresetsDialog = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                    }
+
                     HorizontalDivider()
 
                     val allPresets = DatabaseRepository.searchPresetLenses(lensSearchQueryText)
-                    val filteredPresets = if (selectedLensMountFilter == "All") {
-                        allPresets
-                    } else {
-                        allPresets.filter { it.mount.equals(selectedLensMountFilter, ignoreCase = true) }
+                    val filteredPresets = allPresets.filter { preset ->
+                        val matchesBrand = selectedLensBrandFilter == "All" || (preset.make?.contains(selectedLensBrandFilter, ignoreCase = true) == true) || preset.name.contains(selectedLensBrandFilter, ignoreCase = true)
+                        val matchesMount = selectedLensMountFilter == "All" || preset.mount.equals(selectedLensMountFilter, ignoreCase = true)
+                        matchesBrand && matchesMount
                     }
 
                     if (filteredPresets.isEmpty()) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("No lens presets found for $selectedLensMountFilter.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("No lens presets found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     } else {
                         LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
