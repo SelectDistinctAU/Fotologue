@@ -316,6 +316,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-033: Camera Gear Buried Under Field Module on Mobile Portal
+- **Platform**: Mobile & Desktop (`HubScreen.kt`, `GearLibraryScreen.kt`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: On Mobile, camera gear management was buried inside `FIELD`, preventing users from setting up their gear before shooting. Terminology varied ("Gear Collection" vs "Gear Library").
+- **Root Cause**: Unaligned Information Architecture on Mobile Staging Portal.
+- **Resolution**: Elevated **`CAMERA GEAR`** to Module #1 at the top of Mobile Staging Portal (`HubScreen.kt`) above `FIELD`, with 1-click navigation to `GearLibraryScreen`. Created `settings_photo_camera_24px.xml` M3 vector icon and standardized terminology to **`CAMERA GEAR`** across Mobile and Desktop.
+- **Regression Test Case**: Open Mobile Staging Portal $\to$ verify **CAMERA GEAR** is Module #1 at the top with `settings_photo_camera_24px` icon and opens `GearLibraryScreen` directly.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
