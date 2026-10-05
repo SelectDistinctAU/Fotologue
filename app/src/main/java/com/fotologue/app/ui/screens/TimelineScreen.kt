@@ -153,6 +153,8 @@ fun TimelineScreenContent(
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     TextButton(onClick = {
                         showFoundationSyncDialog = false
+                        onSetIncludeFoundationData(false)
+                        // Trigger manifest restore intent here eventually.
                     }) {
                         Text("Revert")
                     }
@@ -273,7 +275,7 @@ fun TimelineScreenContent(
                             }
                         }
                         IconButton(onClick = onGearLibraryClick) {
-                            Icon(painterResource(R.drawable.ic_handyman), contentDescription = stringResource(R.string.gear_library_title))
+                            Icon(painterResource(R.drawable.settings_photo_camera_24px), contentDescription = stringResource(R.string.gear_library_title))
                         }
                     }
                 )

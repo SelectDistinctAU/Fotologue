@@ -3,5 +3,5 @@
     <!-- US English Overrides (en-US) -->
     <string name="online_lookup">Preset Catalogue</string>
     <string name="search_web_for_specs">Autofill Specs from Catalogue</string>
-    <string name="gear_library_title">Gear Collection</string>
+    <string name="gear_library_title">Camera Gear</string>
 </resources>
