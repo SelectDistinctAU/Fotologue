@@ -396,6 +396,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-041: Maintainer Tool Displayed Empty Preset List Due to Missing Assembly Task
+- **Platform**: Fotologue Maintainer Tool (`MaintainerApp.kt` & `core/data/build.gradle.kts`)
+- **Reported**: October 2026
+- **Symptom**: Launching the Maintainer Tool displayed `"No CAMERA presets found in JSON file."` because the required modular JSON files did not exist.
+- **Root Cause**: The modular preset architecture (`cameras.json`, `films.json`, `lenses.json`) defined in `maintainer_preset_workflow_architecture.md` was never implemented. The system still relied on hardcoded Kotlin objects, and the `assembleMasterCatalog` Gradle task was missing.
+- **Resolution**: Hand-seeded the initial modular JSON files (`cameras.json`, `films.json`, `lenses.json`) into `core/data/src/main/resources/presets/` and implemented the `assembleMasterCatalog` task in `core/data/build.gradle.kts` to compile them into the release artifact.
+- **Regression Test Case**: Run `./gradlew :desktop:runMaintainer` $\to$ verify the tool immediately lists the seeded Camera, Lens, and Film presets.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
