@@ -5217,7 +5217,7 @@ private fun FoundationAdminLeftRail(
                 .verticalScroll(railScrollState),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            // Header 1: GEAR COLLECTION
+            // Header 1: CAMERA GEAR
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -5227,7 +5227,7 @@ private fun FoundationAdminLeftRail(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "GEAR COLLECTION",
+                    "CAMERA GEAR",
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary
                 )

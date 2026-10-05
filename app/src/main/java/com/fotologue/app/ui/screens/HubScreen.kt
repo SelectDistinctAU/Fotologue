@@ -37,6 +37,7 @@ import com.fotologue.core.designsystem.R
 fun HubScreen(
     isSafelightActive: Boolean = false,
     onToggleSafelight: (() -> Unit)? = null,
+    onNavigateToCameraGear: () -> Unit = {},
     onNavigateToField: () -> Unit,
     onNavigateToContacts: () -> Unit = {},
     onNavigateToLab: () -> Unit,
@@ -125,11 +126,25 @@ fun HubScreen(
                 )
             }
 
+            item(key = "module_camera_gear") {
+                HubModuleCard(
+                    title = "CAMERA GEAR",
+                    subtitle = "Cameras, Lenses, Films & Accessories",
+                    description = "Cameras • Lenses • Films • Kits • Teleconverters • Filters • Flashes",
+                    iconRes = com.fotologue.app.R.drawable.settings_photo_camera_24px,
+                    cardBg = safelightCardBg,
+                    titleColor = safelightFg,
+                    subColor = safelightPrimary,
+                    descColor = safelightSubFg,
+                    onClick = onNavigateToCameraGear
+                )
+            }
+
             item(key = "module_field") {
                 HubModuleCard(
                     title = "FIELD",
                     subtitle = "In-situ Exposure & Observation",
-                    description = "Exposure Logging • Light Meter • Active Roll Counter • Gear Kits",
+                    description = "Exposure Logging • Light Meter • Active Roll Counter",
                     iconRes = R.drawable.hiking_24px,
                     cardBg = safelightCardBg,
                     titleColor = safelightFg,

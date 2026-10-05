@@ -89,6 +89,7 @@ class MainActivity : ComponentActivity() {
                                     HubScreen(
                                         isSafelightActive = isSafelightActive,
                                         onToggleSafelight = { mainViewModel.toggleSafelight() },
+                                        onNavigateToCameraGear = { backStack.add(Route.GearLibrary) },
                                         onNavigateToField = { backStack.add(Route.Timeline) },
                                         onNavigateToContacts = { backStack.add(Route.Lab(initialTab = 1)) },
                                         onNavigateToLab = { backStack.add(Route.Lab()) },

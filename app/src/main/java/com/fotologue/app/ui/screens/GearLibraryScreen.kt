@@ -117,7 +117,7 @@ fun GearLibraryScreen(
                         itemsIndexed(categories) { index, category ->
                             if (index == 0) {
                                 Text(
-                                    text = "GEAR COLLECTION",
+                                    text = "CAMERA GEAR",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Bold,
