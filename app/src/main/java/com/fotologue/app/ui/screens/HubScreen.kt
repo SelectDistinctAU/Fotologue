@@ -130,7 +130,7 @@ fun HubScreen(
                 HubModuleCard(
                     title = "CAMERA GEAR",
                     subtitle = "Cameras, Lenses, Films & Accessories",
-                    description = "Cameras • Lenses • Films • Kits • Teleconverters • Filters • Flashes",
+                    description = "Cameras • Lenses • Films • Teleconverters • Filters • Flashes • Viewfinders • Kit Bags",
                     iconRes = com.fotologue.app.R.drawable.settings_photo_camera_24px,
                     cardBg = safelightCardBg,
                     titleColor = safelightFg,
@@ -144,7 +144,7 @@ fun HubScreen(
                 HubModuleCard(
                     title = "FIELD",
                     subtitle = "In-situ Exposure & Observation",
-                    description = "Exposure Logging • Light Meter • Active Roll Counter",
+                    description = "Exposure Logging • Light Meter",
                     iconRes = R.drawable.hiking_24px,
                     cardBg = safelightCardBg,
                     titleColor = safelightFg,
