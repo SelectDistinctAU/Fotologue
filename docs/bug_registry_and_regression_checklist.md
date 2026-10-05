@@ -296,6 +296,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-031: Mobile Lens Preset Dialog Empty & Missing Brand-First Cascade
+- **Platform**: Mobile & Desktop (`AddEditLensScreen.kt` & `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Select Lens from Presets` on Mobile returned `"No lens presets found."` upon opening because it read an uninitialized search state.
+- **Root Cause**: `AddEditLensScreen.kt` read `uiState.searchResults` which initialized to `emptyList()`.
+- **Resolution**: Connected Mobile's `AddEditLensScreen.kt` directly to `MasterPresetEngine.getPresetsByCategory("LENS")`. Re-architected Lens preset dialogs across Mobile and Desktop with **`Filter by Brand`** top dropdown, **`Filter by Lens Mount`** second dropdown, and **`[ ➕ Add New {SelectedBrand} Lens ]`** fallback pre-fill action button.
+- **Regression Test Case**: Open `Add Lens` on Mobile $\to$ tap `[ ⚙️ Select from Presets ]` $\to$ verify lens presets load immediately with Canon FD, Nikon F, Pentax K, Zeiss, etc.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
