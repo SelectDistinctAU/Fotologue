@@ -42,6 +42,9 @@ fun AddLogScreen(
     val locationPermissionState = rememberPermissionState(
         Manifest.permission.ACCESS_FINE_LOCATION,
     )
+    val cameraPermissionState = rememberPermissionState(
+        Manifest.permission.CAMERA
+    )
     val cameras by viewModel.allCameras.collectAsStateWithLifecycle()
     val lenses by viewModel.filteredLenses.collectAsStateWithLifecycle()
     val teleconverters by viewModel.filteredTeleconverters.collectAsStateWithLifecycle()
@@ -68,6 +71,23 @@ fun AddLogScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    if (!locationPermissionState.status.isGranted) {
+                        locationPermissionState.launchPermissionRequest()
+                    } else {
+                        viewModel.saveLog()
+                        onBack()
+                    }
+                }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_check),
+                    contentDescription = if (viewModel.editingLogId != null) stringResource(R.string.save_changes) else stringResource(R.string.save_log)
+                )
+            }
         }
     ) { innerPadding ->
         Column(
@@ -242,15 +262,19 @@ fun AddLogScreen(
 
                     Button(
                         onClick = { 
-                            onMeasureExposure(
-                                uiState.iso,
-                                uiState.selectedCameraId,
-                                uiState.selectedLensId,
-                                uiState.selectedTeleconverterId,
-                                uiState.selectedFilterId,
-                                uiState.selectedFilmId,
-                                uiState.focalLength
-                            ) 
+                            if (!cameraPermissionState.status.isGranted) {
+                                cameraPermissionState.launchPermissionRequest()
+                            } else {
+                                onMeasureExposure(
+                                    uiState.iso,
+                                    uiState.selectedCameraId,
+                                    uiState.selectedLensId,
+                                    uiState.selectedTeleconverterId,
+                                    uiState.selectedFilterId,
+                                    uiState.selectedFilmId,
+                                    uiState.focalLength
+                                ) 
+                            }
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -277,27 +301,8 @@ fun AddLogScreen(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
             )
-
-            if (!locationPermissionState.status.isGranted) {
-                Button(
-                    onClick = { locationPermissionState.launchPermissionRequest() },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
-                ) {
-                    Icon(painterResource(R.drawable.ic_location_on), contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.grant_location_save))
-                }
-            }
-
-            Button(
-                onClick = { viewModel.saveLog(); onBack() },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(if (viewModel.editingLogId != null) stringResource(R.string.save_changes) else stringResource(R.string.save_log))
-            }
             
-            Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding() + 32.dp))
+            Spacer(modifier = Modifier.height(80.dp)) // padding for FAB
         }
     }
 }
