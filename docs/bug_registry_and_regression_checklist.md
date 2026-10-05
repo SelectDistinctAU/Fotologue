@@ -416,6 +416,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-043: Desktop AddEditCameraScreen Unification Bridge Failure
+- **Platform**: Fotologue Desktop (`Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: After successfully unifying the preset dialogs on Mobile, clicking `Select from Presets` on Desktop failed to show newly merged items.
+- **Root Cause**: Desktop's `Main.kt` was missing the `Unification Bridge` logic that merges local custom foundation entries with the `MasterPresetEngine` catalog.
+- **Resolution**: Ported the Unification Bridge logic into Desktop's `Main.kt`. The preset dialogs for Cameras, Lenses, and Films now seamlessly merge custom local Database repository entries with the Master Developer catalog.
+- **Regression Test Case**: Add a custom camera on Desktop $\to$ tap `[ ⚙️ Select from Presets ]` $\to$ verify custom camera appears in the dropdown list.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
