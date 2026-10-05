@@ -386,6 +386,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-040: Unregistered Desktop Build Task for Maintainer Tooling
+- **Platform**: Fotologue Desktop (`desktop/build.gradle.kts`)
+- **Reported**: October 2026
+- **Symptom**: Attempting to execute `./gradlew :desktop:runMaintainer` failed with `Cannot locate tasks that match ':desktop:runMaintainer'`, preventing maintainers from accessing the visual preset authoring GUI.
+- **Root Cause**: The `MaintainerApp.kt` file existed with a `main()` function, but the custom `JavaExec` build task was not registered in `desktop/build.gradle.kts`.
+- **Resolution**: Appended a `tasks.register<JavaExec>("runMaintainer")` block to `desktop/build.gradle.kts` targeting the `com.fotologue.desktop.MaintainerAppKt` main class with the required native JVM access arguments.
+- **Regression Test Case**: Run `./gradlew :desktop:runMaintainer` $\to$ verify build succeeds and Fotologue Master Preset Authoring Tool window opens.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist

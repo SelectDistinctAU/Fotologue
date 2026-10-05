@@ -36,3 +36,11 @@ compose.desktop {
         }
     }
 }
+
+tasks.register<JavaExec>("runMaintainer") {
+    group = "application"
+    description = "Run the Fotologue Master Preset Authoring Tool"
+    mainClass.set("com.fotologue.desktop.MaintainerAppKt")
+    classpath = sourceSets["main"].runtimeClasspath
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
+}
