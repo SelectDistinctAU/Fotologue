@@ -5241,14 +5241,14 @@ private fun FoundationAdminLeftRail(
             
             if (isGearExpanded) {
                 val gearCategories = listOf(
-                    Triple("Kits ($kitsCount)", 3, Icons.Default.Inventory2),
                     Triple("Cameras ($camerasCount)", 0, Icons.Default.PhotoCamera),
                     Triple("Lenses ($lensesCount)", 1, Icons.Default.Camera),
                     Triple("Films ($filmsCount)", 2, Icons.Default.CameraRoll),
                     Triple("Teleconverters ($teleconvertersCount)", 4, Icons.Default.CenterFocusStrong),
                     Triple("Filters ($filtersCount)", 5, Icons.Default.Filter),
                     Triple("Flashes ($flashesCount)", 6, Icons.Default.FlashOn),
-                    Triple("Viewfinders ($viewfindersCount)", 7, Icons.Default.Visibility)
+                    Triple("Viewfinders ($viewfindersCount)", 7, Icons.Default.Visibility),
+                    Triple("Kit Bags ($kitsCount)", 3, Icons.Default.Inventory2)
                 )
                 gearCategories.forEach { (catTitle, catIdx, catIcon) ->
                     val isSel = selectedCategory == catIdx

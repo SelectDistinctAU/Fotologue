@@ -5,7 +5,7 @@
     <string name="app_widget_description">This is an app widget description</string>
 
     <!-- Navigation & General Actions -->
-    <string name="category_kits">Kits</string>
+    <string name="category_kits">Kit Bags</string>
     <string name="category_cameras">Cameras</string>
     <string name="category_lenses">Lenses</string>
     <string name="category_accessories">Accessories</string>
@@ -191,8 +191,8 @@
     <string name="label_guide_number_hint">Guide Number (ISO 100, meters)</string>
     <string name="save_flash">Save Flash</string>
 
-    <string name="add_kit">Add Kit</string>
-    <string name="edit_kit">Edit Kit</string>
+    <string name="add_kit">Add Kit Bag</string>
+    <string name="edit_kit">Edit Kit Bag</string>
     <string name="kit_name">Kit Name</string>
     <string name="kit_name_placeholder">e.g. Street Kit, Landscape Prime</string>
     <string name="error_select_camera">Please select a camera</string>
