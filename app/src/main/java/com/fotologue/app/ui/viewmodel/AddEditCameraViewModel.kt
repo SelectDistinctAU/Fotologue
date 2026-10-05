@@ -65,6 +65,39 @@ class AddEditCameraViewModel @Inject constructor(
         }
     }
 
+    init {
+        // Unification Bridge: Load Desktop-synced local cameras + Global Maintainers Catalog
+        viewModelScope.launch {
+            repository.allCameras.collect { localCameras ->
+                val localSpecs = localCameras.map { c ->
+                    CameraSpec(
+                        name = c.name,
+                        modelNumber = c.modelNumber,
+                        type = c.type,
+                        mount = c.mount,
+                        shutterSpeeds = c.shutterSpeeds
+                    )
+                }
+
+                val masterPresets = MasterPresetEngine.getPresetsByCategory("CAMERA").map { presetItem ->
+                    val subCatStr = presetItem.subCategory ?: presetItem.attributes["type"] ?: "Film SLR"
+                    val cType = CameraType.entries.find { it.displayName.equals(subCatStr, ignoreCase = true) } ?: CameraType.FILM_SLR
+                    CameraSpec(
+                        name = presetItem.name,
+                        modelNumber = presetItem.modelNumber ?: presetItem.name,
+                        type = cType,
+                        mount = presetItem.attributes["mount"] ?: "Standard",
+                        shutterSpeeds = listOf(presetItem.attributes["shutterSpeeds"] ?: "1s - 1/1000s, B")
+                    )
+                }
+
+                // Merge and deduplicate by name
+                val unifiedCatalog = (localSpecs + masterPresets).distinctBy { it.name }
+                _uiState.update { it.copy(searchResults = unifiedCatalog) }
+            }
+        }
+    }
+
     private fun loadCamera() {
         val id = cameraId ?: return
         viewModelScope.launch {
@@ -88,13 +121,10 @@ class AddEditCameraViewModel @Inject constructor(
     }
 
     fun onMakeChange(make: String) {
-        val matchingPresets = MasterPresetEngine.getPresetsByCategory("CAMERA")
-            .filter { it.brand.equals(make.trim(), ignoreCase = true) }
+        val unifiedCatalog = _uiState.value.searchResults
+        val matchingPresets = unifiedCatalog.filter { it.name.substringBefore(" ").equals(make.trim(), ignoreCase = true) }
         
-        val distinctTypes = matchingPresets.mapNotNull { preset ->
-            val subCat = preset.subCategory ?: preset.attributes["type"]
-            CameraType.entries.find { it.displayName.equals(subCat, ignoreCase = true) }
-        }.distinct()
+        val distinctTypes = matchingPresets.map { it.type }.distinct()
 
         val autoSelectedType = if (distinctTypes.size == 1) distinctTypes.first() else null
 

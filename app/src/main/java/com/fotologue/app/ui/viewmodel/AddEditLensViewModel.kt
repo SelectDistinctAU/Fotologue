@@ -73,6 +73,50 @@ class AddEditLensViewModel @Inject constructor(
     private var cameraLensCrossRefs: List<CameraLensCrossRef> = emptyList()
 
     init {
+        // Unification Bridge: Load Desktop-synced local lenses + Global Maintainers Catalog
+        viewModelScope.launch {
+            repository.allLenses.collect { localLenses ->
+                val localSpecs = localLenses.map { l ->
+                    LensSpec(
+                        make = l.make,
+                        model = l.model,
+                        modelNumber = l.modelNumber,
+                        type = l.type,
+                        mount = l.mount,
+                        filterSize = l.filterSize.toString().toIntOrNull() ?: 0,
+                        isStabilized = l.isStabilized,
+                        minFocusDistance = l.minFocusDistance,
+                        maxMagnification = l.maxMagnification,
+                        minAperture = l.minAperture,
+                        maxAperture = l.maxAperture,
+                        minFocalLength = l.minFocalLength,
+                        maxFocalLength = l.maxFocalLength
+                    )
+                }
+
+                val masterPresets = com.fotologue.core.data.preset.MasterPresetEngine.getPresetsByCategory("LENS").map { presetItem ->
+                    LensSpec(
+                        make = presetItem.brand,
+                        model = presetItem.name,
+                        modelNumber = presetItem.modelNumber ?: "",
+                        type = presetItem.subCategory ?: presetItem.attributes["type"] ?: "Prime",
+                        mount = presetItem.attributes["mount"] ?: "Standard",
+                        filterSize = presetItem.attributes["filterSize"]?.replace("mm", "")?.toIntOrNull() ?: 52,
+                        isStabilized = false,
+                        minFocusDistance = 0.5,
+                        maxMagnification = 0.15,
+                        minAperture = presetItem.attributes["minAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 22.0,
+                        maxAperture = presetItem.attributes["maxAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 1.4,
+                        minFocalLength = presetItem.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50,
+                        maxFocalLength = presetItem.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50
+                    )
+                }
+
+                // Merge and deduplicate
+                val unifiedCatalog = (localSpecs + masterPresets).distinctBy { "${it.make} ${it.model}" }
+                _uiState.update { it.copy(searchResults = unifiedCatalog) }
+            }
+        }
         viewModelScope.launch {
             repository.allCameras.collect { camerasList ->
                 val lensesList = repository.allLenses.firstOrNull() ?: emptyList()
