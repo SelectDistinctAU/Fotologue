@@ -346,6 +346,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-036: Outdated 'Active Roll Counter' Reference in FIELD Subtitle
+- **Platform**: Fotologue Mobile (`app` / `HubScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: `FIELD` card description on the Mobile Staging Portal (`HubScreen.kt`) still listed `"Active Roll Counter"`, which is no longer part of that module.
+- **Root Cause**: Un-updated string description in `HubModuleCard`.
+- **Resolution**: Updated `FIELD` card description to **`"Exposure Logging • Light Meter"`**, eliminating the outdated subtitle text.
+- **Regression Test Case**: Open Mobile Staging Portal $\to$ verify `FIELD` description reads `"Exposure Logging • Light Meter"`.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
