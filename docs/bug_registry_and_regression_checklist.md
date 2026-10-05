@@ -326,6 +326,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-034: US English Resource Override Displaying Legacy 'Gear Collection' Title & Crossed Tools Top-Bar Icon
+- **Platform**: Fotologue Mobile (`app` / `strings.xml`, `TimelineScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: On US English devices (`en-rUS`), the top-bar title of `GearLibraryScreen` still displayed `"Gear Collection"`. Additionally, the top-right action icon in `FIELD` (`TimelineScreen.kt`) displayed the crossed-tools icon (`🛠️` / `ic_handyman`).
+- **Root Cause**: `res/values-en-rUS/strings.xml` contained an un-updated override `<string name="gear_library_title">Gear Collection</string>`, and `TimelineScreen.kt` referenced `R.drawable.ic_handyman`.
+- **Resolution**: Updated `gear_library_title` in `res/values-en-rUS/strings.xml` to `"Camera Gear"`, and replaced the action button icon in `TimelineScreen.kt` with `R.drawable.settings_photo_camera_24px`.
+- **Regression Test Case**: Open `Field` screen on a US English device $\to$ verify top-right action icon is `settings_photo_camera_24px` $\to$ tap icon $\to$ verify top-bar title reads **`Camera Gear`**.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
