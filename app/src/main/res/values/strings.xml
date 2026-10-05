@@ -295,7 +295,7 @@
     <string name="action_add">Add</string>
 
     <string name="empty_tags">No tags added yet.</string>
-    <string name="empty_kits">No kits added yet.</string>
+    <string name="empty_kits">No kit bags added yet.</string>
     <string name="empty_teleconverters">No teleconverters added yet.</string>
     <string name="empty_filters">No filters added yet.</string>
     <string name="empty_flashes">No flashes added yet.</string>

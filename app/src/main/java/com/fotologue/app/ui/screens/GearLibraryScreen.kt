@@ -173,18 +173,7 @@ fun GearLibraryScreen(
             AnimatedPane {
                 val content = @Composable { paddingValues: PaddingValues ->
                     when (uiState.selectedCategoryIndex) {
-                        0 -> KitList(
-                            kits = kits,
-                            selectedIds = uiState.selectedKitIds,
-                            isReorderMode = uiState.isReorderMode,
-                            onKitClick = { id -> 
-                                if (uiState.isSelectionMode) viewModel.toggleKitSelection(id) else onEditKit(id)
-                            },
-                            onKitLongClick = { viewModel.toggleKitSelection(it) },
-                            onMove = viewModel::moveKit,
-                            bottomPadding = paddingValues.calculateBottomPadding()
-                        )
-                        1 -> CameraList(
+                        0 -> CameraList(
                             cameras = cameras,
                             selectedIds = uiState.selectedCameraIds,
                             isReorderMode = uiState.isReorderMode,
@@ -195,7 +184,7 @@ fun GearLibraryScreen(
                             onMove = viewModel::moveCamera,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
-                        2 -> LensList(
+                        1 -> LensList(
                             lenses = lensesWithCameras,
                             selectedIds = uiState.selectedLensIds,
                             isReorderMode = uiState.isReorderMode,
@@ -206,7 +195,7 @@ fun GearLibraryScreen(
                             onMove = viewModel::moveLens,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
-                        3 -> FilmList(
+                        2 -> FilmList(
                             films = films,
                             selectedIds = uiState.selectedFilmIds,
                             onFilmClick = { id -> 
@@ -215,7 +204,7 @@ fun GearLibraryScreen(
                             onFilmLongClick = { viewModel.toggleFilmSelection(it) },
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
-                        4 -> TeleconverterList(
+                        3 -> TeleconverterList(
                             teleconverters = teleconverters,
                             selectedIds = uiState.selectedTeleconverterIds,
                             isReorderMode = uiState.isReorderMode,
@@ -226,7 +215,7 @@ fun GearLibraryScreen(
                             onMove = viewModel::moveTeleconverter,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
-                        5 -> FilterList(
+                        4 -> FilterList(
                             filters = filters,
                             selectedIds = uiState.selectedFilterIds,
                             isReorderMode = uiState.isReorderMode,
@@ -237,7 +226,7 @@ fun GearLibraryScreen(
                             onMove = viewModel::moveFilter,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
-                        6 -> FlashList(
+                        5 -> FlashList(
                             flashes = flashes,
                             selectedIds = uiState.selectedFlashIds,
                             isReorderMode = uiState.isReorderMode,
@@ -248,7 +237,7 @@ fun GearLibraryScreen(
                             onMove = viewModel::moveFlash,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
-                        7 -> ViewfinderList(
+                        6 -> ViewfinderList(
                             viewfinders = viewfinders,
                             selectedIds = uiState.selectedViewfinderIds,
                             isReorderMode = uiState.isReorderMode,
@@ -257,6 +246,17 @@ fun GearLibraryScreen(
                             },
                             onViewfinderLongClick = { viewModel.toggleViewfinderSelection(it) },
                             onMove = viewModel::moveViewfinder,
+                            bottomPadding = paddingValues.calculateBottomPadding()
+                        )
+                        7 -> KitList(
+                            kits = kits,
+                            selectedIds = uiState.selectedKitIds,
+                            isReorderMode = uiState.isReorderMode,
+                            onKitClick = { id -> 
+                                if (uiState.isSelectionMode) viewModel.toggleKitSelection(id) else onEditKit(id)
+                            },
+                            onKitLongClick = { viewModel.toggleKitSelection(it) },
+                            onMove = viewModel::moveKit,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         8 -> SubjectList(
