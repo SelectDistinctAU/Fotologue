@@ -366,6 +366,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-038: Hidden Save Actions and Unhandled SecurityException in Mobile Exposure Logging
+- **Platform**: Fotologue Mobile (`app` / `AddLogScreen.kt`, `LightMeterViewModel.kt`)
+- **Reported**: October 2026
+- **Symptom**: In `Add Exposure Log`, the primary `Save Log` button was hidden at the absolute bottom of a long scrollable column, causing UX friction. Tapping `Measure Exposure` crashed the app with a `SecurityException` due to unrequested camera permissions.
+- **Root Cause**: Missing FAB architecture on `AddLogScreen`. Camera permission was deferred from cold-launch but not dynamically requested before entering the `LightMeterScreen`.
+- **Resolution**: Re-architected `AddLogScreen` with an always-visible `FloatingActionButton` containing safe-save logic (prompts for location if missing before saving). Added dynamic `cameraPermissionState` check directly to the `Measure Exposure` button to request hardware access gracefully.
+- **Regression Test Case**: Open `Add Exposure Log` $\to$ verify floating save button is visible without scrolling $\to$ revoke camera permissions $\to$ tap `Measure Exposure` $\to$ verify app requests permission gracefully instead of crashing.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
