@@ -157,9 +157,9 @@ fun HubScreen(
             item(key = "module_contacts") {
                 HubModuleCard(
                     title = "CONTACTS DIRECTORY",
-                    subtitle = "People & Vendor Management (Pillar 2)",
-                    description = "Suppliers • Labs • Repair Techs • Borrowers • Friends",
-                    iconRes = R.drawable.warehouse_24px,
+                    subtitle = "People & Vendor Management",
+                    description = "Suppliers • Labs • Repair Techs • Friends",
+                    iconRes = com.fotologue.app.R.drawable.patient_list_24px,
                     cardBg = safelightCardBg,
                     titleColor = safelightFg,
                     subColor = safelightPrimary,

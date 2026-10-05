@@ -31,6 +31,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Camera
@@ -5293,7 +5294,7 @@ private fun FoundationAdminLeftRail(
 
             if (isContactsExpanded) {
                 val contactsCategories = listOf(
-                    Triple("Contacts ($suppliersCount)", 8, Icons.Default.Storefront)
+                    Triple("Contacts ($suppliersCount)", 8, Icons.Default.AccountBox)
                 )
                 contactsCategories.forEach { (catTitle, catIdx, catIcon) ->
                     val isSel = selectedCategory == catIdx
