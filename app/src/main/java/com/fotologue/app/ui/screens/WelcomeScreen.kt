@@ -48,14 +48,8 @@ fun WelcomeScreen(
         Manifest.permission.CAMERA
     )
 
-    LaunchedEffect(Unit) {
-        if (!locationPermissionState.status.isGranted) {
-            locationPermissionState.launchPermissionRequest()
-        }
-        if (!cameraPermissionState.status.isGranted) {
-            cameraPermissionState.launchPermissionRequest()
-        }
-    }
+    // Defer location permission requests to active capture screens (AddLogScreen)
+    // Camera permission is requested only when enabling camera features or meter calibration
 
     WelcomeScreenContent(
         uiState = uiState,

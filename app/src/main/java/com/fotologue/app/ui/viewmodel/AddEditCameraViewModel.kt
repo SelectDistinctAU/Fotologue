@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class AddEditCameraUiState(
-    val make: String = "Pentax",
+    val make: String = "",
     val name: String = "",
     val modelNumber: String = "",
     val serialNumber: String = "",

@@ -6,22 +6,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fotologue.app.R
+import com.fotologue.app.ui.viewmodel.AddEditCameraViewModel
+import com.fotologue.core.data.CameraSpec
 import com.fotologue.core.data.CameraType
 import com.fotologue.core.data.Film
-import com.fotologue.app.ui.viewmodel.AddEditCameraViewModel
-import com.fotologue.app.R
-import com.fotologue.core.data.CameraSpec
 import com.fotologue.core.data.preset.MasterPresetEngine
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -31,228 +31,72 @@ fun AddEditCameraScreen(
     onBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var isCustomFormView by remember { mutableStateOf(viewModel.cameraId != null) }
     var expanded by remember { mutableStateOf(false) }
-    var showCameraPresetsDialog by remember { mutableStateOf(false) }
+
+    val masterPresetItems = remember { MasterPresetEngine.getPresetsByCategory("CAMERA") }
+    val masterBrands = remember {
+        listOf(
+            "Alpa", "Arca-Swiss", "Arax", "Bronica", "Canon", "Chamonix", "Chroma", "Contax",
+            "Fujifilm", "Hasselblad", "Intrepid", "Kodak", "Konica", "Leica", "Linhof",
+            "Lomography", "Mamiya", "Minolta", "Nikon", "Olympus", "Pentax", "Phase One",
+            "Plaubel", "Ricoh", "Rollei", "Shen Hao", "Sinar", "Toyo", "Voigtländer", "Yashica", "➕ Add new Brand..."
+        )
+    }
+
+    var selectedBrandFilter by remember { mutableStateOf(if (uiState.make.isNotBlank() && masterBrands.contains(uiState.make)) uiState.make else "All") }
+    var selectedCategoryFilter by remember { mutableStateOf("All") }
     var searchQuery by remember { mutableStateOf("") }
 
-    if (showCameraPresetsDialog) {
-        val masterPresetItems = remember { MasterPresetEngine.getPresetsByCategory("CAMERA") }
-        val allBrands = remember { listOf("All") + masterPresetItems.map { it.brand }.distinct().sorted() }
-        
-        var selectedBrandFilter by remember { mutableStateOf(if (uiState.make.isNotBlank() && allBrands.contains(uiState.make)) uiState.make else "All") }
-        var selectedCategoryFilter by remember { mutableStateOf("All") }
+    var brandDropdownExpanded by remember { mutableStateOf(false) }
+    var typeDropdownExpanded by remember { mutableStateOf(false) }
 
-        var brandDropdownExpanded by remember { mutableStateOf(false) }
-        var typeDropdownExpanded by remember { mutableStateOf(false) }
-
-        // Dynamic Camera Types available for selected Brand
-        val availableTypesForBrand = remember(selectedBrandFilter) {
-            val matchingItems = if (selectedBrandFilter == "All") {
-                masterPresetItems
-            } else {
-                masterPresetItems.filter { it.brand.equals(selectedBrandFilter, ignoreCase = true) }
-            }
-            val types = matchingItems.mapNotNull { it.subCategory ?: it.attributes["type"] }.distinct().sorted()
-            
-            // Auto-select type if brand produces only 1 type
-            if (types.size == 1) {
-                selectedCategoryFilter = types.first()
-            } else if (!types.contains(selectedCategoryFilter)) {
-                selectedCategoryFilter = "All"
-            }
-            listOf("All") + types
+    // Dynamic Camera Types available for selected Brand
+    val availableTypesForBrand = remember(selectedBrandFilter) {
+        val matchingItems = if (selectedBrandFilter == "All") {
+            masterPresetItems
+        } else {
+            masterPresetItems.filter { it.brand.equals(selectedBrandFilter, ignoreCase = true) }
         }
-
-        AlertDialog(
-            onDismissRequest = { showCameraPresetsDialog = false },
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(painterResource(R.drawable.frame_inspect_24px), contentDescription = null, modifier = Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Select Camera Body from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                }
-            },
-            text = {
-                Column(
-                    modifier = Modifier.fillMaxWidth().height(440.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text("Select brand and type filters to search camera presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    
-                    // 1. FILTER BY CAMERA BRAND (Top Dropdown)
-                    ExposedDropdownMenuBox(
-                        expanded = brandDropdownExpanded,
-                        onExpandedChange = { brandDropdownExpanded = !brandDropdownExpanded },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        OutlinedTextField(
-                            value = selectedBrandFilter,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Filter by Camera Brand") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandDropdownExpanded) },
-                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = brandDropdownExpanded,
-                            onDismissRequest = { brandDropdownExpanded = false }
-                        ) {
-                            allBrands.forEach { b ->
-                                DropdownMenuItem(
-                                    text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
-                                    onClick = {
-                                        selectedBrandFilter = b
-                                        brandDropdownExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    // 2. FILTER BY CAMERA TYPE (Second Dropdown, Restricted by Brand)
-                    ExposedDropdownMenuBox(
-                        expanded = typeDropdownExpanded,
-                        onExpandedChange = { typeDropdownExpanded = !typeDropdownExpanded },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        OutlinedTextField(
-                            value = selectedCategoryFilter,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Filter by Camera Type") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeDropdownExpanded) },
-                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = typeDropdownExpanded,
-                            onDismissRequest = { typeDropdownExpanded = false }
-                        ) {
-                            availableTypesForBrand.forEach { cat ->
-                                DropdownMenuItem(
-                                    text = { Text(cat, fontWeight = if (cat == selectedCategoryFilter) FontWeight.Bold else FontWeight.Normal) },
-                                    onClick = {
-                                        selectedCategoryFilter = cat
-                                        typeDropdownExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    OutlinedTextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        label = { Text("Search Cameras") },
-                        modifier = Modifier.fillMaxWidth(),
-                        trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
-                    )
-
-                    // Fallback Action Button: Pre-fill selections and return to main form
-                    val fallbackButtonLabel = if (selectedBrandFilter != "All") "➕ Add New $selectedBrandFilter Camera" else "➕ Add New Custom Camera"
-                    OutlinedButton(
-                        onClick = {
-                            if (selectedBrandFilter != "All") {
-                                viewModel.onMakeChange(selectedBrandFilter)
-                            }
-                            if (selectedCategoryFilter != "All") {
-                                val selectedTypeEnum = CameraType.entries.find { it.displayName.equals(selectedCategoryFilter, ignoreCase = true) }
-                                selectedTypeEnum?.let { viewModel.onTypeChange(it) }
-                            }
-                            showCameraPresetsDialog = false
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
-                    }
-
-                    HorizontalDivider()
-
-                    val filteredPresets = remember(selectedBrandFilter, selectedCategoryFilter, searchQuery) {
-                        masterPresetItems.filter { item ->
-                            val matchesBrand = selectedBrandFilter == "All" || item.brand.equals(selectedBrandFilter, ignoreCase = true)
-                            val subCat = item.subCategory ?: item.attributes["type"] ?: ""
-                            val matchesType = selectedCategoryFilter == "All" || subCat.contains(selectedCategoryFilter, ignoreCase = true)
-                            val matchesQuery = searchQuery.isBlank() || (
-                                item.name.contains(searchQuery, ignoreCase = true) ||
-                                item.brand.contains(searchQuery, ignoreCase = true) ||
-                                (item.modelNumber?.contains(searchQuery, ignoreCase = true) == true)
-                            )
-                            matchesBrand && matchesType && matchesQuery
-                        }
-                    }
-
-                    if (filteredPresets.isEmpty()) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("No camera presets found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                    } else {
-                        LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            items(filteredPresets.size) { idx ->
-                                val presetItem = filteredPresets[idx]
-                                val subCatStr = presetItem.subCategory ?: presetItem.attributes["type"] ?: "Film SLR"
-                                val cType = CameraType.entries.find { it.displayName.equals(subCatStr, ignoreCase = true) } ?: CameraType.FILM_SLR
-                                val spec = CameraSpec(
-                                    name = presetItem.name,
-                                    modelNumber = presetItem.modelNumber ?: presetItem.name,
-                                    type = cType,
-                                    mount = presetItem.attributes["mount"] ?: "Standard",
-                                    shutterSpeeds = listOf(presetItem.attributes["shutterSpeeds"] ?: "1s - 1/1000s, B")
-                                )
-
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            viewModel.applySpec(spec)
-                                            showCameraPresetsDialog = false
-                                        },
-                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                ) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth().padding(12.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Column(modifier = Modifier.weight(1f)) {
-                                            Text(spec.name, fontWeight = FontWeight.Bold)
-                                            Text("${spec.type.displayName} • Mount: ${spec.mount}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                        }
-                                        Button(
-                                            onClick = {
-                                                viewModel.applySpec(spec)
-                                                showCameraPresetsDialog = false
-                                            },
-                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
-                                        ) {
-                                            Text("Select", style = MaterialTheme.typography.labelSmall)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(onClick = { showCameraPresetsDialog = false }) {
-                    Text("Close")
-                }
-            }
-        )
+        val types = matchingItems.mapNotNull { it.subCategory ?: it.attributes["type"] }.distinct().sorted()
+        
+        // Auto-select type if brand produces only 1 type
+        if (types.size == 1) {
+            selectedCategoryFilter = types.first()
+        } else if (!types.contains(selectedCategoryFilter)) {
+            selectedCategoryFilter = "All"
+        }
+        listOf("All") + types
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (viewModel.cameraId == null) stringResource(R.string.add_camera) else stringResource(R.string.edit_camera)) },
+                title = { 
+                    Text(
+                        if (viewModel.cameraId == null) {
+                            if (isCustomFormView) "Add Custom Camera" else "Select Camera from Presets"
+                        } else "Edit Camera"
+                    ) 
+                },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = {
+                        if (!isCustomFormView && viewModel.cameraId == null) {
+                            onBack()
+                        } else if (viewModel.cameraId == null) {
+                            isCustomFormView = false
+                        } else {
+                            onBack()
+                        }
+                    }) {
                         Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.action_back))
                     }
                 },
                 actions = {
-                    IconButton(onClick = { viewModel.saveCamera(onBack) }) {
-                        Icon(painterResource(R.drawable.ic_check), contentDescription = stringResource(R.string.action_save))
+                    if (isCustomFormView) {
+                        IconButton(onClick = { viewModel.saveCamera(onBack) }) {
+                            Icon(painterResource(R.drawable.ic_check), contentDescription = stringResource(R.string.action_save))
+                        }
                     }
                 }
             )
@@ -264,210 +108,364 @@ fun AddEditCameraScreen(
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
                 .imePadding()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Button(
-                onClick = { showCameraPresetsDialog = true },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
-                colors = ButtonDefaults.filledTonalButtonColors()
-            ) {
-                Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Select from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
-            }
-
-            val masterBrands = remember {
-                listOf(
-                    "Alpa", "Arca-Swiss", "Arax", "Bronica", "Canon", "Chamonix", "Chroma", "Contax",
-                    "Fujifilm", "Hasselblad", "Intrepid", "Kodak", "Konica", "Leica", "Linhof",
-                    "Lomography", "Mamiya", "Minolta", "Nikon", "Olympus", "Pentax", "Phase One",
-                    "Plaubel", "Ricoh", "Rollei", "Shen Hao", "Sinar", "Toyo", "Voigtländer", "Yashica", "Other..."
+            if (!isCustomFormView && viewModel.cameraId == null) {
+                // PRIMARY TARGET: FULL-SCREEN PRESET CATALOG BROWSER
+                Text(
+                    text = "Select a brand and type to search camera body presets:",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            }
-            var brandExpanded by remember { mutableStateOf(false) }
 
-            // Field 1: Brand (Controlled Dropdown Selector)
-            ExposedDropdownMenuBox(
-                expanded = brandExpanded,
-                onExpandedChange = { brandExpanded = !brandExpanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = uiState.make,
-                    onValueChange = viewModel::onMakeChange,
-                    label = { Text("Brand") },
-                    placeholder = { Text("Select or type Brand") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandExpanded) },
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = brandExpanded,
-                    onDismissRequest = { brandExpanded = false }
-                ) {
-                    masterBrands.forEach { brand ->
-                        DropdownMenuItem(
-                            text = { Text(brand) },
-                            onClick = {
-                                if (brand != "Other...") {
-                                    viewModel.onMakeChange(brand)
-                                }
-                                brandExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            // Field 2: Model Name
-            OutlinedTextField(
-                value = uiState.name,
-                onValueChange = viewModel::onNameChange,
-                label = { Text("Model Name") },
-                placeholder = { Text("e.g. LX, ME Super, K1000, AE-1 Program") },
-                modifier = Modifier.fillMaxWidth(),
-                isError = !uiState.isNameValid,
-                supportingText = if (!uiState.isNameValid) {
-                    { Text(stringResource(R.string.error_name_empty)) }
-                } else null
-            )
-
-            // Field 3: Camera Type Dropdown
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = uiState.type.displayName,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.label_camera_type)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    CameraType.entries.forEach { typeOption ->
-                        DropdownMenuItem(
-                            text = { Text(typeOption.displayName) },
-                            onClick = {
-                                viewModel.onTypeChange(typeOption)
-                                expanded = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            // Field 6: Film Format Dropdown
-            var formatExpanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
-                expanded = formatExpanded,
-                onExpandedChange = { formatExpanded = !formatExpanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = uiState.format,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Film Format") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatExpanded) },
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = formatExpanded,
-                    onDismissRequest = { formatExpanded = false }
-                ) {
-                    Film.ALL_FORMATS.forEach { format ->
-                        DropdownMenuItem(
-                            text = { Text(format) },
-                            onClick = {
-                                viewModel.onFormatChange(format)
-                                formatExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            Text(
-                text = "Hint: If your camera uses multiple film formats (e.g. interchangeable backs), add it once for each format.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 2.dp)
-            )
-
-            // Field 7: Lens Mount
-            if (uiState.type.isInterchangeable) {
-                var mountExpanded by remember { mutableStateOf(false) }
-                val defaultMounts = remember { listOf("Pentax K", "Canon FD", "Nikon F", "Leica M", "Leica L39", "Hasselblad V", "Contax C/Y", "Olympus OM", "Minolta SR/MD", "M42 Thread", "Fixed") }
-
+                // 1. FILTER BY CAMERA BRAND (Top Dropdown)
                 ExposedDropdownMenuBox(
-                    expanded = mountExpanded,
-                    onExpandedChange = { mountExpanded = !mountExpanded },
+                    expanded = brandDropdownExpanded,
+                    onExpandedChange = { brandDropdownExpanded = !brandDropdownExpanded },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
-                        value = uiState.mount,
-                        onValueChange = viewModel::onMountChange,
-                        label = { Text("Lens Mount") },
-                        placeholder = { Text("e.g. Pentax K, Canon FD, Fixed") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = mountExpanded) },
-                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+                        value = selectedBrandFilter,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Filter by Camera Brand") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandDropdownExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
-                        expanded = mountExpanded,
-                        onDismissRequest = { mountExpanded = false }
+                        expanded = brandDropdownExpanded,
+                        onDismissRequest = { brandDropdownExpanded = false }
                     ) {
-                        defaultMounts.forEach { mnt ->
+                        (listOf("All") + masterBrands.filter { it != "➕ Add new Brand..." }).forEach { b ->
                             DropdownMenuItem(
-                                text = { Text(mnt) },
+                                text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
                                 onClick = {
-                                    viewModel.onMountChange(mnt)
-                                    mountExpanded = false
+                                    selectedBrandFilter = b
+                                    brandDropdownExpanded = false
                                 }
                             )
                         }
                     }
                 }
-            }
 
-            // Field 8: Shutter Speeds
-            OutlinedTextField(
-                value = uiState.shutterSpeeds,
-                onValueChange = viewModel::onShutterSpeedsChange,
-                label = { Text("Shutter Speeds") },
-                placeholder = { Text("1s - 1/1000s, B") },
-                modifier = Modifier.fillMaxWidth()
-            )
+                // 2. FILTER BY CAMERA TYPE (Second Dropdown, Dynamic Cascade)
+                ExposedDropdownMenuBox(
+                    expanded = typeDropdownExpanded,
+                    onExpandedChange = { typeDropdownExpanded = !typeDropdownExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = selectedCategoryFilter,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Filter by Camera Type") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeDropdownExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = typeDropdownExpanded,
+                        onDismissRequest = { typeDropdownExpanded = false }
+                    ) {
+                        availableTypesForBrand.forEach { cat ->
+                            DropdownMenuItem(
+                                text = { Text(cat, fontWeight = if (cat == selectedCategoryFilter) FontWeight.Bold else FontWeight.Normal) },
+                                onClick = {
+                                    selectedCategoryFilter = cat
+                                    typeDropdownExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
 
-            Text(
-                text = "Hint: Enter speeds as a range (e.g. 1s - 1/1000s, B) or comma separated (e.g. 1/1000, 1/500, 1/250, B).",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 2.dp)
-            )
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Search Camera Models") },
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
+                )
 
-            // Field 8 (LAST): Serial Number (Optional)
-            OutlinedTextField(
-                value = uiState.serialNumber,
-                onValueChange = viewModel::onSerialNumberChange,
-                label = { Text("Serial Number (Optional)") },
-                placeholder = { Text("Optional") },
-                modifier = Modifier.fillMaxWidth()
-            )
+                // Fallback Action Button: Can't find camera? Add Custom {Brand} Camera
+                val fallbackButtonLabel = if (selectedBrandFilter != "All") "➕ Can't find model? Add Custom $selectedBrandFilter Camera" else "➕ Add Custom / Unlisted Camera"
+                OutlinedButton(
+                    onClick = {
+                        if (selectedBrandFilter != "All") {
+                            viewModel.onMakeChange(selectedBrandFilter)
+                        }
+                        if (selectedCategoryFilter != "All") {
+                            val selectedTypeEnum = CameraType.entries.find { it.displayName.equals(selectedCategoryFilter, ignoreCase = true) }
+                            selectedTypeEnum?.let { viewModel.onTypeChange(it) }
+                        }
+                        isCustomFormView = true
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                }
 
-            Button(
-                onClick = { viewModel.saveCamera(onBack) },
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-            ) {
-                Text(stringResource(R.string.save_camera))
+                HorizontalDivider()
+
+                val filteredPresets = remember(selectedBrandFilter, selectedCategoryFilter, searchQuery) {
+                    masterPresetItems.filter { item ->
+                        val matchesBrand = selectedBrandFilter == "All" || item.brand.equals(selectedBrandFilter, ignoreCase = true)
+                        val subCat = item.subCategory ?: item.attributes["type"] ?: ""
+                        val matchesType = selectedCategoryFilter == "All" || subCat.contains(selectedCategoryFilter, ignoreCase = true)
+                        val matchesQuery = searchQuery.isBlank() || (
+                            item.name.contains(searchQuery, ignoreCase = true) ||
+                            item.brand.contains(searchQuery, ignoreCase = true) ||
+                            (item.modelNumber?.contains(searchQuery, ignoreCase = true) == true)
+                        )
+                        matchesBrand && matchesType && matchesQuery
+                    }
+                }
+
+                if (filteredPresets.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("No camera presets found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Button(onClick = { isCustomFormView = true }) {
+                                Icon(Icons.Default.Add, contentDescription = null)
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Add Custom Camera")
+                            }
+                        }
+                    }
+                } else {
+                    LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(filteredPresets.size) { idx ->
+                            val presetItem = filteredPresets[idx]
+                            val subCatStr = presetItem.subCategory ?: presetItem.attributes["type"] ?: "Film SLR"
+                            val cType = CameraType.entries.find { it.displayName.equals(subCatStr, ignoreCase = true) } ?: CameraType.FILM_SLR
+                            val spec = CameraSpec(
+                                name = presetItem.name,
+                                modelNumber = presetItem.modelNumber ?: presetItem.name,
+                                type = cType,
+                                mount = presetItem.attributes["mount"] ?: "Standard",
+                                shutterSpeeds = listOf(presetItem.attributes["shutterSpeeds"] ?: "1s - 1/1000s, B")
+                            )
+
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        viewModel.applySpec(spec)
+                                        viewModel.saveCamera(onBack)
+                                    },
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(14.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(spec.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                                        Text("${spec.type.displayName} • Mount: ${spec.mount}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                    Button(
+                                        onClick = {
+                                            viewModel.applySpec(spec)
+                                            viewModel.saveCamera(onBack)
+                                        },
+                                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                                    ) {
+                                        Text("Select", style = MaterialTheme.typography.labelLarge)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // SECONDARY FALLBACK VIEW: MANUAL / CUSTOM CAMERA FORM
+                Column(
+                    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    if (viewModel.cameraId == null) {
+                        OutlinedButton(
+                            onClick = { isCustomFormView = false },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Back to Preset Catalog", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                        }
+                    }
+
+                    var brandExpanded by remember { mutableStateOf(false) }
+
+                    // Field 1: Brand (Controlled Dropdown Selector, No Default Brand)
+                    ExposedDropdownMenuBox(
+                        expanded = brandExpanded,
+                        onExpandedChange = { brandExpanded = !brandExpanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.make,
+                            onValueChange = viewModel::onMakeChange,
+                            label = { Text("Brand") },
+                            placeholder = { Text("Select or type Brand") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandExpanded) },
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = brandExpanded,
+                            onDismissRequest = { brandExpanded = false }
+                        ) {
+                            masterBrands.forEach { brand ->
+                                DropdownMenuItem(
+                                    text = { Text(brand) },
+                                    onClick = {
+                                        if (brand == "➕ Add new Brand...") {
+                                            viewModel.onMakeChange("")
+                                        } else {
+                                            viewModel.onMakeChange(brand)
+                                        }
+                                        brandExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // Field 2: Model Name
+                    OutlinedTextField(
+                        value = uiState.name,
+                        onValueChange = viewModel::onNameChange,
+                        label = { Text("Model Name") },
+                        placeholder = { Text("e.g. LX, ME Super, K1000, AE-1 Program") },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = !uiState.isNameValid,
+                        supportingText = if (!uiState.isNameValid) {
+                            { Text(stringResource(R.string.error_name_empty)) }
+                        } else null
+                    )
+
+                    // Field 3: Camera Type Dropdown
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.type.displayName,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text(stringResource(R.string.label_camera_type)) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            CameraType.entries.forEach { typeOption ->
+                                DropdownMenuItem(
+                                    text = { Text(typeOption.displayName) },
+                                    onClick = {
+                                        viewModel.onTypeChange(typeOption)
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // Field 4: Film Format Dropdown
+                    var formatExpanded by remember { mutableStateOf(false) }
+                    val filmFormats = listOf("35mm", "120", "Sheet", "Half-Frame")
+
+                    ExposedDropdownMenuBox(
+                        expanded = formatExpanded,
+                        onExpandedChange = { formatExpanded = !formatExpanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.format,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Film Format") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatExpanded) },
+                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = formatExpanded,
+                            onDismissRequest = { formatExpanded = false }
+                        ) {
+                            filmFormats.forEach { formatOption ->
+                                DropdownMenuItem(
+                                    text = { Text(formatOption) },
+                                    onClick = {
+                                        viewModel.onFormatChange(formatOption)
+                                        formatExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // Field 5: Lens Mount
+                    var mountExpanded by remember { mutableStateOf(false) }
+                    val mounts = listOf("Pentax K", "Canon FD", "Nikon F", "Leica M", "Leica L39", "Hasselblad V", "Contax C/Y", "Olympus OM", "Minolta SR/MD", "M42 Thread", "Fixed")
+
+                    ExposedDropdownMenuBox(
+                        expanded = mountExpanded,
+                        onExpandedChange = { mountExpanded = !mountExpanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.mount,
+                            onValueChange = viewModel::onMountChange,
+                            label = { Text("Lens Mount") },
+                            placeholder = { Text("e.g. Canon FD, Nikon F, Pentax K") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = mountExpanded) },
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = mountExpanded,
+                            onDismissRequest = { mountExpanded = false }
+                        ) {
+                            mounts.forEach { mnt ->
+                                DropdownMenuItem(
+                                    text = { Text(mnt) },
+                                    onClick = {
+                                        viewModel.onMountChange(mnt)
+                                        mountExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // Field 6: Shutter Speeds
+                    OutlinedTextField(
+                        value = uiState.shutterSpeeds,
+                        onValueChange = viewModel::onShutterSpeedsChange,
+                        label = { Text("Shutter Speeds") },
+                        placeholder = { Text("e.g. 1s - 1/1000s, B") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // Field 7: Serial Number
+                    OutlinedTextField(
+                        value = uiState.serialNumber,
+                        onValueChange = viewModel::onSerialNumberChange,
+                        label = { Text("Serial Number (Optional)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Button(
+                        onClick = { viewModel.saveCamera(onBack) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(if (viewModel.cameraId == null) "Save Camera" else "Update Camera")
+                    }
+                }
             }
         }
     }
