@@ -306,6 +306,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-032: Cold Launch Location Permission Prompt & Secondary Preset Navigation Target
+- **Platform**: Fotologue Mobile (`app` / `WelcomeScreen.kt` & `AddEditCameraScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Cold launch of the app immediately interrupted the user with an unwanted location permission prompt. Additionally, `Add Camera` opened to a manual entry form pre-filled with `"Pentax"` rather than promoting preset selection as the primary target.
+- **Root Cause**: `WelcomeScreen.kt` triggered `launchPermissionRequest()` on `Unit` cold launch, and `AddEditCameraScreen.kt` defaulted to a manual form view with `make = "Pentax"`.
+- **Resolution**: Removed cold-launch location prompts (deferring location permissions until active in-situ exposure logging). Re-architected `Add Camera` to open the **Preset Catalog Browser as the primary full-screen view**, cleared hardcoded `"Pentax"` defaults, added `"➕ Add new Brand..."` dropdown options, and provided a `[ ➕ Can't find model? Add Custom Camera ]` fallback button.
+- **Regression Test Case**: Clean launch Mobile app $\to$ verify no location prompt appears $\to$ tap `Add your first Camera` $\to$ verify Preset Catalog Browser opens as the primary full-screen view.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
