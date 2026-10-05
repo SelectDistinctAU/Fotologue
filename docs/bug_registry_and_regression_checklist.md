@@ -376,6 +376,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-039: Missing Mobile Lens Presets and Legacy Brand Mismatch
+- **Platform**: Mobile & Desktop (`AddEditLensScreen.kt`, `Main.kt`, `AddEditLensViewModel.kt`)
+- **Reported**: October 2026
+- **Symptom**: Mobile's `Select Lens from Presets` returned `"No lens presets found."` upon opening due to an uninitialized search state. Custom desktop-synced lenses were also missing from the Mobile presets dialog.
+- **Root Cause**: `AddEditLensScreen.kt` relied on an empty `searchResults` flow. The preset lists between Mobile and Desktop were architecturally disconnected, and Desktop `Main.kt` used inconsistent `Make / Brand` dropdowns.
+- **Resolution**: Implemented the Unification Bridge in `AddEditLensViewModel.kt` to merge `MasterPresetEngine` items with Desktop-synced local Foundation lenses. Re-architected lens preset dialogs across both platforms to use Brand-First cascading filters (`Filter by Brand` $\to$ `Filter by Mount`) and added a `[ ➕ Add New {Brand} Lens ]` fallback pre-fill action button.
+- **Regression Test Case**: Sync a custom lens from Desktop to Mobile $\to$ open `Add Lens` on Mobile $\to$ tap `[ ⚙️ Select from Presets ]` $\to$ verify the unified catalog loads immediately including the synced custom lens.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
