@@ -406,6 +406,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-042: Maintainer Tool Empty State Due to Working Directory Path Resolution Failure
+- **Platform**: Fotologue Maintainer Tool (`MaintainerApp.kt`, `DatabaseRepository.kt`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: After seeding modular JSON files, the Maintainer Tool still displayed an empty state.
+- **Root Cause**: `MaintainerApp.kt` relied on `System.getProperty("user.dir")` which resolved to the `:desktop` module directory during the `JavaExec` build phase, causing the tool to look for files in `desktop/core/data/...` (which did not exist).
+- **Resolution**: Implemented a robust upwards-traversing path resolution algorithm in `MaintainerApp.kt` to locate the true project root (`settings.gradle.kts`) before appending `core/data/src/main/resources/presets`. Also cleaned up compiler warnings in `DatabaseRepository.kt` (unnecessary non-null assertion) and `Main.kt` (redundant Json object creation).
+- **Regression Test Case**: Run `./gradlew :desktop:runMaintainer` $\to$ verify the tool successfully resolves the path and loads JSON presets.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
