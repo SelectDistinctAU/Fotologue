@@ -509,7 +509,8 @@ suspend fun processZipJobLot(
                     val jsonContent = baos.toString("UTF-8")
                     
                     try {
-                        val element = Json { ignoreUnknownKeys = true }.parseToJsonElement(jsonContent)
+                        val jsonParser = Json { ignoreUnknownKeys = true }
+                        val element = jsonParser.parseToJsonElement(jsonContent)
                         val jsonObj = element.jsonObject
                         
                         // Fallback contributor ID extraction

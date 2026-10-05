@@ -55,8 +55,13 @@ fun MaintainerAppScreen() {
     val categories = listOf("CAMERA", "LENS", "FILM", "TELECONVERTER", "FILTER", "FLASH", "VIEWFINDER", "CONSUMABLE", "EQUIPMENT", "SUPPLIER")
 
     val presetsDir = remember {
-        val userDir = System.getProperty("user.dir")
-        File(userDir, "core/data/src/main/resources/presets")
+        var currentDir = File(System.getProperty("user.dir"))
+        // Traverse upwards until we find the project root (marked by settings.gradle.kts)
+        while (currentDir.exists() && !File(currentDir, "settings.gradle.kts").exists()) {
+            val parent = currentDir.parentFile ?: break
+            currentDir = parent
+        }
+        File(currentDir, "core/data/src/main/resources/presets")
     }
 
     var searchQuery by remember { mutableStateOf("") }

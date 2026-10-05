@@ -99,9 +99,10 @@ object DatabaseRepository {
                 frameEntity.learningTag = frame.learningTag
 
                 // Save thumbnail to disk if it has bytes but no path, or just update path
-                if (frame.imageBytes != null && frameEntity.thumbnailPath == null) {
+                val bytes = frame.imageBytes
+                if (bytes != null && frameEntity.thumbnailPath == null) {
                     val thumbFile = File(DatabaseManager.thumbnailsDir, "${frame.timestampMs}.jpg")
-                    thumbFile.writeBytes(frame.imageBytes!!)
+                    thumbFile.writeBytes(bytes)
                     frameEntity.thumbnailPath = thumbFile.absolutePath
                 }
             }
