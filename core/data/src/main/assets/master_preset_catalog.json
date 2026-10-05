@@ -1,0 +1,937 @@
+[
+{
+    "id": "cam_pentax_lx",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Pentax",
+    "name": "Pentax LX",
+    "modelNumber": "LX",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Pentax K",
+      "shutterSpeeds": "125s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_pentax_me_super",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Pentax",
+    "name": "Pentax ME Super",
+    "modelNumber": "ME Super",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Pentax K",
+      "shutterSpeeds": "4s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_pentax_k1000",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Pentax",
+    "name": "Pentax K1000",
+    "modelNumber": "K1000",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Pentax K",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_ae1p",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon AE-1 Program",
+    "modelNumber": "AE-1P",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_f1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon F-1",
+    "modelNumber": "F-1",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "1s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_f3",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F3",
+    "modelNumber": "F3",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "8s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_fm2",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon FM2",
+    "modelNumber": "FM2",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "1s - 1/4000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m3",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M3",
+    "modelNumber": "M3",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m6",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M6",
+    "modelNumber": "M6",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_hasselblad_500cm",
+    "category": "CAMERA",
+    "subCategory": "Medium Format SLR",
+    "brand": "Hasselblad",
+    "name": "Hasselblad 500C/M",
+    "modelNumber": "500C/M",
+    "attributes": {
+      "type": "Medium Format SLR",
+      "mount": "Hasselblad V",
+      "shutterSpeeds": "1s - 1/500s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_yashica_mat124g",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Yashica",
+    "name": "Yashica Mat-124G",
+    "modelNumber": "Mat-124G",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "film_kodak_portra_160",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Portra 160",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "160",
+      "abbreviation": "P160"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_portra_400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Portra 400",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "P400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_portra_800",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Portra 800",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "800",
+      "abbreviation": "P800"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_ektar_100",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Ektar 100",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "100",
+      "abbreviation": "E100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_gold_200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Gold 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "G200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_ultramax_400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "UltraMax 400",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "U400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_trix_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Kodak",
+    "name": "Tri-X 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "TX400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_tmax_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Kodak",
+    "name": "T-Max 100",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "TM100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_tmax_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Kodak",
+    "name": "T-Max 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "TM400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_ektachrome_e100",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Kodak",
+    "name": "Ektachrome E100",
+    "attributes": {
+      "type": "Colour Slide / Reversal (E-6)",
+      "iso": "100",
+      "abbreviation": "E100G"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_hp5_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "HP5 Plus 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "HP5"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_fp4_125",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "FP4 Plus 125",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "125",
+      "abbreviation": "FP4"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_delta_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Delta 100 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "D100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_delta_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Delta 400 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "D400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_delta_3200",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Delta 3200 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "3200",
+      "abbreviation": "D3200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_panf_50",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Pan F Plus 50",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "50",
+      "abbreviation": "PANF"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_xp2_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "XP2 Super 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "XP2"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_c200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Fujifilm",
+    "name": "Fujicolor 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "F200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_superia_400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Fujifilm",
+    "name": "Superia X-TRA 400",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "S400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_velvia_50",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Fujifilm",
+    "name": "Velvia 50",
+    "attributes": {
+      "type": "Colour Slide / Reversal (E-6)",
+      "iso": "50",
+      "abbreviation": "V50"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_velvia_100",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Fujifilm",
+    "name": "Velvia 100",
+    "attributes": {
+      "type": "Colour Slide / Reversal (E-6)",
+      "iso": "100",
+      "abbreviation": "V100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_provia_100f",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Fujifilm",
+    "name": "Provia 100F",
+    "attributes": {
+      "type": "Colour Slide / Reversal (E-6)",
+      "iso": "100",
+      "abbreviation": "RDP"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_acros_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Fujifilm",
+    "name": "Neopan 100 Acros II",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "ACROS"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_50d",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Cinestill",
+    "name": "50Daylight",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "50",
+      "abbreviation": "50D"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_800t",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Cinestill",
+    "name": "800Tungsten",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "800",
+      "abbreviation": "800T"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_400d",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Cinestill",
+    "name": "400Dynamic",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "400D"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_bwxx",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Cinestill",
+    "name": "BwXX",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "250",
+      "abbreviation": "XX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_foma_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Foma",
+    "name": "Fomapan 100 Classic",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "FOM100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_foma_200",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Foma",
+    "name": "Fomapan 200 Creative",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "200",
+      "abbreviation": "FOM200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_foma_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Foma",
+    "name": "Fomapan 400 Action",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "FOM400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_cn100",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "Color Negative 100",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "100",
+      "abbreviation": "L100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_cn400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "Color Negative 400",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "L400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_cn800",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "Color Negative 800",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "800",
+      "abbreviation": "L800"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_metro",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "LomoChrome Metropolis",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "METRO"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_purple",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "LomoChrome Purple",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "PURP"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_agfa_apx100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "AgfaPhoto",
+    "name": "APX 100 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "APX100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_agfa_apx400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "AgfaPhoto",
+    "name": "APX 400 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "APX400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_agfa_vista200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "AgfaPhoto",
+    "name": "Vista 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "VIST"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_retro80s",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "Retro 80s",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "80",
+      "abbreviation": "R80S"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_retro400s",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "Retro 400s",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "R400S"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_rpx100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "RPX 100",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "RPX100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_rpx400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "RPX 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "RPX400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_superpan200",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "Superpan 200",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "200",
+      "abbreviation": "SPAN"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_bergger_pan400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Bergger",
+    "name": "Pancro 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "PAN400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_harman_phoenix200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Harman",
+    "name": "Phoenix 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "PHX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_harman_kp100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Harman",
+    "name": "Kentmere Pan 100",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "KP100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_harman_kp400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Harman",
+    "name": "Kentmere Pan 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "KP400"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "equip_intrepid_enlarger",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Intrepid",
+    "name": "Intrepid Compact Enlarger (35mm / 120)",
+    "attributes": {
+      "category": "Enlarger",
+      "condition": "Excellent",
+      "notes": "LED Light Source with Color/Multigrade Filters"
+    }
+  },
+  {
+    "id": "equip_beseler_23c_ii",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Beseler",
+    "name": "Beseler 23C II Enlarger",
+    "modelNumber": "23C II",
+    "attributes": {
+      "category": "Enlarger",
+      "condition": "Excellent",
+      "notes": "Dichro / Condenser Enlarger Body"
+    }
+  },
+  {
+    "id": "equip_omega_d2",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Omega",
+    "name": "Omega D2 4x5 Enlarger",
+    "modelNumber": "D2",
+    "attributes": {
+      "category": "Enlarger",
+      "condition": "Excellent",
+      "notes": "Large Format Condenser Enlarger"
+    }
+  },
+  {
+    "id": "equip_saunders_lpl_4500ii",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Saunders LPL",
+    "name": "Saunders LPL 4500II 4x5 Enlarger",
+    "modelNumber": "4500II",
+    "attributes": {
+      "category": "Enlarger",
+      "condition": "Excellent",
+      "notes": "Professional 4x5 Color / B&W Enlarger"
+    }
+  },
+  {
+    "id": "equip_paterson_sys_4",
+    "category": "EQUIPMENT",
+    "subCategory": "Dev Tank",
+    "brand": "Paterson",
+    "name": "Paterson Super System 4 Dev Tank",
+    "modelNumber": "System 4",
+    "attributes": {
+      "category": "Dev Tank",
+      "condition": "Excellent",
+      "notes": "Standard Plastic Tank for 2x35mm or 1x120"
+    }
+  },
+  {
+    "id": "equip_jobo_1520",
+    "category": "EQUIPMENT",
+    "subCategory": "Dev Tank",
+    "brand": "Jobo",
+    "name": "Jobo 1520 Tank System",
+    "modelNumber": "1520",
+    "attributes": {
+      "category": "Dev Tank",
+      "condition": "Excellent",
+      "notes": "Rotary & Inversion Tank"
+    }
+  },
+  {
+    "id": "equip_epson_v850",
+    "category": "EQUIPMENT",
+    "subCategory": "Scanner / Digitiser",
+    "brand": "Epson",
+    "name": "Epson Perfection V850 Pro Scanner",
+    "modelNumber": "V850 Pro",
+    "attributes": {
+      "category": "Scanner / Digitiser",
+      "condition": "Excellent",
+      "notes": "Dual Lens Film/Flatbed Scanner"
+    }
+  },
+{
+    "id": "lens_canon_fd_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canon FD 50mm f/1.4",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Canon FD",
+      "filterSize": "52mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_nikon_ai_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Nikon",
+    "name": "Nikon NIKKOR 50mm f/1.4 Ai-S",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Nikon F",
+      "filterSize": "52mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_pentax_smc_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Pentax",
+    "name": "Pentax SMC-A 50mm f/1.4",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Pentax K",
+      "filterSize": "49mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_leica_summicron_50",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Leica",
+    "name": "Leica Summicron-M 50mm f/2",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Leica M",
+      "filterSize": "39mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/2.0",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_hasselblad_planar_80",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Hasselblad",
+    "name": "Zeiss Planar T* 80mm f/2.8",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Hasselblad V",
+      "filterSize": "Bay 60",
+      "focalLength": "80mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  }
+]

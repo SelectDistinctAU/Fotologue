@@ -1,0 +1,82 @@
+[
+  {
+    "id": "lens_canon_fd_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canon FD 50mm f/1.4",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Canon FD",
+      "filterSize": "52mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_nikon_ai_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Nikon",
+    "name": "Nikon NIKKOR 50mm f/1.4 Ai-S",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Nikon F",
+      "filterSize": "52mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_pentax_smc_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Pentax",
+    "name": "Pentax SMC-A 50mm f/1.4",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Pentax K",
+      "filterSize": "49mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_leica_summicron_50",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Leica",
+    "name": "Leica Summicron-M 50mm f/2",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Leica M",
+      "filterSize": "39mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/2.0",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_hasselblad_planar_80",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Hasselblad",
+    "name": "Zeiss Planar T* 80mm f/2.8",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Hasselblad V",
+      "filterSize": "Bay 60",
+      "focalLength": "80mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  }
+]

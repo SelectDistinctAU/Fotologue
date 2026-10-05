@@ -1,0 +1,613 @@
+[
+  {
+    "id": "film_kodak_portra_160",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Portra 160",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "160",
+      "abbreviation": "P160"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_portra_400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Portra 400",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "P400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_portra_800",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Portra 800",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "800",
+      "abbreviation": "P800"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_ektar_100",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Ektar 100",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "100",
+      "abbreviation": "E100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_gold_200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Gold 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "G200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_ultramax_400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "UltraMax 400",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "U400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_trix_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Kodak",
+    "name": "Tri-X 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "TX400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_tmax_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Kodak",
+    "name": "T-Max 100",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "TM100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_tmax_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Kodak",
+    "name": "T-Max 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "TM400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_ektachrome_e100",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Kodak",
+    "name": "Ektachrome E100",
+    "attributes": {
+      "type": "Colour Slide / Reversal (E-6)",
+      "iso": "100",
+      "abbreviation": "E100G"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_hp5_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "HP5 Plus 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "HP5"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_fp4_125",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "FP4 Plus 125",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "125",
+      "abbreviation": "FP4"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_delta_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Delta 100 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "D100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_delta_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Delta 400 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "D400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_delta_3200",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Delta 3200 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "3200",
+      "abbreviation": "D3200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_panf_50",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Pan F Plus 50",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "50",
+      "abbreviation": "PANF"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_xp2_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "XP2 Super 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "XP2"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_c200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Fujifilm",
+    "name": "Fujicolor 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "F200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_superia_400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Fujifilm",
+    "name": "Superia X-TRA 400",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "S400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_velvia_50",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Fujifilm",
+    "name": "Velvia 50",
+    "attributes": {
+      "type": "Colour Slide / Reversal (E-6)",
+      "iso": "50",
+      "abbreviation": "V50"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_velvia_100",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Fujifilm",
+    "name": "Velvia 100",
+    "attributes": {
+      "type": "Colour Slide / Reversal (E-6)",
+      "iso": "100",
+      "abbreviation": "V100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_provia_100f",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Fujifilm",
+    "name": "Provia 100F",
+    "attributes": {
+      "type": "Colour Slide / Reversal (E-6)",
+      "iso": "100",
+      "abbreviation": "RDP"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_acros_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Fujifilm",
+    "name": "Neopan 100 Acros II",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "ACROS"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_50d",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Cinestill",
+    "name": "50Daylight",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "50",
+      "abbreviation": "50D"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_800t",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Cinestill",
+    "name": "800Tungsten",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "800",
+      "abbreviation": "800T"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_400d",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Cinestill",
+    "name": "400Dynamic",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "400D"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_bwxx",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Cinestill",
+    "name": "BwXX",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "250",
+      "abbreviation": "XX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_foma_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Foma",
+    "name": "Fomapan 100 Classic",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "FOM100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_foma_200",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Foma",
+    "name": "Fomapan 200 Creative",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "200",
+      "abbreviation": "FOM200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_foma_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Foma",
+    "name": "Fomapan 400 Action",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "FOM400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_cn100",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "Color Negative 100",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "100",
+      "abbreviation": "L100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_cn400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "Color Negative 400",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "L400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_cn800",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "Color Negative 800",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "800",
+      "abbreviation": "L800"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_metro",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "LomoChrome Metropolis",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "METRO"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_purple",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "LomoChrome Purple",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "PURP"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_agfa_apx100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "AgfaPhoto",
+    "name": "APX 100 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "APX100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_agfa_apx400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "AgfaPhoto",
+    "name": "APX 400 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "APX400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_agfa_vista200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "AgfaPhoto",
+    "name": "Vista 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "VIST"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_retro80s",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "Retro 80s",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "80",
+      "abbreviation": "R80S"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_retro400s",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "Retro 400s",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "R400S"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_rpx100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "RPX 100",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "RPX100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_rpx400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "RPX 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "RPX400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_superpan200",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "Superpan 200",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "200",
+      "abbreviation": "SPAN"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_bergger_pan400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Bergger",
+    "name": "Pancro 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "PAN400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_harman_phoenix200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Harman",
+    "name": "Phoenix 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "PHX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_harman_kp100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Harman",
+    "name": "Kentmere Pan 100",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "KP100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_harman_kp400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Harman",
+    "name": "Kentmere Pan 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "KP400"
+    },
+    "isDeveloperPreset": true
+  }
+]

@@ -9,9 +9,9 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Pentax K",
-      "format": "35mm",
       "shutterSpeeds": "125s - 1/2000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_pentax_me_super",
@@ -23,9 +23,9 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Pentax K",
-      "format": "35mm",
       "shutterSpeeds": "4s - 1/2000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_pentax_k1000",
@@ -37,9 +37,9 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Pentax K",
-      "format": "35mm",
       "shutterSpeeds": "1s - 1/1000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_canon_ae1p",
@@ -51,9 +51,9 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Canon FD",
-      "format": "35mm",
       "shutterSpeeds": "2s - 1/1000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_canon_f1",
@@ -65,9 +65,9 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Canon FD",
-      "format": "35mm",
       "shutterSpeeds": "1s - 1/2000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_nikon_f3",
@@ -79,9 +79,9 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Nikon F",
-      "format": "35mm",
       "shutterSpeeds": "8s - 1/2000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_nikon_fm2",
@@ -93,9 +93,9 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Nikon F",
-      "format": "35mm",
       "shutterSpeeds": "1s - 1/4000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_leica_m3",
@@ -107,9 +107,9 @@
     "attributes": {
       "type": "Rangefinder",
       "mount": "Leica M",
-      "format": "35mm",
       "shutterSpeeds": "1s - 1/1000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_leica_m6",
@@ -121,9 +121,9 @@
     "attributes": {
       "type": "Rangefinder",
       "mount": "Leica M",
-      "format": "35mm",
       "shutterSpeeds": "1s - 1/1000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_hasselblad_500cm",
@@ -135,9 +135,9 @@
     "attributes": {
       "type": "Medium Format SLR",
       "mount": "Hasselblad V",
-      "format": "120",
       "shutterSpeeds": "1s - 1/500s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_yashica_mat124g",
@@ -149,36 +149,8 @@
     "attributes": {
       "type": "TLR",
       "mount": "Fixed",
-      "format": "120",
       "shutterSpeeds": "1s - 1/500s, B"
-    }
-  },
-  {
-    "id": "cam_rolleiflex_28f",
-    "category": "CAMERA",
-    "subCategory": "TLR",
-    "brand": "Rollei",
-    "name": "Rolleiflex 2.8F",
-    "modelNumber": "2.8F",
-    "attributes": {
-      "type": "TLR",
-      "mount": "Fixed",
-      "format": "120",
-      "shutterSpeeds": "1s - 1/500s, B"
-    }
-  },
-  {
-    "id": "cam_mamiya_c330",
-    "category": "CAMERA",
-    "subCategory": "TLR",
-    "brand": "Mamiya",
-    "name": "Mamiya C330 Professional",
-    "modelNumber": "C330",
-    "attributes": {
-      "type": "TLR",
-      "mount": "Mamiya C",
-      "format": "120",
-      "shutterSpeeds": "1s - 1/500s, B"
-    }
+    },
+    "isDeveloperPreset": true
   }
 ]
