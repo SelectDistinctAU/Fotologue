@@ -114,7 +114,7 @@ fun MaintainerAppScreen() {
                     OutlinedTextField(
                         value = newBrand,
                         onValueChange = { newBrand = it },
-                        label = { Text("Brand / Manufacturer (e.g. Pentax, Kodak)") },
+                        label = { Text("Brand (e.g. Pentax, Kodak)") },
                         modifier = Modifier.fillMaxWidth()
                     )
                     OutlinedTextField(
@@ -246,7 +246,7 @@ fun MaintainerAppScreen() {
                 Button(onClick = { showAddDialog = true }) {
                     Icon(Icons.Default.Add, contentDescription = null)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Add $selectedCategory Preset")
+                    Text("Add New $selectedCategory Preset Entry")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
