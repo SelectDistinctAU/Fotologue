@@ -4390,9 +4390,20 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
         var brandDropdownExpanded by remember { mutableStateOf(false) }
         var categoryDropdownExpanded by remember { mutableStateOf(false) }
 
-        val availableTypesForBrand = remember(selectedBrandFilter) {
-            val matching = DatabaseRepository.searchPresetCameras("")
-            val filtered = if (selectedBrandFilter == "All") matching else matching.filter { it.name.startsWith(selectedBrandFilter, ignoreCase = true) }
+        val availableTypesForBrand = remember(selectedBrandFilter, cameras) {
+            val localPresets = cameras.map { c ->
+                ReferenceCameraItem(
+                    id = c.id,
+                    name = c.name,
+                    modelNumber = c.modelNumber,
+                    type = c.type,
+                    mount = c.mount,
+                    format = c.format,
+                    shutterSpeeds = c.shutterSpeeds
+                )
+            }
+            val unifiedCatalog = (DatabaseRepository.searchPresetCameras("") + localPresets).distinctBy { it.name }
+            val filtered = if (selectedBrandFilter == "All") unifiedCatalog else unifiedCatalog.filter { it.name.startsWith(selectedBrandFilter, ignoreCase = true) }
             val types = filtered.map { it.type }.distinct().sorted()
             
             if (types.size == 1) {
@@ -4506,11 +4517,28 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
 
                     HorizontalDivider()
 
-                    val allPresets = DatabaseRepository.searchPresetCameras(cameraSearchQuery)
-                    val filteredPresets = allPresets.filter { preset ->
-                        val matchesBrand = selectedBrandFilter == "All" || preset.name.startsWith(selectedBrandFilter, ignoreCase = true)
-                        val matchesType = selectedCameraTypeFilter == "All" || preset.type.equals(selectedCameraTypeFilter, ignoreCase = true)
-                        matchesBrand && matchesType
+                    val filteredPresets = remember(selectedBrandFilter, selectedCameraTypeFilter, cameraSearchQuery, cameras) {
+                        val localPresets = cameras.map { c ->
+                            ReferenceCameraItem(
+                                id = c.id,
+                                name = c.name,
+                                modelNumber = c.modelNumber,
+                                type = c.type,
+                                mount = c.mount,
+                                format = c.format,
+                                shutterSpeeds = c.shutterSpeeds
+                            )
+                        }
+                        
+                        // Merge Developer list with user's local list
+                        val unifiedCatalog = (DatabaseRepository.searchPresetCameras("") + localPresets).distinctBy { it.name }
+                        
+                        unifiedCatalog.filter { preset ->
+                            val matchesBrand = selectedBrandFilter == "All" || preset.name.startsWith(selectedBrandFilter, ignoreCase = true)
+                            val matchesType = selectedCameraTypeFilter == "All" || preset.type.equals(selectedCameraTypeFilter, ignoreCase = true)
+                            val matchesQuery = cameraSearchQuery.isBlank() || preset.name.contains(cameraSearchQuery, ignoreCase = true)
+                            matchesBrand && matchesType && matchesQuery
+                        }
                     }
 
                     if (filteredPresets.isEmpty()) {
@@ -4588,9 +4616,23 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
         var brandDropdownExpanded by remember { mutableStateOf(false) }
         var mountDropdownExpanded by remember { mutableStateOf(false) }
 
-        val availableMountsForBrand = remember(selectedLensBrandFilter) {
-            val matching = DatabaseRepository.searchPresetLenses("")
-            val filtered = if (selectedLensBrandFilter == "All") matching else matching.filter { (it.make?.contains(selectedLensBrandFilter, ignoreCase = true) == true) || it.name.contains(selectedLensBrandFilter, ignoreCase = true) }
+        val availableMountsForBrand = remember(selectedLensBrandFilter, lenses) {
+            val localPresets = lenses.map { l ->
+                ReferenceLensItem(
+                    id = l.id,
+                    name = l.name,
+                    make = l.make,
+                    model = l.model,
+                    type = l.type,
+                    mount = l.mount,
+                    focalLength = l.focalLength,
+                    maxAperture = l.maxAperture,
+                    minAperture = l.minAperture,
+                    filterSize = l.filterSize
+                )
+            }
+            val unifiedCatalog = (DatabaseRepository.searchPresetLenses("") + localPresets).distinctBy { it.name }
+            val filtered = if (selectedLensBrandFilter == "All") unifiedCatalog else unifiedCatalog.filter { (it.make?.contains(selectedLensBrandFilter, ignoreCase = true) == true) || it.name.contains(selectedLensBrandFilter, ignoreCase = true) }
             val mounts = filtered.mapNotNull { it.mount }.distinct().sorted()
             
             if (mounts.size == 1) {
@@ -4700,11 +4742,30 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
 
                     HorizontalDivider()
 
-                    val allPresets = DatabaseRepository.searchPresetLenses(lensSearchQueryText)
-                    val filteredPresets = allPresets.filter { preset ->
-                        val matchesBrand = selectedLensBrandFilter == "All" || (preset.make?.contains(selectedLensBrandFilter, ignoreCase = true) == true) || preset.name.contains(selectedLensBrandFilter, ignoreCase = true)
-                        val matchesMount = selectedLensMountFilter == "All" || preset.mount.equals(selectedLensMountFilter, ignoreCase = true)
-                        matchesBrand && matchesMount
+                    val filteredPresets = remember(selectedLensBrandFilter, selectedLensMountFilter, lensSearchQueryText, lenses) {
+                        val localPresets = lenses.map { l ->
+                            ReferenceLensItem(
+                                id = l.id,
+                                name = l.name,
+                                make = l.make,
+                                model = l.model,
+                                type = l.type,
+                                mount = l.mount,
+                                focalLength = l.focalLength,
+                                maxAperture = l.maxAperture,
+                                minAperture = l.minAperture,
+                                filterSize = l.filterSize
+                            )
+                        }
+                        
+                        val unifiedCatalog = (DatabaseRepository.searchPresetLenses("") + localPresets).distinctBy { it.name }
+                        
+                        unifiedCatalog.filter { preset ->
+                            val matchesBrand = selectedLensBrandFilter == "All" || (preset.make?.contains(selectedLensBrandFilter, ignoreCase = true) == true) || preset.name.contains(selectedLensBrandFilter, ignoreCase = true)
+                            val matchesMount = selectedLensMountFilter == "All" || preset.mount.equals(selectedLensMountFilter, ignoreCase = true)
+                            val matchesQuery = lensSearchQueryText.isBlank() || preset.name.contains(lensSearchQueryText, ignoreCase = true)
+                            matchesBrand && matchesMount && matchesQuery
+                        }
                     }
 
                     if (filteredPresets.isEmpty()) {
