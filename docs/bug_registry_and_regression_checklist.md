@@ -336,6 +336,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-035: Illogical Category Order for Kits & Legacy 'Kits' Naming
+- **Platform**: Mobile & Desktop (`GearLibraryScreen.kt`, `Main.kt`, `strings.xml`)
+- **Reported**: October 2026
+- **Symptom**: `Kits` was positioned as the #1 category item under `CAMERA GEAR`, which was logically backwards because a kit bundle requires individual cameras, lenses, and films to be configured first.
+- **Root Cause**: Unaligned category ordering in `GearLibraryScreen.kt` and `FoundationAdminLeftRail`.
+- **Resolution**: Renamed "Kits" to **`Kit Bags`** across Mobile and Desktop, and moved `Kit Bags` to position #8 (last item under `CAMERA GEAR`) so photographers configure their individual cameras, lenses, films, and accessories before bundling them into kit bags.
+- **Regression Test Case**: Open `Camera Gear` on Mobile or Desktop $\to$ verify category order starts with **Cameras**, **Lenses**, **Films** and ends with **Kit Bags** at position #8.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
