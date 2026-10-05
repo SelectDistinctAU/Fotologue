@@ -356,6 +356,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-037: Legacy Subtitle Text '(Pillar 2)' & 'Borrowers' in Contacts Directory Portal Card
+- **Platform**: Mobile & Desktop (`HubScreen.kt` & `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: `CONTACTS DIRECTORY` card on Mobile Staging Portal included legacy text `"(Pillar 2)"` in the subtitle and listed `"Borrowers"` in the description.
+- **Root Cause**: Un-updated strings in `HubModuleCard`.
+- **Resolution**: Created `patient_list_24px.xml` M3 vector icon, updated subtitle to **`"People & Vendor Management"`**, and description to **`"Suppliers • Labs • Repair Techs • Friends"`**.
+- **Regression Test Case**: Open Mobile Staging Portal $\to$ verify `CONTACTS DIRECTORY` card displays `patient_list_24px` icon, subtitle `"People & Vendor Management"`, and description `"Suppliers • Labs • Repair Techs • Friends"`.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
