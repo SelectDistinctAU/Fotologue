@@ -556,6 +556,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-057: Unintegrated Top Filter Boxes in Maintainer Data Grid
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Standalone filter boxes sat awkwardly above the Maintainer Data Grid instead of being integrated directly into the column header cells.
+- **Root Cause**: Separate top filter bar design in `MaintainerApp.kt`.
+- **Resolution**: Removed standalone top filter text boxes. Integrated category LOV filtering and sorting controls directly into column header cells (`BRAND ▾`, `TYPE ▾`, `MOUNT ▾`) via clickable dropdown menus matching Desktop Master Rolls layout. Streamlined top row to house Category Chips alongside action buttons.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ click `BRAND ▾` column header cell $\to$ verify dropdown menu opens with sorting options and category brand LOV items.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
