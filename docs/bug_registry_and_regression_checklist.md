@@ -426,6 +426,26 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-044: Floating Action Button Misrouted on Mobile Gear Library
+- **Platform**: Fotologue Mobile (`app` / `GearLibraryScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Tapping the `[ + ]` FAB on the `Cameras` tab accidentally navigated to `Add Kit Bag`, tapping it on `Lenses` went to `Add Camera`, etc.
+- **Root Cause**: The `when` block evaluating `uiState.selectedCategoryIndex` inside the FloatingActionButton `onClick` handler was not updated to reflect the new category index order when `Kit Bags` was moved to the bottom (index 7).
+- **Resolution**: Re-aligned the FAB `onClick` switch statement to perfectly match the current Lexicon category order (`0`=Cameras, `1`=Lenses, `2`=Films... `7`=Kit Bags).
+- **Regression Test Case**: Open Mobile `CAMERA GEAR` $\to$ tap `Cameras` tab $\to$ tap `[ + ]` FAB $\to$ verify it correctly navigates to the `Add Camera` screen.
+
+---
+
+### BUG-045: Ambiguous Action Labels in Maintainer App
+- **Platform**: Fotologue Maintainer Tool (`desktop` / `MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Action buttons in the Maintainer Tool simply read `[ + Add CAMERA Preset ]`, which was confused with creating user gear rather than authoring JSON presets.
+- **Root Cause**: Poorly descriptive button labels in the maintainer GUI.
+- **Resolution**: Updated labels to clearly denote their architectural function: `[ + Add New CAMERA Preset Entry ]`.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ verify action button reads `[ + Add New CAMERA Preset Entry ]`.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
