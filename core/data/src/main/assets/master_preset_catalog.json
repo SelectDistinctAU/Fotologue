@@ -154,6 +154,34 @@
     "isDeveloperPreset": true
   },
 {
+    "id": "con_ilford_id11",
+    "category": "CONSUMABLE",
+    "subCategory": "Chemistry",
+    "brand": "Ilford",
+    "name": "Ilford ID-11 Developer (1L)",
+    "modelNumber": "ID-11",
+    "attributes": {
+      "type": "Chemistry",
+      "mixRatio": "Stock or 1+1",
+      "capacity": "10 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_multigrade_paper",
+    "category": "CONSUMABLE",
+    "subCategory": "Paper",
+    "brand": "Ilford",
+    "name": "Ilford Multigrade V RC Deluxe Paper (8x10)",
+    "modelNumber": "MG-RC-8X10",
+    "attributes": {
+      "type": "Paper",
+      "surface": "Pearl",
+      "contrast": "Multigrade"
+    },
+    "isDeveloperPreset": true
+  },
+{
     "id": "film_kodak_portra_160",
     "category": "FILM",
     "subCategory": "Colour Negative (C-41)",
@@ -765,19 +793,34 @@
     "isDeveloperPreset": true
   },
 {
-    "id": "equip_intrepid_enlarger",
-    "category": "EQUIPMENT",
-    "subCategory": "Enlarger",
-    "brand": "Intrepid",
-    "name": "Intrepid Compact Enlarger (35mm / 120)",
+    "id": "filter_hoya_nd8",
+    "category": "FILTER",
+    "subCategory": "ND (Neutral Density)",
+    "brand": "Hoya",
+    "name": "Hoya PRO1 Digital ND8 (52mm)",
+    "modelNumber": "ND8",
     "attributes": {
-      "category": "Enlarger",
-      "condition": "Excellent",
-      "notes": "LED Light Source with Color/Multigrade Filters"
-    }
+      "threadSize": "52mm",
+      "filterType": "ND (Neutral Density)",
+      "compensationStops": "3.0"
+    },
+    "isDeveloperPreset": true
   },
-  {
-    "id": "equip_beseler_23c_ii",
+{
+    "id": "flash_nikon_sb700",
+    "category": "FLASH",
+    "subCategory": "Speedlight / Shoe Mount",
+    "brand": "Nikon",
+    "name": "Nikon Speedlight SB-700",
+    "modelNumber": "SB-700",
+    "attributes": {
+      "syncType": "Hotshoe",
+      "guideNumber": "28m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "eq_beseler_23c",
     "category": "EQUIPMENT",
     "subCategory": "Enlarger",
     "brand": "Beseler",
@@ -785,74 +828,22 @@
     "modelNumber": "23C II",
     "attributes": {
       "category": "Enlarger",
-      "condition": "Excellent",
-      "notes": "Dichro / Condenser Enlarger Body"
-    }
+      "condition": "Good"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "equip_omega_d2",
-    "category": "EQUIPMENT",
-    "subCategory": "Enlarger",
-    "brand": "Omega",
-    "name": "Omega D2 4x5 Enlarger",
-    "modelNumber": "D2",
-    "attributes": {
-      "category": "Enlarger",
-      "condition": "Excellent",
-      "notes": "Large Format Condenser Enlarger"
-    }
-  },
-  {
-    "id": "equip_saunders_lpl_4500ii",
-    "category": "EQUIPMENT",
-    "subCategory": "Enlarger",
-    "brand": "Saunders LPL",
-    "name": "Saunders LPL 4500II 4x5 Enlarger",
-    "modelNumber": "4500II",
-    "attributes": {
-      "category": "Enlarger",
-      "condition": "Excellent",
-      "notes": "Professional 4x5 Color / B&W Enlarger"
-    }
-  },
-  {
-    "id": "equip_paterson_sys_4",
+    "id": "eq_paterson_multi_reel_tank",
     "category": "EQUIPMENT",
     "subCategory": "Dev Tank",
     "brand": "Paterson",
-    "name": "Paterson Super System 4 Dev Tank",
-    "modelNumber": "System 4",
+    "name": "Paterson Super System 4 Multi-Reel Tank",
+    "modelNumber": "PTP115",
     "attributes": {
       "category": "Dev Tank",
-      "condition": "Excellent",
-      "notes": "Standard Plastic Tank for 2x35mm or 1x120"
-    }
-  },
-  {
-    "id": "equip_jobo_1520",
-    "category": "EQUIPMENT",
-    "subCategory": "Dev Tank",
-    "brand": "Jobo",
-    "name": "Jobo 1520 Tank System",
-    "modelNumber": "1520",
-    "attributes": {
-      "category": "Dev Tank",
-      "condition": "Excellent",
-      "notes": "Rotary & Inversion Tank"
-    }
-  },
-  {
-    "id": "equip_epson_v850",
-    "category": "EQUIPMENT",
-    "subCategory": "Scanner / Digitiser",
-    "brand": "Epson",
-    "name": "Epson Perfection V850 Pro Scanner",
-    "modelNumber": "V850 Pro",
-    "attributes": {
-      "category": "Scanner / Digitiser",
-      "condition": "Excellent",
-      "notes": "Dual Lens Film/Flatbed Scanner"
-    }
+      "condition": "Excellent"
+    },
+    "isDeveloperPreset": true
   },
 {
     "id": "lens_canon_fd_50_14",
@@ -931,6 +922,45 @@
       "focalLength": "80mm",
       "maxAperture": "f/2.8",
       "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "sup_vanbar",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "Vanbar",
+    "name": "Vanbar Imaging",
+    "attributes": {
+      "region": "Australia",
+      "website": "https://www.vanbar.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "tc_nikon_tc14e",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Nikon",
+    "name": "Nikon AF-S Teleconverter TC-14E III",
+    "modelNumber": "TC-14E III",
+    "attributes": {
+      "magnification": "1.4x",
+      "lightLoss": "1 Stop",
+      "mount": "Nikon F"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "vf_pentax_fa1",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Pentax",
+    "name": "Pentax FA-1 Standard Prism Finder",
+    "modelNumber": "FA-1",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Pentax LX"
     },
     "isDeveloperPreset": true
   }

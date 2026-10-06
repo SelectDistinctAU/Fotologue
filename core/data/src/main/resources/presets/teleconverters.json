@@ -1,0 +1,16 @@
+[
+  {
+    "id": "tc_nikon_tc14e",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Nikon",
+    "name": "Nikon AF-S Teleconverter TC-14E III",
+    "modelNumber": "TC-14E III",
+    "attributes": {
+      "magnification": "1.4x",
+      "lightLoss": "1 Stop",
+      "mount": "Nikon F"
+    },
+    "isDeveloperPreset": true
+  }
+]

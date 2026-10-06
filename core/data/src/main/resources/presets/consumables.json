@@ -1,0 +1,30 @@
+[
+  {
+    "id": "con_ilford_id11",
+    "category": "CONSUMABLE",
+    "subCategory": "Chemistry",
+    "brand": "Ilford",
+    "name": "Ilford ID-11 Developer (1L)",
+    "modelNumber": "ID-11",
+    "attributes": {
+      "type": "Chemistry",
+      "mixRatio": "Stock or 1+1",
+      "capacity": "10 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_multigrade_paper",
+    "category": "CONSUMABLE",
+    "subCategory": "Paper",
+    "brand": "Ilford",
+    "name": "Ilford Multigrade V RC Deluxe Paper (8x10)",
+    "modelNumber": "MG-RC-8X10",
+    "attributes": {
+      "type": "Paper",
+      "surface": "Pearl",
+      "contrast": "Multigrade"
+    },
+    "isDeveloperPreset": true
+  }
+]

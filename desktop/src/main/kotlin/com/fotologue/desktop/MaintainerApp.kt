@@ -68,8 +68,26 @@ fun MaintainerAppScreen() {
     var activePresets by remember { mutableStateOf<List<MasterPresetItem>>(emptyList()) }
     var feedbackMessage by remember { mutableStateOf("Ready to edit Maintainer Preset Catalogue.") }
 
+    val categoryFiles = mapOf(
+        "CAMERA" to "cameras.json",
+        "LENS" to "lenses.json",
+        "FILM" to "films.json",
+        "TELECONVERTER" to "teleconverters.json",
+        "FILTER" to "filters.json",
+        "FLASH" to "flashes.json",
+        "VIEWFINDER" to "viewfinders.json",
+        "CONSUMABLE" to "consumables.json",
+        "EQUIPMENT" to "lab_equipment.json",
+        "SUPPLIER" to "suppliers.json"
+    )
+
+    fun getCategoryFile(cat: String): File {
+        val fileName = categoryFiles[cat] ?: "${cat.lowercase()}s.json"
+        return File(presetsDir, fileName)
+    }
+
     fun loadCategoryPresets(cat: String) {
-        val file = File(presetsDir, "${cat.lowercase()}s.json")
+        val file = getCategoryFile(cat)
         if (file.exists()) {
             try {
                 activePresets = json.decodeFromString(file.readText())
@@ -87,7 +105,7 @@ fun MaintainerAppScreen() {
 
     fun saveCategoryPresets() {
         if (!presetsDir.exists()) presetsDir.mkdirs()
-        val file = File(presetsDir, "${selectedCategory.lowercase()}s.json")
+        val file = getCategoryFile(selectedCategory)
         val jsonText = json.encodeToString(activePresets)
         file.writeText(jsonText)
         feedbackMessage = "✅ Saved ${activePresets.size} presets to ${file.name}"

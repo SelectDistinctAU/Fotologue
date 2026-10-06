@@ -1,0 +1,16 @@
+[
+  {
+    "id": "filter_hoya_nd8",
+    "category": "FILTER",
+    "subCategory": "ND (Neutral Density)",
+    "brand": "Hoya",
+    "name": "Hoya PRO1 Digital ND8 (52mm)",
+    "modelNumber": "ND8",
+    "attributes": {
+      "threadSize": "52mm",
+      "filterType": "ND (Neutral Density)",
+      "compensationStops": "3.0"
+    },
+    "isDeveloperPreset": true
+  }
+]

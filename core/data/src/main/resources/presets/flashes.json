@@ -1,0 +1,15 @@
+[
+  {
+    "id": "flash_nikon_sb700",
+    "category": "FLASH",
+    "subCategory": "Speedlight / Shoe Mount",
+    "brand": "Nikon",
+    "name": "Nikon Speedlight SB-700",
+    "modelNumber": "SB-700",
+    "attributes": {
+      "syncType": "Hotshoe",
+      "guideNumber": "28m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  }
+]

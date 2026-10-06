@@ -1,0 +1,15 @@
+[
+  {
+    "id": "vf_pentax_fa1",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Pentax",
+    "name": "Pentax FA-1 Standard Prism Finder",
+    "modelNumber": "FA-1",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  }
+]
