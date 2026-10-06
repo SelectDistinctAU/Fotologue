@@ -5081,23 +5081,25 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                     )
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Button(
-                        onClick = {
-                            desktopPresetRefreshStatus = "Refreshing..."
-                            adminScope.launch {
-                                val ok = DesktopMasterPresetEngine.refreshFromCloud()
-                                desktopPresetRefreshStatus = if (ok) "✅ Refreshed!" else "⚠️ Offline"
-                            }
-                        },
-                        colors = ButtonDefaults.outlinedButtonColors(),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-                    ) {
-                        Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = desktopPresetRefreshStatus ?: "Refresh Cloud Presets",
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                    Column(horizontalAlignment = Alignment.End) {
+                        Button(
+                            onClick = {
+                                desktopPresetRefreshStatus = "Connecting..."
+                                adminScope.launch {
+                                    val ok = DesktopMasterPresetEngine.refreshFromCloud()
+                                    desktopPresetRefreshStatus = if (ok) "✅ Updated!" else "⚠️ URL Unreachable (Using Local)"
+                                }
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors(),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                        ) {
+                            Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Refresh Cloud Presets", style = MaterialTheme.typography.bodySmall)
+                        }
+                        desktopPresetRefreshStatus?.let { status ->
+                            Text(status, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 2.dp))
+                        }
                     }
                     // Actionable Review Queue Header Alert Button
                     Button(
