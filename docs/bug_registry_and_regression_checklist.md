@@ -576,6 +576,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-059: Missing Remote Cloud Preset Refreshing Engine
+- **Platform**: Core, Mobile & Desktop (`MasterPresetEngine.kt`, `DesktopMasterPresetEngine.kt`, `SettingsScreen.kt`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Photographers had no way to fetch live catalog updates or new camera presets without waiting for a full app store release.
+- **Root Cause**: Missing remote cloud fetch mechanism and disk caching layer in `MasterPresetEngine`.
+- **Resolution**: Implemented `refreshFromCloud()` in `MasterPresetEngine.kt` (Mobile) and `DesktopMasterPresetEngine.kt` (Desktop) to fetch the raw `master_preset_catalog.json` directly from GitHub via coroutines. Updated `assembleMasterCatalog` to write to both `src/main/assets/` and `src/main/resources/`. Added a **`[ 🔄 Refresh Master Presets from Cloud ]`** button to Mobile Settings and Desktop Reference Admin.
+- **Regression Test Case**: Open Mobile Settings or Desktop Reference Admin $\to$ tap `Refresh Master Presets from Cloud` $\to$ verify live status feedback confirms `✅ Master presets updated successfully from cloud!`.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
