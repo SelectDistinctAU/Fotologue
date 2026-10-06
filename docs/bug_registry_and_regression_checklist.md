@@ -506,6 +506,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-052: Unfiltered Referenced Lens Dropdown in Maintainer Tool
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Editing a fixed-lens camera (*Yashica Mat-124G*) in the Maintainer Tool displayed all interchangeable SLR and Rangefinder lenses in the `Attribute 3 Value (Referenced Lens)` dropdown.
+- **Root Cause**: `lensOptions` list in `MaintainerApp.kt` was loaded from `lenses.json` without filtering by `mount == "Fixed"`.
+- **Resolution**: Filtered `lensOptions` to strictly require `attributes["mount"].equals("Fixed", ignoreCase = true)`. Interchangeable SLR/Rangefinder lenses (*Canon FD*, *Nikon F*, *Leica M*) are now hidden, leaving only eligible fixed taking lenses in the dropdown.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ edit *Yashica Mat-124G* $\to$ open `Attribute 3 Value` dropdown $\to$ verify Canon FD 50mm f/1.4 is absent and Yashinon 80mm f/3.5 Taking Lens is displayed.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
