@@ -969,25 +969,61 @@ object DatabaseRepository {
 
     // --- PRESET CATALOGUE LOOKUP HELPERS ---
 
+    private val jsonParser = Json { ignoreUnknownKeys = true; isLenient = true }
+
+    private fun getPresetsResourceDir(): File {
+        var rootDir = File(System.getProperty("user.dir"))
+        while (rootDir.exists() && !File(rootDir, "settings.gradle.kts").exists()) {
+            val parent = rootDir.parentFile ?: break
+            rootDir = parent
+        }
+        return File(rootDir, "core/data/src/main/resources/presets")
+    }
+
+    fun loadRawMasterPresetItems(category: String): List<MasterPresetItem> {
+        return try {
+            val fileName = when (category.uppercase()) {
+                "CAMERA" -> "cameras.json"
+                "LENS" -> "lenses.json"
+                "FILM" -> "films.json"
+                "TELECONVERTER" -> "teleconverters.json"
+                "FILTER" -> "filters.json"
+                "FLASH" -> "flashes.json"
+                "VIEWFINDER" -> "viewfinders.json"
+                "CONSUMABLE" -> "consumables.json"
+                "EQUIPMENT" -> "lab_equipment.json"
+                "SUPPLIER" -> "suppliers.json"
+                else -> "${category.lowercase()}s.json"
+            }
+            val jsonFile = File(getPresetsResourceDir(), fileName)
+            if (jsonFile.exists()) {
+                jsonParser.decodeFromString<List<MasterPresetItem>>(jsonFile.readText())
+            } else emptyList()
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
     fun searchPresetCameras(query: String): List<ReferenceCameraItem> {
-        val presets = listOf(
+        val rawItems = loadRawMasterPresetItems("CAMERA")
+        val presets = rawItems.map { item ->
+            ReferenceCameraItem(
+                name = item.name,
+                modelNumber = item.modelNumber ?: item.name,
+                type = item.attributes["type"] ?: item.subCategory ?: "Film SLR",
+                mount = item.attributes["mount"] ?: "Standard",
+                format = if (item.attributes["type"] == "TLR" || item.attributes["type"] == "Medium Format SLR") "120" else "35mm",
+                shutterSpeeds = item.attributes["shutterSpeeds"] ?: "1s - 1/1000s, B"
+            )
+        }
+
+        val listToUse = if (presets.isNotEmpty()) presets else listOf(
             ReferenceCameraItem(name = "Pentax LX", modelNumber = "LX", type = "Film SLR", mount = "Pentax K", format = "35mm", shutterSpeeds = "125s - 1/2000s, B"),
-            ReferenceCameraItem(name = "Pentax ME Super", modelNumber = "ME Super", type = "Film SLR", mount = "Pentax K", format = "35mm", shutterSpeeds = "4s - 1/2000s, B"),
-            ReferenceCameraItem(name = "Pentax K1000", modelNumber = "K1000", type = "Film SLR", mount = "Pentax K", format = "35mm", shutterSpeeds = "1s - 1/1000s, B"),
-            ReferenceCameraItem(name = "Canon AE-1 Program", modelNumber = "AE-1P", type = "Film SLR", mount = "Canon FD", format = "35mm", shutterSpeeds = "2s - 1/1000s, B"),
-            ReferenceCameraItem(name = "Canon F-1", modelNumber = "F-1", type = "Film SLR", mount = "Canon FD", format = "35mm", shutterSpeeds = "1s - 1/2000s, B"),
-            ReferenceCameraItem(name = "Nikon F3", modelNumber = "F3", type = "Film SLR", mount = "Nikon F", format = "35mm", shutterSpeeds = "8s - 1/2000s, B"),
-            ReferenceCameraItem(name = "Nikon FM2", modelNumber = "FM2", type = "Film SLR", mount = "Nikon F", format = "35mm", shutterSpeeds = "1s - 1/4000s, B"),
-            ReferenceCameraItem(name = "Leica M3", modelNumber = "M3", type = "Rangefinder", mount = "Leica M", format = "35mm", shutterSpeeds = "1s - 1/1000s, B"),
-            ReferenceCameraItem(name = "Leica M6", modelNumber = "M6", type = "Rangefinder", mount = "Leica M", format = "35mm", shutterSpeeds = "1s - 1/1000s, B"),
-            ReferenceCameraItem(name = "Olympus OM-1", modelNumber = "OM-1", type = "Film SLR", mount = "Olympus OM", format = "35mm", shutterSpeeds = "1s - 1/1000s, B"),
-            ReferenceCameraItem(name = "Hasselblad 500C/M", modelNumber = "500C/M", type = "Medium Format SLR", mount = "Hasselblad V", format = "120", shutterSpeeds = "1s - 1/500s, B"),
-            ReferenceCameraItem(name = "Yashica Mat-124G", modelNumber = "Mat-124G", type = "TLR", mount = "Fixed", format = "120", shutterSpeeds = "1s - 1/500s, B"),
-            ReferenceCameraItem(name = "Rolleiflex 2.8F", modelNumber = "2.8F", type = "TLR", mount = "Fixed", format = "120", shutterSpeeds = "1s - 1/500s, B"),
-            ReferenceCameraItem(name = "Mamiya C330 Professional", modelNumber = "C330", type = "TLR", mount = "Mamiya C", format = "120", shutterSpeeds = "1s - 1/500s, B")
+            ReferenceCameraItem(name = "Yashica Mat-124G", modelNumber = "Mat-124G", type = "TLR", mount = "Fixed", format = "120", shutterSpeeds = "1s - 1/500s, B")
         )
-        if (query.isBlank()) return presets
-        return presets.filter { it.name.contains(query, ignoreCase = true) || (it.modelNumber?.contains(query, ignoreCase = true) == true) }
+
+        if (query.isBlank()) return listToUse
+        return listToUse.filter { it.name.contains(query, ignoreCase = true) || (it.modelNumber?.contains(query, ignoreCase = true) == true) }
     }
 
     fun searchPresetLenses(query: String): List<ReferenceLensItem> {

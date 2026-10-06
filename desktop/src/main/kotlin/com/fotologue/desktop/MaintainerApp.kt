@@ -371,6 +371,74 @@ fun MaintainerAppScreen() {
                             }
                         }
                     }
+
+                    // Integrated Fixed Lens Section for Cameras
+                    val currentTypeVal = if (isEditing) (editingPresetItem?.attributes?.get("type") ?: "") else newAttr1Value
+                    val currentMountVal = if (isEditing) (editingPresetItem?.attributes?.get("mount") ?: "") else newAttr2Value
+                    val isFixedLensCamera = selectedCategory == "CAMERA" && (currentMountVal == "Fixed" || currentTypeVal == "TLR" || currentTypeVal == "Compact" || currentTypeVal == "Point & Shoot")
+
+                    if (isFixedLensCamera) {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                        Text("📷 Integrated Fixed Lens Specification", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                        
+                        OutlinedTextField(
+                            value = if (isEditing) (editingPresetItem?.attributes?.get("fixedLensName") ?: "") else "",
+                            onValueChange = { input ->
+                                if (isEditing && editingPresetItem != null) {
+                                    val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                    currentAttrs["fixedLensName"] = input
+                                    editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                }
+                            },
+                            label = { Text("Fixed Lens Name") },
+                            placeholder = { Text("e.g. Yashinon 80mm f/3.5 Taking Lens") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = if (isEditing) (editingPresetItem?.attributes?.get("fixedLensFocalLength") ?: "") else "",
+                                onValueChange = { input ->
+                                    if (isEditing && editingPresetItem != null) {
+                                        val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                        currentAttrs["fixedLensFocalLength"] = input
+                                        editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                    }
+                                },
+                                label = { Text("Focal Length") },
+                                placeholder = { Text("e.g. 80mm") },
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            OutlinedTextField(
+                                value = if (isEditing) (editingPresetItem?.attributes?.get("fixedLensMaxAperture") ?: "") else "",
+                                onValueChange = { input ->
+                                    if (isEditing && editingPresetItem != null) {
+                                        val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                        currentAttrs["fixedLensMaxAperture"] = input
+                                        editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                    }
+                                },
+                                label = { Text("Max Aperture") },
+                                placeholder = { Text("e.g. f/3.5") },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+
+                        OutlinedTextField(
+                            value = if (isEditing) (editingPresetItem?.attributes?.get("fixedLensFilterSize") ?: "") else "",
+                            onValueChange = { input ->
+                                if (isEditing && editingPresetItem != null) {
+                                    val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                    currentAttrs["fixedLensFilterSize"] = input
+                                    editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                }
+                            },
+                            label = { Text("Filter Size / Mount") },
+                            placeholder = { Text("e.g. Bay I, 49mm") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             },
             confirmButton = {

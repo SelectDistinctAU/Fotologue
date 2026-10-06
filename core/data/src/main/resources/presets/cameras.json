@@ -149,7 +149,11 @@
     "attributes": {
       "type": "TLR",
       "mount": "Fixed",
-      "shutterSpeeds": "1s - 1/500s, B"
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLensName": "Yashinon 80mm f/3.5 Taking Lens",
+      "fixedLensFocalLength": "80mm",
+      "fixedLensMaxAperture": "f/3.5",
+      "fixedLensFilterSize": "Bay I"
     },
     "isDeveloperPreset": true
   }
