@@ -522,19 +522,41 @@ fun MaintainerAppScreen() {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            // Category Filter Bar
-            FlowRow(
+            // Streamlined Category Bar & Action Buttons
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                categories.forEach { cat ->
-                    val isSel = selectedCategory == cat
-                    FilterChip(
-                        selected = isSel,
-                        onClick = { selectedCategory = cat },
-                        label = { Text(cat, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) }
-                    )
+                FlowRow(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    categories.forEach { cat ->
+                        val isSel = selectedCategory == cat
+                        FilterChip(
+                            selected = isSel,
+                            onClick = { selectedCategory = cat },
+                            label = { Text(cat, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal) }
+                        )
+                    }
+                }
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(onClick = { showAddDialog = true }) {
+                        Icon(Icons.Default.Add, contentDescription = null)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Add New $selectedCategory Preset Entry")
+                    }
+                    Button(
+                        onClick = { saveCategoryPresets() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                    ) {
+                        Icon(Icons.Default.Check, contentDescription = null)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Save to JSON File")
+                    }
                 }
             }
 
@@ -554,138 +576,6 @@ fun MaintainerAppScreen() {
             val mountFilterOptions = remember(activePresets, selectedCategory) {
                 val mounts = activePresets.mapNotNull { it.attributes["mount"] }.distinct().filter { it.isNotBlank() }.sorted()
                 listOf("All") + mounts
-            }
-
-            // Top Category-Specific LOV Filter Bar (Compact Widths)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (showBrandFilter) {
-                    var brandFilterExpanded by remember { mutableStateOf(false) }
-                    Box(modifier = Modifier.width(200.dp)) {
-                        OutlinedTextField(
-                            value = filterBrand,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Filter by Brand") },
-                            modifier = Modifier.fillMaxWidth(),
-                            trailingIcon = {
-                                IconButton(onClick = { brandFilterExpanded = !brandFilterExpanded }) {
-                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                                }
-                            }
-                        )
-                        DropdownMenu(
-                            expanded = brandFilterExpanded,
-                            onDismissRequest = { brandFilterExpanded = false }
-                        ) {
-                            brandFilterOptions.forEach { bOpt ->
-                                DropdownMenuItem(
-                                    text = { Text(bOpt, fontWeight = if (bOpt == filterBrand) FontWeight.Bold else FontWeight.Normal) },
-                                    onClick = {
-                                        filterBrand = bOpt
-                                        brandFilterExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-
-                if (showTypeFilter) {
-                    var typeFilterExpanded by remember { mutableStateOf(false) }
-                    Box(modifier = Modifier.width(220.dp)) {
-                        OutlinedTextField(
-                            value = filterType,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Filter by Type") },
-                            modifier = Modifier.fillMaxWidth(),
-                            trailingIcon = {
-                                IconButton(onClick = { typeFilterExpanded = !typeFilterExpanded }) {
-                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                                }
-                            }
-                        )
-                        DropdownMenu(
-                            expanded = typeFilterExpanded,
-                            onDismissRequest = { typeFilterExpanded = false }
-                        ) {
-                            typeFilterOptions.forEach { tOpt ->
-                                DropdownMenuItem(
-                                    text = { Text(tOpt, fontWeight = if (tOpt == filterType) FontWeight.Bold else FontWeight.Normal) },
-                                    onClick = {
-                                        filterType = tOpt
-                                        typeFilterExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-
-                if (showMountFilter) {
-                    var mountFilterExpanded by remember { mutableStateOf(false) }
-                    Box(modifier = Modifier.width(200.dp)) {
-                        OutlinedTextField(
-                            value = filterMount,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Filter by Mount") },
-                            modifier = Modifier.fillMaxWidth(),
-                            trailingIcon = {
-                                IconButton(onClick = { mountFilterExpanded = !mountFilterExpanded }) {
-                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                                }
-                            }
-                        )
-                        DropdownMenu(
-                            expanded = mountFilterExpanded,
-                            onDismissRequest = { mountFilterExpanded = false }
-                        ) {
-                            mountFilterOptions.forEach { mOpt ->
-                                DropdownMenuItem(
-                                    text = { Text(mOpt, fontWeight = if (mOpt == filterMount) FontWeight.Bold else FontWeight.Normal) },
-                                    onClick = {
-                                        filterMount = mOpt
-                                        mountFilterExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    label = { Text("Filter Presets") },
-                    modifier = Modifier.weight(1f),
-                    trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = { showAddDialog = true }) {
-                    Icon(Icons.Default.Add, contentDescription = null)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Add New $selectedCategory Preset Entry")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = { saveCategoryPresets() },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
-                ) {
-                    Icon(Icons.Default.Check, contentDescription = null)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Save to JSON File")
-                }
             }
 
             Text(feedbackMessage, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
@@ -727,7 +617,7 @@ fun MaintainerAppScreen() {
                     tonalElevation = 1.dp
                 ) {
                     Column(modifier = Modifier.fillMaxSize()) {
-                        // Data Grid Header Row
+                        // Data Grid Header Row with Integrated Filter + Sort Dropdowns
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -739,36 +629,51 @@ fun MaintainerAppScreen() {
                                 title = "Brand",
                                 activeColumn = sortColumn,
                                 ascending = sortAscending,
+                                filterOptions = brandFilterOptions,
+                                activeFilter = filterBrand,
                                 modifier = Modifier.weight(1.2f),
-                                onClick = { toggleSort("Brand") }
+                                onSelectSort = { toggleSort("Brand") },
+                                onSelectFilter = { filterBrand = it }
                             )
                             GridHeaderCell(
                                 title = "Preset Name",
                                 activeColumn = sortColumn,
                                 ascending = sortAscending,
+                                filterOptions = emptyList(),
+                                activeFilter = "All",
                                 modifier = Modifier.weight(2.5f),
-                                onClick = { toggleSort("Name") }
+                                onSelectSort = { toggleSort("Name") },
+                                onSelectFilter = {}
                             )
                             GridHeaderCell(
                                 title = "Type",
                                 activeColumn = sortColumn,
                                 ascending = sortAscending,
+                                filterOptions = if (showTypeFilter) typeFilterOptions else emptyList(),
+                                activeFilter = filterType,
                                 modifier = Modifier.weight(1.5f),
-                                onClick = { toggleSort("Type") }
+                                onSelectSort = { toggleSort("Type") },
+                                onSelectFilter = { filterType = it }
                             )
                             GridHeaderCell(
                                 title = "Mount / Spec",
                                 activeColumn = sortColumn,
                                 ascending = sortAscending,
+                                filterOptions = if (showMountFilter) mountFilterOptions else emptyList(),
+                                activeFilter = filterMount,
                                 modifier = Modifier.weight(1.5f),
-                                onClick = { toggleSort("Mount") }
+                                onSelectSort = { toggleSort("Mount") },
+                                onSelectFilter = { filterMount = it }
                             )
                             GridHeaderCell(
                                 title = "Preset ID",
                                 activeColumn = sortColumn,
                                 ascending = sortAscending,
+                                filterOptions = emptyList(),
+                                activeFilter = "All",
                                 modifier = Modifier.weight(1.8f),
-                                onClick = { toggleSort("ID") }
+                                onSelectSort = { toggleSort("ID") },
+                                onSelectFilter = {}
                             )
                             Text(
                                 "Actions",
@@ -876,26 +781,73 @@ private fun GridHeaderCell(
     title: String,
     activeColumn: String,
     ascending: Boolean,
+    filterOptions: List<String>,
+    activeFilter: String,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onSelectSort: () -> Unit,
+    onSelectFilter: (String) -> Unit
 ) {
-    val isActive = activeColumn.equals(title.substringBefore(" ").substringBefore("/"), ignoreCase = true)
-    Row(
-        modifier = modifier.clickable { onClick() },
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(
-            title,
-            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-            color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        if (isActive) {
+    var menuExpanded by remember { mutableStateOf(false) }
+    val isSortActive = activeColumn.equals(title.substringBefore(" ").substringBefore("/"), ignoreCase = true)
+    val isFilterActive = activeFilter != "All"
+
+    Box(modifier = modifier) {
+        Row(
+            modifier = Modifier.clickable { menuExpanded = true },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             Text(
-                if (ascending) "▲" else "▼",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary
+                if (isFilterActive) "$title: $activeFilter" else title,
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                color = if (isSortActive || isFilterActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Icon(
+                Icons.Default.ArrowDropDown,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = if (isSortActive || isFilterActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            if (isSortActive) {
+                Text(
+                    if (ascending) "▲" else "▼",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = menuExpanded,
+            onDismissRequest = { menuExpanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Sort Ascending (A-Z)", fontWeight = if (isSortActive && ascending) FontWeight.Bold else FontWeight.Normal) },
+                onClick = {
+                    if (!isSortActive || !ascending) onSelectSort()
+                    menuExpanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Sort Descending (Z-A)", fontWeight = if (isSortActive && !ascending) FontWeight.Bold else FontWeight.Normal) },
+                onClick = {
+                    if (!isSortActive || ascending) onSelectSort()
+                    menuExpanded = false
+                }
+            )
+
+            if (filterOptions.isNotEmpty()) {
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                filterOptions.forEach { fOpt ->
+                    DropdownMenuItem(
+                        text = { Text(if (fOpt == "All") "All ${title}s" else fOpt, fontWeight = if (fOpt == activeFilter) FontWeight.Bold else FontWeight.Normal) },
+                        onClick = {
+                            onSelectFilter(fOpt)
+                            menuExpanded = false
+                        }
+                    )
+                }
+            }
         }
     }
 }
