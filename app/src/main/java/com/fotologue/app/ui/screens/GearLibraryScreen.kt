@@ -349,8 +349,8 @@ fun GearLibraryScreen(
                                     IconButton(onClick = { viewModel.deleteSelectedGear() }) {
                                         Icon(painterResource(R.drawable.ic_delete), contentDescription = stringResource(R.string.action_delete))
                                     }
-                                } else if (!uiState.isReorderMode && uiState.selectedCategoryIndex != 3 && uiState.selectedCategoryIndex < 8) {
-                                    // Disable reorder for Films (index 3) and Tags (index 8, 9)
+                                } else if (!uiState.isReorderMode && uiState.selectedCategoryIndex != 2 && uiState.selectedCategoryIndex < 8) {
+                                    // Disable reorder for Films (index 2) and Tags (index 8, 9, 10)
                                     IconButton(onClick = { viewModel.toggleReorderMode() }) {
                                         Icon(painterResource(R.drawable.select_check_box_24px), contentDescription = "Toggle Reorder")
                                     }
@@ -363,14 +363,14 @@ fun GearLibraryScreen(
                             FloatingActionButton(
                                 onClick = {
                                     when (uiState.selectedCategoryIndex) {
-                                        0 -> onAddKit()
-                                        1 -> onAddCamera()
-                                        2 -> onAddLens()
-                                        3 -> onAddFilm()
-                                        4 -> onAddTeleconverter()
-                                        5 -> onAddFilter()
-                                        6 -> onAddFlash()
-                                        7 -> onAddViewfinder()
+                                        0 -> onAddCamera()
+                                        1 -> onAddLens()
+                                        2 -> onAddFilm()
+                                        3 -> onAddTeleconverter()
+                                        4 -> onAddFilter()
+                                        5 -> onAddFlash()
+                                        6 -> onAddViewfinder()
+                                        7 -> onAddKit()
                                         8 -> viewModel.showAddTagDialog()
                                         9 -> viewModel.showAddContentDialog()
                                         10 -> viewModel.showAddIntentDialog()
