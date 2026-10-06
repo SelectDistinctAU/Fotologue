@@ -77,6 +77,12 @@ fun MaintainerAppScreen() {
         )
     }
 
+    val cameraTypes = listOf("Film SLR", "Rangefinder", "TLR", "Medium Format SLR", "Point & Shoot", "Compact", "Large Format", "DSLR", "Mirrorless")
+    val lensTypes = listOf("Prime", "Zoom", "Macro", "Anamorphic", "Tilt-Shift")
+    val filmTypes = listOf("Colour Negative (C-41)", "Black & White Negative (B&W)", "Colour Slide / Reversal (E-6)", "B&W Slide", "Infrared")
+    val viewfinderTypes = listOf("Eye-Level Prism", "Waist-Level Finder", "Action Finder", "Right-Angle Finder", "Coldshoe Auxiliary Finder")
+    val mountOptions = listOf("Canon FD", "Nikon F", "Pentax K", "Leica M", "Leica L39", "Hasselblad V", "Contax C/Y", "Olympus OM", "Minolta SR/MD", "M42 Thread", "Fixed", "Bay I", "Bay II", "Bay III")
+
     val activeCategoryBrands = remember(activePresets) {
         val jsonBrands = activePresets.map { it.brand }.distinct()
         (canonicalBrands + jsonBrands).filter { it.isNotBlank() }.distinct().sorted()
@@ -140,6 +146,35 @@ fun MaintainerAppScreen() {
     val isEditing = editingPresetItem != null
     if (showAddDialog || isEditing) {
         var brandDropdownExpanded by remember { mutableStateOf(false) }
+        var attr1DropdownExpanded by remember { mutableStateOf(false) }
+        var attr2DropdownExpanded by remember { mutableStateOf(false) }
+
+        // Tailored Attribute Visibility & Default Keys per Category
+        val showAttr1 = selectedCategory != "TELECONVERTER" && selectedCategory != "FILTER" && selectedCategory != "FLASH"
+        val showAttr2 = selectedCategory == "CAMERA" || selectedCategory == "LENS" || selectedCategory == "TELECONVERTER"
+
+        val attr1KeyName = when (selectedCategory) {
+            "CAMERA", "LENS", "FILM", "VIEWFINDER" -> "type"
+            else -> newAttr1Key.ifBlank { "type" }
+        }
+
+        val attr2KeyName = when (selectedCategory) {
+            "CAMERA", "LENS", "TELECONVERTER" -> "mount"
+            else -> newAttr2Key.ifBlank { "mount" }
+        }
+
+        val attr1ValueOptions = when (selectedCategory) {
+            "CAMERA" -> cameraTypes
+            "LENS" -> lensTypes
+            "FILM" -> filmTypes
+            "VIEWFINDER" -> viewfinderTypes
+            else -> emptyList()
+        }
+
+        val attr2ValueOptions = when (selectedCategory) {
+            "CAMERA", "LENS", "TELECONVERTER" -> mountOptions
+            else -> emptyList()
+        }
 
         AlertDialog(
             onDismissRequest = { 
@@ -217,50 +252,120 @@ fun MaintainerAppScreen() {
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(
-                            value = newAttr1Key,
-                            onValueChange = { newAttr1Key = it },
-                            label = { Text("Attribute 1 Key") },
-                            modifier = Modifier.weight(1f)
-                        )
-                        OutlinedTextField(
-                            value = if (isEditing) (editingPresetItem?.attributes?.get(newAttr1Key) ?: "") else newAttr1Value,
-                            onValueChange = { input ->
-                                if (isEditing && editingPresetItem != null) {
-                                    val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
-                                    currentAttrs[newAttr1Key] = input
-                                    editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
-                                } else {
-                                    newAttr1Value = input
+                    // Attribute 1 Row (Conditional)
+                    if (showAttr1) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = attr1KeyName,
+                                onValueChange = { newAttr1Key = it },
+                                readOnly = attr1ValueOptions.isNotEmpty(),
+                                label = { Text("Attribute 1 Key") },
+                                modifier = Modifier.weight(1f)
+                            )
+                            Box(modifier = Modifier.weight(1f)) {
+                                OutlinedTextField(
+                                    value = if (isEditing) (editingPresetItem?.attributes?.get(attr1KeyName) ?: "") else newAttr1Value,
+                                    onValueChange = { input ->
+                                        if (isEditing && editingPresetItem != null) {
+                                            val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                            currentAttrs[attr1KeyName] = input
+                                            editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                        } else {
+                                            newAttr1Value = input
+                                        }
+                                    },
+                                    label = { Text("Attribute 1 Value") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    trailingIcon = if (attr1ValueOptions.isNotEmpty()) {
+                                        {
+                                            IconButton(onClick = { attr1DropdownExpanded = !attr1DropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    } else null
+                                )
+                                if (attr1ValueOptions.isNotEmpty()) {
+                                    DropdownMenu(
+                                        expanded = attr1DropdownExpanded,
+                                        onDismissRequest = { attr1DropdownExpanded = false }
+                                    ) {
+                                        attr1ValueOptions.forEach { vOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(vOpt) },
+                                                onClick = {
+                                                    if (isEditing && editingPresetItem != null) {
+                                                        val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                                        currentAttrs[attr1KeyName] = vOpt
+                                                        editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                                    } else {
+                                                        newAttr1Value = vOpt
+                                                    }
+                                                    attr1DropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
                                 }
-                            },
-                            label = { Text("Attribute 1 Value") },
-                            modifier = Modifier.weight(1f)
-                        )
+                            }
+                        }
                     }
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(
-                            value = newAttr2Key,
-                            onValueChange = { newAttr2Key = it },
-                            label = { Text("Attribute 2 Key") },
-                            modifier = Modifier.weight(1f)
-                        )
-                        OutlinedTextField(
-                            value = if (isEditing) (editingPresetItem?.attributes?.get(newAttr2Key) ?: "") else newAttr2Value,
-                            onValueChange = { input ->
-                                if (isEditing && editingPresetItem != null) {
-                                    val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
-                                    currentAttrs[newAttr2Key] = input
-                                    editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
-                                } else {
-                                    newAttr2Value = input
+                    // Attribute 2 Row (Conditional)
+                    if (showAttr2) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = attr2KeyName,
+                                onValueChange = { newAttr2Key = it },
+                                readOnly = attr2ValueOptions.isNotEmpty(),
+                                label = { Text("Attribute 2 Key") },
+                                modifier = Modifier.weight(1f)
+                            )
+                            Box(modifier = Modifier.weight(1f)) {
+                                OutlinedTextField(
+                                    value = if (isEditing) (editingPresetItem?.attributes?.get(attr2KeyName) ?: "") else newAttr2Value,
+                                    onValueChange = { input ->
+                                        if (isEditing && editingPresetItem != null) {
+                                            val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                            currentAttrs[attr2KeyName] = input
+                                            editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                        } else {
+                                            newAttr2Value = input
+                                        }
+                                    },
+                                    label = { Text("Attribute 2 Value") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    trailingIcon = if (attr2ValueOptions.isNotEmpty()) {
+                                        {
+                                            IconButton(onClick = { attr2DropdownExpanded = !attr2DropdownExpanded }) {
+                                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                            }
+                                        }
+                                    } else null
+                                )
+                                if (attr2ValueOptions.isNotEmpty()) {
+                                    DropdownMenu(
+                                        expanded = attr2DropdownExpanded,
+                                        onDismissRequest = { attr2DropdownExpanded = false }
+                                    ) {
+                                        attr2ValueOptions.forEach { vOpt ->
+                                            DropdownMenuItem(
+                                                text = { Text(vOpt) },
+                                                onClick = {
+                                                    if (isEditing && editingPresetItem != null) {
+                                                        val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                                        currentAttrs[attr2KeyName] = vOpt
+                                                        editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                                    } else {
+                                                        newAttr2Value = vOpt
+                                                    }
+                                                    attr2DropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
                                 }
-                            },
-                            label = { Text("Attribute 2 Value") },
-                            modifier = Modifier.weight(1f)
-                        )
+                            }
+                        }
                     }
                 }
             },
@@ -275,8 +380,8 @@ fun MaintainerAppScreen() {
                         } else if (newName.isNotBlank() && newBrand.isNotBlank()) {
                             val generatedId = "${selectedCategory.lowercase().take(3)}_${newBrand.lowercase().replace(" ", "_")}_${newName.lowercase().replace(" ", "_").replace("/", "_")}"
                             val attrs = mutableMapOf<String, String>()
-                            if (newAttr1Key.isNotBlank() && newAttr1Value.isNotBlank()) attrs[newAttr1Key] = newAttr1Value
-                            if (newAttr2Key.isNotBlank() && newAttr2Value.isNotBlank()) attrs[newAttr2Key] = newAttr2Value
+                            if (showAttr1 && attr1KeyName.isNotBlank() && newAttr1Value.isNotBlank()) attrs[attr1KeyName] = newAttr1Value
+                            if (showAttr2 && attr2KeyName.isNotBlank() && newAttr2Value.isNotBlank()) attrs[attr2KeyName] = newAttr2Value
 
                             val item = MasterPresetItem(
                                 id = generatedId,
