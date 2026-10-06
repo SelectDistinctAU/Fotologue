@@ -516,6 +516,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-053: Missing Category Top Dropdown Filters in Maintainer Tool
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Maintainer Tool list view only offered a search bar, forcing maintainers to browse through un-filtered preset entries across large categories.
+- **Root Cause**: Missing category-specific top dropdown filter bar in `MaintainerApp.kt`.
+- **Resolution**: Added category-specific top dropdown filters (`Filter by Brand`, `Filter by Type`, `Filter by Mount`) above the preset list in `MaintainerApp.kt`, applying dynamic multi-criteria filtering on the active JSON dataset.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ select `CAMERA` tab $\to$ verify top dropdown filters for Brand, Type, and Mount render and filter the preset cards list immediately.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
