@@ -446,6 +446,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-046: Maintainer Tool Naive Pluralization File Mapping Failure
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Selecting the `LENS`, `FLASH`, or `EQUIPMENT` tabs in the Maintainer Tool displayed empty states (`"No LENS presets found in JSON file."`).
+- **Root Cause**: `MaintainerApp.kt` constructed JSON filenames using naive string appending (`"${cat.lowercase()}s.json"`), attempting to read `lenss.json`, `flashs.json`, and `equipments.json` instead of `lenses.json`, `flashes.json`, and `lab_equipment.json`.
+- **Resolution**: Replaced naive string appending with an explicit category-to-filename routing map (`"LENS" -> "lenses.json"`, `"EQUIPMENT" -> "lab_equipment.json"`, etc.) and seeded default JSON arrays for all 10 categories in `core/data/src/main/resources/presets/`.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ click `LENS`, `CONSUMABLE`, `EQUIPMENT` tabs $\to$ verify presets load cleanly without file routing errors.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
