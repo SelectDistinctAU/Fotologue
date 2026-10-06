@@ -65,6 +65,10 @@ fun MaintainerAppScreen() {
     }
 
     var searchQuery by remember { mutableStateOf("") }
+    var filterBrand by remember { mutableStateOf("All") }
+    var filterType by remember { mutableStateOf("All") }
+    var filterMount by remember { mutableStateOf("All") }
+
     var activePresets by remember { mutableStateOf<List<MasterPresetItem>>(emptyList()) }
     var feedbackMessage by remember { mutableStateOf("Ready to edit Maintainer Preset Catalogue.") }
 
@@ -122,6 +126,9 @@ fun MaintainerAppScreen() {
     }
 
     LaunchedEffect(selectedCategory) {
+        filterBrand = "All"
+        filterType = "All"
+        filterMount = "All"
         loadCategoryPresets(selectedCategory)
     }
 
@@ -519,6 +526,127 @@ fun MaintainerAppScreen() {
                 }
             }
 
+            val showBrandFilter = true
+            val showTypeFilter = selectedCategory == "CAMERA" || selectedCategory == "LENS" || selectedCategory == "FILM" || selectedCategory == "VIEWFINDER"
+            val showMountFilter = selectedCategory == "CAMERA" || selectedCategory == "LENS" || selectedCategory == "TELECONVERTER"
+
+            val brandFilterOptions = remember(activePresets) {
+                listOf("All") + activePresets.map { it.brand }.distinct().filter { it.isNotBlank() }.sorted()
+            }
+
+            val typeFilterOptions = remember(activePresets, selectedCategory) {
+                val types = activePresets.mapNotNull { it.subCategory ?: it.attributes["type"] }.distinct().filter { it.isNotBlank() }.sorted()
+                listOf("All") + types
+            }
+
+            val mountFilterOptions = remember(activePresets, selectedCategory) {
+                val mounts = activePresets.mapNotNull { it.attributes["mount"] }.distinct().filter { it.isNotBlank() }.sorted()
+                listOf("All") + mounts
+            }
+
+            // Top Category-Specific LOV Filter Bar
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (showBrandFilter) {
+                    var brandFilterExpanded by remember { mutableStateOf(false) }
+                    Box(modifier = Modifier.weight(1f)) {
+                        OutlinedTextField(
+                            value = filterBrand,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Brand") },
+                            modifier = Modifier.fillMaxWidth(),
+                            trailingIcon = {
+                                IconButton(onClick = { brandFilterExpanded = !brandFilterExpanded }) {
+                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                }
+                            }
+                        )
+                        DropdownMenu(
+                            expanded = brandFilterExpanded,
+                            onDismissRequest = { brandFilterExpanded = false }
+                        ) {
+                            brandFilterOptions.forEach { bOpt ->
+                                DropdownMenuItem(
+                                    text = { Text(bOpt, fontWeight = if (bOpt == filterBrand) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        filterBrand = bOpt
+                                        brandFilterExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (showTypeFilter) {
+                    var typeFilterExpanded by remember { mutableStateOf(false) }
+                    Box(modifier = Modifier.weight(1f)) {
+                        OutlinedTextField(
+                            value = filterType,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Type") },
+                            modifier = Modifier.fillMaxWidth(),
+                            trailingIcon = {
+                                IconButton(onClick = { typeFilterExpanded = !typeFilterExpanded }) {
+                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                }
+                            }
+                        )
+                        DropdownMenu(
+                            expanded = typeFilterExpanded,
+                            onDismissRequest = { typeFilterExpanded = false }
+                        ) {
+                            typeFilterOptions.forEach { tOpt ->
+                                DropdownMenuItem(
+                                    text = { Text(tOpt, fontWeight = if (tOpt == filterType) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        filterType = tOpt
+                                        typeFilterExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (showMountFilter) {
+                    var mountFilterExpanded by remember { mutableStateOf(false) }
+                    Box(modifier = Modifier.weight(1f)) {
+                        OutlinedTextField(
+                            value = filterMount,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Mount") },
+                            modifier = Modifier.fillMaxWidth(),
+                            trailingIcon = {
+                                IconButton(onClick = { mountFilterExpanded = !mountFilterExpanded }) {
+                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                }
+                            }
+                        )
+                        DropdownMenu(
+                            expanded = mountFilterExpanded,
+                            onDismissRequest = { mountFilterExpanded = false }
+                        ) {
+                            mountFilterOptions.forEach { mOpt ->
+                                DropdownMenuItem(
+                                    text = { Text(mOpt, fontWeight = if (mOpt == filterMount) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        filterMount = mOpt
+                                        mountFilterExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -552,8 +680,15 @@ fun MaintainerAppScreen() {
 
             HorizontalDivider()
 
-            val filteredList = activePresets.filter {
-                searchQuery.isBlank() || it.name.contains(searchQuery, true) || it.brand.contains(searchQuery, true)
+            val filteredList = activePresets.filter { preset ->
+                val matchesBrand = filterBrand == "All" || preset.brand.equals(filterBrand, ignoreCase = true)
+                val typeVal = preset.subCategory ?: preset.attributes["type"] ?: ""
+                val matchesType = filterType == "All" || typeVal.equals(filterType, ignoreCase = true)
+                val mountVal = preset.attributes["mount"] ?: ""
+                val matchesMount = filterMount == "All" || mountVal.equals(filterMount, ignoreCase = true)
+                val matchesSearch = searchQuery.isBlank() || preset.name.contains(searchQuery, true) || preset.brand.contains(searchQuery, true) || (preset.modelNumber?.contains(searchQuery, true) == true)
+
+                matchesBrand && matchesType && matchesMount && matchesSearch
             }
 
             if (filteredList.isEmpty()) {
