@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -65,6 +66,17 @@ fun MaintainerAppScreen() {
     }
 
     var searchQuery by remember { mutableStateOf("") }
+    var sortColumn by remember { mutableStateOf("Brand") }
+    var sortAscending by remember { mutableStateOf(true) }
+
+    fun toggleSort(col: String) {
+        if (sortColumn == col) {
+            sortAscending = !sortAscending
+        } else {
+            sortColumn = col
+            sortAscending = true
+        }
+    }
     var filterBrand by remember { mutableStateOf("All") }
     var filterType by remember { mutableStateOf("All") }
     var filterMount by remember { mutableStateOf("All") }
@@ -691,48 +703,199 @@ fun MaintainerAppScreen() {
                 matchesBrand && matchesType && matchesMount && matchesSearch
             }
 
-            if (filteredList.isEmpty()) {
+            val sortedList = remember(filteredList, sortColumn, sortAscending) {
+                val comp = when (sortColumn) {
+                    "Brand" -> compareBy<MasterPresetItem> { it.brand }
+                    "Name" -> compareBy { it.name }
+                    "Type" -> compareBy { it.subCategory ?: it.attributes["type"] ?: "" }
+                    "Mount" -> compareBy { it.attributes["mount"] ?: "" }
+                    "ID" -> compareBy { it.id }
+                    else -> compareBy { it.brand }
+                }
+                if (sortAscending) filteredList.sortedWith(comp) else filteredList.sortedWith(comp.reversed())
+            }
+
+            if (sortedList.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("No $selectedCategory presets found in JSON file.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
-                LazyColumn(
+                Surface(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    tonalElevation = 1.dp
                 ) {
-                    items(filteredList.size) { idx ->
-                        val preset = filteredList[idx]
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        // Data Grid Header Row
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .padding(horizontal = 12.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text("${preset.brand} ${preset.name}", fontWeight = FontWeight.Bold)
-                                    Text("ID: ${preset.id} • Attrs: ${preset.attributes}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            GridHeaderCell(
+                                title = "Brand",
+                                activeColumn = sortColumn,
+                                ascending = sortAscending,
+                                modifier = Modifier.weight(1.2f),
+                                onClick = { toggleSort("Brand") }
+                            )
+                            GridHeaderCell(
+                                title = "Preset Name",
+                                activeColumn = sortColumn,
+                                ascending = sortAscending,
+                                modifier = Modifier.weight(2.5f),
+                                onClick = { toggleSort("Name") }
+                            )
+                            GridHeaderCell(
+                                title = "Type",
+                                activeColumn = sortColumn,
+                                ascending = sortAscending,
+                                modifier = Modifier.weight(1.5f),
+                                onClick = { toggleSort("Type") }
+                            )
+                            GridHeaderCell(
+                                title = "Mount / Spec",
+                                activeColumn = sortColumn,
+                                ascending = sortAscending,
+                                modifier = Modifier.weight(1.5f),
+                                onClick = { toggleSort("Mount") }
+                            )
+                            GridHeaderCell(
+                                title = "Preset ID",
+                                activeColumn = sortColumn,
+                                ascending = sortAscending,
+                                modifier = Modifier.weight(1.8f),
+                                onClick = { toggleSort("ID") }
+                            )
+                            Text(
+                                "Actions",
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.width(80.dp)
+                            )
+                        }
+
+                        HorizontalDivider()
+
+                        // Data Grid Content Rows
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            items(sortedList.size) { idx ->
+                                val preset = sortedList[idx]
+                                val cleanName = if (preset.name.startsWith(preset.brand, ignoreCase = true)) {
+                                    preset.name.substring(preset.brand.length).trim()
+                                } else {
+                                    preset.name
                                 }
-                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(onClick = {
-                                        editingPresetItem = preset
-                                    }) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit Preset", tint = MaterialTheme.colorScheme.primary)
-                                    }
-                                    IconButton(onClick = {
-                                        activePresets = activePresets.filter { it.id != preset.id }
-                                        saveCategoryPresets()
-                                    }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete Preset", tint = MaterialTheme.colorScheme.error)
+                                val typeVal = preset.subCategory ?: preset.attributes["type"] ?: "—"
+                                val mountVal = preset.attributes["mount"] ?: preset.attributes["fixedLens"] ?: preset.attributes["compensationStops"] ?: "—"
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { editingPresetItem = preset }
+                                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        preset.brand,
+                                        fontWeight = FontWeight.Bold,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.weight(1.2f)
+                                    )
+                                    Text(
+                                        cleanName,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.weight(2.5f)
+                                    )
+                                    Text(
+                                        typeVal,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.weight(1.5f)
+                                    )
+                                    Text(
+                                        mountVal,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.weight(1.5f)
+                                    )
+                                    Text(
+                                        preset.id,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.weight(1.8f)
+                                    )
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                        modifier = Modifier.width(80.dp)
+                                    ) {
+                                        IconButton(
+                                            onClick = { editingPresetItem = preset },
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Edit,
+                                                contentDescription = "Edit Preset",
+                                                tint = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                        IconButton(
+                                            onClick = {
+                                                activePresets = activePresets.filter { it.id != preset.id }
+                                                saveCategoryPresets()
+                                            },
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Delete,
+                                                contentDescription = "Delete Preset",
+                                                tint = MaterialTheme.colorScheme.error,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
                                     }
                                 }
+                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                             }
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun GridHeaderCell(
+    title: String,
+    activeColumn: String,
+    ascending: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val isActive = activeColumn.equals(title.substringBefore(" ").substringBefore("/"), ignoreCase = true)
+    Row(
+        modifier = modifier.clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            title,
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+            color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        if (isActive) {
+            Text(
+                if (ascending) "▲" else "▼",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
