@@ -526,6 +526,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-054: Bloated Full-Width Top Dropdown Filters in Maintainer Tool
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Top dropdown filter boxes (`Filter by Brand`, `Filter by Type`, `Filter by Mount`) stretched across the entire width of the window, creating an overly wide, bloated layout.
+- **Root Cause**: `Modifier.weight(1f)` was used on the filter container `Box`es.
+- **Resolution**: Replaced full-width `weight(1f)` with compact, content-tailored fixed widths (`200.dp` – `220.dp`), keeping the filter bar neatly aligned on the left.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ verify top filter dropdowns render as compact `200.dp` – `220.dp` boxes.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
