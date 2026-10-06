@@ -544,15 +544,15 @@ fun MaintainerAppScreen() {
                 listOf("All") + mounts
             }
 
-            // Top Category-Specific LOV Filter Bar
+            // Top Category-Specific LOV Filter Bar (Compact Widths)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (showBrandFilter) {
                     var brandFilterExpanded by remember { mutableStateOf(false) }
-                    Box(modifier = Modifier.weight(1f)) {
+                    Box(modifier = Modifier.width(200.dp)) {
                         OutlinedTextField(
                             value = filterBrand,
                             onValueChange = {},
@@ -584,7 +584,7 @@ fun MaintainerAppScreen() {
 
                 if (showTypeFilter) {
                     var typeFilterExpanded by remember { mutableStateOf(false) }
-                    Box(modifier = Modifier.weight(1f)) {
+                    Box(modifier = Modifier.width(220.dp)) {
                         OutlinedTextField(
                             value = filterType,
                             onValueChange = {},
@@ -616,7 +616,7 @@ fun MaintainerAppScreen() {
 
                 if (showMountFilter) {
                     var mountFilterExpanded by remember { mutableStateOf(false) }
-                    Box(modifier = Modifier.weight(1f)) {
+                    Box(modifier = Modifier.width(200.dp)) {
                         OutlinedTextField(
                             value = filterMount,
                             onValueChange = {},
