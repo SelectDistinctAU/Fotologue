@@ -4,11 +4,292 @@
     "category": "VIEWFINDER",
     "subCategory": "Eye-Level Prism",
     "brand": "Pentax",
-    "name": "Pentax FA-1 Standard Prism Finder",
-    "modelNumber": "FA-1",
+    "name": "Pentax FA-1 Eye-Level Finder",
+    "modelNumber": "FA-1 / 30961",
     "attributes": {
       "type": "Eye-Level Prism",
+      "magnification": "0.90x",
       "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fa1w",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Pentax",
+    "name": "Pentax FA-1W Wide-Eyepoint Finder",
+    "modelNumber": "FA-1W / 30963",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "magnification": "0.80-0.88x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fa2",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Pentax",
+    "name": "Pentax FA-2 Lightweight Eye-Level Finder",
+    "modelNumber": "FA-2 / 30962",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "magnification": "0.90x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fe1",
+    "category": "VIEWFINDER",
+    "subCategory": "Waist-Level Finder",
+    "brand": "Pentax",
+    "name": "Pentax FE-1 Magni-Finder",
+    "modelNumber": "FE-1 / 30965",
+    "attributes": {
+      "type": "Waist-Level Finder",
+      "magnification": "1.35x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_ff1",
+    "category": "VIEWFINDER",
+    "subCategory": "Waist-Level Finder",
+    "brand": "Pentax",
+    "name": "Pentax FF-1 Folding Waist-Level Finder",
+    "modelNumber": "FF-1 / 30966",
+    "attributes": {
+      "type": "Waist-Level Finder",
+      "magnification": "1.05x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fb1",
+    "category": "VIEWFINDER",
+    "subCategory": "System Finder Base",
+    "brand": "Pentax",
+    "name": "Pentax FB-1 System Finder Base",
+    "modelNumber": "FB-1 / 30964",
+    "attributes": {
+      "type": "System Finder Base",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fc1",
+    "category": "VIEWFINDER",
+    "subCategory": "Action Finder",
+    "brand": "Pentax",
+    "name": "Pentax FC-1 Action Eyepiece",
+    "modelNumber": "FC-1 / 30981",
+    "attributes": {
+      "type": "Action Finder",
+      "magnification": "0.55x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fd1",
+    "category": "VIEWFINDER",
+    "subCategory": "Right-Angle Finder",
+    "brand": "Pentax",
+    "name": "Pentax FD-1 Magni-Eyepiece 45°",
+    "modelNumber": "FD-1 / 30982",
+    "attributes": {
+      "type": "Right-Angle Finder",
+      "magnification": "0.95x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fd2",
+    "category": "VIEWFINDER",
+    "subCategory": "Right-Angle Finder",
+    "brand": "Pentax",
+    "name": "Pentax FD-2 Standard 45° Eyepiece",
+    "modelNumber": "FD-2 / 30983",
+    "attributes": {
+      "type": "Right-Angle Finder",
+      "magnification": "0.84x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_nikon_de1",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Nikon",
+    "name": "Nikon DE-1 Standard Eye-Level Prism",
+    "modelNumber": "DE-1",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Nikon F2"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_nikon_dp1",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Nikon",
+    "name": "Nikon DP-1 Photomic Finder",
+    "modelNumber": "DP-1",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Nikon F2"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_nikon_de2",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Nikon",
+    "name": "Nikon DE-2 Eye-Level Finder",
+    "modelNumber": "DE-2",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Nikon F3"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_nikon_dw3",
+    "category": "VIEWFINDER",
+    "subCategory": "Waist-Level Finder",
+    "brand": "Nikon",
+    "name": "Nikon DW-3 Waist-Level Finder",
+    "modelNumber": "DW-3",
+    "attributes": {
+      "type": "Waist-Level Finder",
+      "compatibleCamera": "Nikon F3"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_nikon_da2",
+    "category": "VIEWFINDER",
+    "subCategory": "Action Finder",
+    "brand": "Nikon",
+    "name": "Nikon DA-2 Action Finder",
+    "modelNumber": "DA-2",
+    "attributes": {
+      "type": "Action Finder",
+      "compatibleCamera": "Nikon F3"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_canon_f1_standard",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Canon",
+    "name": "Canon Eye-Level Finder F-1",
+    "modelNumber": "F-1 Standard",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Canon F-1"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_canon_ae_fn",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Canon",
+    "name": "Canon AE Finder FN",
+    "modelNumber": "AE Finder FN",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Canon New F-1"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_canon_speed_fn",
+    "category": "VIEWFINDER",
+    "subCategory": "Action Finder",
+    "brand": "Canon",
+    "name": "Canon Speed Finder FN",
+    "modelNumber": "Speed Finder FN",
+    "attributes": {
+      "type": "Action Finder",
+      "compatibleCamera": "Canon New F-1"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_canon_wlf_fn",
+    "category": "VIEWFINDER",
+    "subCategory": "Waist-Level Finder",
+    "brand": "Canon",
+    "name": "Canon Waist-Level Finder FN",
+    "modelNumber": "WLF FN",
+    "attributes": {
+      "type": "Waist-Level Finder",
+      "compatibleCamera": "Canon New F-1"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_hasselblad_pm43",
+    "category": "VIEWFINDER",
+    "subCategory": "Right-Angle Finder",
+    "brand": "Hasselblad",
+    "name": "Hasselblad PM43 45-Degree Prism Finder",
+    "modelNumber": "PM43",
+    "attributes": {
+      "type": "Right-Angle Finder",
+      "compatibleCamera": "Hasselblad 500C/M"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_hasselblad_wlf",
+    "category": "VIEWFINDER",
+    "subCategory": "Waist-Level Finder",
+    "brand": "Hasselblad",
+    "name": "Hasselblad WLF Waist-Level Finder",
+    "modelNumber": "WLF",
+    "attributes": {
+      "type": "Waist-Level Finder",
+      "compatibleCamera": "Hasselblad 500C/M"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_mamiya_rz_ae_prism",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Mamiya",
+    "name": "Mamiya RZ AE Prism Finder",
+    "modelNumber": "RZ AE Prism",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Mamiya RZ67 Pro"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_leica_21mm_finder",
+    "category": "VIEWFINDER",
+    "subCategory": "Coldshoe Auxiliary Finder",
+    "brand": "Leica",
+    "name": "Leica 21mm Brightline Optical Finder",
+    "modelNumber": "12013",
+    "attributes": {
+      "type": "Coldshoe Auxiliary Finder",
+      "compatibleCamera": "Leica M Rangefinders"
     },
     "isDeveloperPreset": true
   }

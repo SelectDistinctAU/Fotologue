@@ -1,6 +1,62 @@
 [
   {
-    "id": "tc_nikon_tc14e",
+    "id": "tc_canon_fd_14a",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Canon",
+    "name": "Canon Extender FD 1.4x A",
+    "modelNumber": "1.4x A",
+    "attributes": {
+      "magnification": "1.4x",
+      "lightLoss": "1 Stop",
+      "mount": "Canon FD"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_canon_fd_2a",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Canon",
+    "name": "Canon Extender FD 2x A",
+    "modelNumber": "2x A",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Canon FD"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_canon_ef_14_2",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Canon",
+    "name": "Canon Extender EF 1.4x II",
+    "modelNumber": "EF 1.4x II",
+    "attributes": {
+      "magnification": "1.4x",
+      "lightLoss": "1 Stop",
+      "mount": "Canon EF"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_canon_ef_2_2",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Canon",
+    "name": "Canon Extender EF 2x II",
+    "modelNumber": "EF 2x II",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Canon EF"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_nikon_tc14e3",
     "category": "TELECONVERTER",
     "subCategory": "Teleconverter",
     "brand": "Nikon",
@@ -10,6 +66,104 @@
       "magnification": "1.4x",
       "lightLoss": "1 Stop",
       "mount": "Nikon F"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_nikon_tc14a",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Nikon",
+    "name": "Nikon Teleconverter TC-14A 1.4x",
+    "modelNumber": "TC-14A",
+    "attributes": {
+      "magnification": "1.4x",
+      "lightLoss": "1 Stop",
+      "mount": "Nikon F"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_nikon_tc201",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Nikon",
+    "name": "Nikon Teleconverter TC-201 2x",
+    "modelNumber": "TC-201",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Nikon F"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_pentax_rear_14a",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Pentax",
+    "name": "Pentax Rear Converter K 1.4x-A",
+    "modelNumber": "1.4x-A",
+    "attributes": {
+      "magnification": "1.4x",
+      "lightLoss": "1 Stop",
+      "mount": "Pentax K"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_pentax_rear_2a",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Pentax",
+    "name": "Pentax Rear Converter K 2x-A",
+    "modelNumber": "2x-A",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Pentax K"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_minolta_2x_md",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Minolta",
+    "name": "Minolta Tele Converter 2x MD 300S",
+    "modelNumber": "2x MD",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Minolta SR/MD"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_leica_extender_r_2x",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Leica",
+    "name": "Leica Extender-R 2x",
+    "modelNumber": "Extender-R",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Leica R"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_hasselblad_mutar_2x",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Hasselblad",
+    "name": "Hasselblad Mutar 2x Teleconverter",
+    "modelNumber": "Mutar 2x",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Hasselblad V"
     },
     "isDeveloperPreset": true
   }

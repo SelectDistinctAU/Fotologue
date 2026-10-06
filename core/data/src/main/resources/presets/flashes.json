@@ -1,14 +1,211 @@
 [
   {
+    "id": "flash_canon_199a",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Canon",
+    "name": "Canon Speedlite 199A",
+    "modelNumber": "199A",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "30m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_canon_430ex2",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Canon",
+    "name": "Canon Speedlite 430EX II",
+    "modelNumber": "430EX II",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "43m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_canon_580ex2",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Canon",
+    "name": "Canon Speedlite 580EX II",
+    "modelNumber": "580EX II",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "58m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_nikon_sb24",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Nikon",
+    "name": "Nikon Speedlight SB-24",
+    "modelNumber": "SB-24",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "36m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_nikon_sb28",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Nikon",
+    "name": "Nikon Speedlight SB-28",
+    "modelNumber": "SB-28",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "36m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "flash_nikon_sb700",
     "category": "FLASH",
-    "subCategory": "Speedlight / Shoe Mount",
+    "subCategory": "Shoe Mount / Speedlight",
     "brand": "Nikon",
     "name": "Nikon Speedlight SB-700",
     "modelNumber": "SB-700",
     "attributes": {
+      "type": "Shoe Mount / Speedlight",
       "syncType": "Hotshoe",
       "guideNumber": "28m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_nikon_sb800",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Nikon",
+    "name": "Nikon Speedlight SB-800",
+    "modelNumber": "SB-800",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "38m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_olympus_t32",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Olympus",
+    "name": "Olympus T32 Electronic Flash",
+    "modelNumber": "T32",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "32m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_pentax_af280t",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Pentax",
+    "name": "Pentax AF-280T Speedlight",
+    "modelNumber": "AF-280T",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "28m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_pentax_af360fgz",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Pentax",
+    "name": "Pentax AF-360FGZ Speedlight",
+    "modelNumber": "AF-360FGZ",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "36m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_minolta_360px",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Minolta",
+    "name": "Minolta Auto 360PX Flash",
+    "modelNumber": "360PX",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "36m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_minolta_5400hs",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Minolta",
+    "name": "Minolta Program 5400HS Flash",
+    "modelNumber": "5400HS",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "54m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_leica_sf24d",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Leica",
+    "name": "Leica SF 24D System Flash",
+    "modelNumber": "SF 24D",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "24m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_vivitar_283",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Vivitar",
+    "name": "Vivitar 283 Auto Thyristor",
+    "modelNumber": "283",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe / PC Sync",
+      "guideNumber": "36m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_popup_builtin",
+    "category": "FLASH",
+    "subCategory": "Built-in / Pop-up Flash",
+    "brand": "Generic",
+    "name": "Integrated Camera Pop-Up Flash",
+    "modelNumber": "Pop-Up",
+    "attributes": {
+      "type": "Built-in / Pop-up Flash",
+      "syncType": "Built-in",
+      "guideNumber": "12m (ISO 100)"
     },
     "isDeveloperPreset": true
   }

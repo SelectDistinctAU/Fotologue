@@ -1849,15 +1849,212 @@
     "isDeveloperPreset": true
   },
 {
+    "id": "flash_canon_199a",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Canon",
+    "name": "Canon Speedlite 199A",
+    "modelNumber": "199A",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "30m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_canon_430ex2",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Canon",
+    "name": "Canon Speedlite 430EX II",
+    "modelNumber": "430EX II",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "43m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_canon_580ex2",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Canon",
+    "name": "Canon Speedlite 580EX II",
+    "modelNumber": "580EX II",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "58m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_nikon_sb24",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Nikon",
+    "name": "Nikon Speedlight SB-24",
+    "modelNumber": "SB-24",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "36m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_nikon_sb28",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Nikon",
+    "name": "Nikon Speedlight SB-28",
+    "modelNumber": "SB-28",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "36m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "flash_nikon_sb700",
     "category": "FLASH",
-    "subCategory": "Speedlight / Shoe Mount",
+    "subCategory": "Shoe Mount / Speedlight",
     "brand": "Nikon",
     "name": "Nikon Speedlight SB-700",
     "modelNumber": "SB-700",
     "attributes": {
+      "type": "Shoe Mount / Speedlight",
       "syncType": "Hotshoe",
       "guideNumber": "28m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_nikon_sb800",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Nikon",
+    "name": "Nikon Speedlight SB-800",
+    "modelNumber": "SB-800",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "38m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_olympus_t32",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Olympus",
+    "name": "Olympus T32 Electronic Flash",
+    "modelNumber": "T32",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "32m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_pentax_af280t",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Pentax",
+    "name": "Pentax AF-280T Speedlight",
+    "modelNumber": "AF-280T",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "28m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_pentax_af360fgz",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Pentax",
+    "name": "Pentax AF-360FGZ Speedlight",
+    "modelNumber": "AF-360FGZ",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "36m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_minolta_360px",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Minolta",
+    "name": "Minolta Auto 360PX Flash",
+    "modelNumber": "360PX",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "36m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_minolta_5400hs",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Minolta",
+    "name": "Minolta Program 5400HS Flash",
+    "modelNumber": "5400HS",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "54m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_leica_sf24d",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Leica",
+    "name": "Leica SF 24D System Flash",
+    "modelNumber": "SF 24D",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe",
+      "guideNumber": "24m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_vivitar_283",
+    "category": "FLASH",
+    "subCategory": "Shoe Mount / Speedlight",
+    "brand": "Vivitar",
+    "name": "Vivitar 283 Auto Thyristor",
+    "modelNumber": "283",
+    "attributes": {
+      "type": "Shoe Mount / Speedlight",
+      "syncType": "Hotshoe / PC Sync",
+      "guideNumber": "36m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "flash_popup_builtin",
+    "category": "FLASH",
+    "subCategory": "Built-in / Pop-up Flash",
+    "brand": "Generic",
+    "name": "Integrated Camera Pop-Up Flash",
+    "modelNumber": "Pop-Up",
+    "attributes": {
+      "type": "Built-in / Pop-up Flash",
+      "syncType": "Built-in",
+      "guideNumber": "12m (ISO 100)"
     },
     "isDeveloperPreset": true
   },
@@ -3356,28 +3553,464 @@
     "isDeveloperPreset": true
   },
 {
-        "id": "tc_nikon_tc14e",
-        "category": "TELECONVERTER",
-        "subCategory": "Teleconverter",
-        "brand": "Nikon",
-        "name": "Nikon AF-S Teleconverter TC-14E III",
-        "modelNumber": "TC-14E III",
-        "attributes": {
-            "magnification": "1.4x",
-            "lightLoss": "1 Stop",
-            "mount": "Nikon F"
-        }
+    "id": "tc_canon_fd_14a",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Canon",
+    "name": "Canon Extender FD 1.4x A",
+    "modelNumber": "1.4x A",
+    "attributes": {
+      "magnification": "1.4x",
+      "lightLoss": "1 Stop",
+      "mount": "Canon FD"
     },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_canon_fd_2a",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Canon",
+    "name": "Canon Extender FD 2x A",
+    "modelNumber": "2x A",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Canon FD"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_canon_ef_14_2",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Canon",
+    "name": "Canon Extender EF 1.4x II",
+    "modelNumber": "EF 1.4x II",
+    "attributes": {
+      "magnification": "1.4x",
+      "lightLoss": "1 Stop",
+      "mount": "Canon EF"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_canon_ef_2_2",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Canon",
+    "name": "Canon Extender EF 2x II",
+    "modelNumber": "EF 2x II",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Canon EF"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_nikon_tc14e3",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Nikon",
+    "name": "Nikon AF-S Teleconverter TC-14E III",
+    "modelNumber": "TC-14E III",
+    "attributes": {
+      "magnification": "1.4x",
+      "lightLoss": "1 Stop",
+      "mount": "Nikon F"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_nikon_tc14a",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Nikon",
+    "name": "Nikon Teleconverter TC-14A 1.4x",
+    "modelNumber": "TC-14A",
+    "attributes": {
+      "magnification": "1.4x",
+      "lightLoss": "1 Stop",
+      "mount": "Nikon F"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_nikon_tc201",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Nikon",
+    "name": "Nikon Teleconverter TC-201 2x",
+    "modelNumber": "TC-201",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Nikon F"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_pentax_rear_14a",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Pentax",
+    "name": "Pentax Rear Converter K 1.4x-A",
+    "modelNumber": "1.4x-A",
+    "attributes": {
+      "magnification": "1.4x",
+      "lightLoss": "1 Stop",
+      "mount": "Pentax K"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_pentax_rear_2a",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Pentax",
+    "name": "Pentax Rear Converter K 2x-A",
+    "modelNumber": "2x-A",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Pentax K"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_minolta_2x_md",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Minolta",
+    "name": "Minolta Tele Converter 2x MD 300S",
+    "modelNumber": "2x MD",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Minolta SR/MD"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_leica_extender_r_2x",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Leica",
+    "name": "Leica Extender-R 2x",
+    "modelNumber": "Extender-R",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Leica R"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "tc_hasselblad_mutar_2x",
+    "category": "TELECONVERTER",
+    "subCategory": "Teleconverter",
+    "brand": "Hasselblad",
+    "name": "Hasselblad Mutar 2x Teleconverter",
+    "modelNumber": "Mutar 2x",
+    "attributes": {
+      "magnification": "2.0x",
+      "lightLoss": "2 Stops",
+      "mount": "Hasselblad V"
+    },
+    "isDeveloperPreset": true
+  },
 {
     "id": "vf_pentax_fa1",
     "category": "VIEWFINDER",
     "subCategory": "Eye-Level Prism",
     "brand": "Pentax",
-    "name": "Pentax FA-1 Standard Prism Finder",
-    "modelNumber": "FA-1",
+    "name": "Pentax FA-1 Eye-Level Finder",
+    "modelNumber": "FA-1 / 30961",
     "attributes": {
       "type": "Eye-Level Prism",
+      "magnification": "0.90x",
       "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fa1w",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Pentax",
+    "name": "Pentax FA-1W Wide-Eyepoint Finder",
+    "modelNumber": "FA-1W / 30963",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "magnification": "0.80-0.88x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fa2",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Pentax",
+    "name": "Pentax FA-2 Lightweight Eye-Level Finder",
+    "modelNumber": "FA-2 / 30962",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "magnification": "0.90x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fe1",
+    "category": "VIEWFINDER",
+    "subCategory": "Waist-Level Finder",
+    "brand": "Pentax",
+    "name": "Pentax FE-1 Magni-Finder",
+    "modelNumber": "FE-1 / 30965",
+    "attributes": {
+      "type": "Waist-Level Finder",
+      "magnification": "1.35x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_ff1",
+    "category": "VIEWFINDER",
+    "subCategory": "Waist-Level Finder",
+    "brand": "Pentax",
+    "name": "Pentax FF-1 Folding Waist-Level Finder",
+    "modelNumber": "FF-1 / 30966",
+    "attributes": {
+      "type": "Waist-Level Finder",
+      "magnification": "1.05x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fb1",
+    "category": "VIEWFINDER",
+    "subCategory": "System Finder Base",
+    "brand": "Pentax",
+    "name": "Pentax FB-1 System Finder Base",
+    "modelNumber": "FB-1 / 30964",
+    "attributes": {
+      "type": "System Finder Base",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fc1",
+    "category": "VIEWFINDER",
+    "subCategory": "Action Finder",
+    "brand": "Pentax",
+    "name": "Pentax FC-1 Action Eyepiece",
+    "modelNumber": "FC-1 / 30981",
+    "attributes": {
+      "type": "Action Finder",
+      "magnification": "0.55x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fd1",
+    "category": "VIEWFINDER",
+    "subCategory": "Right-Angle Finder",
+    "brand": "Pentax",
+    "name": "Pentax FD-1 Magni-Eyepiece 45°",
+    "modelNumber": "FD-1 / 30982",
+    "attributes": {
+      "type": "Right-Angle Finder",
+      "magnification": "0.95x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_pentax_fd2",
+    "category": "VIEWFINDER",
+    "subCategory": "Right-Angle Finder",
+    "brand": "Pentax",
+    "name": "Pentax FD-2 Standard 45° Eyepiece",
+    "modelNumber": "FD-2 / 30983",
+    "attributes": {
+      "type": "Right-Angle Finder",
+      "magnification": "0.84x",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_nikon_de1",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Nikon",
+    "name": "Nikon DE-1 Standard Eye-Level Prism",
+    "modelNumber": "DE-1",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Nikon F2"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_nikon_dp1",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Nikon",
+    "name": "Nikon DP-1 Photomic Finder",
+    "modelNumber": "DP-1",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Nikon F2"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_nikon_de2",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Nikon",
+    "name": "Nikon DE-2 Eye-Level Finder",
+    "modelNumber": "DE-2",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Nikon F3"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_nikon_dw3",
+    "category": "VIEWFINDER",
+    "subCategory": "Waist-Level Finder",
+    "brand": "Nikon",
+    "name": "Nikon DW-3 Waist-Level Finder",
+    "modelNumber": "DW-3",
+    "attributes": {
+      "type": "Waist-Level Finder",
+      "compatibleCamera": "Nikon F3"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_nikon_da2",
+    "category": "VIEWFINDER",
+    "subCategory": "Action Finder",
+    "brand": "Nikon",
+    "name": "Nikon DA-2 Action Finder",
+    "modelNumber": "DA-2",
+    "attributes": {
+      "type": "Action Finder",
+      "compatibleCamera": "Nikon F3"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_canon_f1_standard",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Canon",
+    "name": "Canon Eye-Level Finder F-1",
+    "modelNumber": "F-1 Standard",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Canon F-1"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_canon_ae_fn",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Canon",
+    "name": "Canon AE Finder FN",
+    "modelNumber": "AE Finder FN",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Canon New F-1"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_canon_speed_fn",
+    "category": "VIEWFINDER",
+    "subCategory": "Action Finder",
+    "brand": "Canon",
+    "name": "Canon Speed Finder FN",
+    "modelNumber": "Speed Finder FN",
+    "attributes": {
+      "type": "Action Finder",
+      "compatibleCamera": "Canon New F-1"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_canon_wlf_fn",
+    "category": "VIEWFINDER",
+    "subCategory": "Waist-Level Finder",
+    "brand": "Canon",
+    "name": "Canon Waist-Level Finder FN",
+    "modelNumber": "WLF FN",
+    "attributes": {
+      "type": "Waist-Level Finder",
+      "compatibleCamera": "Canon New F-1"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_hasselblad_pm43",
+    "category": "VIEWFINDER",
+    "subCategory": "Right-Angle Finder",
+    "brand": "Hasselblad",
+    "name": "Hasselblad PM43 45-Degree Prism Finder",
+    "modelNumber": "PM43",
+    "attributes": {
+      "type": "Right-Angle Finder",
+      "compatibleCamera": "Hasselblad 500C/M"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_hasselblad_wlf",
+    "category": "VIEWFINDER",
+    "subCategory": "Waist-Level Finder",
+    "brand": "Hasselblad",
+    "name": "Hasselblad WLF Waist-Level Finder",
+    "modelNumber": "WLF",
+    "attributes": {
+      "type": "Waist-Level Finder",
+      "compatibleCamera": "Hasselblad 500C/M"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_mamiya_rz_ae_prism",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Mamiya",
+    "name": "Mamiya RZ AE Prism Finder",
+    "modelNumber": "RZ AE Prism",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Mamiya RZ67 Pro"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "vf_leica_21mm_finder",
+    "category": "VIEWFINDER",
+    "subCategory": "Coldshoe Auxiliary Finder",
+    "brand": "Leica",
+    "name": "Leica 21mm Brightline Optical Finder",
+    "modelNumber": "12013",
+    "attributes": {
+      "type": "Coldshoe Auxiliary Finder",
+      "compatibleCamera": "Leica M Rangefinders"
     },
     "isDeveloperPreset": true
   }
