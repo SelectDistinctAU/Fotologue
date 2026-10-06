@@ -521,6 +521,12 @@ fun MaintainerAppScreen() {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Text(
+                "📂 Active Preset File Path: ${getCategoryFile(selectedCategory).absolutePath}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium
+            )
 
             // Streamlined Category Bar & Action Buttons
             Row(
