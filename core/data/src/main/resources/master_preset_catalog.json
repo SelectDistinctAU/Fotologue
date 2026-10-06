@@ -1848,6 +1848,370 @@
     },
     "isDeveloperPreset": true
   },
+  {
+    "id": "filter_hoya_hd3_uv_49",
+    "category": "FILTER",
+    "subCategory": "UV / Protection",
+    "brand": "Hoya",
+    "name": "Hoya HD3 UV Protector (49mm)",
+    "modelNumber": "HD3-UV",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "49mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_hd3_uv_52",
+    "category": "FILTER",
+    "subCategory": "UV / Protection",
+    "brand": "Hoya",
+    "name": "Hoya HD3 UV Protector (52mm)",
+    "modelNumber": "HD3-UV",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_hd3_uv_67",
+    "category": "FILTER",
+    "subCategory": "UV / Protection",
+    "brand": "Hoya",
+    "name": "Hoya HD3 UV Protector (67mm)",
+    "modelNumber": "HD3-UV",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "67mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_hd3_uv_77",
+    "category": "FILTER",
+    "subCategory": "UV / Protection",
+    "brand": "Hoya",
+    "name": "Hoya HD3 UV Protector (77mm)",
+    "modelNumber": "HD3-UV",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "77mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_cpl_67",
+    "category": "FILTER",
+    "subCategory": "Polarizer (CPL)",
+    "brand": "Hoya",
+    "name": "Hoya PRO1 Digital CPL (67mm)",
+    "modelNumber": "PRO1-CPL",
+    "attributes": {
+      "compensationStops": "+1.5 Stops (CPL / Polarizer)",
+      "threadSize": "67mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_cpl_77",
+    "category": "FILTER",
+    "subCategory": "Polarizer (CPL)",
+    "brand": "Hoya",
+    "name": "Hoya PRO1 Digital CPL (77mm)",
+    "modelNumber": "PRO1-CPL",
+    "attributes": {
+      "compensationStops": "+1.5 Stops (CPL / Polarizer)",
+      "threadSize": "77mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_nd64_52",
+    "category": "FILTER",
+    "subCategory": "ND (Neutral Density)",
+    "brand": "Hoya",
+    "name": "Hoya PRO1 Digital ND64 (52mm)",
+    "modelNumber": "ND64",
+    "attributes": {
+      "compensationStops": "+6.0 Stops (ND64)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_prond1000_77",
+    "category": "FILTER",
+    "subCategory": "ND (Neutral Density)",
+    "brand": "Hoya",
+    "name": "Hoya PROND1000 (77mm)",
+    "modelNumber": "ND1000",
+    "attributes": {
+      "compensationStops": "+10.0 Stops (ND1000)",
+      "threadSize": "77mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_orange_52",
+    "category": "FILTER",
+    "subCategory": "B&W Orange 16",
+    "brand": "Hoya",
+    "name": "Hoya Orange 16 Contrast Filter (52mm)",
+    "modelNumber": "Orange 16",
+    "attributes": {
+      "compensationStops": "+2.0 Stops (Orange 16)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_red_52",
+    "category": "FILTER",
+    "subCategory": "B&W Red 25A",
+    "brand": "Hoya",
+    "name": "Hoya Red 25A Contrast Filter (52mm)",
+    "modelNumber": "Red 25A",
+    "attributes": {
+      "compensationStops": "+3.0 Stops (Red 25A / ND8)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_bw_010_uv_39",
+    "category": "FILTER",
+    "subCategory": "UV / Protection",
+    "brand": "B+W",
+    "name": "B+W 010 UV MRC Filter (39mm)",
+    "modelNumber": "010-UV",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "39mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_bw_010_uv_49",
+    "category": "FILTER",
+    "subCategory": "UV / Protection",
+    "brand": "B+W",
+    "name": "B+W 010 UV MRC Filter (49mm)",
+    "modelNumber": "010-UV",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "49mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_bw_010_uv_52",
+    "category": "FILTER",
+    "subCategory": "UV / Protection",
+    "brand": "B+W",
+    "name": "B+W 010 UV MRC Filter (52mm)",
+    "modelNumber": "010-UV",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_bw_010_uv_77",
+    "category": "FILTER",
+    "subCategory": "UV / Protection",
+    "brand": "B+W",
+    "name": "B+W 010 UV MRC Filter (77mm)",
+    "modelNumber": "010-UV",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "77mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_bw_cpl_52",
+    "category": "FILTER",
+    "subCategory": "Polarizer (CPL)",
+    "brand": "B+W",
+    "name": "B+W Kaesemann CPL MRC (52mm)",
+    "modelNumber": "Kaesemann-CPL",
+    "attributes": {
+      "compensationStops": "+1.5 Stops (CPL / Polarizer)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_bw_cpl_77",
+    "category": "FILTER",
+    "subCategory": "Polarizer (CPL)",
+    "brand": "B+W",
+    "name": "B+W Kaesemann CPL MRC (77mm)",
+    "modelNumber": "Kaesemann-CPL",
+    "attributes": {
+      "compensationStops": "+1.5 Stops (CPL / Polarizer)",
+      "threadSize": "77mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_bw_103_nd_77",
+    "category": "FILTER",
+    "subCategory": "ND (Neutral Density)",
+    "brand": "B+W",
+    "name": "B+W 103 ND 0.9 Filter (77mm)",
+    "modelNumber": "103-ND",
+    "attributes": {
+      "compensationStops": "+3.0 Stops (Red 25A / ND8)",
+      "threadSize": "77mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_bw_110_nd_77",
+    "category": "FILTER",
+    "subCategory": "ND (Neutral Density)",
+    "brand": "B+W",
+    "name": "B+W 110 ND 3.0 Filter (77mm)",
+    "modelNumber": "110-ND1000",
+    "attributes": {
+      "compensationStops": "+10.0 Stops (ND1000)",
+      "threadSize": "77mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_bw_022_yellow_52",
+    "category": "FILTER",
+    "subCategory": "B&W Yellow K2",
+    "brand": "B+W",
+    "name": "B+W 022 Yellow Contrast Filter (52mm)",
+    "modelNumber": "022-Yellow",
+    "attributes": {
+      "compensationStops": "+1.0 Stop (Yellow K2)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_tiffen_promist_49",
+    "category": "FILTER",
+    "subCategory": "Diffusion / Mist",
+    "brand": "Tiffen",
+    "name": "Tiffen Black Pro-Mist 1/4 (49mm)",
+    "modelNumber": "Pro-Mist 1/4",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "49mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_tiffen_promist_52",
+    "category": "FILTER",
+    "subCategory": "Diffusion / Mist",
+    "brand": "Tiffen",
+    "name": "Tiffen Black Pro-Mist 1/4 (52mm)",
+    "modelNumber": "Pro-Mist 1/4",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_tiffen_promist_77",
+    "category": "FILTER",
+    "subCategory": "Diffusion / Mist",
+    "brand": "Tiffen",
+    "name": "Tiffen Black Pro-Mist 1/4 (77mm)",
+    "modelNumber": "Pro-Mist 1/4",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "77mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_tiffen_warm_cpl_77",
+    "category": "FILTER",
+    "subCategory": "Polarizer (CPL)",
+    "brand": "Tiffen",
+    "name": "Tiffen Warm CPL Polarizer (77mm)",
+    "modelNumber": "Warm-CPL",
+    "attributes": {
+      "compensationStops": "+1.5 Stops (CPL / Polarizer)",
+      "threadSize": "77mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_rollei_bay1_yellow",
+    "category": "FILTER",
+    "subCategory": "B&W Yellow K2",
+    "brand": "Rollei",
+    "name": "Rollei Bay I Yellow K2 Filter",
+    "modelNumber": "Bay I Yellow",
+    "attributes": {
+      "compensationStops": "+1.0 Stop (Yellow K2)",
+      "threadSize": "Bay I"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_rollei_bay1_red",
+    "category": "FILTER",
+    "subCategory": "B&W Red 25A",
+    "brand": "Rollei",
+    "name": "Rollei Bay I Red 25A Filter",
+    "modelNumber": "Bay I Red",
+    "attributes": {
+      "compensationStops": "+3.0 Stops (Red 25A / ND8)",
+      "threadSize": "Bay I"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_rollei_bay3_yellow",
+    "category": "FILTER",
+    "subCategory": "B&W Yellow K2",
+    "brand": "Rollei",
+    "name": "Rollei Bay III Yellow K2 Filter",
+    "modelNumber": "Bay III Yellow",
+    "attributes": {
+      "compensationStops": "+1.0 Stop (Yellow K2)",
+      "threadSize": "Bay III"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hasselblad_bay60_uv",
+    "category": "FILTER",
+    "subCategory": "UV / Protection",
+    "brand": "Hasselblad",
+    "name": "Hasselblad Bay 60 UV Sky Filter",
+    "modelNumber": "Bay 60 UV",
+    "attributes": {
+      "compensationStops": "+0.0 Stops (Clear / UV)",
+      "threadSize": "Bay 60"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hasselblad_bay60_cpl",
+    "category": "FILTER",
+    "subCategory": "Polarizer (CPL)",
+    "brand": "Hasselblad",
+    "name": "Hasselblad Bay 60 CPL Polarizer",
+    "modelNumber": "Bay 60 CPL",
+    "attributes": {
+      "compensationStops": "+1.5 Stops (CPL / Polarizer)",
+      "threadSize": "Bay 60"
+    },
+    "isDeveloperPreset": true
+  },
 {
     "id": "flash_canon_199a",
     "category": "FLASH",
