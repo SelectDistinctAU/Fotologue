@@ -586,6 +586,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-060: Missing Active Preset File Path Display in Maintainer Tool
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Maintainers had no visual indication of which exact disk file path was being edited in the Maintainer Tool interface.
+- **Root Cause**: Missing active file path status label in `MaintainerApp.kt`.
+- **Resolution**: Added `📂 Active Preset File Path: ${getCategoryFile(selectedCategory).absolutePath}` to the main header area in `MaintainerApp.kt`, dynamically updating when switching category tabs.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ verify header displays the active file path (e.g. `.../resources/presets/cameras.json`).
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
