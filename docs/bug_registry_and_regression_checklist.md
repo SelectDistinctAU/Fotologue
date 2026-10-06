@@ -496,6 +496,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-051: Un-Normalized Fixed Lens Specifications in Camera Catalog
+- **Platform**: Maintainer Tool, Mobile & Desktop (`cameras.json`, `lenses.json`, `MaintainerApp.kt`, `AddEditCameraViewModel.kt`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Fixed-lens properties (focal length, max aperture, filter size) were duplicated inside `cameras.json` rather than referencing the single source of truth in `lenses.json`.
+- **Root Cause**: Un-normalized preset data schema.
+- **Resolution**: Refactored taking lenses so full specs live in `lenses.json` (e.g. *Yashinon 80mm f/3.5 Taking Lens*). In `cameras.json`, fixed-lens bodies reference them via Attribute 3 Key = `"fixedLens"`. Updated Maintainer Tool to render **Attribute 3 Value** as a **Controlled Dropdown Selector** populated from `lenses.json`, and updated Mobile & Desktop client viewmodels to resolve taking lens properties dynamically.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ edit *Yashica Mat-124G* $\to$ verify Attribute 3 Key is `fixedLens` and Attribute 3 Value is a controlled dropdown containing `Yashinon 80mm f/3.5 Taking Lens`.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
