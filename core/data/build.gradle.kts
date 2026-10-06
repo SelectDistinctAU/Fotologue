@@ -67,16 +67,21 @@ tasks.register("assembleMasterCatalog") {
     
     val presetsDir = file("src/main/resources/presets")
     val assetsDir = file("src/main/assets")
-    val outputFile = file("src/main/assets/master_preset_catalog.json")
+    val resourcesDir = file("src/main/resources")
+    val assetsOutputFile = file("src/main/assets/master_preset_catalog.json")
+    val resourcesOutputFile = file("src/main/resources/master_preset_catalog.json")
 
     inputs.dir(presetsDir)
-    outputs.file(outputFile)
+    outputs.file(assetsOutputFile)
+    outputs.file(resourcesOutputFile)
 
     doLast {
         if (!assetsDir.exists()) assetsDir.mkdirs()
+        if (!resourcesDir.exists()) resourcesDir.mkdirs()
         if (!presetsDir.exists() || presetsDir.listFiles()?.isEmpty() == true) {
             println("No modular preset files found in src/main/resources/presets/")
-            outputFile.writeText("[]")
+            assetsOutputFile.writeText("[]")
+            resourcesOutputFile.writeText("[]")
             return@doLast
         }
 
@@ -96,8 +101,9 @@ tasks.register("assembleMasterCatalog") {
         }
 
         val combinedJson = "[\n${allJsonObjects.joinToString(",\n")}\n]"
-        outputFile.writeText(combinedJson)
-        println("✅ Successfully assembled ${jsonFiles.size} modular files into master_preset_catalog.json")
+        assetsOutputFile.writeText(combinedJson)
+        resourcesOutputFile.writeText(combinedJson)
+        println("✅ Successfully assembled ${jsonFiles.size} modular files into master_preset_catalog.json (Assets & Resources)")
     }
 }
 

@@ -1,5 +1,5 @@
 [
-  {
+{
     "id": "cam_pentax_lx",
     "category": "CAMERA",
     "subCategory": "Film SLR",
@@ -9,9 +9,9 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Pentax K",
-      "format": "35mm",
       "shutterSpeeds": "125s - 1/2000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_pentax_me_super",
@@ -23,9 +23,9 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Pentax K",
-      "format": "35mm",
       "shutterSpeeds": "4s - 1/2000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_pentax_k1000",
@@ -37,9 +37,51 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Pentax K",
-      "format": "35mm",
       "shutterSpeeds": "1s - 1/1000s, B"
-    }
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_pentax_spotmatic",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Pentax",
+    "name": "Pentax Spotmatic SPII",
+    "modelNumber": "SPII",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "M42 Thread",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_pentax_mx",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Pentax",
+    "name": "Pentax MX",
+    "modelNumber": "MX",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Pentax K",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_pentax_67",
+    "category": "CAMERA",
+    "subCategory": "Medium Format SLR",
+    "brand": "Pentax",
+    "name": "Pentax 67",
+    "modelNumber": "Pentax 67",
+    "attributes": {
+      "type": "Medium Format SLR",
+      "mount": "Pentax 67 Bayonet",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_canon_ae1p",
@@ -51,9 +93,23 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Canon FD",
-      "format": "35mm",
       "shutterSpeeds": "2s - 1/1000s, B"
-    }
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_ae1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon AE-1",
+    "modelNumber": "AE-1",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_canon_f1",
@@ -65,9 +121,135 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Canon FD",
-      "format": "35mm",
       "shutterSpeeds": "1s - 1/2000s, B"
-    }
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_new_f1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon New F-1",
+    "modelNumber": "New F-1",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "8s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_a1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon A-1",
+    "modelNumber": "A-1",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "30s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_ftb",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon FTb",
+    "modelNumber": "FTb",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_av1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon AV-1",
+    "modelNumber": "AV-1",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_t90",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon T90",
+    "modelNumber": "T90",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "30s - 1/4000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_eos1n",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon EOS-1N",
+    "modelNumber": "EOS-1N",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon EF",
+      "shutterSpeeds": "30s - 1/8000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_eos3",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon EOS 3",
+    "modelNumber": "EOS 3",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon EF",
+      "shutterSpeeds": "30s - 1/8000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_f",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F",
+    "modelNumber": "F",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_f2",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F2",
+    "modelNumber": "F2",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "10s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_nikon_f3",
@@ -79,9 +261,9 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Nikon F",
-      "format": "35mm",
       "shutterSpeeds": "8s - 1/2000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_nikon_fm2",
@@ -93,37 +275,93 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Nikon F",
-      "format": "35mm",
       "shutterSpeeds": "1s - 1/4000s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "cam_leica_m3",
+    "id": "cam_nikon_fe",
     "category": "CAMERA",
-    "subCategory": "Rangefinder",
-    "brand": "Leica",
-    "name": "Leica M3",
-    "modelNumber": "M3",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon FE",
+    "modelNumber": "FE",
     "attributes": {
-      "type": "Rangefinder",
-      "mount": "Leica M",
-      "format": "35mm",
-      "shutterSpeeds": "1s - 1/1000s, B"
-    }
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "8s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "cam_leica_m6",
+    "id": "cam_nikon_fm",
     "category": "CAMERA",
-    "subCategory": "Rangefinder",
-    "brand": "Leica",
-    "name": "Leica M6",
-    "modelNumber": "M6",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon FM",
+    "modelNumber": "FM",
     "attributes": {
-      "type": "Rangefinder",
-      "mount": "Leica M",
-      "format": "35mm",
+      "type": "Film SLR",
+      "mount": "Nikon F",
       "shutterSpeeds": "1s - 1/1000s, B"
-    }
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_fa",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon FA",
+    "modelNumber": "FA",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "1s - 1/4000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_f4",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F4",
+    "modelNumber": "F4",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "30s - 1/8000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_f5",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F5",
+    "modelNumber": "F5",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "30s - 1/8000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_f90x",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F90X / N90s",
+    "modelNumber": "F90X",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "30s - 1/8000s, B"
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_olympus_om1",
@@ -135,9 +373,205 @@
     "attributes": {
       "type": "Film SLR",
       "mount": "Olympus OM",
-      "format": "35mm",
       "shutterSpeeds": "1s - 1/1000s, B"
-    }
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_olympus_om2",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Olympus",
+    "name": "Olympus OM-2",
+    "modelNumber": "OM-2",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Olympus OM",
+      "shutterSpeeds": "60s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_olympus_om10",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Olympus",
+    "name": "Olympus OM-10",
+    "modelNumber": "OM-10",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Olympus OM",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_olympus_om4ti",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Olympus",
+    "name": "Olympus OM-4 Ti",
+    "modelNumber": "OM-4 Ti",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Olympus OM",
+      "shutterSpeeds": "240s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_srt101",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Minolta",
+    "name": "Minolta SR-T 101",
+    "modelNumber": "SRT-101",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Minolta SR/MD",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_x700",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Minolta",
+    "name": "Minolta X-700",
+    "modelNumber": "X-700",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Minolta SR/MD",
+      "shutterSpeeds": "4s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_xd11",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Minolta",
+    "name": "Minolta XD-11",
+    "modelNumber": "XD-11",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Minolta SR/MD",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_maxxum7000",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Minolta",
+    "name": "Minolta Maxxum 7000",
+    "modelNumber": "7000",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Minolta A",
+      "shutterSpeeds": "30s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_maxxum9",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Minolta",
+    "name": "Minolta Maxxum 9",
+    "modelNumber": "9",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Minolta A",
+      "shutterSpeeds": "30s - 1/12000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m3",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M3",
+    "modelNumber": "M3",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m6",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M6",
+    "modelNumber": "M6",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_leicaflex_sl2",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Leica",
+    "name": "Leicaflex SL2",
+    "modelNumber": "SL2",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Leica R",
+      "shutterSpeeds": "1s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_r6",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Leica",
+    "name": "Leica R6",
+    "modelNumber": "R6",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Leica R",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_contax_rts",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Contax",
+    "name": "Contax RTS",
+    "modelNumber": "RTS",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Contax C/Y",
+      "shutterSpeeds": "4s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_contax_rx",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Contax",
+    "name": "Contax RX",
+    "modelNumber": "RX",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Contax C/Y",
+      "shutterSpeeds": "16s - 1/4000s, B"
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_hasselblad_500cm",
@@ -149,9 +583,37 @@
     "attributes": {
       "type": "Medium Format SLR",
       "mount": "Hasselblad V",
-      "format": "120",
       "shutterSpeeds": "1s - 1/500s, B"
-    }
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_hasselblad_503cx",
+    "category": "CAMERA",
+    "subCategory": "Medium Format SLR",
+    "brand": "Hasselblad",
+    "name": "Hasselblad 503CX",
+    "modelNumber": "503CX",
+    "attributes": {
+      "type": "Medium Format SLR",
+      "mount": "Hasselblad V",
+      "shutterSpeeds": "1s - 1/500s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_mamiya_rz67",
+    "category": "CAMERA",
+    "subCategory": "Medium Format SLR",
+    "brand": "Mamiya",
+    "name": "Mamiya RZ67 Pro",
+    "modelNumber": "RZ67",
+    "attributes": {
+      "type": "Medium Format SLR",
+      "mount": "Mamiya RZ",
+      "shutterSpeeds": "8s - 1/400s, B"
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_yashica_mat124g",
@@ -163,12 +625,41 @@
     "attributes": {
       "type": "TLR",
       "mount": "Fixed",
-      "format": "120",
-      "shutterSpeeds": "1s - 1/500s, B"
-    }
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Yashinon 80mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "cam_rolleiflex_28f",
+    "id": "cam_yashica_fx3",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Yashica",
+    "name": "Yashica FX-3 Super 2000",
+    "modelNumber": "FX-3",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Contax C/Y",
+      "shutterSpeeds": "1s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_bronica_sqa",
+    "category": "CAMERA",
+    "subCategory": "Medium Format SLR",
+    "brand": "Bronica",
+    "name": "Bronica SQ-A",
+    "modelNumber": "SQ-A",
+    "attributes": {
+      "type": "Medium Format SLR",
+      "mount": "Bronica SQ",
+      "shutterSpeeds": "8s - 1/500s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_rollei_28f",
     "category": "CAMERA",
     "subCategory": "TLR",
     "brand": "Rollei",
@@ -177,9 +668,100 @@
     "attributes": {
       "type": "TLR",
       "mount": "Fixed",
-      "format": "120",
-      "shutterSpeeds": "1s - 1/500s, B"
-    }
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Planar 80mm f/2.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_rollei_28e",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Rollei",
+    "name": "Rolleiflex 2.8E",
+    "modelNumber": "2.8E",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Xenar 80mm f/2.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_rollei_35f",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Rollei",
+    "name": "Rolleiflex 3.5F",
+    "modelNumber": "3.5F",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Planar 80mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_rollei_rolleicord_va",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Rollei",
+    "name": "Rolleicord Va",
+    "modelNumber": "Va",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Xenar 75mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_rollei_rolleicord_vb",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Rollei",
+    "name": "Rolleicord Vb",
+    "modelNumber": "Vb",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Xenar 75mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_yashica_mat124",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Yashica",
+    "name": "Yashica Mat-124",
+    "modelNumber": "Mat-124",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Yashinon 80mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_yashica_mat_e",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Yashica",
+    "name": "Yashica Mat-E",
+    "modelNumber": "Mat-E",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Yashinon 80mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "cam_mamiya_c330",
@@ -191,199 +773,1096 @@
     "attributes": {
       "type": "TLR",
       "mount": "Mamiya C",
-      "format": "120",
       "shutterSpeeds": "1s - 1/500s, B"
-    }
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "lens_yashinon_80_35",
-    "category": "LENS",
-    "subCategory": "Prime",
-    "brand": "Yashica",
-    "name": "Yashinon 80mm f/3.5",
-    "modelNumber": "Mat-124G Taking Lens",
+    "id": "cam_mamiya_c220",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Mamiya",
+    "name": "Mamiya C220 Professional",
+    "modelNumber": "C220",
     "attributes": {
-      "type": "Prime",
-      "mount": "Fixed",
-      "focalLength": "80mm",
-      "maxAperture": "f/3.5",
-      "minAperture": "f/32",
-      "filterSize": "Bay I"
-    }
+      "type": "TLR",
+      "mount": "Mamiya C",
+      "shutterSpeeds": "1s - 1/500s, B"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "lens_zeiss_planar_80_28",
-    "category": "LENS",
-    "subCategory": "Prime",
-    "brand": "Carl Zeiss",
-    "name": "Zeiss Planar 80mm f/2.8",
-    "modelNumber": "Rolleiflex 2.8F Taking Lens",
+    "id": "cam_kiev_60",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Kiev",
+    "name": "Kiev 60",
+    "modelNumber": "60",
     "attributes": {
-      "type": "Prime",
-      "mount": "Fixed",
-      "focalLength": "80mm",
-      "maxAperture": "f/2.8",
-      "minAperture": "f/22",
-      "filterSize": "Bay III"
-    }
+      "type": "TLR",
+      "mount": "Kiev 60",
+      "shutterSpeeds": "1/2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "lens_olympus_zuiko_35_28",
-    "category": "LENS",
-    "subCategory": "Prime",
+    "id": "cam_seagull_4a",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Seagull",
+    "name": "Seagull 4A",
+    "modelNumber": "4A",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/300s, B",
+      "fixedLens": "Haiou 75mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m2",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M2",
+    "modelNumber": "M2",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m4",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M4",
+    "modelNumber": "M4",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m5",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M5",
+    "modelNumber": "M5",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1/2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_cl",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica CL",
+    "modelNumber": "CL",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1/2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m4_2",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M4-2",
+    "modelNumber": "M4-2",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m4_p",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M4-P",
+    "modelNumber": "M4-P",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m6_ttl",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M6 TTL",
+    "modelNumber": "M6 TTL",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_contax_ii_a",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Contax",
+    "name": "Contax IIa",
+    "modelNumber": "IIa",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Contax RF",
+      "shutterSpeeds": "1s - 1/1250s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_contax_g1",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Contax",
+    "name": "Contax G1",
+    "modelNumber": "G1",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Contax G",
+      "shutterSpeeds": "16s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_contax_g2",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Contax",
+    "name": "Contax G2",
+    "modelNumber": "G2",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Contax G",
+      "shutterSpeeds": "16s - 1/6000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_canonet_ql17",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Canon",
+    "name": "Canonet QL17 G-III",
+    "modelNumber": "QL17 G-III",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/4s - 1/500s, B",
+      "fixedLens": "Canonet 40mm f/1.7 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_canonet_ql19",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Canon",
+    "name": "Canonet QL19 G-III",
+    "modelNumber": "QL19 G-III",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/4s - 1/500s, B",
+      "fixedLens": "Canonet 45mm f/1.9 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_konica_auto_s2",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Konica",
+    "name": "Konica Auto S2",
+    "modelNumber": "Auto S2",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Hexanon 45mm f/1.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_konica_auto_s3",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Konica",
+    "name": "Konica Auto S3",
+    "modelNumber": "Auto S3",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/8s - 1/500s, B",
+      "fixedLens": "Hexanon 38mm f/1.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_konica_hexar_af",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Konica",
+    "name": "Konica Hexar AF",
+    "modelNumber": "Hexar AF",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "30s - 1/250s, B",
+      "fixedLens": "Hexar 35mm f/2.0 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_himatic_7s2",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Minolta",
+    "name": "Minolta Hi-Matic 7sII",
+    "modelNumber": "7sII",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/8s - 1/500s, B",
+      "fixedLens": "Rokkor 40mm f/1.7 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_himatic_9",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Minolta",
+    "name": "Minolta Hi-Matic 9",
+    "modelNumber": "9",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Rokkor 45mm f/1.7 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_olympus_35_sp",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
     "brand": "Olympus",
-    "name": "Olympus Zuiko 35mm f/2.8",
-    "modelNumber": "Mju-II Taking Lens",
+    "name": "Olympus 35 SP",
+    "modelNumber": "35 SP",
     "attributes": {
-      "type": "Prime",
+      "type": "Rangefinder",
       "mount": "Fixed",
-      "focalLength": "35mm",
-      "maxAperture": "f/2.8",
-      "minAperture": "f/16",
-      "filterSize": ""
-    }
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "E-Zuiko 42mm f/1.7 Taking Lens"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "lens_canon_ef_100_macro",
-    "category": "LENS",
-    "subCategory": "Macro",
-    "brand": "Canon",
-    "name": "Canon EF 100mm f/2.8L Macro IS USM",
-    "modelNumber": "EF10028LIS",
+    "id": "cam_olympus_35_rc",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Olympus",
+    "name": "Olympus 35 RC",
+    "modelNumber": "35 RC",
     "attributes": {
-      "type": "Macro",
-      "mount": "Canon EF",
-      "focalLength": "100mm",
-      "maxAperture": "f/2.8",
-      "minAperture": "f/32",
-      "filterSize": "67mm",
-      "isImageStabilised": "true"
-    }
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/15s - 1/500s, B",
+      "fixedLens": "E-Zuiko 42mm f/2.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "lens_canon_fd_50_14",
-    "category": "LENS",
-    "subCategory": "Prime",
-    "brand": "Canon",
-    "name": "Canon FD 50mm f/1.4",
-    "modelNumber": "FD5014",
+    "id": "cam_yashica_electro35_gsn",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Yashica",
+    "name": "Yashica Electro 35 GSN",
+    "modelNumber": "35 GSN",
     "attributes": {
-      "type": "Prime",
-      "mount": "Canon FD",
-      "focalLength": "50mm",
-      "maxAperture": "f/1.4",
-      "minAperture": "f/16",
-      "filterSize": "52mm",
-      "isImageStabilised": "false"
-    }
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "30s - 1/500s, B",
+      "fixedLens": "Color-Yashinon DX 45mm f/1.7 Taking Lens"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "lens_nikkor_50_14",
-    "category": "LENS",
-    "subCategory": "Prime",
+    "id": "cam_petri_7",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Petri",
+    "name": "Petri 7",
+    "modelNumber": "7",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Petri 45mm f/1.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_nikkorex_35",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
     "brand": "Nikon",
-    "name": "Nikkor 50mm f/1.4 AI-S",
-    "modelNumber": "AI-S 50mm",
+    "name": "Nikkorex 35",
+    "modelNumber": "35",
     "attributes": {
-      "type": "Prime",
-      "mount": "Nikon F",
-      "focalLength": "50mm",
-      "maxAperture": "f/1.4",
-      "minAperture": "f/16",
-      "filterSize": "52mm",
-      "isImageStabilised": "false"
-    }
+      "type": "Film SLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Nikkor 48mm f/2.4 Taking Lens"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "lens_zeiss_planar_50_14",
-    "category": "LENS",
-    "subCategory": "Prime",
-    "brand": "Carl Zeiss",
-    "name": "Carl Zeiss Planar T* 50mm f/1.4",
-    "modelNumber": "Planar 50/1.4",
+    "id": "cam_rollei_sl2000f",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Rollei",
+    "name": "Rollei SL2000F",
+    "modelNumber": "SL2000F",
     "attributes": {
-      "type": "Prime",
-      "mount": "Contax C/Y",
-      "focalLength": "50mm",
-      "maxAperture": "f/1.4",
-      "minAperture": "f/16",
-      "filterSize": "55mm",
-      "isImageStabilised": "false"
-    }
+      "type": "Film SLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "16s - 1/1000s, B",
+      "fixedLens": "Rolleinar 35-70mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "lens_rodenstock_50_28",
-    "category": "LENS",
-    "subCategory": "Enlarger Lens",
-    "brand": "Rodenstock",
-    "name": "Rodenstock Rodagon 50mm f/2.8",
-    "modelNumber": "Rodagon 50mm",
+    "id": "cam_rollei_35s",
+    "category": "CAMERA",
+    "subCategory": "Compact",
+    "brand": "Rollei",
+    "name": "Rollei 35S",
+    "modelNumber": "35S",
     "attributes": {
-      "type": "Enlarger Lens",
-      "focalLength": "50mm",
-      "maxAperture": "f/2.8",
-      "minAperture": "f/16",
-      "filterSize": "40.5mm"
-    }
+      "type": "Compact",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/2s - 1/500s, B",
+      "fixedLens": "Sonnar 40mm f/2.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "con_ilford_id11",
+    "category": "CONSUMABLE",
+    "subCategory": "Chemistry",
+    "brand": "Ilford",
+    "name": "Ilford ID-11 Developer (1L)",
+    "modelNumber": "ID-11",
+    "attributes": {
+      "type": "Chemistry",
+      "mixRatio": "Stock or 1+1",
+      "capacity": "10 rolls"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "lens_schneider_50_28",
-    "category": "LENS",
-    "subCategory": "Enlarger Lens",
-    "brand": "Schneider",
-    "name": "Schneider Componon-S 50mm f/2.8",
-    "modelNumber": "Componon-S 50mm",
+    "id": "con_ilford_multigrade_paper",
+    "category": "CONSUMABLE",
+    "subCategory": "Paper",
+    "brand": "Ilford",
+    "name": "Ilford Multigrade V RC Deluxe Paper (8x10)",
+    "modelNumber": "MG-RC-8X10",
     "attributes": {
-      "type": "Enlarger Lens",
-      "focalLength": "50mm",
-      "maxAperture": "f/2.8",
-      "minAperture": "f/16"
-    }
+      "type": "Paper",
+      "surface": "Pearl",
+      "contrast": "Multigrade"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "film_kodak_portra_160",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Portra 160",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "160",
+      "abbreviation": "P160"
+    },
+    "isDeveloperPreset": true
   },
   {
     "id": "film_kodak_portra_400",
     "category": "FILM",
     "subCategory": "Colour Negative (C-41)",
     "brand": "Kodak",
-    "name": "Kodak Portra 400",
+    "name": "Portra 400",
     "attributes": {
-      "abbreviation": "P400",
-      "iso": "400",
       "type": "Colour Negative (C-41)",
-      "format": "35mm",
-      "expectedExposures": "36"
-    }
+      "iso": "400",
+      "abbreviation": "P400"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "film_ilford_hp5",
+    "id": "film_kodak_portra_800",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Portra 800",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "800",
+      "abbreviation": "P800"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_ektar_100",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Ektar 100",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "100",
+      "abbreviation": "E100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_gold_200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "Gold 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "G200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_ultramax_400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Kodak",
+    "name": "UltraMax 400",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "U400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_trix_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Kodak",
+    "name": "Tri-X 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "TX400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_tmax_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Kodak",
+    "name": "T-Max 100",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "TM100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_tmax_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Kodak",
+    "name": "T-Max 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "TM400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_kodak_ektachrome_e100",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Kodak",
+    "name": "Ektachrome E100",
+    "attributes": {
+      "type": "Colour Slide / Reversal (E-6)",
+      "iso": "100",
+      "abbreviation": "E100G"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_hp5_400",
     "category": "FILM",
     "subCategory": "Black & White Negative (B&W)",
     "brand": "Ilford",
-    "name": "Ilford HP5 Plus 400",
+    "name": "HP5 Plus 400",
     "attributes": {
-      "abbreviation": "HP5",
-      "iso": "400",
       "type": "Black & White Negative (B&W)",
-      "format": "35mm",
-      "expectedExposures": "36"
-    }
+      "iso": "400",
+      "abbreviation": "HP5"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "film_fujifilm_velvia_50",
+    "id": "film_ilford_fp4_125",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "FP4 Plus 125",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "125",
+      "abbreviation": "FP4"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_delta_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Delta 100 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "D100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_delta_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Delta 400 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "D400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_delta_3200",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Delta 3200 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "3200",
+      "abbreviation": "D3200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_panf_50",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "Pan F Plus 50",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "50",
+      "abbreviation": "PANF"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_ilford_xp2_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Ilford",
+    "name": "XP2 Super 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "XP2"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_c200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Fujifilm",
+    "name": "Fujicolor 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "F200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_superia_400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Fujifilm",
+    "name": "Superia X-TRA 400",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "S400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_velvia_50",
     "category": "FILM",
     "subCategory": "Colour Slide / Reversal (E-6)",
     "brand": "Fujifilm",
-    "name": "Fujifilm Velvia 50",
+    "name": "Velvia 50",
     "attributes": {
-      "abbreviation": "V50",
-      "iso": "50",
       "type": "Colour Slide / Reversal (E-6)",
-      "format": "35mm",
-      "expectedExposures": "36"
-    }
+      "iso": "50",
+      "abbreviation": "V50"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "equip_beseler_23c_ii",
+    "id": "film_fuji_velvia_100",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Fujifilm",
+    "name": "Velvia 100",
+    "attributes": {
+      "type": "Colour Slide / Reversal (E-6)",
+      "iso": "100",
+      "abbreviation": "V100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_provia_100f",
+    "category": "FILM",
+    "subCategory": "Colour Slide / Reversal (E-6)",
+    "brand": "Fujifilm",
+    "name": "Provia 100F",
+    "attributes": {
+      "type": "Colour Slide / Reversal (E-6)",
+      "iso": "100",
+      "abbreviation": "RDP"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_fuji_acros_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Fujifilm",
+    "name": "Neopan 100 Acros II",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "ACROS"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_50d",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Cinestill",
+    "name": "50Daylight",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "50",
+      "abbreviation": "50D"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_800t",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Cinestill",
+    "name": "800Tungsten",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "800",
+      "abbreviation": "800T"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_400d",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Cinestill",
+    "name": "400Dynamic",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "400D"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_cinestill_bwxx",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Cinestill",
+    "name": "BwXX",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "250",
+      "abbreviation": "XX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_foma_100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Foma",
+    "name": "Fomapan 100 Classic",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "FOM100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_foma_200",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Foma",
+    "name": "Fomapan 200 Creative",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "200",
+      "abbreviation": "FOM200"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_foma_400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Foma",
+    "name": "Fomapan 400 Action",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "FOM400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_cn100",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "Color Negative 100",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "100",
+      "abbreviation": "L100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_cn400",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "Color Negative 400",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "L400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_cn800",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "Color Negative 800",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "800",
+      "abbreviation": "L800"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_metro",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "LomoChrome Metropolis",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "METRO"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_lomo_purple",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Lomography",
+    "name": "LomoChrome Purple",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "400",
+      "abbreviation": "PURP"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_agfa_apx100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "AgfaPhoto",
+    "name": "APX 100 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "APX100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_agfa_apx400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "AgfaPhoto",
+    "name": "APX 400 Professional",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "APX400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_agfa_vista200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "AgfaPhoto",
+    "name": "Vista 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "VIST"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_retro80s",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "Retro 80s",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "80",
+      "abbreviation": "R80S"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_retro400s",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "Retro 400s",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "R400S"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_rpx100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "RPX 100",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "RPX100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_rpx400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "RPX 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "RPX400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_rollei_superpan200",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Rollei",
+    "name": "Superpan 200",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "200",
+      "abbreviation": "SPAN"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_bergger_pan400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Bergger",
+    "name": "Pancro 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "PAN400"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_harman_phoenix200",
+    "category": "FILM",
+    "subCategory": "Colour Negative (C-41)",
+    "brand": "Harman",
+    "name": "Phoenix 200",
+    "attributes": {
+      "type": "Colour Negative (C-41)",
+      "iso": "200",
+      "abbreviation": "PHX"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_harman_kp100",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Harman",
+    "name": "Kentmere Pan 100",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "100",
+      "abbreviation": "KP100"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "film_harman_kp400",
+    "category": "FILM",
+    "subCategory": "Black & White Negative (B&W)",
+    "brand": "Harman",
+    "name": "Kentmere Pan 400",
+    "attributes": {
+      "type": "Black & White Negative (B&W)",
+      "iso": "400",
+      "abbreviation": "KP400"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "filter_hoya_nd8",
+    "category": "FILTER",
+    "subCategory": "ND (Neutral Density)",
+    "brand": "Hoya",
+    "name": "Hoya PRO1 Digital ND8 (52mm)",
+    "modelNumber": "ND8",
+    "attributes": {
+      "compensationStops": "+3.0 Stops (Red 25A / ND8)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_cpl_52",
+    "category": "FILTER",
+    "subCategory": "Polarizer (CPL)",
+    "brand": "Hoya",
+    "name": "Hoya HRT Circular Polarizer (52mm)",
+    "modelNumber": "HRT-CPL",
+    "attributes": {
+      "compensationStops": "+1.5 Stops (CPL / Polarizer)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_k2_52",
+    "category": "FILTER",
+    "subCategory": "B&W Yellow K2",
+    "brand": "Hoya",
+    "name": "Hoya Yellow K2 Contrast Filter (52mm)",
+    "modelNumber": "K2",
+    "attributes": {
+      "compensationStops": "+1.0 Stop (Yellow K2)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "flash_nikon_sb700",
+    "category": "FLASH",
+    "subCategory": "Speedlight / Shoe Mount",
+    "brand": "Nikon",
+    "name": "Nikon Speedlight SB-700",
+    "modelNumber": "SB-700",
+    "attributes": {
+      "syncType": "Hotshoe",
+      "guideNumber": "28m (ISO 100)"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "eq_beseler_23c",
     "category": "EQUIPMENT",
     "subCategory": "Enlarger",
     "brand": "Beseler",
@@ -391,34 +1870,475 @@
     "modelNumber": "23C II",
     "attributes": {
       "category": "Enlarger",
-      "condition": "Excellent",
-      "notes": "Dichro / Condenser Enlarger Body"
-    }
+      "condition": "Good"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "equip_paterson_sys_4",
+    "id": "eq_paterson_multi_reel_tank",
     "category": "EQUIPMENT",
     "subCategory": "Dev Tank",
     "brand": "Paterson",
-    "name": "Paterson Super System 4 Dev Tank",
-    "modelNumber": "System 4",
+    "name": "Paterson Super System 4 Multi-Reel Tank",
+    "modelNumber": "PTP115",
     "attributes": {
       "category": "Dev Tank",
-      "condition": "Excellent",
-      "notes": "Standard Plastic Tank for 2x35mm or 1x120"
-    }
+      "condition": "Excellent"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "lens_canon_fd_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canon FD 50mm f/1.4",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Canon FD",
+      "filterSize": "52mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
   },
   {
-    "id": "equip_epson_v850",
-    "category": "EQUIPMENT",
-    "subCategory": "Scanner / Digitiser",
-    "brand": "Epson",
-    "name": "Epson Perfection V850 Pro Scanner",
-    "modelNumber": "V850 Pro",
+    "id": "lens_nikon_ai_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Nikon",
+    "name": "Nikon NIKKOR 50mm f/1.4 Ai-S",
     "attributes": {
-      "category": "Scanner / Digitiser",
-      "condition": "Excellent",
-      "notes": "Dual Lens Film/Flatbed Scanner"
-    }
+      "type": "Prime",
+      "mount": "Nikon F",
+      "filterSize": "52mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_pentax_smc_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Pentax",
+    "name": "Pentax SMC-A 50mm f/1.4",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Pentax K",
+      "filterSize": "49mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_leica_summicron_50",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Leica",
+    "name": "Leica Summicron-M 50mm f/2",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Leica M",
+      "filterSize": "39mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/2.0",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_hasselblad_planar_80",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Hasselblad",
+    "name": "Zeiss Planar T* 80mm f/2.8",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Hasselblad V",
+      "filterSize": "Bay 60",
+      "focalLength": "80mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_yashica_yashinon_80_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Yashica",
+    "name": "Yashinon 80mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay I",
+      "focalLength": "80mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_planar_80_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Planar 80mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay III",
+      "focalLength": "80mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_xenar_80_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Xenar 80mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay III",
+      "focalLength": "80mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_planar_80_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Planar 80mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay II",
+      "focalLength": "80mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_xenar_75_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Xenar 75mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay I",
+      "focalLength": "75mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_seagull_haiou_75_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Seagull",
+    "name": "Haiou 75mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "35.5mm",
+      "focalLength": "75mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_canonet_40_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canonet 40mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "48mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_canonet_45_19",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canonet 45mm f/1.9 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "48mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.9",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_konica_hexanon_45_18",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Konica",
+    "name": "Hexanon 45mm f/1.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "55mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.8",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_konica_hexanon_38_18",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Konica",
+    "name": "Hexanon 38mm f/1.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "49mm",
+      "focalLength": "38mm",
+      "maxAperture": "f/1.8",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_konica_hexar_35_20",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Konica",
+    "name": "Hexar 35mm f/2.0 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "46mm",
+      "focalLength": "35mm",
+      "maxAperture": "f/2.0",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_minolta_rokkor_40_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Minolta",
+    "name": "Rokkor 40mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "49mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_minolta_rokkor_45_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Minolta",
+    "name": "Rokkor 45mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "55mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_olympus_zuiko_42_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Olympus",
+    "name": "E-Zuiko 42mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "49mm",
+      "focalLength": "42mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_olympus_zuiko_42_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Olympus",
+    "name": "E-Zuiko 42mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "43.5mm",
+      "focalLength": "42mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_yashica_yashinon_45_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Yashica",
+    "name": "Color-Yashinon DX 45mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "55mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_petri_45_18",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Petri",
+    "name": "Petri 45mm f/1.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "52mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.8",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_nikon_nikkor_48_24",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Nikon",
+    "name": "Nikkor 48mm f/2.4 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "52mm",
+      "focalLength": "48mm",
+      "maxAperture": "f/2.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_rolleinar_35_70",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Rollei",
+    "name": "Rolleinar 35-70mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Fixed",
+      "filterSize": "52mm",
+      "focalLength": "35-70mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_tessar_40_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Tessar 40mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "24mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_sonnar_40_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Sonnar 40mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "30.5mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+{
+    "id": "sup_vanbar",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "Vanbar",
+    "name": "Vanbar Imaging",
+    "attributes": {
+      "region": "Australia",
+      "website": "https://www.vanbar.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+{
+        "id": "tc_nikon_tc14e",
+        "category": "TELECONVERTER",
+        "subCategory": "Teleconverter",
+        "brand": "Nikon",
+        "name": "Nikon AF-S Teleconverter TC-14E III",
+        "modelNumber": "TC-14E III",
+        "attributes": {
+            "magnification": "1.4x",
+            "lightLoss": "1 Stop",
+            "mount": "Nikon F"
+        }
+    },
+{
+    "id": "vf_pentax_fa1",
+    "category": "VIEWFINDER",
+    "subCategory": "Eye-Level Prism",
+    "brand": "Pentax",
+    "name": "Pentax FA-1 Standard Prism Finder",
+    "modelNumber": "FA-1",
+    "attributes": {
+      "type": "Eye-Level Prism",
+      "compatibleCamera": "Pentax LX"
+    },
+    "isDeveloperPreset": true
   }
 ]

@@ -19,12 +19,36 @@ data class MasterPresetItem(
 
 object MasterPresetEngine {
 
+    const val DEFAULT_REMOTE_CATALOG_URL = "https://raw.githubusercontent.com/geewy/Fotologue/main/core/data/src/main/resources/master_preset_catalog.json"
+
     private val json = Json {
         prettyPrint = true
         ignoreUnknownKeys = true
     }
 
     private var cachedPresets: List<MasterPresetItem> = emptyList()
+
+    suspend fun refreshFromCloud(remoteUrl: String = DEFAULT_REMOTE_CATALOG_URL): Boolean {
+        return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                val connection = java.net.URL(remoteUrl).openConnection() as java.net.HttpURLConnection
+                connection.connectTimeout = 5000
+                connection.readTimeout = 5000
+                connection.requestMethod = "GET"
+                
+                if (connection.responseCode == 200) {
+                    val jsonContent = connection.inputStream.bufferedReader().use { it.readText() }
+                    val parsed = json.decodeFromString<List<MasterPresetItem>>(jsonContent)
+                    if (parsed.isNotEmpty()) {
+                        cachedPresets = parsed
+                        true
+                    } else false
+                } else false
+            } catch (_: Exception) {
+                false
+            }
+        }
+    }
 
     private fun initializeIfNeeded() {
         if (cachedPresets.isNotEmpty()) return

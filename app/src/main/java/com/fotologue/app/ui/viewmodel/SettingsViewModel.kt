@@ -97,6 +97,21 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    private val _presetRefreshStatus = MutableStateFlow<String?>(null)
+    val presetRefreshStatus: StateFlow<String?> = _presetRefreshStatus.asStateFlow()
+
+    fun refreshMasterPresetsFromCloud() {
+        viewModelScope.launch {
+            _presetRefreshStatus.value = "Refreshing master presets from cloud..."
+            val success = com.fotologue.core.data.preset.MasterPresetEngine.refreshFromCloud()
+            if (success) {
+                _presetRefreshStatus.value = "✅ Master presets updated successfully from cloud!"
+            } else {
+                _presetRefreshStatus.value = "⚠️ Cloud refresh unavailable. Operating on local catalog."
+            }
+        }
+    }
+
     fun toggleThumbnail(enabled: Boolean) {
         viewModelScope.launch {
             repository.setThumbnailEnabled(enabled)

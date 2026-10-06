@@ -469,6 +469,27 @@ fun SettingsScreen(
                 Text("Add Macro Copy Preset")
             }
 
+            val presetRefreshStatus by viewModel.presetRefreshStatus.collectAsStateWithLifecycle()
+
+            OutlinedButton(
+                onClick = { viewModel.refreshMasterPresetsFromCloud() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(painterResource(R.drawable.sync_desktop_24px), contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Refresh Master Presets from Cloud")
+            }
+
+            presetRefreshStatus?.let { status ->
+                Text(
+                    text = status,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider()
 

@@ -5060,6 +5060,9 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
             modifier = Modifier.fillMaxSize().padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            var desktopPresetRefreshStatus by remember { mutableStateOf<String?>(null) }
+            val adminScope = rememberCoroutineScope()
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -5078,6 +5081,24 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                     )
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Button(
+                        onClick = {
+                            desktopPresetRefreshStatus = "Refreshing..."
+                            adminScope.launch {
+                                val ok = DesktopMasterPresetEngine.refreshFromCloud()
+                                desktopPresetRefreshStatus = if (ok) "✅ Refreshed!" else "⚠️ Offline"
+                            }
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors(),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = desktopPresetRefreshStatus ?: "Refresh Cloud Presets",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                     // Actionable Review Queue Header Alert Button
                     Button(
                         onClick = { showReviewQueueDialog = true },
