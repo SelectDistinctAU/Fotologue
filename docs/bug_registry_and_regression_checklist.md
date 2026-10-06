@@ -546,6 +546,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-056: Maintainer Tool Preset List Lacked Sortable Data Grid Architecture
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Maintainer Tool rendered preset entries as vertical cards with duplicate brand string formatting (*"Canon Canon AE-1 Program"*) and lacked column sorting.
+- **Root Cause**: Primitive vertical card list layout in `MaintainerApp.kt`.
+- **Resolution**: Re-architected Maintainer Tool list into a **Sortable Data Grid** matching Desktop Master Rolls design. Added sortable column headers (`Brand`, `Preset Name`, `Type`, `Mount`, `ID`) with 1-click direction toggles (`▲` / `▼`), and separated `Brand` and `Name` into distinct columns to eliminate string duplication.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ verify Data Grid header renders with sortable columns and duplicate brand labels are eliminated (*Brand: Canon | Name: AE-1 Program*).
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
