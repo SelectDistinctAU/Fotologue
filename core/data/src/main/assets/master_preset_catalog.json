@@ -800,9 +800,34 @@
     "name": "Hoya PRO1 Digital ND8 (52mm)",
     "modelNumber": "ND8",
     "attributes": {
-      "threadSize": "52mm",
-      "filterType": "ND (Neutral Density)",
-      "compensationStops": "3.0"
+      "compensationStops": "+3.0 Stops (Red 25A / ND8)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_cpl_52",
+    "category": "FILTER",
+    "subCategory": "Polarizer (CPL)",
+    "brand": "Hoya",
+    "name": "Hoya HRT Circular Polarizer (52mm)",
+    "modelNumber": "HRT-CPL",
+    "attributes": {
+      "compensationStops": "+1.5 Stops (CPL / Polarizer)",
+      "threadSize": "52mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "filter_hoya_k2_52",
+    "category": "FILTER",
+    "subCategory": "B&W Yellow K2",
+    "brand": "Hoya",
+    "name": "Hoya Yellow K2 Contrast Filter (52mm)",
+    "modelNumber": "K2",
+    "attributes": {
+      "compensationStops": "+1.0 Stop (Yellow K2)",
+      "threadSize": "52mm"
     },
     "isDeveloperPreset": true
   },

@@ -83,6 +83,8 @@ fun MaintainerAppScreen() {
     val viewfinderTypes = listOf("Eye-Level Prism", "Waist-Level Finder", "Action Finder", "Right-Angle Finder", "Coldshoe Auxiliary Finder")
     val mountOptions = listOf("Canon FD", "Nikon F", "Pentax K", "Leica M", "Leica L39", "Hasselblad V", "Contax C/Y", "Olympus OM", "Minolta SR/MD", "M42 Thread", "Fixed", "Bay I", "Bay II", "Bay III")
 
+    val filterCompensationStops = listOf("+0.0 Stops (Clear / UV)", "+0.3 Stops", "+0.6 Stops", "+1.0 Stop (Yellow K2)", "+1.5 Stops (CPL / Polarizer)", "+2.0 Stops (Orange 16)", "+3.0 Stops (Red 25A / ND8)", "+6.0 Stops (ND64)", "+10.0 Stops (ND1000)")
+
     val activeCategoryBrands = remember(activePresets) {
         val jsonBrands = activePresets.map { it.brand }.distinct()
         (canonicalBrands + jsonBrands).filter { it.isNotBlank() }.distinct().sorted()
@@ -150,11 +152,12 @@ fun MaintainerAppScreen() {
         var attr2DropdownExpanded by remember { mutableStateOf(false) }
 
         // Tailored Attribute Visibility & Default Keys per Category
-        val showAttr1 = selectedCategory != "TELECONVERTER" && selectedCategory != "FILTER" && selectedCategory != "FLASH"
+        val showAttr1 = selectedCategory != "TELECONVERTER" && selectedCategory != "FLASH"
         val showAttr2 = selectedCategory == "CAMERA" || selectedCategory == "LENS" || selectedCategory == "TELECONVERTER"
 
         val attr1KeyName = when (selectedCategory) {
             "CAMERA", "LENS", "FILM", "VIEWFINDER" -> "type"
+            "FILTER" -> "compensationStops"
             else -> newAttr1Key.ifBlank { "type" }
         }
 
@@ -168,6 +171,7 @@ fun MaintainerAppScreen() {
             "LENS" -> lensTypes
             "FILM" -> filmTypes
             "VIEWFINDER" -> viewfinderTypes
+            "FILTER" -> filterCompensationStops
             else -> emptyList()
         }
 
