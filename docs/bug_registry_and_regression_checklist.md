@@ -626,6 +626,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-064: Optical Filter Catalog Expansion across Hoya, B+W, Tiffen, and Bayonets
+- **Platform**: Fotologue Preset Catalog (`filters.json`, `master_preset_catalog.json`)
+- **Reported**: October 2026
+- **Symptom**: The filter preset catalog only contained 3 items, lacking popular optical filters across major lens thread sizes and bayonet mounts.
+- **Root Cause**: Unpopulated optical filter preset dataset.
+- **Resolution**: Ingested 32 popular optical filters across Hoya, B+W/Schneider, Tiffen, Rollei Bayonet, and Hasselblad Bayonet mounts (UV, CPL, ND8, ND64, ND1000, Black Pro-Mist, Yellow K2, Orange 16, Red 25A). Total filter presets expanded from 3 to **35 master optical filters**.
+- **Regression Test Case**: Launch Maintainer Tool `./gradlew :desktop:runMaintainer` $\to$ select `FILTER` tab $\to$ verify total filter count displays 35 filters.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
