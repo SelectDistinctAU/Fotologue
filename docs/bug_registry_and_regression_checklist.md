@@ -466,6 +466,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-048: Raw Text Entry in Maintainer Tool Attribute Value Fields
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Attribute 1 Value` and `Attribute 2 Value` in the Maintainer Tool dialogs relied on unconstrained text fields, permitting string drift (e.g., typing `"film slr"` or `"pentax-k"`). Unused attribute fields also cluttered single-attribute categories like `FILM` and `FILTER`.
+- **Root Cause**: Un-tailored attribute form dialogs in `MaintainerApp.kt`.
+- **Resolution**: Tailored the Add/Edit dialog per category (hiding unused attributes for `FILM`, `VIEWFINDER`, `TELECONVERTER`, `FILTER`, `FLASH`). Converted `Attribute 1 Value` and `Attribute 2 Value` into **Controlled Dropdown Selectors** backed by canonical LOV sets (`cameraTypes`, `lensTypes`, `filmTypes`, `viewfinderTypes`, `mountOptions`).
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ edit a Camera preset $\to$ verify `type` and `mount` values are controlled dropdown selectors.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
