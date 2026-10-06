@@ -536,6 +536,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-055: Camera Catalog Bulk Expansion From Luma & Leo AI List
+- **Platform**: Fotologue Preset Catalog (`cameras.json`, `master_preset_catalog.json`)
+- **Reported**: October 2026
+- **Symptom**: The camera preset catalog only contained 11 base cameras, lacking popular 1960–2000 film SLRs, rangefinders, and medium format bodies.
+- **Root Cause**: Unpopulated preset catalog dataset.
+- **Resolution**: Parsed and ingested 36 iconic, reliable 1960–2000 camera models from Luma and Leo AI lists into `cameras.json` (Nikon F/F2/FE/FM/FA/F4/F5/F90X, Canon New F-1/AE-1/A-1/FTb/AV-1/T90/EOS-1N/EOS 3, Pentax Spotmatic/MX/67, Olympus OM-1/2/10/4Ti, Minolta SRT-101/X-700/XD-11/Maxxum 7000/9, Leicaflex SL2, Leica R6, Contax RTS/RX, Hasselblad 503CX, Mamiya RZ67 Pro, Yashica FX-3, Bronica SQ-A). Compiled master release artifact via `./gradlew :core:data:assembleMasterCatalog`.
+- **Regression Test Case**: Launch Maintainer Tool `./gradlew :desktop:runMaintainer` $\to$ select `CAMERA` tab $\to$ verify total camera count displays 47 cameras.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
