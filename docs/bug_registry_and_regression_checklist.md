@@ -476,6 +476,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-049: Missing Filter Exposure Factor Compensation in Preset Authoring & Metering
+- **Platform**: Maintainer Tool & Mobile App (`MaintainerApp.kt`, `filters.json`, `ExposureSuggester.kt`, `LightMeterViewModel.kt`)
+- **Reported**: October 2026
+- **Symptom**: `FILTER` presets did not include exposure compensation factors (`compensationStops`), forcing photographers using ND filters or contrast filters to manually calculate stop adjustments outside the app.
+- **Root Cause**: Missing `compensationStops` attribute in Maintainer Tool `FILTER` form and missing seeded data in `filters.json`.
+- **Resolution**: Enabled Attribute 1 Key = `"compensationStops"` for `FILTER` in `MaintainerApp.kt` with a Controlled Dropdown Selector (*0.0 Stops*, *+1.0 Stop*, *+1.5 Stops*, *+2.0 Stops*, *+3.0 Stops*, *+6.0 Stops*, *+10.0 Stops*). Seeded `filters.json` with Hoya ND8 (+3.0 stops), CPL (+1.5 stops), and Yellow K2 (+1.0 stop), automatically wired into `ExposureSuggester` for automatic light meter shutter speed/aperture compensation.
+- **Regression Test Case**: Open `Add Exposure Log` $\to$ measure EV 15 $\to$ select *Hoya ND8* filter $\to$ verify recommended shutter speed slows down by 3 stops automatically.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
