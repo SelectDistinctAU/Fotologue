@@ -1968,6 +1968,38 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "lens_canon_fd_85_12l",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canon FD 85mm f/1.2L nFD",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Canon FD",
+      "filterSize": "72mm",
+      "focalLength": "85mm",
+      "maxAperture": "f/1.2",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_fd_24_14l",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canon FD 24mm f/1.4L nFD",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Canon FD",
+      "filterSize": "72mm",
+      "focalLength": "24mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "lens_canon_fd_135_28",
     "category": "LENS",
     "subCategory": "Prime",
@@ -2000,6 +2032,150 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "lens_canon_ef_100_28l_macro",
+    "category": "LENS",
+    "subCategory": "Macro",
+    "brand": "Canon",
+    "name": "Canon EF 100mm f/2.8L Macro IS USM",
+    "attributes": {
+      "type": "Macro",
+      "mount": "Canon EF",
+      "filterSize": "67mm",
+      "focalLength": "100mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_ef_100_400l",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Canon",
+    "name": "Canon EF 100-400mm f/4.5-5.6L IS USM",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Canon EF",
+      "filterSize": "77mm",
+      "focalLength": "100-400mm",
+      "maxAperture": "f/4.5",
+      "minAperture": "f/38"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_ef_24_70_28l",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Canon",
+    "name": "Canon EF 24-70mm f/2.8L USM",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Canon EF",
+      "filterSize": "77mm",
+      "focalLength": "24-70mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_ef_70_200_28l",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Canon",
+    "name": "Canon EF 70-200mm f/2.8L IS USM",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Canon EF",
+      "filterSize": "77mm",
+      "focalLength": "70-200mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_ef_50_12l",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canon EF 50mm f/1.2L USM",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Canon EF",
+      "filterSize": "72mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.2",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_ef_50_18",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canon EF 50mm f/1.8 II",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Canon EF",
+      "filterSize": "52mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_ef_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canon EF 50mm f/1.4 USM",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Canon EF",
+      "filterSize": "58mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_ef_85_18",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canon EF 85mm f/1.8 USM",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Canon EF",
+      "filterSize": "58mm",
+      "focalLength": "85mm",
+      "maxAperture": "f/1.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_ef_24_105",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Canon",
+    "name": "Canon EF 24-105mm f/4L IS USM",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Canon EF",
+      "filterSize": "77mm",
+      "focalLength": "24-105mm",
+      "maxAperture": "f/4.0",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "lens_nikon_ai_50_14",
     "category": "LENS",
     "subCategory": "Prime",
@@ -2011,6 +2187,22 @@
       "filterSize": "52mm",
       "focalLength": "50mm",
       "maxAperture": "f/1.4",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_nikon_ai_50_12",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Nikon",
+    "name": "Nikkor 50mm f/1.2 Ai-S",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Nikon F",
+      "filterSize": "52mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.2",
       "minAperture": "f/16"
     },
     "isDeveloperPreset": true
@@ -2096,6 +2288,22 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "lens_nikon_ai_180_28_ed",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Nikon",
+    "name": "Nikkor 180mm f/2.8 ED Ai-S",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Nikon F",
+      "filterSize": "72mm",
+      "focalLength": "180mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "lens_nikon_micro_55_28",
     "category": "LENS",
     "subCategory": "Macro",
@@ -2108,6 +2316,70 @@
       "focalLength": "55mm",
       "maxAperture": "f/2.8",
       "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_nikon_micro_105_28g",
+    "category": "LENS",
+    "subCategory": "Macro",
+    "brand": "Nikon",
+    "name": "AF-S VR Micro-Nikkor 105mm f/2.8G IF-ED",
+    "attributes": {
+      "type": "Macro",
+      "mount": "Nikon F",
+      "filterSize": "62mm",
+      "focalLength": "105mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_nikon_80_400_ed_vr",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Nikon",
+    "name": "AF-S Nikkor 80-400mm f/4.5-5.6G ED VR",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Nikon F",
+      "filterSize": "77mm",
+      "focalLength": "80-400mm",
+      "maxAperture": "f/4.5",
+      "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_nikon_24_70_28g",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Nikon",
+    "name": "AF-S Nikkor 24-70mm f/2.8G ED",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Nikon F",
+      "filterSize": "77mm",
+      "focalLength": "24-70mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_nikon_70_200_28g_vr2",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Nikon",
+    "name": "AF-S Nikkor 70-200mm f/2.8G ED VR II",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Nikon F",
+      "filterSize": "77mm",
+      "focalLength": "70-200mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
     },
     "isDeveloperPreset": true
   },
@@ -2203,6 +2475,38 @@
       "filterSize": "49mm",
       "focalLength": "135mm",
       "maxAperture": "f/3.5",
+      "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_pentax_star_85_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Pentax",
+    "name": "SMC Pentax-FA* 85mm f/1.4 ED",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Pentax K",
+      "filterSize": "67mm",
+      "focalLength": "85mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_pentax_star_200_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Pentax",
+    "name": "SMC Pentax-A* 200mm f/2.8 ED",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Pentax K",
+      "filterSize": "77mm",
+      "focalLength": "200mm",
+      "maxAperture": "f/2.8",
       "minAperture": "f/32"
     },
     "isDeveloperPreset": true
@@ -2320,6 +2624,22 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "lens_olympus_zuiko_macro_90_20",
+    "category": "LENS",
+    "subCategory": "Macro",
+    "brand": "Olympus",
+    "name": "Zuiko Auto-Macro 90mm f/2.0",
+    "attributes": {
+      "type": "Macro",
+      "mount": "Olympus OM",
+      "filterSize": "55mm",
+      "focalLength": "90mm",
+      "maxAperture": "f/2.0",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "lens_olympus_zuiko_100_28",
     "category": "LENS",
     "subCategory": "Prime",
@@ -2400,6 +2720,22 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "lens_minolta_md_macro_100_40",
+    "category": "LENS",
+    "subCategory": "Macro",
+    "brand": "Minolta",
+    "name": "Minolta MD Macro 100mm f/4.0",
+    "attributes": {
+      "type": "Macro",
+      "mount": "Minolta SR/MD",
+      "filterSize": "55mm",
+      "focalLength": "100mm",
+      "maxAperture": "f/4.0",
+      "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "lens_minolta_af_50_17",
     "category": "LENS",
     "subCategory": "Prime",
@@ -2416,6 +2752,38 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "lens_minolta_af_85_14g",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Minolta",
+    "name": "Minolta AF 85mm f/1.4 G",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Minolta A",
+      "filterSize": "72mm",
+      "focalLength": "85mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_minolta_af_200_28g",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Minolta",
+    "name": "Minolta AF 200mm f/2.8 APO G",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Minolta A",
+      "filterSize": "72mm",
+      "focalLength": "200mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "lens_minolta_af_beercan_70_210",
     "category": "LENS",
     "subCategory": "Zoom",
@@ -2428,6 +2796,22 @@
       "focalLength": "70-210mm",
       "maxAperture": "f/4.0",
       "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_leica_summilux_50_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Leica",
+    "name": "Leica Summilux-M 50mm f/1.4 ASPH",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Leica M",
+      "filterSize": "46mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/16"
     },
     "isDeveloperPreset": true
   },
@@ -2460,6 +2844,22 @@
       "focalLength": "28mm",
       "maxAperture": "f/2.8",
       "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_leica_summilux_35_14",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Leica",
+    "name": "Leica Summilux-M 35mm f/1.4 ASPH",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Leica M",
+      "filterSize": "46mm",
+      "focalLength": "35mm",
+      "maxAperture": "f/1.4",
+      "minAperture": "f/16"
     },
     "isDeveloperPreset": true
   },
@@ -2576,70 +2976,6 @@
     "isDeveloperPreset": true
   },
   {
-    "id": "lens_canon_ef_50_18",
-    "category": "LENS",
-    "subCategory": "Prime",
-    "brand": "Canon",
-    "name": "Canon EF 50mm f/1.8 II",
-    "attributes": {
-      "type": "Prime",
-      "mount": "Canon EF",
-      "filterSize": "52mm",
-      "focalLength": "50mm",
-      "maxAperture": "f/1.8",
-      "minAperture": "f/22"
-    },
-    "isDeveloperPreset": true
-  },
-  {
-    "id": "lens_canon_ef_50_14",
-    "category": "LENS",
-    "subCategory": "Prime",
-    "brand": "Canon",
-    "name": "Canon EF 50mm f/1.4 USM",
-    "attributes": {
-      "type": "Prime",
-      "mount": "Canon EF",
-      "filterSize": "58mm",
-      "focalLength": "50mm",
-      "maxAperture": "f/1.4",
-      "minAperture": "f/22"
-    },
-    "isDeveloperPreset": true
-  },
-  {
-    "id": "lens_canon_ef_85_18",
-    "category": "LENS",
-    "subCategory": "Prime",
-    "brand": "Canon",
-    "name": "Canon EF 85mm f/1.8 USM",
-    "attributes": {
-      "type": "Prime",
-      "mount": "Canon EF",
-      "filterSize": "58mm",
-      "focalLength": "85mm",
-      "maxAperture": "f/1.8",
-      "minAperture": "f/22"
-    },
-    "isDeveloperPreset": true
-  },
-  {
-    "id": "lens_canon_ef_24_105",
-    "category": "LENS",
-    "subCategory": "Zoom",
-    "brand": "Canon",
-    "name": "Canon EF 24-105mm f/4L IS USM",
-    "attributes": {
-      "type": "Zoom",
-      "mount": "Canon EF",
-      "filterSize": "77mm",
-      "focalLength": "24-105mm",
-      "maxAperture": "f/4.0",
-      "minAperture": "f/22"
-    },
-    "isDeveloperPreset": true
-  },
-  {
     "id": "lens_hasselblad_planar_80",
     "category": "LENS",
     "subCategory": "Prime",
@@ -2652,6 +2988,22 @@
       "focalLength": "80mm",
       "maxAperture": "f/2.8",
       "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_hasselblad_makro_planar_120",
+    "category": "LENS",
+    "subCategory": "Macro",
+    "brand": "Hasselblad",
+    "name": "Zeiss Makro-Planar T* 120mm f/4.0",
+    "attributes": {
+      "type": "Macro",
+      "mount": "Hasselblad V",
+      "filterSize": "Bay 60",
+      "focalLength": "120mm",
+      "maxAperture": "f/4.0",
+      "minAperture": "f/32"
     },
     "isDeveloperPreset": true
   },
