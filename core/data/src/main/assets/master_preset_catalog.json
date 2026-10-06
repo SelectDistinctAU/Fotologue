@@ -42,12 +42,68 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "cam_pentax_spotmatic",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Pentax",
+    "name": "Pentax Spotmatic SPII",
+    "modelNumber": "SPII",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "M42 Thread",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_pentax_mx",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Pentax",
+    "name": "Pentax MX",
+    "modelNumber": "MX",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Pentax K",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_pentax_67",
+    "category": "CAMERA",
+    "subCategory": "Medium Format SLR",
+    "brand": "Pentax",
+    "name": "Pentax 67",
+    "modelNumber": "Pentax 67",
+    "attributes": {
+      "type": "Medium Format SLR",
+      "mount": "Pentax 67 Bayonet",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "cam_canon_ae1p",
     "category": "CAMERA",
     "subCategory": "Film SLR",
     "brand": "Canon",
     "name": "Canon AE-1 Program",
     "modelNumber": "AE-1P",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_ae1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon AE-1",
+    "modelNumber": "AE-1",
     "attributes": {
       "type": "Film SLR",
       "mount": "Canon FD",
@@ -66,6 +122,132 @@
       "type": "Film SLR",
       "mount": "Canon FD",
       "shutterSpeeds": "1s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_new_f1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon New F-1",
+    "modelNumber": "New F-1",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "8s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_a1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon A-1",
+    "modelNumber": "A-1",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "30s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_ftb",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon FTb",
+    "modelNumber": "FTb",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_av1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon AV-1",
+    "modelNumber": "AV-1",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_t90",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon T90",
+    "modelNumber": "T90",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "30s - 1/4000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_eos1n",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon EOS-1N",
+    "modelNumber": "EOS-1N",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon EF",
+      "shutterSpeeds": "30s - 1/8000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_eos3",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon EOS 3",
+    "modelNumber": "EOS 3",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon EF",
+      "shutterSpeeds": "30s - 1/8000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_f",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F",
+    "modelNumber": "F",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_f2",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F2",
+    "modelNumber": "F2",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "10s - 1/2000s, B"
     },
     "isDeveloperPreset": true
   },
@@ -98,6 +280,216 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "cam_nikon_fe",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon FE",
+    "modelNumber": "FE",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "8s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_fm",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon FM",
+    "modelNumber": "FM",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_fa",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon FA",
+    "modelNumber": "FA",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "1s - 1/4000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_f4",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F4",
+    "modelNumber": "F4",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "30s - 1/8000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_f5",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F5",
+    "modelNumber": "F5",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "30s - 1/8000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_f90x",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikon F90X / N90s",
+    "modelNumber": "F90X",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Nikon F",
+      "shutterSpeeds": "30s - 1/8000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_olympus_om1",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Olympus",
+    "name": "Olympus OM-1",
+    "modelNumber": "OM-1",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Olympus OM",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_olympus_om2",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Olympus",
+    "name": "Olympus OM-2",
+    "modelNumber": "OM-2",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Olympus OM",
+      "shutterSpeeds": "60s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_olympus_om10",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Olympus",
+    "name": "Olympus OM-10",
+    "modelNumber": "OM-10",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Olympus OM",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_olympus_om4ti",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Olympus",
+    "name": "Olympus OM-4 Ti",
+    "modelNumber": "OM-4 Ti",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Olympus OM",
+      "shutterSpeeds": "240s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_srt101",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Minolta",
+    "name": "Minolta SR-T 101",
+    "modelNumber": "SRT-101",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Minolta SR/MD",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_x700",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Minolta",
+    "name": "Minolta X-700",
+    "modelNumber": "X-700",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Minolta SR/MD",
+      "shutterSpeeds": "4s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_xd11",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Minolta",
+    "name": "Minolta XD-11",
+    "modelNumber": "XD-11",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Minolta SR/MD",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_maxxum7000",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Minolta",
+    "name": "Minolta Maxxum 7000",
+    "modelNumber": "7000",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Minolta A",
+      "shutterSpeeds": "30s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_maxxum9",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Minolta",
+    "name": "Minolta Maxxum 9",
+    "modelNumber": "9",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Minolta A",
+      "shutterSpeeds": "30s - 1/12000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "cam_leica_m3",
     "category": "CAMERA",
     "subCategory": "Rangefinder",
@@ -126,6 +518,62 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "cam_leica_leicaflex_sl2",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Leica",
+    "name": "Leicaflex SL2",
+    "modelNumber": "SL2",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Leica R",
+      "shutterSpeeds": "1s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_r6",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Leica",
+    "name": "Leica R6",
+    "modelNumber": "R6",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Leica R",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_contax_rts",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Contax",
+    "name": "Contax RTS",
+    "modelNumber": "RTS",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Contax C/Y",
+      "shutterSpeeds": "4s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_contax_rx",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Contax",
+    "name": "Contax RX",
+    "modelNumber": "RX",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Contax C/Y",
+      "shutterSpeeds": "16s - 1/4000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "cam_hasselblad_500cm",
     "category": "CAMERA",
     "subCategory": "Medium Format SLR",
@@ -136,6 +584,34 @@
       "type": "Medium Format SLR",
       "mount": "Hasselblad V",
       "shutterSpeeds": "1s - 1/500s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_hasselblad_503cx",
+    "category": "CAMERA",
+    "subCategory": "Medium Format SLR",
+    "brand": "Hasselblad",
+    "name": "Hasselblad 503CX",
+    "modelNumber": "503CX",
+    "attributes": {
+      "type": "Medium Format SLR",
+      "mount": "Hasselblad V",
+      "shutterSpeeds": "1s - 1/500s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_mamiya_rz67",
+    "category": "CAMERA",
+    "subCategory": "Medium Format SLR",
+    "brand": "Mamiya",
+    "name": "Mamiya RZ67 Pro",
+    "modelNumber": "RZ67",
+    "attributes": {
+      "type": "Medium Format SLR",
+      "mount": "Mamiya RZ",
+      "shutterSpeeds": "8s - 1/400s, B"
     },
     "isDeveloperPreset": true
   },
@@ -151,6 +627,34 @@
       "mount": "Fixed",
       "shutterSpeeds": "1s - 1/500s, B",
       "fixedLens": "Yashinon 80mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_yashica_fx3",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Yashica",
+    "name": "Yashica FX-3 Super 2000",
+    "modelNumber": "FX-3",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Contax C/Y",
+      "shutterSpeeds": "1s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_bronica_sqa",
+    "category": "CAMERA",
+    "subCategory": "Medium Format SLR",
+    "brand": "Bronica",
+    "name": "Bronica SQ-A",
+    "modelNumber": "SQ-A",
+    "attributes": {
+      "type": "Medium Format SLR",
+      "mount": "Bronica SQ",
+      "shutterSpeeds": "8s - 1/500s, B"
     },
     "isDeveloperPreset": true
   },
