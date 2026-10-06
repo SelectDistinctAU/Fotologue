@@ -382,7 +382,11 @@ fun MaintainerAppScreen() {
                         val lensOptions = remember {
                             val lensFile = File(presetsDir, "lenses.json")
                             val loaded = if (lensFile.exists()) {
-                                try { json.decodeFromString<List<MasterPresetItem>>(lensFile.readText()).map { it.name } } catch (_: Exception) { emptyList() }
+                                try { 
+                                    json.decodeFromString<List<MasterPresetItem>>(lensFile.readText())
+                                        .filter { it.attributes["mount"].equals("Fixed", ignoreCase = true) }
+                                        .map { it.name } 
+                                } catch (_: Exception) { emptyList() }
                             } else emptyList()
                             listOf("None") + loaded
                         }
