@@ -606,6 +606,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-062: Ingestion of Flagship L-Series & Pro Optics into Lens Catalog
+- **Platform**: Fotologue Preset Catalog (`lenses.json`, `master_preset_catalog.json`)
+- **Reported**: October 2026
+- **Symptom**: The lens preset catalog lacked flagship professional L-series optics (Canon EF 100mm f/2.8L Macro, EF 100-400mm f/4.5-5.6L IS), Nikkor ED Gold Ring lenses, Pentax Star `*` glass, and Zeiss Makro-Planar optics.
+- **Root Cause**: Unpopulated flagship lens dataset.
+- **Resolution**: Ingested 22 flagship L-Series and pro optics across Canon EF/FD, Nikkor Ai-S/AF-S, Pentax K, Minolta A/MD, Leica M, and Zeiss V mounts into `lenses.json`. Total lens presets expanded from 71 to **93 master lenses**.
+- **Regression Test Case**: Launch Maintainer Tool `./gradlew :desktop:runMaintainer` $\to$ select `LENS` tab $\to$ verify total lens count displays 93 lenses including Canon EF 100mm f/2.8L Macro.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
