@@ -566,6 +566,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-058: Ingestion of Corrected 1960–2000 TLRs, Rangefinders & Fixed Compacts
+- **Platform**: Fotologue Preset Catalog (`cameras.json`, `lenses.json`, `master_preset_catalog.json`)
+- **Reported**: October 2026
+- **Symptom**: The preset catalog was missing classic 1960–2000 TLRs, rangefinders, and premium fixed compacts (Rolleiflex 2.8F, Canonet QL17 G-III, Konica Auto S2/S3, Olympus 35 SP, Rollei 35S, Leica M2/M4/M5, Contax G1/G2).
+- **Root Cause**: Unpopulated TLR and Rangefinder preset dataset.
+- **Resolution**: Ingested 35 new camera presets from the Corrected Master List into `cameras.json` and 20 normalized fixed taking lenses into `lenses.json`. Total camera presets expanded from 47 to **82 master camera bodies**, and total lens presets expanded to **26 master lenses**.
+- **Regression Test Case**: Launch Maintainer Tool `./gradlew :desktop:runMaintainer` $\to$ verify total camera count displays 82 cameras and lens count displays 26 lenses.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
