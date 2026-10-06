@@ -596,6 +596,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-061: Enthusiast Lens Catalog Expansion across 8 Lens Mounts
+- **Platform**: Fotologue Preset Catalog (`lenses.json`, `master_preset_catalog.json`)
+- **Reported**: October 2026
+- **Symptom**: The lens preset catalog only contained 26 lenses, lacking classic enthusiast prime and zoom optics for major SLR and Rangefinder mounts.
+- **Root Cause**: Unpopulated lens catalog dataset.
+- **Resolution**: Ingested 45 iconic enthusiast lenses across Canon FD/EF, Nikkor Ai-S, Pentax SMC/M42, Olympus Zuiko, Minolta MD/A, Leica M, and Zeiss C/Y mounts into `lenses.json`. Total lens presets expanded from 26 to **71 master lenses**.
+- **Regression Test Case**: Launch Maintainer Tool `./gradlew :desktop:runMaintainer` $\to$ select `LENS` tab $\to$ verify total lens count displays 71 lenses.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
