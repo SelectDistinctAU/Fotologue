@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -56,7 +57,6 @@ fun MaintainerAppScreen() {
 
     val presetsDir = remember {
         var currentDir = File(System.getProperty("user.dir"))
-        // Traverse upwards until we find the project root (marked by settings.gradle.kts)
         while (currentDir.exists() && !File(currentDir, "settings.gradle.kts").exists()) {
             val parent = currentDir.parentFile ?: break
             currentDir = parent
@@ -67,6 +67,20 @@ fun MaintainerAppScreen() {
     var searchQuery by remember { mutableStateOf("") }
     var activePresets by remember { mutableStateOf<List<MasterPresetItem>>(emptyList()) }
     var feedbackMessage by remember { mutableStateOf("Ready to edit Maintainer Preset Catalogue.") }
+
+    val canonicalBrands = remember {
+        listOf(
+            "Alpa", "Arca-Swiss", "Arax", "Bronica", "Canon", "Chamonix", "Chroma", "Contax",
+            "Fujifilm", "Hasselblad", "Intrepid", "Kodak", "Konica", "Leica", "Linhof",
+            "Lomography", "Mamiya", "Minolta", "Nikon", "Olympus", "Pentax", "Phase One",
+            "Plaubel", "Ricoh", "Rollei", "Shen Hao", "Sinar", "Toyo", "Voigtländer", "Yashica"
+        )
+    }
+
+    val activeCategoryBrands = remember(activePresets) {
+        val jsonBrands = activePresets.map { it.brand }.distinct()
+        (canonicalBrands + jsonBrands).filter { it.isNotBlank() }.distinct().sorted()
+    }
 
     val categoryFiles = mapOf(
         "CAMERA" to "cameras.json",
@@ -112,6 +126,8 @@ fun MaintainerAppScreen() {
     }
 
     var showAddDialog by remember { mutableStateOf(false) }
+    var editingPresetItem by remember { mutableStateOf<MasterPresetItem?>(null) }
+
     var newBrand by remember { mutableStateOf("") }
     var newName by remember { mutableStateOf("") }
     var newModelNumber by remember { mutableStateOf("") }
@@ -120,33 +136,87 @@ fun MaintainerAppScreen() {
     var newAttr2Key by remember { mutableStateOf("mount") }
     var newAttr2Value by remember { mutableStateOf("") }
 
-    if (showAddDialog) {
+    // Dialog for ADDING or EDITING a Preset Entry
+    val isEditing = editingPresetItem != null
+    if (showAddDialog || isEditing) {
+        var brandDropdownExpanded by remember { mutableStateOf(false) }
+
         AlertDialog(
-            onDismissRequest = { showAddDialog = false },
-            title = { Text("➕ Add $selectedCategory Preset", fontWeight = FontWeight.Bold) },
+            onDismissRequest = { 
+                showAddDialog = false
+                editingPresetItem = null
+            },
+            title = { Text(if (isEditing) "✏️ Edit $selectedCategory Preset Entry" else "➕ Add New $selectedCategory Preset Entry", fontWeight = FontWeight.Bold) },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    // Controlled Brand Dropdown
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = if (isEditing) (editingPresetItem?.brand ?: "") else newBrand,
+                            onValueChange = { input ->
+                                if (isEditing) {
+                                    editingPresetItem = editingPresetItem?.copy(brand = input)
+                                } else {
+                                    newBrand = input
+                                }
+                            },
+                            label = { Text("Brand") },
+                            modifier = Modifier.fillMaxWidth(),
+                            trailingIcon = {
+                                IconButton(onClick = { brandDropdownExpanded = !brandDropdownExpanded }) {
+                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                }
+                            }
+                        )
+                        DropdownMenu(
+                            expanded = brandDropdownExpanded,
+                            onDismissRequest = { brandDropdownExpanded = false }
+                        ) {
+                            activeCategoryBrands.forEach { bOpt ->
+                                DropdownMenuItem(
+                                    text = { Text(bOpt) },
+                                    onClick = {
+                                        if (isEditing) {
+                                            editingPresetItem = editingPresetItem?.copy(brand = bOpt)
+                                        } else {
+                                            newBrand = bOpt
+                                        }
+                                        brandDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
                     OutlinedTextField(
-                        value = newBrand,
-                        onValueChange = { newBrand = it },
-                        label = { Text("Brand (e.g. Pentax, Kodak)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = newName,
-                        onValueChange = { newName = it },
+                        value = if (isEditing) (editingPresetItem?.name ?: "") else newName,
+                        onValueChange = { input ->
+                            if (isEditing) {
+                                editingPresetItem = editingPresetItem?.copy(name = input)
+                            } else {
+                                newName = input
+                            }
+                        },
                         label = { Text("Preset Name (e.g. Pentax LX)") },
                         modifier = Modifier.fillMaxWidth()
                     )
+
                     OutlinedTextField(
-                        value = newModelNumber,
-                        onValueChange = { newModelNumber = it },
-                        label = { Text("Model Number (e.g. LX)") },
+                        value = if (isEditing) (editingPresetItem?.modelNumber ?: "") else newModelNumber,
+                        onValueChange = { input ->
+                            if (isEditing) {
+                                editingPresetItem = editingPresetItem?.copy(modelNumber = input)
+                            } else {
+                                newModelNumber = input
+                            }
+                        },
+                        label = { Text("Model Number (Optional)") },
                         modifier = Modifier.fillMaxWidth()
                     )
+
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedTextField(
                             value = newAttr1Key,
@@ -155,12 +225,21 @@ fun MaintainerAppScreen() {
                             modifier = Modifier.weight(1f)
                         )
                         OutlinedTextField(
-                            value = newAttr1Value,
-                            onValueChange = { newAttr1Value = it },
+                            value = if (isEditing) (editingPresetItem?.attributes?.get(newAttr1Key) ?: "") else newAttr1Value,
+                            onValueChange = { input ->
+                                if (isEditing && editingPresetItem != null) {
+                                    val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                    currentAttrs[newAttr1Key] = input
+                                    editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                } else {
+                                    newAttr1Value = input
+                                }
+                            },
                             label = { Text("Attribute 1 Value") },
                             modifier = Modifier.weight(1f)
                         )
                     }
+
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedTextField(
                             value = newAttr2Key,
@@ -169,8 +248,16 @@ fun MaintainerAppScreen() {
                             modifier = Modifier.weight(1f)
                         )
                         OutlinedTextField(
-                            value = newAttr2Value,
-                            onValueChange = { newAttr2Value = it },
+                            value = if (isEditing) (editingPresetItem?.attributes?.get(newAttr2Key) ?: "") else newAttr2Value,
+                            onValueChange = { input ->
+                                if (isEditing && editingPresetItem != null) {
+                                    val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                    currentAttrs[newAttr2Key] = input
+                                    editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                } else {
+                                    newAttr2Value = input
+                                }
+                            },
                             label = { Text("Attribute 2 Value") },
                             modifier = Modifier.weight(1f)
                         )
@@ -180,7 +267,12 @@ fun MaintainerAppScreen() {
             confirmButton = {
                 Button(
                     onClick = {
-                        if (newName.isNotBlank() && newBrand.isNotBlank()) {
+                        if (isEditing && editingPresetItem != null) {
+                            val updated = editingPresetItem!!
+                            activePresets = activePresets.map { if (it.id == updated.id) updated else it }
+                            saveCategoryPresets()
+                            editingPresetItem = null
+                        } else if (newName.isNotBlank() && newBrand.isNotBlank()) {
                             val generatedId = "${selectedCategory.lowercase().take(3)}_${newBrand.lowercase().replace(" ", "_")}_${newName.lowercase().replace(" ", "_").replace("/", "_")}"
                             val attrs = mutableMapOf<String, String>()
                             if (newAttr1Key.isNotBlank() && newAttr1Value.isNotBlank()) attrs[newAttr1Key] = newAttr1Value
@@ -205,11 +297,14 @@ fun MaintainerAppScreen() {
                         }
                     }
                 ) {
-                    Text("Add Preset")
+                    Text(if (isEditing) "Save Changes" else "Add Preset Entry")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showAddDialog = false }) {
+                TextButton(onClick = { 
+                    showAddDialog = false
+                    editingPresetItem = null
+                }) {
                     Text("Cancel")
                 }
             }
@@ -309,11 +404,18 @@ fun MaintainerAppScreen() {
                                     Text("${preset.brand} ${preset.name}", fontWeight = FontWeight.Bold)
                                     Text("ID: ${preset.id} • Attrs: ${preset.attributes}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
-                                IconButton(onClick = {
-                                    activePresets = activePresets.filter { it.id != preset.id }
-                                    saveCategoryPresets()
-                                }) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Delete Preset", tint = MaterialTheme.colorScheme.error)
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = {
+                                        editingPresetItem = preset
+                                    }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit Preset", tint = MaterialTheme.colorScheme.primary)
+                                    }
+                                    IconButton(onClick = {
+                                        activePresets = activePresets.filter { it.id != preset.id }
+                                        saveCategoryPresets()
+                                    }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete Preset", tint = MaterialTheme.colorScheme.error)
+                                    }
                                 }
                             }
                         }
