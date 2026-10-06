@@ -658,6 +658,518 @@
     },
     "isDeveloperPreset": true
   },
+  {
+    "id": "cam_rollei_28f",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Rollei",
+    "name": "Rolleiflex 2.8F",
+    "modelNumber": "2.8F",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Planar 80mm f/2.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_rollei_28e",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Rollei",
+    "name": "Rolleiflex 2.8E",
+    "modelNumber": "2.8E",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Xenar 80mm f/2.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_rollei_35f",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Rollei",
+    "name": "Rolleiflex 3.5F",
+    "modelNumber": "3.5F",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Planar 80mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_rollei_rolleicord_va",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Rollei",
+    "name": "Rolleicord Va",
+    "modelNumber": "Va",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Xenar 75mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_rollei_rolleicord_vb",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Rollei",
+    "name": "Rolleicord Vb",
+    "modelNumber": "Vb",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Xenar 75mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_yashica_mat124",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Yashica",
+    "name": "Yashica Mat-124",
+    "modelNumber": "Mat-124",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Yashinon 80mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_yashica_mat_e",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Yashica",
+    "name": "Yashica Mat-E",
+    "modelNumber": "Mat-E",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Yashinon 80mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_mamiya_c330",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Mamiya",
+    "name": "Mamiya C330 Professional",
+    "modelNumber": "C330",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Mamiya C",
+      "shutterSpeeds": "1s - 1/500s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_mamiya_c220",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Mamiya",
+    "name": "Mamiya C220 Professional",
+    "modelNumber": "C220",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Mamiya C",
+      "shutterSpeeds": "1s - 1/500s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_kiev_60",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Kiev",
+    "name": "Kiev 60",
+    "modelNumber": "60",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Kiev 60",
+      "shutterSpeeds": "1/2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_seagull_4a",
+    "category": "CAMERA",
+    "subCategory": "TLR",
+    "brand": "Seagull",
+    "name": "Seagull 4A",
+    "modelNumber": "4A",
+    "attributes": {
+      "type": "TLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/300s, B",
+      "fixedLens": "Haiou 75mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m2",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M2",
+    "modelNumber": "M2",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m4",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M4",
+    "modelNumber": "M4",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m5",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M5",
+    "modelNumber": "M5",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1/2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_cl",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica CL",
+    "modelNumber": "CL",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1/2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m4_2",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M4-2",
+    "modelNumber": "M4-2",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m4_p",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M4-P",
+    "modelNumber": "M4-P",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_leica_m6_ttl",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Leica",
+    "name": "Leica M6 TTL",
+    "modelNumber": "M6 TTL",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Leica M",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_contax_ii_a",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Contax",
+    "name": "Contax IIa",
+    "modelNumber": "IIa",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Contax RF",
+      "shutterSpeeds": "1s - 1/1250s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_contax_g1",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Contax",
+    "name": "Contax G1",
+    "modelNumber": "G1",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Contax G",
+      "shutterSpeeds": "16s - 1/2000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_contax_g2",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Contax",
+    "name": "Contax G2",
+    "modelNumber": "G2",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Contax G",
+      "shutterSpeeds": "16s - 1/6000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_canonet_ql17",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Canon",
+    "name": "Canonet QL17 G-III",
+    "modelNumber": "QL17 G-III",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/4s - 1/500s, B",
+      "fixedLens": "Canonet 40mm f/1.7 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_canonet_ql19",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Canon",
+    "name": "Canonet QL19 G-III",
+    "modelNumber": "QL19 G-III",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/4s - 1/500s, B",
+      "fixedLens": "Canonet 45mm f/1.9 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_konica_auto_s2",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Konica",
+    "name": "Konica Auto S2",
+    "modelNumber": "Auto S2",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Hexanon 45mm f/1.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_konica_auto_s3",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Konica",
+    "name": "Konica Auto S3",
+    "modelNumber": "Auto S3",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/8s - 1/500s, B",
+      "fixedLens": "Hexanon 38mm f/1.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_konica_hexar_af",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Konica",
+    "name": "Konica Hexar AF",
+    "modelNumber": "Hexar AF",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "30s - 1/250s, B",
+      "fixedLens": "Hexar 35mm f/2.0 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_himatic_7s2",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Minolta",
+    "name": "Minolta Hi-Matic 7sII",
+    "modelNumber": "7sII",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/8s - 1/500s, B",
+      "fixedLens": "Rokkor 40mm f/1.7 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_minolta_himatic_9",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Minolta",
+    "name": "Minolta Hi-Matic 9",
+    "modelNumber": "9",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Rokkor 45mm f/1.7 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_olympus_35_sp",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Olympus",
+    "name": "Olympus 35 SP",
+    "modelNumber": "35 SP",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "E-Zuiko 42mm f/1.7 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_olympus_35_rc",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Olympus",
+    "name": "Olympus 35 RC",
+    "modelNumber": "35 RC",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/15s - 1/500s, B",
+      "fixedLens": "E-Zuiko 42mm f/2.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_yashica_electro35_gsn",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Yashica",
+    "name": "Yashica Electro 35 GSN",
+    "modelNumber": "35 GSN",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "30s - 1/500s, B",
+      "fixedLens": "Color-Yashinon DX 45mm f/1.7 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_petri_7",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "Petri",
+    "name": "Petri 7",
+    "modelNumber": "7",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Petri 45mm f/1.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_nikon_nikkorex_35",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Nikon",
+    "name": "Nikkorex 35",
+    "modelNumber": "35",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "1s - 1/500s, B",
+      "fixedLens": "Nikkor 48mm f/2.4 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_rollei_sl2000f",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Rollei",
+    "name": "Rollei SL2000F",
+    "modelNumber": "SL2000F",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Fixed",
+      "shutterSpeeds": "16s - 1/1000s, B",
+      "fixedLens": "Rolleinar 35-70mm f/3.5 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_rollei_35s",
+    "category": "CAMERA",
+    "subCategory": "Compact",
+    "brand": "Rollei",
+    "name": "Rollei 35S",
+    "modelNumber": "35S",
+    "attributes": {
+      "type": "Compact",
+      "mount": "Fixed",
+      "shutterSpeeds": "1/2s - 1/500s, B",
+      "fixedLens": "Sonnar 40mm f/2.8 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
 {
     "id": "con_ilford_id11",
     "category": "CONSUMABLE",
@@ -1471,6 +1983,326 @@
     },
     "isDeveloperPreset": true
   },
+  {
+    "id": "lens_rollei_planar_80_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Planar 80mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay III",
+      "focalLength": "80mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_xenar_80_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Xenar 80mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay III",
+      "focalLength": "80mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_planar_80_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Planar 80mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay II",
+      "focalLength": "80mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_xenar_75_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Xenar 75mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay I",
+      "focalLength": "75mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_seagull_haiou_75_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Seagull",
+    "name": "Haiou 75mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "35.5mm",
+      "focalLength": "75mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_canonet_40_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canonet 40mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "48mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_canonet_45_19",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canonet 45mm f/1.9 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "48mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.9",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_konica_hexanon_45_18",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Konica",
+    "name": "Hexanon 45mm f/1.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "55mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.8",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_konica_hexanon_38_18",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Konica",
+    "name": "Hexanon 38mm f/1.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "49mm",
+      "focalLength": "38mm",
+      "maxAperture": "f/1.8",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_konica_hexar_35_20",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Konica",
+    "name": "Hexar 35mm f/2.0 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "46mm",
+      "focalLength": "35mm",
+      "maxAperture": "f/2.0",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_minolta_rokkor_40_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Minolta",
+    "name": "Rokkor 40mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "49mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_minolta_rokkor_45_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Minolta",
+    "name": "Rokkor 45mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "55mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_olympus_zuiko_42_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Olympus",
+    "name": "E-Zuiko 42mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "49mm",
+      "focalLength": "42mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_olympus_zuiko_42_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Olympus",
+    "name": "E-Zuiko 42mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "43.5mm",
+      "focalLength": "42mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_yashica_yashinon_45_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Yashica",
+    "name": "Color-Yashinon DX 45mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "55mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_petri_45_18",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Petri",
+    "name": "Petri 45mm f/1.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "52mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.8",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_nikon_nikkor_48_24",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Nikon",
+    "name": "Nikkor 48mm f/2.4 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "52mm",
+      "focalLength": "48mm",
+      "maxAperture": "f/2.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_rolleinar_35_70",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Rollei",
+    "name": "Rolleinar 35-70mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Fixed",
+      "filterSize": "52mm",
+      "focalLength": "35-70mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_tessar_40_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Tessar 40mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "24mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_sonnar_40_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Sonnar 40mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "30.5mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
 {
     "id": "sup_vanbar",
     "category": "SUPPLIER",
@@ -1484,19 +2316,18 @@
     "isDeveloperPreset": true
   },
 {
-    "id": "tc_nikon_tc14e",
-    "category": "TELECONVERTER",
-    "subCategory": "Teleconverter",
-    "brand": "Nikon",
-    "name": "Nikon AF-S Teleconverter TC-14E III",
-    "modelNumber": "TC-14E III",
-    "attributes": {
-      "magnification": "1.4x",
-      "lightLoss": "1 Stop",
-      "mount": "Nikon F"
+        "id": "tc_nikon_tc14e",
+        "category": "TELECONVERTER",
+        "subCategory": "Teleconverter",
+        "brand": "Nikon",
+        "name": "Nikon AF-S Teleconverter TC-14E III",
+        "modelNumber": "TC-14E III",
+        "attributes": {
+            "magnification": "1.4x",
+            "lightLoss": "1 Stop",
+            "mount": "Nikon F"
+        }
     },
-    "isDeveloperPreset": true
-  },
 {
     "id": "vf_pentax_fa1",
     "category": "VIEWFINDER",

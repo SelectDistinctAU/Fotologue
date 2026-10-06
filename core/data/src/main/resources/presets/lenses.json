@@ -94,5 +94,325 @@
       "minAperture": "f/22"
     },
     "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_planar_80_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Planar 80mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay III",
+      "focalLength": "80mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_xenar_80_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Xenar 80mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay III",
+      "focalLength": "80mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_planar_80_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Planar 80mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay II",
+      "focalLength": "80mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_xenar_75_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Xenar 75mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay I",
+      "focalLength": "75mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_seagull_haiou_75_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Seagull",
+    "name": "Haiou 75mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "35.5mm",
+      "focalLength": "75mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_canonet_40_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canonet 40mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "48mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_canon_canonet_45_19",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Canon",
+    "name": "Canonet 45mm f/1.9 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "48mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.9",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_konica_hexanon_45_18",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Konica",
+    "name": "Hexanon 45mm f/1.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "55mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.8",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_konica_hexanon_38_18",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Konica",
+    "name": "Hexanon 38mm f/1.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "49mm",
+      "focalLength": "38mm",
+      "maxAperture": "f/1.8",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_konica_hexar_35_20",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Konica",
+    "name": "Hexar 35mm f/2.0 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "46mm",
+      "focalLength": "35mm",
+      "maxAperture": "f/2.0",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_minolta_rokkor_40_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Minolta",
+    "name": "Rokkor 40mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "49mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_minolta_rokkor_45_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Minolta",
+    "name": "Rokkor 45mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "55mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_olympus_zuiko_42_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Olympus",
+    "name": "E-Zuiko 42mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "49mm",
+      "focalLength": "42mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_olympus_zuiko_42_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Olympus",
+    "name": "E-Zuiko 42mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "43.5mm",
+      "focalLength": "42mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_yashica_yashinon_45_17",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Yashica",
+    "name": "Color-Yashinon DX 45mm f/1.7 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "55mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.7",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_petri_45_18",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Petri",
+    "name": "Petri 45mm f/1.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "52mm",
+      "focalLength": "45mm",
+      "maxAperture": "f/1.8",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_nikon_nikkor_48_24",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Nikon",
+    "name": "Nikkor 48mm f/2.4 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "52mm",
+      "focalLength": "48mm",
+      "maxAperture": "f/2.4",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_rolleinar_35_70",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Rollei",
+    "name": "Rolleinar 35-70mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Fixed",
+      "filterSize": "52mm",
+      "focalLength": "35-70mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_tessar_40_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Tessar 40mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "24mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_rollei_sonnar_40_28",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Rollei",
+    "name": "Sonnar 40mm f/2.8 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "30.5mm",
+      "focalLength": "40mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
   }
 ]
