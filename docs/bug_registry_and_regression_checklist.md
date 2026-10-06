@@ -456,6 +456,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-047: Missing Edit Feature & Raw Text Entry in Maintainer Tool
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Maintainer Tool preset cards only offered a delete action without any way to edit existing JSON entries. Additionally, the `Brand` field was a raw text box rather than a controlled LOV dropdown.
+- **Root Cause**: `MaintainerApp.kt` lacked an edit dialog state and relied on raw `OutlinedTextField` inputs for brand data.
+- **Resolution**: Added an `Edit` action button (`IconButton(Icons.Default.Edit)`) to all preset cards opening a pre-filled `Edit {Category} Preset Entry` dialog. Replaced raw text brand entry with a **Controlled Brand Dropdown Selector** populated from canonical and active JSON category brands.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ click `Edit` on a preset card $\to$ verify pre-filled edit dialog opens with a controlled Brand dropdown.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
