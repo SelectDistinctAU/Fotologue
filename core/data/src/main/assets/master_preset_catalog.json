@@ -150,10 +150,7 @@
       "type": "TLR",
       "mount": "Fixed",
       "shutterSpeeds": "1s - 1/500s, B",
-      "fixedLensName": "Yashinon 80mm f/3.5 Taking Lens",
-      "fixedLensFocalLength": "80mm",
-      "fixedLensMaxAperture": "f/3.5",
-      "fixedLensFilterSize": "Bay I"
+      "fixedLens": "Yashinon 80mm f/3.5 Taking Lens"
     },
     "isDeveloperPreset": true
   },
@@ -950,6 +947,22 @@
       "filterSize": "Bay 60",
       "focalLength": "80mm",
       "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_yashica_yashinon_80_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Yashica",
+    "name": "Yashinon 80mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay I",
+      "focalLength": "80mm",
+      "maxAperture": "f/3.5",
       "minAperture": "f/22"
     },
     "isDeveloperPreset": true

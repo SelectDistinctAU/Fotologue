@@ -78,5 +78,21 @@
       "minAperture": "f/22"
     },
     "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_yashica_yashinon_80_35",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Yashica",
+    "name": "Yashinon 80mm f/3.5 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "Bay I",
+      "focalLength": "80mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
   }
 ]

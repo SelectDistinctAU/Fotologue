@@ -4558,11 +4558,16 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                             val mountAuto = if (isTlrOrFixed) "Fixed" else preset.mount
                                             editingCamera = preset.copy(format = formatAuto, mount = mountAuto)
                                             if (isTlrOrFixed || preset.name.contains("Yashica", ignoreCase = true)) {
-                                                val masterItem = DatabaseRepository.loadRawMasterPresetItems("CAMERA").firstOrNull { it.name.equals(preset.name, ignoreCase = true) }
-                                                fixedLensName = masterItem?.attributes?.get("fixedLensName") ?: "${preset.name} Taking Lens"
-                                                fixedLensFocalLength = masterItem?.attributes?.get("fixedLensFocalLength") ?: "80mm"
-                                                fixedLensMaxAperture = masterItem?.attributes?.get("fixedLensMaxAperture") ?: "f/3.5"
-                                                fixedLensFilterSize = masterItem?.attributes?.get("fixedLensFilterSize") ?: "Bay I"
+                                                val masterCam = DatabaseRepository.loadRawMasterPresetItems("CAMERA").firstOrNull { it.name.equals(preset.name, ignoreCase = true) }
+                                                val refLensName = masterCam?.attributes?.get("fixedLens")
+                                                val masterLens = if (refLensName != null) {
+                                                    DatabaseRepository.loadRawMasterPresetItems("LENS").firstOrNull { it.name.equals(refLensName, ignoreCase = true) }
+                                                } else null
+
+                                                fixedLensName = masterLens?.name ?: refLensName ?: "${preset.name} Taking Lens"
+                                                fixedLensFocalLength = masterLens?.attributes?.get("focalLength") ?: "80mm"
+                                                fixedLensMaxAperture = masterLens?.attributes?.get("maxAperture") ?: "f/3.5"
+                                                fixedLensFilterSize = masterLens?.attributes?.get("filterSize") ?: "Bay I"
                                             }
                                             showCameraPresetsDialog = false
                                         },
@@ -4584,11 +4589,16 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                                                 val mountAuto = if (isTlrOrFixed) "Fixed" else preset.mount
                                                 editingCamera = preset.copy(format = formatAuto, mount = mountAuto)
                                                 if (isTlrOrFixed || preset.name.contains("Yashica", ignoreCase = true)) {
-                                                    val masterItem = DatabaseRepository.loadRawMasterPresetItems("CAMERA").firstOrNull { it.name.equals(preset.name, ignoreCase = true) }
-                                                    fixedLensName = masterItem?.attributes?.get("fixedLensName") ?: "${preset.name} Taking Lens"
-                                                    fixedLensFocalLength = masterItem?.attributes?.get("fixedLensFocalLength") ?: "80mm"
-                                                    fixedLensMaxAperture = masterItem?.attributes?.get("fixedLensMaxAperture") ?: "f/3.5"
-                                                    fixedLensFilterSize = masterItem?.attributes?.get("fixedLensFilterSize") ?: "Bay I"
+                                                    val masterCam = DatabaseRepository.loadRawMasterPresetItems("CAMERA").firstOrNull { it.name.equals(preset.name, ignoreCase = true) }
+                                                    val refLensName = masterCam?.attributes?.get("fixedLens")
+                                                    val masterLens = if (refLensName != null) {
+                                                        DatabaseRepository.loadRawMasterPresetItems("LENS").firstOrNull { it.name.equals(refLensName, ignoreCase = true) }
+                                                    } else null
+
+                                                    fixedLensName = masterLens?.name ?: refLensName ?: "${preset.name} Taking Lens"
+                                                    fixedLensFocalLength = masterLens?.attributes?.get("focalLength") ?: "80mm"
+                                                    fixedLensMaxAperture = masterLens?.attributes?.get("maxAperture") ?: "f/3.5"
+                                                    fixedLensFilterSize = masterLens?.attributes?.get("filterSize") ?: "Bay I"
                                                 }
                                                 showCameraPresetsDialog = false
                                             },

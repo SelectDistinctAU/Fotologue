@@ -372,72 +372,67 @@ fun MaintainerAppScreen() {
                         }
                     }
 
-                    // Integrated Fixed Lens Section for Cameras
+                    // Attribute 3 Row: Fixed Lens Reference for Fixed-Lens Cameras
                     val currentTypeVal = if (isEditing) (editingPresetItem?.attributes?.get("type") ?: "") else newAttr1Value
                     val currentMountVal = if (isEditing) (editingPresetItem?.attributes?.get("mount") ?: "") else newAttr2Value
                     val isFixedLensCamera = selectedCategory == "CAMERA" && (currentMountVal == "Fixed" || currentTypeVal == "TLR" || currentTypeVal == "Compact" || currentTypeVal == "Point & Shoot")
 
                     if (isFixedLensCamera) {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                        Text("📷 Integrated Fixed Lens Specification", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-                        
-                        OutlinedTextField(
-                            value = if (isEditing) (editingPresetItem?.attributes?.get("fixedLensName") ?: "") else "",
-                            onValueChange = { input ->
-                                if (isEditing && editingPresetItem != null) {
-                                    val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
-                                    currentAttrs["fixedLensName"] = input
-                                    editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
-                                }
-                            },
-                            label = { Text("Fixed Lens Name") },
-                            placeholder = { Text("e.g. Yashinon 80mm f/3.5 Taking Lens") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        var attr3DropdownExpanded by remember { mutableStateOf(false) }
+                        val lensOptions = remember {
+                            val lensFile = File(presetsDir, "lenses.json")
+                            val loaded = if (lensFile.exists()) {
+                                try { json.decodeFromString<List<MasterPresetItem>>(lensFile.readText()).map { it.name } } catch (_: Exception) { emptyList() }
+                            } else emptyList()
+                            listOf("None") + loaded
+                        }
 
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedTextField(
-                                value = if (isEditing) (editingPresetItem?.attributes?.get("fixedLensFocalLength") ?: "") else "",
-                                onValueChange = { input ->
-                                    if (isEditing && editingPresetItem != null) {
-                                        val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
-                                        currentAttrs["fixedLensFocalLength"] = input
-                                        editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
-                                    }
-                                },
-                                label = { Text("Focal Length") },
-                                placeholder = { Text("e.g. 80mm") },
+                                value = "fixedLens",
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Attribute 3 Key") },
                                 modifier = Modifier.weight(1f)
                             )
-
-                            OutlinedTextField(
-                                value = if (isEditing) (editingPresetItem?.attributes?.get("fixedLensMaxAperture") ?: "") else "",
-                                onValueChange = { input ->
-                                    if (isEditing && editingPresetItem != null) {
-                                        val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
-                                        currentAttrs["fixedLensMaxAperture"] = input
-                                        editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                            Box(modifier = Modifier.weight(1f)) {
+                                OutlinedTextField(
+                                    value = if (isEditing) (editingPresetItem?.attributes?.get("fixedLens") ?: "") else "",
+                                    onValueChange = { input ->
+                                        if (isEditing && editingPresetItem != null) {
+                                            val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                            currentAttrs["fixedLens"] = input
+                                            editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                        }
+                                    },
+                                    label = { Text("Attribute 3 Value (Referenced Lens)") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    trailingIcon = {
+                                        IconButton(onClick = { attr3DropdownExpanded = !attr3DropdownExpanded }) {
+                                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                        }
                                     }
-                                },
-                                label = { Text("Max Aperture") },
-                                placeholder = { Text("e.g. f/3.5") },
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-
-                        OutlinedTextField(
-                            value = if (isEditing) (editingPresetItem?.attributes?.get("fixedLensFilterSize") ?: "") else "",
-                            onValueChange = { input ->
-                                if (isEditing && editingPresetItem != null) {
-                                    val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
-                                    currentAttrs["fixedLensFilterSize"] = input
-                                    editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                )
+                                DropdownMenu(
+                                    expanded = attr3DropdownExpanded,
+                                    onDismissRequest = { attr3DropdownExpanded = false }
+                                ) {
+                                    lensOptions.forEach { lOpt ->
+                                        DropdownMenuItem(
+                                            text = { Text(lOpt) },
+                                            onClick = {
+                                                if (isEditing && editingPresetItem != null) {
+                                                    val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                                    if (lOpt == "None") currentAttrs.remove("fixedLens") else currentAttrs["fixedLens"] = lOpt
+                                                    editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                                }
+                                                attr3DropdownExpanded = false
+                                            }
+                                        )
+                                    }
                                 }
-                            },
-                            label = { Text("Filter Size / Mount") },
-                            placeholder = { Text("e.g. Bay I, 49mm") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                            }
+                        }
                     }
                 }
             },

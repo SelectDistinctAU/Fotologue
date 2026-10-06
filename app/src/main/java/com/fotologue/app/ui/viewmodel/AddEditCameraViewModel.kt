@@ -298,16 +298,26 @@ class AddEditCameraViewModel @Inject constructor(
                 )
                 repository.insertLens(fixedLensObj, listOf(newCamId))
             } else if (!currentState.type.isInterchangeable || currentState.mount.equals("Fixed", ignoreCase = true)) {
-                // Generates a generic fixed taking lens if the preset didn't define one
+                val camPreset = MasterPresetEngine.getPresetsByCategory("CAMERA").find { it.name.equals(currentState.name, ignoreCase = true) }
+                val refLensName = camPreset?.attributes?.get("fixedLens")
+                val matchedLensPreset = if (refLensName != null) {
+                    MasterPresetEngine.getPresetsByCategory("LENS").find { it.name.equals(refLensName, ignoreCase = true) }
+                } else null
+
+                val makeName = matchedLensPreset?.brand ?: currentState.name.substringBefore(" ")
+                val modelName = matchedLensPreset?.name ?: "Taking Lens"
+                val fLength = matchedLensPreset?.attributes?.get("focalLength")?.replace("mm", "")?.toIntOrNull() ?: 80
+                val maxAp = matchedLensPreset?.attributes?.get("maxAperture")?.replace("f/", "")?.toDoubleOrNull() ?: 3.5
+
                 val genericFixedLens = Lens(
-                    make = currentState.name.substringBefore(" "),
-                    model = "Taking Lens",
+                    make = makeName,
+                    model = modelName,
                     mount = "Fixed",
-                    type = "Prime",
-                    maxAperture = 3.5,
+                    type = matchedLensPreset?.subCategory ?: matchedLensPreset?.attributes?.get("type") ?: "Prime",
+                    maxAperture = maxAp,
                     minAperture = 22.0,
-                    minFocalLength = 80,
-                    maxFocalLength = 80,
+                    minFocalLength = fLength,
+                    maxFocalLength = fLength,
                     filterSize = 0,
                     isStabilized = false,
                     minFocusDistance = 1.0,
