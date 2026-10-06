@@ -486,6 +486,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-050: Hardcoded Fixed Lens Strings and Missing Maintainer CRUD Controls
+- **Platform**: Maintainer Tool & Desktop App (`MaintainerApp.kt`, `cameras.json`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Fixed taking lenses for TLRs (*Yashica Mat-124G*) and compact cameras were hardcoded in Kotlin string fallbacks (`"${preset.name} Taking Lens"`, `"80mm"`, `"f/3.5"`), preventing maintainers from authoring or editing taking lens specs in the preset catalog.
+- **Root Cause**: Unrepresented taking lens attributes in `cameras.json` and missing UI controls in `MaintainerApp.kt`.
+- **Resolution**: Defined explicit fixed lens attributes (`fixedLensName`, `fixedLensFocalLength`, `fixedLensMaxAperture`, `fixedLensFilterSize`) in `cameras.json`. Added explicit **Integrated Fixed Lens CRUD controls** in `MaintainerApp.kt` when `mount == "Fixed"` or `type` is in (`TLR`, `Compact`, `Point & Shoot`), and updated `Main.kt` to read taking lens attributes dynamically from the catalog.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ edit *Yashica Mat-124G* $\to$ verify taking lens fields display pre-filled and can be edited and saved back to `cameras.json`.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
