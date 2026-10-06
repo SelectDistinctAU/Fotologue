@@ -616,6 +616,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-063: System Gear Expansion for Teleconverters, Flashes & Viewfinders
+- **Platform**: Fotologue Preset Catalog (`teleconverters.json`, `flashes.json`, `viewfinders.json`, `MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: The preset catalog was missing teleconverters, speedlights, pop-up flash types, and system viewfinders for the 82 camera bodies.
+- **Root Cause**: Unpopulated system accessory datasets.
+- **Resolution**: Enabled `Built-in / Pop-up Flash` LOV type in `MaintainerApp.kt`. Ingested 12 teleconverters (Canon FD/EF, Nikon F, Pentax K, Minolta MD/AF, Leica, Hasselblad), 14 flashes (including Canon Speedlite, Nikon SB, Vivitar 283, and Pop-up Flash), and 21 system viewfinders (including all 9 Pentax LX system finders).
+- **Regression Test Case**: Launch Maintainer Tool `./gradlew :desktop:runMaintainer` $\to$ verify `FLASH` type dropdown contains `Built-in / Pop-up Flash` and `VIEWFINDER` lists all 9 Pentax LX system finders.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
