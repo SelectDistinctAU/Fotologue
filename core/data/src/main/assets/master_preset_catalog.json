@@ -3699,6 +3699,118 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "lens_pentax_smc_a_70_210",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Pentax",
+    "name": "SMC Pentax-A 70-210mm f/4.0",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Pentax K",
+      "filterSize": "58mm",
+      "focalLength": "70-210mm",
+      "maxAperture": "f/4.0",
+      "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_pentax_smc_m_80_200",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Pentax",
+    "name": "SMC Pentax-M 80-200mm f/4.5",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Pentax K",
+      "filterSize": "52mm",
+      "focalLength": "80-200mm",
+      "maxAperture": "f/4.5",
+      "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_pentax_smc_a_35_105",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Pentax",
+    "name": "SMC Pentax-A 35-105mm f/3.5 Macro",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Pentax K",
+      "filterSize": "67mm",
+      "focalLength": "35-105mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_pentax_smc_f_35_70",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Pentax",
+    "name": "SMC Pentax-F 35-70mm f/3.5-4.5",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Pentax K",
+      "filterSize": "49mm",
+      "focalLength": "35-70mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_pentax_smc_fa_28_105",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Pentax",
+    "name": "SMC Pentax-FA 28-105mm f/3.2-4.5 IF",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Pentax K",
+      "filterSize": "58mm",
+      "focalLength": "28-105mm",
+      "maxAperture": "f/3.2",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_pentax_star_28_70_28",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Pentax",
+    "name": "SMC Pentax-FA* 28-70mm f/2.8 AL",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Pentax K",
+      "filterSize": "67mm",
+      "focalLength": "28-70mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_pentax_star_80_200_28",
+    "category": "LENS",
+    "subCategory": "Zoom",
+    "brand": "Pentax",
+    "name": "SMC Pentax-FA* 80-200mm f/2.8 ED IF",
+    "attributes": {
+      "type": "Zoom",
+      "mount": "Pentax K",
+      "filterSize": "77mm",
+      "focalLength": "80-200mm",
+      "maxAperture": "f/2.8",
+      "minAperture": "f/32"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "lens_pentax_star_85_14",
     "category": "LENS",
     "subCategory": "Prime",
