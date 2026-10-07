@@ -784,6 +784,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-078: LocationProvider SecurityException Guard and Native Permission Launchers
+- **Platform**: Fotologue Mobile (`LocationProvider.kt`, `AddLogScreen.kt`, `LightMeterScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Calling Measure Exposure or initializing Light Meter crashed the app when GPS location or camera permissions were missing.
+- **Root Cause**: `LocationProvider.kt` invoked `fusedLocationClient.getCurrentLocation()` without checking `ContextCompat.checkSelfPermission`, throwing an unhandled `SecurityException` when permission was missing.
+- **Resolution**:
+  1. Wrapped `LocationProvider.kt` with explicit `ContextCompat.checkSelfPermission` checks for `ACCESS_FINE_LOCATION` and `ACCESS_COARSE_LOCATION`, returning `null` safely if permissions are not granted.
+  2. Migrated `AddLogScreen.kt` and `LightMeterScreen.kt` to native Android `rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission())` with `ContextCompat` pre-checks.
+  3. Made FloatingActionButton save action non-blocking.
+- **Regression Test Case**: Revoke Location and Camera permissions in Android App Info $\to$ open `Add Exposure Log` $\to$ tap `Measure Exposure` $\to$ verify permission prompt displays and app does not crash.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
