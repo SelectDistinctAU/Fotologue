@@ -656,6 +656,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-067: Supplier Contact Preset Tailoring & Client Import Bridge
+- **Platform**: Maintainer Tool, Mobile & Desktop (`suppliers.json`, `MaintainerApp.kt`, `DatabaseRepository.kt`, `Main.kt`, `AddEditSupplierScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: The Maintainer Tool displayed camera body brands (*Alpa*, *Canon*, *Nikon*) for `SUPPLIER` presets, and neither Mobile nor Desktop offered a 1-click way to import vendor contacts from presets.
+- **Root Cause**: Un-tailored `SUPPLIER` category form in Maintainer Tool and missing preset import modals in client apps.
+- **Resolution**: Tailored `SUPPLIER` in `MaintainerApp.kt` to hide Brand/Model fields, prompting for Vendor Name, Supplier Type, Region, and Website. Seeded starter vendor presets (*B&H Photo*, *Adorama*, *Analogue Wonderland*, *Vanbar*, *Rewind Photo Lab*) into `suppliers.json`. Added **`[ ⚙️ Select Supplier from Presets ]`** buttons to Desktop Contact form (Category 8) and Mobile `AddEditSupplierScreen.kt` for 1-click vendor contact ingestion.
+- **Regression Test Case**: Open Add Contact on Mobile or Desktop $\to$ tap `Select Supplier from Presets` $\to$ select *B&H Photo Video* $\to$ verify Vendor Name, Website, Region, and `#Supplier` role auto-fill.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
