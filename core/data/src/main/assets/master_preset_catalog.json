@@ -1171,30 +1171,352 @@
     "isDeveloperPreset": true
   },
 {
-    "id": "con_ilford_id11",
+    "id": "con_kodak_d76_1l",
     "category": "CONSUMABLE",
-    "subCategory": "Chemistry",
-    "brand": "Ilford",
-    "name": "Ilford ID-11 Developer (1L)",
-    "modelNumber": "ID-11",
+    "subCategory": "Developer (Film)",
+    "brand": "Kodak",
+    "name": "Kodak D-76 Developer (1L)",
+    "modelNumber": "D-76",
     "attributes": {
-      "type": "Chemistry",
+      "type": "Developer (Film)",
       "mixRatio": "Stock or 1+1",
       "capacity": "10 rolls"
     },
     "isDeveloperPreset": true
   },
   {
-    "id": "con_ilford_multigrade_paper",
+    "id": "con_kodak_xtol_5l",
     "category": "CONSUMABLE",
-    "subCategory": "Paper",
-    "brand": "Ilford",
-    "name": "Ilford Multigrade V RC Deluxe Paper (8x10)",
-    "modelNumber": "MG-RC-8X10",
+    "subCategory": "Developer (Film)",
+    "brand": "Kodak",
+    "name": "Kodak Xtol Ascorbate Developer (5L)",
+    "modelNumber": "Xtol",
     "attributes": {
-      "type": "Paper",
-      "surface": "Pearl",
-      "contrast": "Multigrade"
+      "type": "Developer (Film)",
+      "mixRatio": "Stock or 1+1",
+      "capacity": "50 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_kodak_hc110",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Kodak",
+    "name": "Kodak HC-110 Developer (1L Concentrate)",
+    "modelNumber": "HC-110",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Dilution B (1+31)",
+      "capacity": "80 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_kodak_tmax_dev",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Kodak",
+    "name": "Kodak T-Max Developer (1L Liquid)",
+    "modelNumber": "T-Max Dev",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "1+4",
+      "capacity": "16 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_id11",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Ilford",
+    "name": "Ilford ID-11 Developer (1L)",
+    "modelNumber": "ID-11",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Stock or 1+1",
+      "capacity": "10 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_ddx_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Ilford",
+    "name": "Ilford Ilfotec DD-X (1L Liquid)",
+    "modelNumber": "DD-X",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "1+4",
+      "capacity": "16 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_microphen",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Ilford",
+    "name": "Ilford Microphen Push Developer (1L)",
+    "modelNumber": "Microphen",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Stock or 1+1",
+      "capacity": "10 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_perceptol",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Ilford",
+    "name": "Ilford Perceptol Fine Grain Developer (1L)",
+    "modelNumber": "Perceptol",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Stock or 1+1",
+      "capacity": "10 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_adox_rodinal_500ml",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Agfa / Adox",
+    "name": "Adox Rodinal / R09 One Shot (500ml)",
+    "modelNumber": "Rodinal R09",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "1+25 or 1+50",
+      "capacity": "50 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_cinestill_cs41_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Cinestill",
+    "name": "Cinestill Cs41 Liquid C-41 Color Kit (1L)",
+    "modelNumber": "Cs41 1L",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Kit Stock",
+      "capacity": "16 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_cinestill_cs63_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Cinestill",
+    "name": "Cinestill Cs63 Color Slide E-6 Kit (1L)",
+    "modelNumber": "Cs63 1L",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Kit Stock",
+      "capacity": "12 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_tetenal_c41_rapid_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Tetenal",
+    "name": "Tetenal Colortec C-41 Rapid Kit (1L)",
+    "modelNumber": "Colortec C-41",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Kit Stock",
+      "capacity": "16 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_rapid_fixer_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Fixer",
+    "brand": "Ilford",
+    "name": "Ilford Rapid Fixer (1L)",
+    "modelNumber": "Rapid Fixer 1L",
+    "attributes": {
+      "type": "Fixer",
+      "mixRatio": "1+4 (Film) or 1+9 (Paper)",
+      "capacity": "24 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_ilfostop_500ml",
+    "category": "CONSUMABLE",
+    "subCategory": "Stop Bath",
+    "brand": "Ilford",
+    "name": "Ilford Ilfostop Stop Bath (500ml)",
+    "modelNumber": "Ilfostop",
+    "attributes": {
+      "type": "Stop Bath",
+      "mixRatio": "1+19",
+      "capacity": "30 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_kodak_rapid_fixer_1gal",
+    "category": "CONSUMABLE",
+    "subCategory": "Fixer",
+    "brand": "Kodak",
+    "name": "Kodak Rapid Fixer (1 Gal / 3.8L)",
+    "modelNumber": "Rapid Fixer",
+    "attributes": {
+      "type": "Fixer",
+      "mixRatio": "Stock",
+      "capacity": "60 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_kodak_indicator_stop",
+    "category": "CONSUMABLE",
+    "subCategory": "Stop Bath",
+    "brand": "Kodak",
+    "name": "Kodak Indicator Stop Bath (473ml)",
+    "modelNumber": "Indicator Stop",
+    "attributes": {
+      "type": "Stop Bath",
+      "mixRatio": "1+63",
+      "capacity": "40 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_adox_adofix_500ml",
+    "category": "CONSUMABLE",
+    "subCategory": "Fixer",
+    "brand": "Agfa / Adox",
+    "name": "Adox Adofix Plus Fixer (500ml)",
+    "modelNumber": "Adofix Plus",
+    "attributes": {
+      "type": "Fixer",
+      "mixRatio": "1+4 or 1+9",
+      "capacity": "15 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_adox_adostop_500ml",
+    "category": "CONSUMABLE",
+    "subCategory": "Stop Bath",
+    "brand": "Agfa / Adox",
+    "name": "Adox Adostop Odourless Stop Bath (500ml)",
+    "modelNumber": "Adostop",
+    "attributes": {
+      "type": "Stop Bath",
+      "mixRatio": "1+19",
+      "capacity": "25 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_ilfotol_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Wetting Agent",
+    "brand": "Ilford",
+    "name": "Ilford Ilfotol Wetting Agent (1L)",
+    "modelNumber": "Ilfotol",
+    "attributes": {
+      "type": "Wetting Agent",
+      "mixRatio": "1+200",
+      "capacity": "200 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_kodak_photoflo_200",
+    "category": "CONSUMABLE",
+    "subCategory": "Wetting Agent",
+    "brand": "Kodak",
+    "name": "Kodak Photo-Flo 200 (473ml)",
+    "modelNumber": "Photo-Flo 200",
+    "attributes": {
+      "type": "Wetting Agent",
+      "mixRatio": "1+200",
+      "capacity": "100 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_multigrade_rc_glossy_100",
+    "category": "CONSUMABLE",
+    "subCategory": "Darkroom Paper",
+    "brand": "Ilford",
+    "name": "Ilford Multigrade V RC Deluxe Glossy (8x10 / 100 Sheets)",
+    "modelNumber": "MG-RC-Glossy",
+    "attributes": {
+      "type": "Darkroom Paper",
+      "surface": "Glossy RC",
+      "size": "8x10 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_multigrade_rc_pearl_100",
+    "category": "CONSUMABLE",
+    "subCategory": "Darkroom Paper",
+    "brand": "Ilford",
+    "name": "Ilford Multigrade V RC Deluxe Pearl (8x10 / 100 Sheets)",
+    "modelNumber": "MG-RC-Pearl",
+    "attributes": {
+      "type": "Darkroom Paper",
+      "surface": "Pearl RC",
+      "size": "8x10 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_multigrade_fb_classic_50",
+    "category": "CONSUMABLE",
+    "subCategory": "Darkroom Paper",
+    "brand": "Ilford",
+    "name": "Ilford Multigrade FB Classic Glossy (8x10 / 50 Sheets)",
+    "modelNumber": "MG-FB-Classic",
+    "attributes": {
+      "type": "Darkroom Paper",
+      "surface": "Glossy Fiber Base (FB)",
+      "size": "8x10 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_foma_fomabrom_fb_50",
+    "category": "CONSUMABLE",
+    "subCategory": "Darkroom Paper",
+    "brand": "Foma",
+    "name": "Foma Fomabrom Variant III FB Glossy (8x10 / 50 Sheets)",
+    "modelNumber": "Fomabrom III",
+    "attributes": {
+      "type": "Darkroom Paper",
+      "surface": "Glossy Fiber Base (FB)",
+      "size": "8x10 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_adox_lupex_contact_25",
+    "category": "CONSUMABLE",
+    "subCategory": "Darkroom Paper",
+    "brand": "Agfa / Adox",
+    "name": "Adox Lupex Silver Chloride Contact Paper (8x10 / 25 Sheets)",
+    "modelNumber": "Lupex 8x10",
+    "attributes": {
+      "type": "Darkroom Paper",
+      "surface": "Contact FB",
+      "size": "8x10 in"
     },
     "isDeveloperPreset": true
   },
@@ -2427,24 +2749,360 @@
     "category": "EQUIPMENT",
     "subCategory": "Enlarger",
     "brand": "Beseler",
-    "name": "Beseler 23C II Enlarger",
-    "modelNumber": "23C II",
+    "name": "Beseler 23C III XL Enlarger",
+    "modelNumber": "23C III XL",
     "attributes": {
-      "category": "Enlarger",
-      "condition": "Good"
+      "type": "Enlarger",
+      "format": "35mm to 6x9cm"
     },
     "isDeveloperPreset": true
   },
   {
-    "id": "eq_paterson_multi_reel_tank",
+    "id": "eq_beseler_printmaker_67",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Beseler",
+    "name": "Beseler Printmaker 67 Enlarger",
+    "modelNumber": "Printmaker 67",
+    "attributes": {
+      "type": "Enlarger",
+      "format": "35mm to 6x7cm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_durst_m605",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Durst",
+    "name": "Durst M605 Color Enlarger",
+    "modelNumber": "M605",
+    "attributes": {
+      "type": "Enlarger",
+      "format": "35mm to 6x6cm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_durst_laborator_1200",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Durst",
+    "name": "Durst Laborator 1200 4x5 Enlarger",
+    "modelNumber": "L1200",
+    "attributes": {
+      "type": "Enlarger",
+      "format": "4x5 Large Format"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_lpl_7700_dual_mx",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "LPL / Saunders",
+    "name": "LPL / Saunders 7700 Dual MX Enlarger",
+    "modelNumber": "7700 Dual MX",
+    "attributes": {
+      "type": "Enlarger",
+      "format": "35mm to 6x7cm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_lpl_4500ii",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "LPL / Saunders",
+    "name": "LPL 4500II 4x5 Color Enlarger",
+    "modelNumber": "4500II",
+    "attributes": {
+      "type": "Enlarger",
+      "format": "4x5 Large Format"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_omega_d5xl",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Omega / Saunders",
+    "name": "Omega D5-XL 4x5 Pro Enlarger",
+    "modelNumber": "D5-XL",
+    "attributes": {
+      "type": "Enlarger",
+      "format": "4x5 Large Format"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_meopta_opemus_6",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Meopta",
+    "name": "Meopta Opemus 6 Enlarger",
+    "modelNumber": "Opemus 6",
+    "attributes": {
+      "type": "Enlarger",
+      "format": "35mm to 6x6cm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_intrepid_led_enlarger",
+    "category": "EQUIPMENT",
+    "subCategory": "Enlarger",
+    "brand": "Intrepid",
+    "name": "Intrepid Compact LED Enlarger (35mm / 120)",
+    "modelNumber": "Compact LED",
+    "attributes": {
+      "type": "Enlarger",
+      "format": "35mm to 6x9cm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_paterson_universal_tank",
     "category": "EQUIPMENT",
     "subCategory": "Dev Tank",
     "brand": "Paterson",
-    "name": "Paterson Super System 4 Multi-Reel Tank",
+    "name": "Paterson Super System 4 Universal Tank (2 Reels)",
     "modelNumber": "PTP115",
     "attributes": {
-      "category": "Dev Tank",
-      "condition": "Excellent"
+      "type": "Dev Tank",
+      "capacity": "2x 35mm / 1x 120"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_paterson_multireel_5",
+    "category": "EQUIPMENT",
+    "subCategory": "Dev Tank",
+    "brand": "Paterson",
+    "name": "Paterson Super System 4 Multi-Reel 5 Tank",
+    "modelNumber": "PTP117",
+    "attributes": {
+      "type": "Dev Tank",
+      "capacity": "5x 35mm / 3x 120"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_paterson_auto_reel",
+    "category": "EQUIPMENT",
+    "subCategory": "Film Reel",
+    "brand": "Paterson",
+    "name": "Paterson Auto-Load Adjustable Film Reel",
+    "modelNumber": "PTP119",
+    "attributes": {
+      "type": "Film Reel",
+      "capacity": "35mm / 120 / 220"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_jobo_1520_tank",
+    "category": "EQUIPMENT",
+    "subCategory": "Dev Tank",
+    "brand": "Jobo",
+    "name": "Jobo 1520 Tank System",
+    "modelNumber": "1520",
+    "attributes": {
+      "type": "Dev Tank",
+      "capacity": "2x 35mm / 2x 120"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_jobo_1510_tank",
+    "category": "EQUIPMENT",
+    "subCategory": "Dev Tank",
+    "brand": "Jobo",
+    "name": "Jobo 1510 Single-Roll Tank",
+    "modelNumber": "1510",
+    "attributes": {
+      "type": "Dev Tank",
+      "capacity": "1x 35mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_jobo_2520_multitank",
+    "category": "EQUIPMENT",
+    "subCategory": "Dev Tank",
+    "brand": "Jobo",
+    "name": "Jobo 2520 Multitank 2 (4x5 Sheet Film)",
+    "modelNumber": "2520",
+    "attributes": {
+      "type": "Dev Tank",
+      "capacity": "6x 4x5 Sheets"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_jobo_1501_reel",
+    "category": "EQUIPMENT",
+    "subCategory": "Film Reel",
+    "brand": "Jobo",
+    "name": "Jobo 1501 Adjustable Spiral Reel",
+    "modelNumber": "1501",
+    "attributes": {
+      "type": "Film Reel",
+      "capacity": "35mm / 120"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_ap_compact_tank",
+    "category": "EQUIPMENT",
+    "subCategory": "Dev Tank",
+    "brand": "AP",
+    "name": "AP Compact Film Developing Tank + 2 Reels",
+    "modelNumber": "AP Compact",
+    "attributes": {
+      "type": "Dev Tank",
+      "capacity": "2x 35mm / 1x 120"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_kindermann_ss_tank",
+    "category": "EQUIPMENT",
+    "subCategory": "Dev Tank",
+    "brand": "Kindermann",
+    "name": "Kindermann Stainless Steel 35mm Tank & Reel",
+    "modelNumber": "SS Tank",
+    "attributes": {
+      "type": "Dev Tank",
+      "capacity": "1x 35mm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_paterson_8x10_trays",
+    "category": "EQUIPMENT",
+    "subCategory": "Developing Tray",
+    "brand": "Paterson",
+    "name": "Paterson 8x10 Developing Trays (Red/White/Grey 3-Pack)",
+    "modelNumber": "PTP325",
+    "attributes": {
+      "type": "Developing Tray",
+      "size": "8x10 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_paterson_11x14_trays",
+    "category": "EQUIPMENT",
+    "subCategory": "Developing Tray",
+    "brand": "Paterson",
+    "name": "Paterson 11x14 Developing Trays (3-Pack)",
+    "modelNumber": "PTP331",
+    "attributes": {
+      "type": "Developing Tray",
+      "size": "11x14 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_paterson_squeegee",
+    "category": "EQUIPMENT",
+    "subCategory": "Film Squeegee",
+    "brand": "Paterson",
+    "name": "Paterson Anti-Scratch Rubber Film Squeegee",
+    "modelNumber": "PTP255",
+    "attributes": {
+      "type": "Film Squeegee"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_paterson_print_washer",
+    "category": "EQUIPMENT",
+    "subCategory": "Developing Tray",
+    "brand": "Paterson",
+    "name": "Paterson Auto Print Washer 10x12",
+    "modelNumber": "PTP230",
+    "attributes": {
+      "type": "Developing Tray",
+      "size": "10x12 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_gralab_300_timer",
+    "category": "EQUIPMENT",
+    "subCategory": "Darkroom Timer / Exposure Timer",
+    "brand": "Kaiser",
+    "name": "GraLab Model 300 Electro-Mechanical Darkroom Timer",
+    "modelNumber": "Model 300",
+    "attributes": {
+      "type": "Darkroom Timer / Exposure Timer"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_kaiser_light_table",
+    "category": "EQUIPMENT",
+    "subCategory": "Darkroom Timer / Exposure Timer",
+    "brand": "Kaiser",
+    "name": "Kaiser Slimlite Plano LED Light Table (5000K)",
+    "modelNumber": "Slimlite Plano",
+    "attributes": {
+      "type": "Darkroom Timer / Exposure Timer",
+      "colorTemp": "5000K Daylight"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_kaiser_safelight",
+    "category": "EQUIPMENT",
+    "subCategory": "Safelight",
+    "brand": "Kaiser",
+    "name": "Kaiser Darkroom Safelight (Red / Amber LED)",
+    "modelNumber": "Safelight LED",
+    "attributes": {
+      "type": "Safelight",
+      "spectrum": "Red / Amber 590nm"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_peak_grain_focus_scope",
+    "category": "EQUIPMENT",
+    "subCategory": "Focus Finder / Grain Focus Scope",
+    "brand": "Peak",
+    "name": "Peak Critical Grain Focus Scope Model 1 (10x)",
+    "modelNumber": "Model 1",
+    "attributes": {
+      "type": "Focus Finder / Grain Focus Scope",
+      "magnification": "10x"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_paterson_changing_bag",
+    "category": "EQUIPMENT",
+    "subCategory": "Film Changing Bag",
+    "brand": "Paterson",
+    "name": "Paterson Darkroom Changing Bag (Large 27\"x30\")",
+    "modelNumber": "PTP263",
+    "attributes": {
+      "type": "Film Changing Bag",
+      "size": "27x30 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "eq_jobo_precision_thermometer",
+    "category": "EQUIPMENT",
+    "subCategory": "Thermometer",
+    "brand": "Jobo",
+    "name": "Jobo Precision Darkroom Thermometer (±0.2°C)",
+    "modelNumber": "Precision Thermo",
+    "attributes": {
+      "type": "Thermometer",
+      "accuracy": "±0.2°C"
     },
     "isDeveloperPreset": true
   },

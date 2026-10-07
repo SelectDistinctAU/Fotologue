@@ -1,29 +1,351 @@
 [
   {
-    "id": "con_ilford_id11",
+    "id": "con_kodak_d76_1l",
     "category": "CONSUMABLE",
-    "subCategory": "Chemistry",
-    "brand": "Ilford",
-    "name": "Ilford ID-11 Developer (1L)",
-    "modelNumber": "ID-11",
+    "subCategory": "Developer (Film)",
+    "brand": "Kodak",
+    "name": "Kodak D-76 Developer (1L)",
+    "modelNumber": "D-76",
     "attributes": {
-      "type": "Chemistry",
+      "type": "Developer (Film)",
       "mixRatio": "Stock or 1+1",
       "capacity": "10 rolls"
     },
     "isDeveloperPreset": true
   },
   {
-    "id": "con_ilford_multigrade_paper",
+    "id": "con_kodak_xtol_5l",
     "category": "CONSUMABLE",
-    "subCategory": "Paper",
-    "brand": "Ilford",
-    "name": "Ilford Multigrade V RC Deluxe Paper (8x10)",
-    "modelNumber": "MG-RC-8X10",
+    "subCategory": "Developer (Film)",
+    "brand": "Kodak",
+    "name": "Kodak Xtol Ascorbate Developer (5L)",
+    "modelNumber": "Xtol",
     "attributes": {
-      "type": "Paper",
-      "surface": "Pearl",
-      "contrast": "Multigrade"
+      "type": "Developer (Film)",
+      "mixRatio": "Stock or 1+1",
+      "capacity": "50 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_kodak_hc110",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Kodak",
+    "name": "Kodak HC-110 Developer (1L Concentrate)",
+    "modelNumber": "HC-110",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Dilution B (1+31)",
+      "capacity": "80 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_kodak_tmax_dev",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Kodak",
+    "name": "Kodak T-Max Developer (1L Liquid)",
+    "modelNumber": "T-Max Dev",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "1+4",
+      "capacity": "16 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_id11",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Ilford",
+    "name": "Ilford ID-11 Developer (1L)",
+    "modelNumber": "ID-11",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Stock or 1+1",
+      "capacity": "10 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_ddx_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Ilford",
+    "name": "Ilford Ilfotec DD-X (1L Liquid)",
+    "modelNumber": "DD-X",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "1+4",
+      "capacity": "16 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_microphen",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Ilford",
+    "name": "Ilford Microphen Push Developer (1L)",
+    "modelNumber": "Microphen",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Stock or 1+1",
+      "capacity": "10 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_perceptol",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Ilford",
+    "name": "Ilford Perceptol Fine Grain Developer (1L)",
+    "modelNumber": "Perceptol",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Stock or 1+1",
+      "capacity": "10 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_adox_rodinal_500ml",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Agfa / Adox",
+    "name": "Adox Rodinal / R09 One Shot (500ml)",
+    "modelNumber": "Rodinal R09",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "1+25 or 1+50",
+      "capacity": "50 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_cinestill_cs41_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Cinestill",
+    "name": "Cinestill Cs41 Liquid C-41 Color Kit (1L)",
+    "modelNumber": "Cs41 1L",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Kit Stock",
+      "capacity": "16 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_cinestill_cs63_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Cinestill",
+    "name": "Cinestill Cs63 Color Slide E-6 Kit (1L)",
+    "modelNumber": "Cs63 1L",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Kit Stock",
+      "capacity": "12 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_tetenal_c41_rapid_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Tetenal",
+    "name": "Tetenal Colortec C-41 Rapid Kit (1L)",
+    "modelNumber": "Colortec C-41",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "Kit Stock",
+      "capacity": "16 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_rapid_fixer_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Fixer",
+    "brand": "Ilford",
+    "name": "Ilford Rapid Fixer (1L)",
+    "modelNumber": "Rapid Fixer 1L",
+    "attributes": {
+      "type": "Fixer",
+      "mixRatio": "1+4 (Film) or 1+9 (Paper)",
+      "capacity": "24 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_ilfostop_500ml",
+    "category": "CONSUMABLE",
+    "subCategory": "Stop Bath",
+    "brand": "Ilford",
+    "name": "Ilford Ilfostop Stop Bath (500ml)",
+    "modelNumber": "Ilfostop",
+    "attributes": {
+      "type": "Stop Bath",
+      "mixRatio": "1+19",
+      "capacity": "30 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_kodak_rapid_fixer_1gal",
+    "category": "CONSUMABLE",
+    "subCategory": "Fixer",
+    "brand": "Kodak",
+    "name": "Kodak Rapid Fixer (1 Gal / 3.8L)",
+    "modelNumber": "Rapid Fixer",
+    "attributes": {
+      "type": "Fixer",
+      "mixRatio": "Stock",
+      "capacity": "60 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_kodak_indicator_stop",
+    "category": "CONSUMABLE",
+    "subCategory": "Stop Bath",
+    "brand": "Kodak",
+    "name": "Kodak Indicator Stop Bath (473ml)",
+    "modelNumber": "Indicator Stop",
+    "attributes": {
+      "type": "Stop Bath",
+      "mixRatio": "1+63",
+      "capacity": "40 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_adox_adofix_500ml",
+    "category": "CONSUMABLE",
+    "subCategory": "Fixer",
+    "brand": "Agfa / Adox",
+    "name": "Adox Adofix Plus Fixer (500ml)",
+    "modelNumber": "Adofix Plus",
+    "attributes": {
+      "type": "Fixer",
+      "mixRatio": "1+4 or 1+9",
+      "capacity": "15 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_adox_adostop_500ml",
+    "category": "CONSUMABLE",
+    "subCategory": "Stop Bath",
+    "brand": "Agfa / Adox",
+    "name": "Adox Adostop Odourless Stop Bath (500ml)",
+    "modelNumber": "Adostop",
+    "attributes": {
+      "type": "Stop Bath",
+      "mixRatio": "1+19",
+      "capacity": "25 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_ilfotol_1l",
+    "category": "CONSUMABLE",
+    "subCategory": "Wetting Agent",
+    "brand": "Ilford",
+    "name": "Ilford Ilfotol Wetting Agent (1L)",
+    "modelNumber": "Ilfotol",
+    "attributes": {
+      "type": "Wetting Agent",
+      "mixRatio": "1+200",
+      "capacity": "200 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_kodak_photoflo_200",
+    "category": "CONSUMABLE",
+    "subCategory": "Wetting Agent",
+    "brand": "Kodak",
+    "name": "Kodak Photo-Flo 200 (473ml)",
+    "modelNumber": "Photo-Flo 200",
+    "attributes": {
+      "type": "Wetting Agent",
+      "mixRatio": "1+200",
+      "capacity": "100 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_multigrade_rc_glossy_100",
+    "category": "CONSUMABLE",
+    "subCategory": "Darkroom Paper",
+    "brand": "Ilford",
+    "name": "Ilford Multigrade V RC Deluxe Glossy (8x10 / 100 Sheets)",
+    "modelNumber": "MG-RC-Glossy",
+    "attributes": {
+      "type": "Darkroom Paper",
+      "surface": "Glossy RC",
+      "size": "8x10 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_multigrade_rc_pearl_100",
+    "category": "CONSUMABLE",
+    "subCategory": "Darkroom Paper",
+    "brand": "Ilford",
+    "name": "Ilford Multigrade V RC Deluxe Pearl (8x10 / 100 Sheets)",
+    "modelNumber": "MG-RC-Pearl",
+    "attributes": {
+      "type": "Darkroom Paper",
+      "surface": "Pearl RC",
+      "size": "8x10 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_ilford_multigrade_fb_classic_50",
+    "category": "CONSUMABLE",
+    "subCategory": "Darkroom Paper",
+    "brand": "Ilford",
+    "name": "Ilford Multigrade FB Classic Glossy (8x10 / 50 Sheets)",
+    "modelNumber": "MG-FB-Classic",
+    "attributes": {
+      "type": "Darkroom Paper",
+      "surface": "Glossy Fiber Base (FB)",
+      "size": "8x10 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_foma_fomabrom_fb_50",
+    "category": "CONSUMABLE",
+    "subCategory": "Darkroom Paper",
+    "brand": "Foma",
+    "name": "Foma Fomabrom Variant III FB Glossy (8x10 / 50 Sheets)",
+    "modelNumber": "Fomabrom III",
+    "attributes": {
+      "type": "Darkroom Paper",
+      "surface": "Glossy Fiber Base (FB)",
+      "size": "8x10 in"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "con_adox_lupex_contact_25",
+    "category": "CONSUMABLE",
+    "subCategory": "Darkroom Paper",
+    "brand": "Agfa / Adox",
+    "name": "Adox Lupex Silver Chloride Contact Paper (8x10 / 25 Sheets)",
+    "modelNumber": "Lupex 8x10",
+    "attributes": {
+      "type": "Darkroom Paper",
+      "surface": "Contact FB",
+      "size": "8x10 in"
     },
     "isDeveloperPreset": true
   }
