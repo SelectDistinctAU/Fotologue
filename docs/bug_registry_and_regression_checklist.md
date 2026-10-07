@@ -696,6 +696,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-071: Unnecessary Mount / Spec Column Rendered in Non-Mount Data Grids
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Viewing `CONSUMABLE`, `EQUIPMENT`, `FILM`, `FILTER`, `FLASH`, or `VIEWFINDER` presets in the Maintainer Data Grid displayed an unnecessary `Mount / Spec` column with empty dash placeholders (`—`).
+- **Root Cause**: Unconditional rendering of `Mount / Spec` column in `MaintainerApp.kt`.
+- **Resolution**: Conditionally hid `Mount / Spec` column when `showMountFilter == false`, re-allocating column weights so `Brand`, `Preset Name`, `Type`, and `Preset ID` fill the grid cleanly without empty placeholders.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ select `CONSUMABLE` or `EQUIPMENT` tab $\to$ verify `Mount / Spec` column is hidden and remaining columns expand smoothly.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
