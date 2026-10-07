@@ -1,5 +1,6 @@
 package com.fotologue.app.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -116,10 +117,61 @@ fun AddEditViewfinderScreen(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
 
+            var showVfPresetDialog by remember { mutableStateOf(false) }
+
+            if (showVfPresetDialog) {
+                val vfPresets = remember {
+                    com.fotologue.core.data.preset.MasterPresetEngine.getPresetsByCategory("VIEWFINDER")
+                }
+                AlertDialog(
+                    onDismissRequest = { showVfPresetDialog = false },
+                    title = { Text("Select Viewfinder from Presets", fontWeight = FontWeight.Bold) },
+                    text = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            vfPresets.forEach { preset ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            viewModel.onNameChange(preset.name)
+                                            preset.modelNumber?.let { viewModel.onModelNumberChange(it) }
+                                            preset.attributes["type"]?.let { viewModel.onTypeChange(it) }
+                                            showVfPresetDialog = false
+                                        },
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Column(modifier = Modifier.padding(12.dp)) {
+                                        Text(preset.name, fontWeight = FontWeight.Bold)
+                                        Text("Brand: ${preset.brand} • Type: ${preset.attributes["type"] ?: "Viewfinder"} ${if (!preset.attributes["compatibleCamera"].isNullOrBlank()) "• For: ${preset.attributes["compatibleCamera"]}" else ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showVfPresetDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
+            OutlinedButton(
+                onClick = { showVfPresetDialog = true },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(painterResource(R.drawable.ic_settings), contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Select Viewfinder from Presets", fontWeight = FontWeight.Bold)
+            }
+
             OutlinedTextField(
                 value = uiState.name,
                 onValueChange = viewModel::onNameChange,
-                label = { Text("Viewfinder Name (e.g. Pentax FA-1 Finder)") },
+                label = { Text("Viewfinder Name") },
                 modifier = Modifier.fillMaxWidth()
             )
 

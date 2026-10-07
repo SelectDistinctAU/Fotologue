@@ -1,5 +1,6 @@
 package com.fotologue.app.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -112,17 +113,73 @@ fun AddEditFlashScreen(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
 
+            var showFlashPresetDialog by remember { mutableStateOf(false) }
+
+            if (showFlashPresetDialog) {
+                val flashPresets = remember {
+                    com.fotologue.core.data.preset.MasterPresetEngine.getPresetsByCategory("FLASH")
+                }
+                AlertDialog(
+                    onDismissRequest = { showFlashPresetDialog = false },
+                    title = { Text("Select Flash Speedlight from Presets", fontWeight = FontWeight.Bold) },
+                    text = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            flashPresets.forEach { preset ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            viewModel.onMakeChange(preset.brand)
+                                            viewModel.onModelChange(preset.name.substringAfter(preset.brand).trim().ifBlank { preset.name })
+                                            preset.attributes["guideNumber"]?.let { gn ->
+                                                val digits = gn.filter { c -> c.isDigit() || c == '.' }
+                                                if (digits.isNotBlank()) viewModel.onGuideNumberChange(digits)
+                                            }
+                                            preset.attributes["type"]?.let { viewModel.onFlashTypeChange(it) }
+                                            preset.attributes["syncType"]?.let { viewModel.onSyncTypeChange(it) }
+                                            showFlashPresetDialog = false
+                                        },
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Column(modifier = Modifier.padding(12.dp)) {
+                                        Text(preset.name, fontWeight = FontWeight.Bold)
+                                        Text("Brand: ${preset.brand} • Type: ${preset.attributes["type"] ?: "Speedlight"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showFlashPresetDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
+            OutlinedButton(
+                onClick = { showFlashPresetDialog = true },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(painterResource(R.drawable.ic_settings), contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Select Flash Speedlight from Presets", fontWeight = FontWeight.Bold)
+            }
+
             OutlinedTextField(
                 value = uiState.make,
                 onValueChange = viewModel::onMakeChange,
-                label = { Text(stringResource(R.string.label_make_hint)) },
+                label = { Text("Brand / Manufacturer") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 value = uiState.model,
                 onValueChange = viewModel::onModelChange,
-                label = { Text(stringResource(R.string.label_model_hint)) },
+                label = { Text("Model Number") },
                 modifier = Modifier.fillMaxWidth()
             )
 

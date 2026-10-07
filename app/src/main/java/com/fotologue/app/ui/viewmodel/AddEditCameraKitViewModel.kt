@@ -138,11 +138,12 @@ class AddEditCameraKitViewModel @Inject constructor(
                     tcs
                 } else {
                     val associatedIds = refs.filter { it.cameraId == cameraId }.map { it.teleconverterId }.toSet()
-                    tcs.filter { tc -> associatedIds.contains(tc.id) || refs.none { it.teleconverterId == tc.id } }
+                    tcs.filter { tc -> associatedIds.contains(tc.id) }
                 }
                 _uiState.update { it.copy(
                     filteredTeleconverters = filtered,
-                    isTeleconverterVisible = tcs.isNotEmpty()
+                    isTeleconverterVisible = filtered.isNotEmpty(),
+                    teleconverterId = if (filtered.isEmpty()) null else it.teleconverterId
                 ) }
             }.collect {}
         }
@@ -183,7 +184,12 @@ class AddEditCameraKitViewModel @Inject constructor(
             }.collect {}
         }
         viewModelScope.launch {
-            repository.allFilms.collect { films -> _uiState.update { it.copy(allFilms = films) } }
+            repository.allFilms.collect { films ->
+                _uiState.update { state ->
+                    val autoFilmId = if (state.filmId == null && films.size == 1) films[0].id else state.filmId
+                    state.copy(allFilms = films, filmId = autoFilmId)
+                }
+            }
         }
         loadKit()
     }

@@ -475,6 +475,11 @@ private fun FilmSelection(
     }
 }
 
+private fun formatLensDisplay(make: String, model: String): String {
+    val cleanModel = if (model.startsWith(make, ignoreCase = true)) model.substring(make.length).trim() else model
+    return "$make $cleanModel".trim()
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LensSelection(
@@ -491,7 +496,7 @@ private fun LensSelection(
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            value = selectedLens?.let { "${it.make} ${it.model}" } ?: stringResource(R.string.select_lens),
+            value = selectedLens?.let { formatLensDisplay(it.make, it.model) } ?: stringResource(R.string.select_lens),
             onValueChange = {},
             readOnly = true,
             label = { Text(stringResource(R.string.label_lens)) },
@@ -511,7 +516,7 @@ private fun LensSelection(
             )
             lenses.forEach { lens ->
                 DropdownMenuItem(
-                    text = { Text("${lens.make} ${lens.model}") },
+                    text = { Text(formatLensDisplay(lens.make, lens.model)) },
                     onClick = {
                         onLensSelected(lens.id)
                         expanded = false

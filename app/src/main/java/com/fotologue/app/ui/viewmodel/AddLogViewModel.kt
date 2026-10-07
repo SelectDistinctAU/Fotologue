@@ -154,7 +154,7 @@ class AddLogViewModel @Inject constructor(
     ) { tcs, refs, cameraId ->
         if (cameraId == null) return@combine tcs
         val associatedIds = refs.asSequence().filter { it.cameraId == cameraId }.map { it.teleconverterId }.toSet()
-        tcs.filter { tc -> associatedIds.contains(tc.id) || refs.none { it.teleconverterId == tc.id } }
+        tcs.filter { tc -> associatedIds.contains(tc.id) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val allCameraFilterCrossRefs = repository.allCameraFilterCrossRefs
@@ -191,6 +191,20 @@ class AddLogViewModel @Inject constructor(
             repository.insertDefaultTagsIfNeeded()
             repository.allTags.collect { tags ->
                 _uiState.update { it.copy(allTags = tags) }
+            }
+        }
+        viewModelScope.launch {
+            filteredLenses.collect { lenses ->
+                if (lenses.size == 1 && _uiState.value.selectedLensId == null) {
+                    onLensSelected(lenses[0].id)
+                }
+            }
+        }
+        viewModelScope.launch {
+            allFilms.collect { films ->
+                if (films.size == 1 && _uiState.value.selectedFilmId == null) {
+                    onFilmSelected(filmId = films[0].id, filmIso = films[0].iso, updatePersistent = true)
+                }
             }
         }
         viewModelScope.launch {

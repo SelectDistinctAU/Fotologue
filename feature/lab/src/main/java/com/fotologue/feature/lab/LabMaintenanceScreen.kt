@@ -118,7 +118,7 @@ fun LabMaintenanceScreen(
         MaintenanceArea.LOCATIONS -> "Maintenance • Storage Locations"
         MaintenanceArea.CATEGORIES -> "Maintenance • Categories"
         MaintenanceArea.UNITS -> "Maintenance • Measurement Units"
-        MaintenanceArea.MANUFACTURERS -> "Maintenance • Manufacturers"
+        MaintenanceArea.MANUFACTURERS -> "Maintenance • Brands"
         MaintenanceArea.EQUIPMENT_SUBCATEGORIES -> "Maintenance • Equipment Sub-Categories"
     }
 
@@ -265,7 +265,7 @@ fun LabMaintenanceScreen(
 
                     item(key = "nav_manufacturers") {
                         NavigationDrawerItem(
-                            label = { Text("Manufacturers") },
+                            label = { Text("Brands") },
                             selected = false,
                             onClick = { activeArea = MaintenanceArea.MANUFACTURERS },
                             icon = {
@@ -327,47 +327,47 @@ fun LabMaintenanceScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        OutlinedTextField(
-                            value = newEqSubCatName,
-                            onValueChange = { newEqSubCatName = it },
-                            label = { Text("New Sub-Category (e.g. Multi-roll developing tank)") },
-                            singleLine = true,
+                        ExposedDropdownMenuBox(
+                            expanded = eqCatExpanded,
+                            onExpandedChange = { eqCatExpanded = !eqCatExpanded },
                             modifier = Modifier.fillMaxWidth()
-                        )
+                        ) {
+                            OutlinedTextField(
+                                value = newEqCategory,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Parent Equipment Category") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = eqCatExpanded) },
+                                modifier = Modifier.menuAnchor().fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = eqCatExpanded,
+                                onDismissRequest = { eqCatExpanded = false }
+                            ) {
+                                equipmentCategoriesList.forEach { cat ->
+                                    DropdownMenuItem(
+                                        text = { Text(cat) },
+                                        onClick = {
+                                            newEqCategory = cat
+                                            eqCatExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            ExposedDropdownMenuBox(
-                                expanded = eqCatExpanded,
-                                onExpandedChange = { eqCatExpanded = !eqCatExpanded },
+                            OutlinedTextField(
+                                value = newEqSubCatName,
+                                onValueChange = { newEqSubCatName = it },
+                                label = { Text("New Sub-Category Name") },
+                                singleLine = true,
                                 modifier = Modifier.weight(1f)
-                            ) {
-                                OutlinedTextField(
-                                    value = newEqCategory,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    label = { Text("Equipment Category") },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = eqCatExpanded) },
-                                    modifier = Modifier.menuAnchor().fillMaxWidth()
-                                )
-                                ExposedDropdownMenu(
-                                    expanded = eqCatExpanded,
-                                    onDismissRequest = { eqCatExpanded = false }
-                                ) {
-                                    equipmentCategoriesList.forEach { cat ->
-                                        DropdownMenuItem(
-                                            text = { Text(cat) },
-                                            onClick = {
-                                                newEqCategory = cat
-                                                eqCatExpanded = false
-                                            }
-                                        )
-                                    }
-                                }
-                            }
+                            )
 
                             Button(
                                 onClick = {
@@ -514,49 +514,49 @@ fun LabMaintenanceScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        OutlinedTextField(
-                            value = newItemName,
-                            onValueChange = { newItemName = it },
-                            label = { Text("New Item Name") },
-                            singleLine = true,
+                        // Parent Category Dropdown
+                        ExposedDropdownMenuBox(
+                            expanded = itemCatExpanded,
+                            onExpandedChange = { itemCatExpanded = !itemCatExpanded },
                             modifier = Modifier.fillMaxWidth()
-                        )
+                        ) {
+                            OutlinedTextField(
+                                value = newItemCategory,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Parent Category") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = itemCatExpanded) },
+                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary),
+                                modifier = Modifier.menuAnchor().fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = itemCatExpanded,
+                                onDismissRequest = { itemCatExpanded = false }
+                            ) {
+                                categoriesList.forEach { cat ->
+                                    DropdownMenuItem(
+                                        text = { Text(cat) },
+                                        onClick = {
+                                            newItemCategory = cat
+                                            itemCatExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Category Dropdown
-                            ExposedDropdownMenuBox(
-                                expanded = itemCatExpanded,
-                                onExpandedChange = { itemCatExpanded = !itemCatExpanded },
+                            OutlinedTextField(
+                                value = newItemName,
+                                onValueChange = { newItemName = it },
+                                label = { Text("New Item Name") },
+                                singleLine = true,
                                 modifier = Modifier.weight(1f)
-                            ) {
-                                OutlinedTextField(
-                                    value = newItemCategory,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    label = { Text("Category") },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = itemCatExpanded) },
-                                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary),
-                                    modifier = Modifier.menuAnchor().fillMaxWidth()
-                                )
-                                ExposedDropdownMenu(
-                                    expanded = itemCatExpanded,
-                                    onDismissRequest = { itemCatExpanded = false }
-                                ) {
-                                    categoriesList.forEach { cat ->
-                                        DropdownMenuItem(
-                                            text = { Text(cat) },
-                                            onClick = {
-                                                newItemCategory = cat
-                                                itemCatExpanded = false
-                                            }
-                                        )
-                                    }
-                                }
-                            }
+                            )
 
                             Button(
                                 onClick = {
@@ -1089,7 +1089,7 @@ fun LabMaintenanceScreen(
                         OutlinedTextField(
                             value = newMfgName,
                             onValueChange = { newMfgName = it },
-                            label = { Text("New Manufacturer Name") },
+                            label = { Text("New Brand Name") },
                             singleLine = true,
                             modifier = Modifier.weight(1f)
                         )

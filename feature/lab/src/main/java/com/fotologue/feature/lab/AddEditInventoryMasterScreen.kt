@@ -358,8 +358,7 @@ fun AddEditInventoryMasterScreen(
                         manufacturer = it
                         if (category == "Film Stock") name = "" // Filter film stock options when manufacturer changes
                     },
-                    label = { Text("Manufacturer / Brand") },
-                    placeholder = { Text("e.g. Ilford, Kodak, Fuji, CineStill") },
+                    label = { Text("Brand / Manufacturer") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = mfgExpanded) },
                     singleLine = true,
                     colors = textFieldColors,
@@ -402,7 +401,6 @@ fun AddEditInventoryMasterScreen(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text(if (category == "Film Stock") "Film Stock Name" else "Item Name") },
-                    placeholder = { Text(if (category == "Film Stock") "e.g. HP5 Plus 400 or Tri-X 400" else "e.g. Rapid Fixer or Multigrade RC 8x10") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = nameExpanded) },
                     singleLine = true,
                     colors = textFieldColors,

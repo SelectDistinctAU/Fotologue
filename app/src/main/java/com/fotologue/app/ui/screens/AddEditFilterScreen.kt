@@ -71,15 +71,15 @@ fun AddEditFilterScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                stringResource(R.string.associated_cameras),
+                "Associated Lenses",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            if (uiState.cameras.isEmpty()) {
+            if (uiState.lenses.isEmpty() && uiState.cameras.isEmpty()) {
                 Text(
-                    stringResource(R.string.error_no_cameras),
+                    "No lenses found in library. Add a lens first.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -89,6 +89,23 @@ fun AddEditFilterScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    uiState.lenses.forEach { lens ->
+                        val isSelected = uiState.selectedLensIds.contains(lens.id)
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { viewModel.onLensToggled(lens.id) },
+                            label = { Text("${lens.make} ${lens.model} (${lens.filterSize}mm)") },
+                            leadingIcon = if (isSelected) {
+                                {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_check),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                    )
+                                }
+                            } else null
+                        )
+                    }
                     uiState.cameras.forEach { camera ->
                         val isSelected = uiState.selectedCameraIds.contains(camera.id)
                         FilterChip(

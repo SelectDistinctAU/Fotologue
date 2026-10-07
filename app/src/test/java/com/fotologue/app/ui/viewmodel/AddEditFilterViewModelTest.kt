@@ -17,6 +17,7 @@ class AddEditFilterViewModelTest {
 
     private lateinit var viewModel: AddEditFilterViewModel
     private val repository: FotologueRepository = mockk()
+    private val settingsRepository: SettingsRepository = mockk(relaxed = true)
     private val savedStateHandle = SavedStateHandle()
 
     private val testDispatcher = StandardTestDispatcher()
@@ -25,8 +26,9 @@ class AddEditFilterViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         every { repository.allCameras } returns flowOf(emptyList())
+        every { repository.allLenses } returns flowOf(emptyList())
         every { repository.allCameraFilterCrossRefs } returns flowOf(emptyList())
-        viewModel = AddEditFilterViewModel(repository, savedStateHandle)
+        viewModel = AddEditFilterViewModel(repository, settingsRepository, savedStateHandle)
     }
 
     @After

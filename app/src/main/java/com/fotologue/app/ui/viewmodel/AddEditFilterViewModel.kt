@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.fotologue.core.data.Camera
 import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.Filter
+import com.fotologue.core.data.Lens
 import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,9 @@ data class AddEditFilterUiState(
     val type: String = "ND (Neutral Density)",
     val compensationStops: String = "0.0",
     val filterTypes: List<String> = listOf("ND (Neutral Density)", "Yellow (Y2/8)", "Red (R2/25)", "Green", "Orange", "CPL (Circular Polariser)", "UV / Skylight", "Front Aux Lens (Mutar / Diopter)", "Specialty"),
-    val threadSizes: List<String> = listOf("49mm", "52mm", "55mm", "58mm", "62mm", "67mm", "72mm", "77mm", "82mm", "Bayonet I", "Bayonet II", "Bayonet III"),
+    val threadSizes: List<String> = listOf("49mm", "52mm", "55mm", "58mm", "62mm", "67mm", "72mm", "77mm", "82mm", "Bayonet I", "Bayonet II", "Bayonet III", "Bayonet 60"),
+    val lenses: List<Lens> = emptyList(),
+    val selectedLensIds: Set<Long> = emptySet(),
     val cameras: List<Camera> = emptyList(),
     val selectedCameraIds: Set<Long> = emptySet()
 )
@@ -45,6 +48,11 @@ class AddEditFilterViewModel @Inject constructor(
         private set
 
     init {
+        viewModelScope.launch {
+            repository.allLenses.collect { lenses ->
+                _uiState.update { it.copy(lenses = lenses) }
+            }
+        }
         viewModelScope.launch {
             repository.allCameras.collect { cameras ->
                 _uiState.update { it.copy(cameras = cameras) }
@@ -97,6 +105,14 @@ class AddEditFilterViewModel @Inject constructor(
     fun onCompensationStopsChange(value: String) {
         savedStateHandle["compensationStops"] = value
         _uiState.update { it.copy(compensationStops = value) }
+    }
+
+    fun onLensToggled(lensId: Long) {
+        _uiState.update { state ->
+            val current = state.selectedLensIds
+            val updated = if (current.contains(lensId)) current - lensId else current + lensId
+            state.copy(selectedLensIds = updated)
+        }
     }
 
     fun onCameraToggled(cameraId: Long) {

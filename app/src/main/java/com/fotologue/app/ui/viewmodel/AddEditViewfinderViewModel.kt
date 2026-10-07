@@ -46,14 +46,26 @@ class AddEditViewfinderViewModel @Inject constructor(
         viewModelScope.launch {
             repository.allCameras.collect { cameras ->
                 val interchangeableFinderCameras = cameras.filter { camera ->
-                    camera.name.contains("Pentax LX", ignoreCase = true) ||
-                    camera.name.contains("Nikon F", ignoreCase = true) ||
-                    camera.name.contains("Hasselblad", ignoreCase = true) ||
-                    camera.name.contains("Leica", ignoreCase = true) ||
-                    camera.name.contains("Mamiya", ignoreCase = true) ||
-                    camera.name.contains("Canon F-1", ignoreCase = true) ||
-                    camera.name.contains("Exakta", ignoreCase = true) ||
-                    (camera.type.isInterchangeable && camera.mount != "Fixed")
+                    val name = camera.name.uppercase()
+                    val isExplicitAE1 = name.contains("AE-1") || name.contains("AE1")
+                    if (isExplicitAE1) return@filter false
+
+                    val isSupportedModel = name.contains("LX") ||
+                        name.contains("HASSELBLAD") ||
+                        name.contains("LEICA") ||
+                        name.contains("MAMIYA") ||
+                        name.contains("F-1") ||
+                        name.contains("EXAKTA") ||
+                        name.contains("NIKON F2") ||
+                        name.contains("NIKON F3") ||
+                        name.contains("NIKON F4") ||
+                        name.contains("NIKON F5") ||
+                        camera.type.name.contains("MEDIUM_FORMAT", ignoreCase = true) ||
+                        camera.type.name.contains("RANGEFINDER", ignoreCase = true) ||
+                        camera.type.name.contains("TLR", ignoreCase = true) ||
+                        camera.type.name.contains("LARGE_FORMAT", ignoreCase = true)
+
+                    isSupportedModel
                 }
                 _uiState.update { it.copy(cameras = interchangeableFinderCameras) }
             }
