@@ -716,6 +716,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-073: Ingestion of Classic Pentax Zoom Lenses Reaching 100 Master Lenses Milestone
+- **Platform**: Fotologue Preset Catalog (`lenses.json`, `master_preset_catalog.json`)
+- **Reported**: October 2026
+- **Symptom**: The lens preset catalog lacked classic Pentax zoom lenses (SMC Pentax-A 70-210mm f/4, SMC Pentax-M 80-200mm f/4.5, SMC Pentax-FA* 28-70mm f/2.8 AL, SMC Pentax-FA* 80-200mm f/2.8 ED).
+- **Root Cause**: Unpopulated Pentax zoom lens dataset.
+- **Resolution**: Ingested 7 classic Pentax zoom lenses into `lenses.json`. Total lens presets expanded from 93 to **100 master lenses**.
+- **Regression Test Case**: Launch Maintainer Tool `./gradlew :desktop:runMaintainer` $\to$ select `LENS` tab $\to$ filter by Brand `Pentax` & Type `Zoom` $\to$ verify total lens count displays 100 lenses.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
