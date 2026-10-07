@@ -636,6 +636,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-065: Unconstrained Consumable Brand LOV and Missing Controlled Type LOV
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Editing a Consumable preset in the Maintainer Tool displayed camera body manufacturers (*Alpa*, *Canon*, *Nikon*, *Pentax*) in the Brand dropdown, and `type` was an unconstrained text input.
+- **Root Cause**: Un-tailored `CONSUMABLE` category options in `MaintainerApp.kt`.
+- **Resolution**: Restricted Consumable Brand LOV to darkroom chemistry/paper manufacturers (*Ilford*, *Kodak*, *Agfa/Adox*, *Foma*, *Paterson*, *Cinestill*, *Fujifilm*, etc.). Converted `type` into a **Controlled Dropdown Selector** (`Developer (Film)`, `Developer (Paper)`, `Stop Bath`, `Fixer`, `Wetting Agent`, `Darkroom Paper`, etc.), and enabled `TYPE ▾` column header filtering in the Data Grid.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ select `CONSUMABLE` tab $\to$ click `Add New CONSUMABLE Preset Entry` $\to$ verify Brand dropdown lists darkroom manufacturers and `type` is a controlled dropdown.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
