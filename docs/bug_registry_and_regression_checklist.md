@@ -745,6 +745,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-075: Camera Permission Crash, Un-Aligned Preset Modals & 120 Format Frame Count Validation
+- **Platform**: Fotologue Mobile & Desktop (`AddLogScreen.kt`, `LightMeterScreen.kt`, `AddEditFilterScreen.kt`, `AddEditFlashScreen.kt`, `AddEditViewfinderScreen.kt`, `AddEditFilmViewModel.kt`)
+- **Reported**: October 2026
+- **Symptom**: Tapping Measure Exposure crashed with a SecurityException when camera permission was not granted; Add Filter still showed camera chips and duplicate brand prefixes; Flash and Viewfinder preset dialogs lacked brand-first filtering; 120 medium format film defaulted to 36 exposures.
+- **Root Cause**: Un-guarded camera provider binding, un-aligned preset dialogs, and un-validated film format frame counts.
+- **Resolution**:
+  1. Wrapped Measure Exposure in `LightMeterScreen.kt` with a strict `rememberPermissionState(Manifest.permission.CAMERA)` guard to request permission before launching.
+  2. Removed Camera chips from `AddFilterScreen.kt` and Desktop `Main.kt`, and applied `cleanLensName` to strip brand tautologies.
+  3. Re-architected Flash and Viewfinder preset selection modals with Brand-First Cascading Filters.
+  4. Enforced 12 exposure default for 120 medium format film in `AddEditFilmViewModel.kt`.
+- **Regression Test Case**: Revoke Camera permission $\to$ tap `Measure Exposure` $\to$ verify permission request dialog launches safely without crashing; open 120 film creation $\to$ verify expected exposures defaults to 12.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
