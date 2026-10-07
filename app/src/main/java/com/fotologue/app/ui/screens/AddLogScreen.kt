@@ -339,38 +339,53 @@ private fun CameraKitSelection(
     selectedKitId: Long?,
     onKitSelected: (Long?) -> Unit,
 ) {
-    var expanded by remember { mutableStateOf(value = false) }
+    var expanded by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
     val selectedKit = kits.find { it.cameraKit.id == selectedKitId }
+    val displayText = selectedKit?.cameraKit?.name ?: ""
+
+    val filteredKits = remember(kits, searchQuery) {
+        if (searchQuery.isBlank()) kits else kits.filter { it.cameraKit.name.contains(searchQuery, ignoreCase = true) }
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            value = selectedKit?.cameraKit?.name ?: stringResource(R.string.quick_fill_from_kit),
-            onValueChange = {},
-            readOnly = true,
+            value = if (expanded) searchQuery else displayText,
+            onValueChange = {
+                searchQuery = it
+                expanded = true
+            },
+            placeholder = { Text(selectedKit?.cameraKit?.name ?: stringResource(R.string.quick_fill_from_kit)) },
             label = { Text(stringResource(R.string.camera_kit)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            singleLine = true,
             modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = {
+                expanded = false
+                searchQuery = ""
+            }
         ) {
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.none_custom)) },
                 onClick = {
                     onKitSelected(null)
                     expanded = false
+                    searchQuery = ""
                 }
             )
-            kits.forEach { kit ->
+            filteredKits.forEach { kit ->
                 DropdownMenuItem(
                     text = { Text(kit.cameraKit.name) },
                     onClick = {
                         onKitSelected(kit.cameraKit.id)
                         expanded = false
+                        searchQuery = ""
                     }
                 )
             }
@@ -386,30 +401,44 @@ private fun CameraSelection(
     onCameraSelected: (Long) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
     val selectedCamera = cameras.find { it.id == selectedCameraId }
+    val displayText = selectedCamera?.name ?: ""
+
+    val filteredCameras = remember(cameras, searchQuery) {
+        if (searchQuery.isBlank()) cameras else cameras.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            value = selectedCamera?.name ?: stringResource(R.string.select_camera),
-            onValueChange = {},
-            readOnly = true,
+            value = if (expanded) searchQuery else displayText,
+            onValueChange = {
+                searchQuery = it
+                expanded = true
+            },
+            placeholder = { Text(selectedCamera?.name ?: stringResource(R.string.select_camera)) },
             label = { Text(stringResource(R.string.label_camera)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+            singleLine = true,
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
         )
         ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
+            expanded = expanded && filteredCameras.isNotEmpty(),
+            onDismissRequest = {
+                expanded = false
+                searchQuery = ""
+            }
         ) {
-            cameras.forEach { camera ->
+            filteredCameras.forEach { camera ->
                 DropdownMenuItem(
                     text = { Text(camera.name) },
                     onClick = {
                         onCameraSelected(camera.id)
                         expanded = false
+                        searchQuery = ""
                     }
                 )
             }
@@ -426,7 +455,13 @@ private fun FilmSelection(
     onAddFilm: () -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
     val selectedFilm = films.find { it.id == selectedFilmId }
+    val displayText = selectedFilm?.name ?: ""
+
+    val filteredFilms = remember(films, searchQuery) {
+        if (searchQuery.isBlank()) films else films.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         ExposedDropdownMenuBox(
@@ -434,23 +469,31 @@ private fun FilmSelection(
             onExpandedChange = { expanded = !expanded }
         ) {
             OutlinedTextField(
-                value = selectedFilm?.name ?: if (films.isEmpty()) "No matching film in library" else stringResource(R.string.select_film),
-                onValueChange = {},
-                readOnly = true,
+                value = if (expanded) searchQuery else displayText,
+                onValueChange = {
+                    searchQuery = it
+                    expanded = true
+                },
+                placeholder = { Text(selectedFilm?.name ?: if (films.isEmpty()) "No matching film in library" else stringResource(R.string.select_film)) },
                 label = { Text(stringResource(R.string.label_film)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                singleLine = true,
+                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
             )
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = {
+                    expanded = false
+                    searchQuery = ""
+                }
             ) {
-                films.forEach { film ->
+                filteredFilms.forEach { film ->
                     DropdownMenuItem(
                         text = { Text(film.name) },
                         onClick = {
                             onFilmSelected(film.id, film.iso)
                             expanded = false
+                            searchQuery = ""
                         }
                     )
                 }
@@ -464,6 +507,7 @@ private fun FilmSelection(
                     },
                     onClick = {
                         expanded = false
+                        searchQuery = ""
                         onAddFilm()
                     }
                 )
@@ -527,37 +571,54 @@ private fun LensSelection(
     onAddLens: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
     val selectedLens = lenses.find { it.id == selectedLensId }
+    val displayText = selectedLens?.let { formatLensDisplay(it.make, it.model) } ?: ""
+
+    val filteredLenses = remember(lenses, searchQuery) {
+        if (searchQuery.isBlank()) lenses else lenses.filter { 
+            formatLensDisplay(it.make, it.model).contains(searchQuery, ignoreCase = true) 
+        }
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            value = selectedLens?.let { formatLensDisplay(it.make, it.model) } ?: stringResource(R.string.select_lens),
-            onValueChange = {},
-            readOnly = true,
+            value = if (expanded) searchQuery else displayText,
+            onValueChange = {
+                searchQuery = it
+                expanded = true
+            },
+            placeholder = { Text(selectedLens?.let { formatLensDisplay(it.make, it.model) } ?: stringResource(R.string.select_lens)) },
             label = { Text(stringResource(R.string.label_lens)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+            singleLine = true,
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = {
+                expanded = false
+                searchQuery = ""
+            }
         ) {
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.none)) },
                 onClick = {
                     onLensSelected(null)
                     expanded = false
+                    searchQuery = ""
                 }
             )
-            lenses.forEach { lens ->
+            filteredLenses.forEach { lens ->
                 DropdownMenuItem(
                     text = { Text(formatLensDisplay(lens.make, lens.model)) },
                     onClick = {
                         onLensSelected(lens.id)
                         expanded = false
+                        searchQuery = ""
                     }
                 )
             }
@@ -567,6 +628,7 @@ private fun LensSelection(
                 onClick = {
                     onAddLens()
                     expanded = false
+                    searchQuery = ""
                 },
                 leadingIcon = { Icon(painterResource(R.drawable.ic_add), contentDescription = null) }
             )

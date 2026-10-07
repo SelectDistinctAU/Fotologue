@@ -230,6 +230,14 @@ fun AddEditInventoryMasterScreen(
     }
     val itemPresets = (customNamesForCategory + defaultPresets).distinct()
 
+    val filteredMfgList = remember(mfgList, manufacturer) {
+        if (manufacturer.isBlank()) mfgList else mfgList.filter { it.contains(manufacturer, ignoreCase = true) }
+    }
+
+    val filteredItemPresets = remember(itemPresets, name) {
+        if (name.isBlank()) itemPresets else itemPresets.filter { it.contains(name, ignoreCase = true) }
+    }
+
     // PURE DARKROOM SAFELIGHT RED COLORS
     val safelightBg = if (isSafelightActive) Color.Black else MaterialTheme.colorScheme.surface
     val safelightFg = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface
@@ -371,7 +379,7 @@ fun AddEditInventoryMasterScreen(
                     onDismissRequest = { mfgExpanded = false },
                     containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
-                    mfgList.forEach { mfg ->
+                    filteredMfgList.forEach { mfg ->
                         DropdownMenuItem(
                             text = { Text(mfg, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {
@@ -413,7 +421,7 @@ fun AddEditInventoryMasterScreen(
                     onDismissRequest = { nameExpanded = false },
                     containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                 ) {
-                    itemPresets.forEach { preset ->
+                    filteredItemPresets.forEach { preset ->
                         DropdownMenuItem(
                             text = { Text(preset, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                             onClick = {

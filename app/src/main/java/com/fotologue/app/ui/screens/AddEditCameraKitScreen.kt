@@ -68,31 +68,46 @@ fun AddEditCameraKitScreen(
 
             // Camera Selection
             var cameraExpanded by remember { mutableStateOf(false) }
+            var cameraSearchQuery by remember { mutableStateOf("") }
+            val selectedCamera = uiState.allCameras.find { it.id == uiState.cameraId }
+            val cameraDisplayText = selectedCamera?.name ?: ""
+
+            val filteredCameras = remember(uiState.allCameras, cameraSearchQuery) {
+                if (cameraSearchQuery.isBlank()) uiState.allCameras else uiState.allCameras.filter { it.name.contains(cameraSearchQuery, ignoreCase = true) }
+            }
+
             ExposedDropdownMenuBox(
                 expanded = cameraExpanded,
-                onExpandedChange = { cameraExpanded = it },
+                onExpandedChange = { cameraExpanded = !cameraExpanded },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val selectedCamera = uiState.allCameras.find { it.id == uiState.cameraId }
                 OutlinedTextField(
-                    value = selectedCamera?.name ?: stringResource(R.string.select_camera),
-                    onValueChange = {},
-                    readOnly = true,
+                    value = if (cameraExpanded) cameraSearchQuery else cameraDisplayText,
+                    onValueChange = {
+                        cameraSearchQuery = it
+                        cameraExpanded = true
+                    },
+                    placeholder = { Text(selectedCamera?.name ?: stringResource(R.string.select_camera)) },
                     label = { Text(stringResource(R.string.label_camera)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = cameraExpanded) },
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
+                    singleLine = true,
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth(),
                     isError = !uiState.isCameraValid
                 )
                 ExposedDropdownMenu(
-                    expanded = cameraExpanded,
-                    onDismissRequest = { cameraExpanded = false }
+                    expanded = cameraExpanded && filteredCameras.isNotEmpty(),
+                    onDismissRequest = {
+                        cameraExpanded = false
+                        cameraSearchQuery = ""
+                    }
                 ) {
-                    uiState.allCameras.forEach { camera ->
+                    filteredCameras.forEach { camera ->
                         DropdownMenuItem(
                             text = { Text(camera.name) },
                             onClick = {
                                 viewModel.onCameraSelected(camera.id)
                                 cameraExpanded = false
+                                cameraSearchQuery = ""
                             }
                         )
                     }
@@ -101,36 +116,59 @@ fun AddEditCameraKitScreen(
 
             // Lens Selection
             var lensExpanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
-                expanded = lensExpanded,
-                onExpandedChange = { lensExpanded = it },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                val selectedLens = uiState.filteredLenses.find { it.id == uiState.lensId }
-                val selectedLensTitle = selectedLens?.let { l ->
+            var lensSearchQuery by remember { mutableStateOf("") }
+            val selectedLens = uiState.filteredLenses.find { it.id == uiState.lensId }
+            val selectedLensTitle = selectedLens?.let { l ->
+                val trimmedMake = l.make.trim()
+                val trimmedModel = l.model.trim()
+                val subBrands = listOf("Yashinon", "Nikkor", "Zuiko", "Rokkor", "Takumar", "Carl Zeiss", "Summicron", "Summilux", "Hexanon", "Ektar", "Sekor", "Apo", "SMC", "Planar", "Xenar", "Tessar")
+                if (trimmedModel.startsWith(trimmedMake, true) || trimmedModel.contains(trimmedMake, true) || subBrands.any { trimmedModel.startsWith(it, true) }) {
+                    trimmedModel
+                } else {
+                    "$trimmedMake $trimmedModel"
+                }
+            } ?: ""
+
+            val filteredLenses = remember(uiState.filteredLenses, lensSearchQuery) {
+                if (lensSearchQuery.isBlank()) uiState.filteredLenses else uiState.filteredLenses.filter { l ->
                     val trimmedMake = l.make.trim()
                     val trimmedModel = l.model.trim()
                     val subBrands = listOf("Yashinon", "Nikkor", "Zuiko", "Rokkor", "Takumar", "Carl Zeiss", "Summicron", "Summilux", "Hexanon", "Ektar", "Sekor", "Apo", "SMC", "Planar", "Xenar", "Tessar")
-                    if (trimmedModel.startsWith(trimmedMake, true) || trimmedModel.contains(trimmedMake, true) || subBrands.any { trimmedModel.startsWith(it, true) }) {
+                    val cleanTitle = if (trimmedModel.startsWith(trimmedMake, true) || trimmedModel.contains(trimmedMake, true) || subBrands.any { trimmedModel.startsWith(it, true) }) {
                         trimmedModel
                     } else {
                         "$trimmedMake $trimmedModel"
                     }
+                    cleanTitle.contains(lensSearchQuery, ignoreCase = true)
                 }
+            }
+
+            ExposedDropdownMenuBox(
+                expanded = lensExpanded,
+                onExpandedChange = { lensExpanded = !lensExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 OutlinedTextField(
-                    value = selectedLensTitle ?: stringResource(R.string.select_lens),
-                    onValueChange = {},
-                    readOnly = true,
+                    value = if (lensExpanded) lensSearchQuery else selectedLensTitle,
+                    onValueChange = {
+                        lensSearchQuery = it
+                        lensExpanded = true
+                    },
+                    placeholder = { Text(selectedLensTitle.ifBlank { stringResource(R.string.select_lens) }) },
                     label = { Text(stringResource(R.string.label_lens)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = lensExpanded) },
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
+                    singleLine = true,
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth(),
                     isError = !uiState.isLensValid
                 )
                 ExposedDropdownMenu(
                     expanded = lensExpanded,
-                    onDismissRequest = { lensExpanded = false }
+                    onDismissRequest = {
+                        lensExpanded = false
+                        lensSearchQuery = ""
+                    }
                 ) {
-                    uiState.filteredLenses.forEach { lens ->
+                    filteredLenses.forEach { lens ->
                         val trimmedMake = lens.make.trim()
                         val trimmedModel = lens.model.trim()
                         val subBrands = listOf("Yashinon", "Nikkor", "Zuiko", "Rokkor", "Takumar", "Carl Zeiss", "Summicron", "Summilux", "Hexanon", "Ektar", "Sekor", "Apo", "SMC", "Planar", "Xenar", "Tessar")
@@ -144,6 +182,7 @@ fun AddEditCameraKitScreen(
                             onClick = {
                                 viewModel.onLensSelected(lens.id)
                                 lensExpanded = false
+                                lensSearchQuery = ""
                             }
                         )
                     }
