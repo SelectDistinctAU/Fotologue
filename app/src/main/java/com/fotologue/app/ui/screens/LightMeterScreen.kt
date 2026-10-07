@@ -4,6 +4,8 @@ import android.Manifest
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CaptureRequest
 import android.hardware.camera2.TotalCaptureResult
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.camera2.interop.Camera2Interop
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.CameraSelector
@@ -87,10 +89,13 @@ fun LightMeterScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isThumbnailEnabled by viewModel.isThumbnailEnabled.collectAsStateWithLifecycle()
 
-    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { isGranted -> }
+
     val hasCameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED
 
-    if (!hasCameraPermission && !cameraPermissionState.status.isGranted) {
+    if (!hasCameraPermission) {
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -132,7 +137,7 @@ fun LightMeterScreen(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
-                    onClick = { cameraPermissionState.launchPermissionRequest() },
+                    onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Grant Camera Permission")
@@ -169,8 +174,8 @@ fun LightMeterScreen(
         }
     }
 
-    LaunchedEffect(lifecycleOwner, cameraPermissionState.status.isGranted) {
-        if (cameraPermissionState.status.isGranted) {
+    LaunchedEffect(lifecycleOwner, hasCameraPermission) {
+        if (hasCameraPermission) {
             cameraProviderFuture.addListener({
                 try {
                     val cameraProvider = cameraProviderFuture.get()
@@ -276,9 +281,9 @@ fun LightMeterScreen(
         uiState = uiState,
         isLandscape = isLandscape,
         isThumbnailEnabled = isThumbnailEnabled,
-        isCameraPermissionGranted = cameraPermissionState.status.isGranted,
-        shouldShowCameraPermissionRationale = cameraPermissionState.status.shouldShowRationale,
-        onCameraPermissionRequest = { cameraPermissionState.launchPermissionRequest() },
+        isCameraPermissionGranted = hasCameraPermission,
+        shouldShowCameraPermissionRationale = false,
+        onCameraPermissionRequest = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
         previewView = previewView,
         onBack = onBack,
         onToggleMeteringMode = viewModel::toggleMeteringMode,

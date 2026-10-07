@@ -1,6 +1,10 @@
 package com.fotologue.app.ui.screens
 
 import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -39,12 +43,32 @@ fun AddLogScreen(
     onAddFilm: () -> Unit = {},
     onNavigateToRollCounter: () -> Unit,
 ) {
-    val locationPermissionState = rememberPermissionState(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-    )
-    val cameraPermissionState = rememberPermissionState(
-        Manifest.permission.CAMERA
-    )
+    val context = LocalContext.current
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            onMeasureExposure(
+                viewModel.uiState.value.iso,
+                viewModel.uiState.value.selectedCameraId,
+                viewModel.uiState.value.selectedLensId,
+                viewModel.uiState.value.selectedTeleconverterId,
+                viewModel.uiState.value.selectedFilterId,
+                viewModel.uiState.value.selectedFilmId,
+                viewModel.uiState.value.focalLength
+            )
+        }
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            viewModel.fetchLocation()
+        }
+    }
+
     val cameras by viewModel.allCameras.collectAsStateWithLifecycle()
     val lenses by viewModel.filteredLenses.collectAsStateWithLifecycle()
     val teleconverters by viewModel.filteredTeleconverters.collectAsStateWithLifecycle()
@@ -55,9 +79,13 @@ fun AddLogScreen(
     val kits by viewModel.allCameraKitsWithGear.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(locationPermissionState.status.isGranted) {
-        if (locationPermissionState.status.isGranted) {
+    LaunchedEffect(Unit) {
+        val hasFineLocation = androidx.core.content.ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        val hasCoarseLocation = androidx.core.content.ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        if (hasFineLocation || hasCoarseLocation) {
             viewModel.fetchLocation()
+        } else {
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
@@ -75,12 +103,8 @@ fun AddLogScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (!locationPermissionState.status.isGranted) {
-                        locationPermissionState.launchPermissionRequest()
-                    } else {
-                        viewModel.saveLog()
-                        onBack()
-                    }
+                    viewModel.saveLog()
+                    onBack()
                 }
             ) {
                 Icon(
@@ -262,9 +286,8 @@ fun AddLogScreen(
 
                     Button(
                         onClick = { 
-                            if (!cameraPermissionState.status.isGranted) {
-                                cameraPermissionState.launchPermissionRequest()
-                            } else {
+                            val hasCamera = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                            if (hasCamera) {
                                 onMeasureExposure(
                                     uiState.iso,
                                     uiState.selectedCameraId,
@@ -274,6 +297,8 @@ fun AddLogScreen(
                                     uiState.selectedFilmId,
                                     uiState.focalLength
                                 ) 
+                            } else {
+                                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
