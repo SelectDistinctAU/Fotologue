@@ -3068,24 +3068,29 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             val threadSizes = listOf("49mm", "52mm", "55mm", "58mm", "62mm", "67mm", "72mm", "77mm", "82mm", "Bayonet I", "Bayonet II", "Bayonet III")
                             val filterTypes = listOf("ND (Neutral Density)", "Yellow (Y2/8)", "Red (R2/25)", "Green", "Orange", "CPL (Circular Polariser)", "UV / Skylight", "Front Aux Lens (Mutar / Diopter)", "Specialty")
 
-                            // Section 1: Associated Cameras (All Cameras including TLRs / Fixed Lens)
-                            Text("Associated Cameras", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
-                            if (cameras.isEmpty()) {
-                                Text("No cameras found. Please add a camera first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                            // Section 1: Associated Lenses
+                            Text("Associated Lenses", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                            if (lenses.isEmpty()) {
+                                Text("No lenses found in library. Please add a lens first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                             } else {
                                 FlowRow(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                                     verticalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
-                                    cameras.forEach { camera ->
-                                        val isSelected = selectedAssociatedCameraIds.contains(camera.id)
+                                    lenses.forEach { lens ->
+                                        val isSelected = selectedAssociatedCameraIds.contains(lens.id)
+                                        val cleanModel = if (lens.name.startsWith(lens.make ?: "", ignoreCase = true)) {
+                                            lens.name.substring(lens.make?.length ?: 0).trim()
+                                        } else {
+                                            lens.name
+                                        }
                                         FilterChip(
                                             selected = isSelected,
                                             onClick = {
-                                                selectedAssociatedCameraIds = if (isSelected) selectedAssociatedCameraIds - camera.id else selectedAssociatedCameraIds + camera.id
+                                                selectedAssociatedCameraIds = if (isSelected) selectedAssociatedCameraIds - lens.id else selectedAssociatedCameraIds + lens.id
                                             },
-                                            label = { Text(camera.name, style = MaterialTheme.typography.labelSmall) },
+                                            label = { Text("$cleanModel (${lens.filterSize ?: "52mm"})", style = MaterialTheme.typography.labelSmall) },
                                             leadingIcon = if (isSelected) { { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp)) } } else null
                                         )
                                     }

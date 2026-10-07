@@ -123,15 +123,99 @@ fun AddEditViewfinderScreen(
                 val vfPresets = remember {
                     com.fotologue.core.data.preset.MasterPresetEngine.getPresetsByCategory("VIEWFINDER")
                 }
+                var selectedBrandFilter by remember { mutableStateOf("All") }
+                var selectedTypeFilter by remember { mutableStateOf("All") }
+                var presetSearchQuery by remember { mutableStateOf("") }
+                var brandExpanded by remember { mutableStateOf(false) }
+                var typeExpanded by remember { mutableStateOf(false) }
+
+                val brandOptions = remember(vfPresets) {
+                    listOf("All") + vfPresets.map { it.brand }.distinct().sorted()
+                }
+                val typeOptions = remember(vfPresets, selectedBrandFilter) {
+                    val baseList = if (selectedBrandFilter == "All") vfPresets else vfPresets.filter { it.brand.equals(selectedBrandFilter, true) }
+                    listOf("All") + baseList.mapNotNull { it.attributes["type"] }.distinct().sorted()
+                }
+
+                val filteredPresets = remember(vfPresets, selectedBrandFilter, selectedTypeFilter, presetSearchQuery) {
+                    vfPresets.filter { preset ->
+                        val matchesBrand = selectedBrandFilter == "All" || preset.brand.equals(selectedBrandFilter, true)
+                        val matchesType = selectedTypeFilter == "All" || (preset.attributes["type"] ?: "").equals(selectedTypeFilter, true)
+                        val matchesSearch = presetSearchQuery.isBlank() || preset.name.contains(presetSearchQuery, true) || preset.brand.contains(presetSearchQuery, true)
+                        matchesBrand && matchesType && matchesSearch
+                    }
+                }
+
                 AlertDialog(
                     onDismissRequest = { showVfPresetDialog = false },
                     title = { Text("Select Viewfinder from Presets", fontWeight = FontWeight.Bold) },
                     text = {
                         Column(
                             modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            vfPresets.forEach { preset ->
+                            Text("Select a brand and type to search interchangeable viewfinders:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                            // Brand Filter
+                            ExposedDropdownMenuBox(expanded = brandExpanded, onExpandedChange = { brandExpanded = it }) {
+                                OutlinedTextField(
+                                    value = selectedBrandFilter,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text("Filter by Viewfinder Brand") },
+                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandExpanded) },
+                                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                                )
+                                ExposedDropdownMenu(expanded = brandExpanded, onDismissRequest = { brandExpanded = false }) {
+                                    brandOptions.forEach { bOpt ->
+                                        DropdownMenuItem(text = { Text(bOpt) }, onClick = { selectedBrandFilter = bOpt; brandExpanded = false })
+                                    }
+                                }
+                            }
+
+                            // Type Filter
+                            ExposedDropdownMenuBox(expanded = typeExpanded, onExpandedChange = { typeExpanded = it }) {
+                                OutlinedTextField(
+                                    value = selectedTypeFilter,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text("Filter by Viewfinder Type") },
+                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
+                                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                                )
+                                ExposedDropdownMenu(expanded = typeExpanded, onDismissRequest = { typeExpanded = false }) {
+                                    typeOptions.forEach { tOpt ->
+                                        DropdownMenuItem(text = { Text(tOpt) }, onClick = { selectedTypeFilter = tOpt; typeExpanded = false })
+                                    }
+                                }
+                            }
+
+                            // Search Bar
+                            OutlinedTextField(
+                                value = presetSearchQuery,
+                                onValueChange = { presetSearchQuery = it },
+                                label = { Text("Search Viewfinder Models") },
+                                leadingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            // Fallback Action Button
+                            OutlinedButton(
+                                onClick = {
+                                    if (selectedBrandFilter != "All") viewModel.onNameChange("$selectedBrandFilter Viewfinder")
+                                    showVfPresetDialog = false
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(painterResource(R.drawable.ic_add), contentDescription = null)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(if (selectedBrandFilter != "All") "Add Custom $selectedBrandFilter Viewfinder" else "Add Custom / Unlisted Viewfinder")
+                            }
+
+                            HorizontalDivider()
+
+                            filteredPresets.forEach { preset ->
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()

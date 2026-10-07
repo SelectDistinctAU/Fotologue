@@ -119,15 +119,99 @@ fun AddEditFlashScreen(
                 val flashPresets = remember {
                     com.fotologue.core.data.preset.MasterPresetEngine.getPresetsByCategory("FLASH")
                 }
+                var selectedBrandFilter by remember { mutableStateOf("All") }
+                var selectedTypeFilter by remember { mutableStateOf("All") }
+                var presetSearchQuery by remember { mutableStateOf("") }
+                var brandExpanded by remember { mutableStateOf(false) }
+                var typeExpanded by remember { mutableStateOf(false) }
+
+                val brandOptions = remember(flashPresets) {
+                    listOf("All") + flashPresets.map { it.brand }.distinct().sorted()
+                }
+                val typeOptions = remember(flashPresets, selectedBrandFilter) {
+                    val baseList = if (selectedBrandFilter == "All") flashPresets else flashPresets.filter { it.brand.equals(selectedBrandFilter, true) }
+                    listOf("All") + baseList.mapNotNull { it.attributes["type"] }.distinct().sorted()
+                }
+
+                val filteredPresets = remember(flashPresets, selectedBrandFilter, selectedTypeFilter, presetSearchQuery) {
+                    flashPresets.filter { preset ->
+                        val matchesBrand = selectedBrandFilter == "All" || preset.brand.equals(selectedBrandFilter, true)
+                        val matchesType = selectedTypeFilter == "All" || (preset.attributes["type"] ?: "").equals(selectedTypeFilter, true)
+                        val matchesSearch = presetSearchQuery.isBlank() || preset.name.contains(presetSearchQuery, true) || preset.brand.contains(presetSearchQuery, true)
+                        matchesBrand && matchesType && matchesSearch
+                    }
+                }
+
                 AlertDialog(
                     onDismissRequest = { showFlashPresetDialog = false },
-                    title = { Text("Select Flash Speedlight from Presets", fontWeight = FontWeight.Bold) },
+                    title = { Text("Select Flash from Presets", fontWeight = FontWeight.Bold) },
                     text = {
                         Column(
                             modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            flashPresets.forEach { preset ->
+                            Text("Select a brand and type to search flash speedlights:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                            // Brand Filter
+                            ExposedDropdownMenuBox(expanded = brandExpanded, onExpandedChange = { brandExpanded = it }) {
+                                OutlinedTextField(
+                                    value = selectedBrandFilter,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text("Filter by Flash Brand") },
+                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandExpanded) },
+                                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                                )
+                                ExposedDropdownMenu(expanded = brandExpanded, onDismissRequest = { brandExpanded = false }) {
+                                    brandOptions.forEach { bOpt ->
+                                        DropdownMenuItem(text = { Text(bOpt) }, onClick = { selectedBrandFilter = bOpt; brandExpanded = false })
+                                    }
+                                }
+                            }
+
+                            // Type Filter
+                            ExposedDropdownMenuBox(expanded = typeExpanded, onExpandedChange = { typeExpanded = it }) {
+                                OutlinedTextField(
+                                    value = selectedTypeFilter,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text("Filter by Flash Type") },
+                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
+                                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                                )
+                                ExposedDropdownMenu(expanded = typeExpanded, onDismissRequest = { typeExpanded = false }) {
+                                    typeOptions.forEach { tOpt ->
+                                        DropdownMenuItem(text = { Text(tOpt) }, onClick = { selectedTypeFilter = tOpt; typeExpanded = false })
+                                    }
+                                }
+                            }
+
+                            // Search Bar
+                            OutlinedTextField(
+                                value = presetSearchQuery,
+                                onValueChange = { presetSearchQuery = it },
+                                label = { Text("Search Flash Models") },
+                                leadingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            // Fallback Action Button
+                            OutlinedButton(
+                                onClick = {
+                                    if (selectedBrandFilter != "All") viewModel.onMakeChange(selectedBrandFilter)
+                                    showFlashPresetDialog = false
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(painterResource(R.drawable.ic_add), contentDescription = null)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(if (selectedBrandFilter != "All") "Add Custom $selectedBrandFilter Flash" else "Add Custom / Unlisted Flash")
+                            }
+
+                            HorizontalDivider()
+
+                            filteredPresets.forEach { preset ->
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()

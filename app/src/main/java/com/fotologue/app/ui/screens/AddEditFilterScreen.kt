@@ -77,7 +77,7 @@ fun AddEditFilterScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            if (uiState.lenses.isEmpty() && uiState.cameras.isEmpty()) {
+            if (uiState.lenses.isEmpty()) {
                 Text(
                     "No lenses found in library. Add a lens first.",
                     style = MaterialTheme.typography.bodyMedium,
@@ -91,27 +91,16 @@ fun AddEditFilterScreen(
                 ) {
                     uiState.lenses.forEach { lens ->
                         val isSelected = uiState.selectedLensIds.contains(lens.id)
+                        val cleanModel = if (lens.model.startsWith(lens.make, ignoreCase = true)) {
+                            lens.model.substring(lens.make.length).trim()
+                        } else {
+                            lens.model
+                        }
+                        val sizeLabel = if (lens.filterSize > 0) "${lens.filterSize}mm" else "Fixed"
                         FilterChip(
                             selected = isSelected,
                             onClick = { viewModel.onLensToggled(lens.id) },
-                            label = { Text("${lens.make} ${lens.model} (${lens.filterSize}mm)") },
-                            leadingIcon = if (isSelected) {
-                                {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_check),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(FilterChipDefaults.IconSize)
-                                    )
-                                }
-                            } else null
-                        )
-                    }
-                    uiState.cameras.forEach { camera ->
-                        val isSelected = uiState.selectedCameraIds.contains(camera.id)
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = { viewModel.onCameraToggled(camera.id) },
-                            label = { Text(camera.name) },
+                            label = { Text("$cleanModel ($sizeLabel)") },
                             leadingIcon = if (isSelected) {
                                 {
                                     Icon(

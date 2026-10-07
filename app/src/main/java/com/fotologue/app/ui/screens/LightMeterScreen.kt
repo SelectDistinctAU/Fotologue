@@ -88,7 +88,59 @@ fun LightMeterScreen(
     val isThumbnailEnabled by viewModel.isThumbnailEnabled.collectAsStateWithLifecycle()
 
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-    
+
+    if (!cameraPermissionState.status.isGranted) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Camera Permission Required") },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "Back")
+                        }
+                    }
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.camera_24px),
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "Camera Access Needed",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "Fotologue requires camera access for live-view spot and centre-weighted exposure metering. Your video feed is processed 100% on-device and never stored or shared.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    onClick = { cameraPermissionState.launchPermissionRequest() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Grant Camera Permission")
+                }
+            }
+        }
+        return
+    }
+
     // NAVIGATION FIX: Return to Settings if we were in Wizard-only mode
     LaunchedEffect(uiState.calibrationFinished, uiState.calibrationCancelled) {
         if (uiState.calibrationFinished) {

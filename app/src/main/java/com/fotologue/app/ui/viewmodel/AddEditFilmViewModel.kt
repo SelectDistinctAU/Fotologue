@@ -142,7 +142,11 @@ class AddEditFilmViewModel @Inject constructor(
         val newAbbr = preset.abbreviation
         val newIso = preset.iso.toString()
         val newType = preset.type
-        val newExpected = preset.expectedExposures.toString()
+        val newExpected = when (_uiState.value.format) {
+            Film.FORMAT_120 -> "12"
+            Film.FORMAT_LARGE -> "1"
+            else -> preset.expectedExposures.toString()
+        }
         
         savedStateHandle["name"] = newName
         savedStateHandle["abbreviation"] = newAbbr

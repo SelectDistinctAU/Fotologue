@@ -107,8 +107,12 @@ fun AddEditCameraKitScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 val selectedLens = uiState.filteredLenses.find { it.id == uiState.lensId }
+                val selectedLensTitle = selectedLens?.let { l ->
+                    val cleanM = if (l.model.startsWith(l.make, ignoreCase = true)) l.model.substring(l.make.length).trim() else l.model
+                    "${l.make} $cleanM".trim()
+                }
                 OutlinedTextField(
-                    value = selectedLens?.let { "${it.make} ${it.model}" } ?: stringResource(R.string.select_lens),
+                    value = selectedLensTitle ?: stringResource(R.string.select_lens),
                     onValueChange = {},
                     readOnly = true,
                     label = { Text(stringResource(R.string.label_lens)) },
@@ -121,8 +125,9 @@ fun AddEditCameraKitScreen(
                     onDismissRequest = { lensExpanded = false }
                 ) {
                     uiState.filteredLenses.forEach { lens ->
+                        val cleanM = if (lens.model.startsWith(lens.make, ignoreCase = true)) lens.model.substring(lens.make.length).trim() else lens.model
                         DropdownMenuItem(
-                            text = { Text("${lens.make} ${lens.model}") },
+                            text = { Text("${lens.make} $cleanM".trim()) },
                             onClick = {
                                 viewModel.onLensSelected(lens.id)
                                 lensExpanded = false
