@@ -100,12 +100,18 @@ fun MaintainerAppScreen() {
     val flashTypes = listOf("Shoe Mount / Speedlight", "Built-in / Pop-up Flash", "Handle Mount / Potato Masher", "Ring Flash", "Studio / Strobe")
     val consumableTypes = listOf("Developer (Film)", "Developer (Paper)", "Stop Bath", "Fixer", "Wetting Agent", "Bleach / Toner", "Darkroom Paper", "Chemical Cleaner")
     val consumableBrands = listOf("Agfa / Adox", "Bellini", "Bergger", "Champion", "Cinestill", "Foma", "Fujifilm", "Ilford", "Jobo", "Kodak", "Paterson", "Photographers' Formulary", "Tetenal")
+    val equipmentTypes = listOf("Enlarger", "Dev Tank", "Film Reel", "Developing Tray", "Measuring Cylinder / Beaker", "Film Squeegee", "Darkroom Timer / Exposure Timer", "Safelight", "Thermometer", "Film Changing Bag", "Graduated Pitcher", "Focus Finder / Grain Focus Scope")
+    val equipmentBrands = listOf("Adox", "AP", "Beseler", "Durst", "Hama", "Ilford", "Jobo", "Kaiser", "Kindermann", "LPL / Saunders", "Meopta", "Omega / Saunders", "Paterson", "Peak")
     val mountOptions = listOf("Canon FD", "Nikon F", "Pentax K", "Leica M", "Leica L39", "Hasselblad V", "Contax C/Y", "Olympus OM", "Minolta SR/MD", "M42 Thread", "Fixed", "Bay I", "Bay II", "Bay III")
 
     val filterCompensationStops = listOf("+0.0 Stops (Clear / UV)", "+0.3 Stops", "+0.6 Stops", "+1.0 Stop (Yellow K2)", "+1.5 Stops (CPL / Polarizer)", "+2.0 Stops (Orange 16)", "+3.0 Stops (Red 25A / ND8)", "+6.0 Stops (ND64)", "+10.0 Stops (ND1000)")
 
     val activeCategoryBrands = remember(activePresets, selectedCategory) {
-        val baseList = if (selectedCategory == "CONSUMABLE") consumableBrands else canonicalBrands
+        val baseList = when (selectedCategory) {
+            "CONSUMABLE" -> consumableBrands
+            "EQUIPMENT" -> equipmentBrands
+            else -> canonicalBrands
+        }
         val jsonBrands = activePresets.map { it.brand }.distinct()
         (baseList + jsonBrands).filter { it.isNotBlank() }.distinct().sorted()
     }
@@ -179,7 +185,7 @@ fun MaintainerAppScreen() {
         val showAttr2 = selectedCategory == "CAMERA" || selectedCategory == "LENS" || selectedCategory == "TELECONVERTER"
 
         val attr1KeyName = when (selectedCategory) {
-            "CAMERA", "LENS", "FILM", "VIEWFINDER", "FLASH", "CONSUMABLE" -> "type"
+            "CAMERA", "LENS", "FILM", "VIEWFINDER", "FLASH", "CONSUMABLE", "EQUIPMENT" -> "type"
             "FILTER" -> "compensationStops"
             else -> newAttr1Key.ifBlank { "type" }
         }
@@ -197,6 +203,7 @@ fun MaintainerAppScreen() {
             "FILTER" -> filterCompensationStops
             "FLASH" -> flashTypes
             "CONSUMABLE" -> consumableTypes
+            "EQUIPMENT" -> equipmentTypes
             else -> emptyList()
         }
 
