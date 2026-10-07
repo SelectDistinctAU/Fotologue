@@ -686,6 +686,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-070: Master Darkroom Consumables & Lab Hardware Catalog Expansion
+- **Platform**: Fotologue Preset Catalog (`consumables.json`, `lab_equipment.json`, `master_preset_catalog.json`)
+- **Reported**: October 2026
+- **Symptom**: The consumables and equipment preset catalogs only contained 5 and 12 items respectively, lacking standard darkroom chemistry, papers, enlargers, and developing hardware.
+- **Root Cause**: Unpopulated darkroom chemistry and lab hardware datasets.
+- **Resolution**: Ingested 25 darkroom chemistry and paper presets into `consumables.json` (Kodak D-76, Xtol, HC-110, T-Max, Ilford ID-11, DD-X, Rapid Fixer, Ilfostop, Rodinal, Cinestill Cs41, Ilford Multigrade Papers) and 25 lab equipment presets into `lab_equipment.json` (Beseler 23C III, Durst M605/L1200, LPL 7700/4500II, Omega D5-XL, Paterson Super System 4, Jobo 1520/2520, GraLab 300, Peak Grain Scope). Consumables expanded to **30 master presets** and Lab Equipment expanded to **37 master presets**.
+- **Regression Test Case**: Launch Maintainer Tool `./gradlew :desktop:runMaintainer` $\to$ select `CONSUMABLE` and `EQUIPMENT` tabs $\to$ verify total counts display 30 consumables and 37 equipment presets.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
