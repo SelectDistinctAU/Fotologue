@@ -238,7 +238,7 @@ fun FilmPresetsDialog(
     val masterFilmBrands = remember {
         listOf("All") + FilmPresets.manufacturers.sorted()
     }
-    var selectedBrandFilter by remember { mutableStateOf("Kodak") }
+    var selectedBrandFilter by remember { mutableStateOf("All") }
     var brandDropdownExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
 

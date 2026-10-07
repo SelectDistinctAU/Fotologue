@@ -2016,7 +2016,7 @@ class FoundationAdminFormState {
     var selectedLensMountFilter by mutableStateOf("All")
     var lensSearchQueryText by mutableStateOf("")
     var showFilmPresetsDialog by mutableStateOf(false)
-    var selectedFilmManufacturer by mutableStateOf("Kodak")
+    var selectedFilmManufacturer by mutableStateOf("All")
     var showEquipmentPresetsDialog by mutableStateOf(false)
     var selectedEquipmentCategoryFilter by mutableStateOf("All")
     var equipmentSearchQuery by mutableStateOf("")
