@@ -676,6 +676,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-069: Maintainer Data Grid Blank Column Display for Suppliers
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Viewing `SUPPLIER` presets in the Maintainer Data Grid rendered a blank `Preset Name` column and empty dash placeholders in `Mount / Spec`.
+- **Root Cause**: Un-tailored data grid columns for business contacts in `MaintainerApp.kt`.
+- **Resolution**: Re-architected Data Grid header and rows when `selectedCategory == "SUPPLIER"` to render **Vendor Name** (full name without string stripping), **Supplier Type**, **Region**, **Website**, and **Preset ID**.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ select `SUPPLIER` tab $\to$ verify Data Grid renders Vendor Name, Supplier Type, Region, and Website URL cleanly.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
