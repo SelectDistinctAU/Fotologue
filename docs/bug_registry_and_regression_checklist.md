@@ -666,6 +666,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-068: Ingestion of Australian Suppliers, Processing Labs & WA Camera Stores
+- **Platform**: Fotologue Preset Catalog (`suppliers.json`, `master_preset_catalog.json`)
+- **Reported**: October 2026
+- **Symptom**: The supplier preset catalog was missing major Australian film suppliers, processing labs, and Western Australian local camera stores.
+- **Root Cause**: Unpopulated Australian supplier dataset.
+- **Resolution**: Ingested 15 top Australian supplier, lab, and WA store presets (Camera Electronic Perth, Leederville Cameras, Fitzgerald Photo, Camera House, Georges, DigiDirect, Ted's Cameras, Walkens, Hillvale, FilmNeverDie, Do Film Lab, Halide Supply, Sydney Film Lab, Gold Street Studios). Total supplier presets expanded from 7 to **22 master vendor presets**.
+- **Regression Test Case**: Open Add Contact on Mobile or Desktop $\to$ tap `Select Supplier from Presets` $\to$ verify Camera Electronic Perth and Fitzgerald Photo Imaging appear in dropdown list.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
