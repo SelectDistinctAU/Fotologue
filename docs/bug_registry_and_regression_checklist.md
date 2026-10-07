@@ -759,6 +759,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-076: Default Film Stock Brand Filter Pre-Selection in Film Presets Dialog
+- **Platform**: Mobile & Desktop (`AddEditFilmScreen.kt`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Opening `Select Film Stock from Presets` defaulted the brand filter to `"Kodak"`, hiding non-Kodak film stocks (*Ilford*, *Fujifilm*, *Cinestill*, *Foma*) until manually cleared.
+- **Root Cause**: Hardcoded initial `selectedBrandFilter` state value `"Kodak"`.
+- **Resolution**: Changed default `selectedBrandFilter` in `AddEditFilmScreen.kt` and `selectedFilmManufacturer` in `Main.kt` from `"Kodak"` to **`"All"`**.
+- **Regression Test Case**: Open `Select Film Stock from Presets` on Mobile or Desktop $\to$ verify brand filter defaults to `All` and all master film stocks display immediately.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
