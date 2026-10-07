@@ -582,6 +582,7 @@
     "modelNumber": "500C/M",
     "attributes": {
       "type": "Medium Format SLR",
+      "format": "120 (Medium Format)",
       "mount": "Hasselblad V",
       "shutterSpeeds": "1s - 1/500s, B"
     },
@@ -596,6 +597,7 @@
     "modelNumber": "503CX",
     "attributes": {
       "type": "Medium Format SLR",
+      "format": "120 (Medium Format)",
       "mount": "Hasselblad V",
       "shutterSpeeds": "1s - 1/500s, B"
     },
@@ -610,6 +612,7 @@
     "modelNumber": "RZ67",
     "attributes": {
       "type": "Medium Format SLR",
+      "format": "120 (Medium Format)",
       "mount": "Mamiya RZ",
       "shutterSpeeds": "8s - 1/400s, B"
     },
@@ -624,6 +627,7 @@
     "modelNumber": "Mat-124G",
     "attributes": {
       "type": "TLR",
+      "format": "120 (Medium Format)",
       "mount": "Fixed",
       "shutterSpeeds": "1s - 1/500s, B",
       "fixedLens": "Yashinon 80mm f/3.5 Taking Lens"
@@ -653,6 +657,7 @@
     "modelNumber": "SQ-A",
     "attributes": {
       "type": "Medium Format SLR",
+      "format": "120 (Medium Format)",
       "mount": "Bronica SQ",
       "shutterSpeeds": "8s - 1/500s, B"
     },
@@ -667,6 +672,7 @@
     "modelNumber": "2.8F",
     "attributes": {
       "type": "TLR",
+      "format": "120 (Medium Format)",
       "mount": "Fixed",
       "shutterSpeeds": "1s - 1/500s, B",
       "fixedLens": "Planar 80mm f/2.8 Taking Lens"

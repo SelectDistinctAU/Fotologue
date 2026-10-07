@@ -88,8 +88,9 @@ fun LightMeterScreen(
     val isThumbnailEnabled by viewModel.isThumbnailEnabled.collectAsStateWithLifecycle()
 
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+    val hasCameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED
 
-    if (!cameraPermissionState.status.isGranted) {
+    if (!hasCameraPermission && !cameraPermissionState.status.isGranted) {
         Scaffold(
             topBar = {
                 TopAppBar(

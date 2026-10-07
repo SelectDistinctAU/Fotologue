@@ -76,9 +76,13 @@ class AddLogViewModel @Inject constructor(
         if (cameraId == null) return@combine films
         
         val camera = cameras.find { it.id == cameraId } ?: return@combine films
-        films.filter { 
-            it.format == camera.format || 
-            (camera.format == Film.FORMAT_35MM_HALF && it.format == Film.FORMAT_35MM) 
+        films.filter { film ->
+            val normCam = camera.format.trim().lowercase()
+            val normFilm = film.format.trim().lowercase()
+            normCam == normFilm ||
+            (normCam.contains("120") && normFilm.contains("120")) ||
+            (normCam.contains("35mm") && normFilm.contains("35mm")) ||
+            (normCam.contains("large") && normFilm.contains("large"))
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 

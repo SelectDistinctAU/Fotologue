@@ -476,8 +476,21 @@ private fun FilmSelection(
 }
 
 private fun formatLensDisplay(make: String, model: String): String {
-    val cleanModel = if (model.startsWith(make, ignoreCase = true)) model.substring(make.length).trim() else model
-    return "$make $cleanModel".trim()
+    val trimmedMake = make.trim()
+    val trimmedModel = model.trim()
+    if (trimmedModel.isBlank()) return trimmedMake
+    if (trimmedMake.isBlank()) return trimmedModel
+
+    if (trimmedModel.startsWith(trimmedMake, ignoreCase = true) || trimmedModel.contains(trimmedMake, ignoreCase = true)) {
+        return trimmedModel
+    }
+
+    val subBrands = listOf("Yashinon", "Nikkor", "Zuiko", "Rokkor", "Takumar", "Carl Zeiss", "Summicron", "Summilux", "Hexanon", "Ektar", "Sekor", "Apo", "SMC", "Planar", "Xenar", "Tessar")
+    if (subBrands.any { trimmedModel.startsWith(it, ignoreCase = true) }) {
+        return trimmedModel
+    }
+
+    return "$trimmedMake $trimmedModel"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

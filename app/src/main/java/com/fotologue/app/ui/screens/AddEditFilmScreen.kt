@@ -220,6 +220,7 @@ fun AddEditFilmScreen(
 
     if (showPresetsDialog) {
         FilmPresetsDialog(
+            initialFormat = uiState.format,
             onDismiss = { showPresetsDialog = false },
             onPresetSelected = { preset ->
                 viewModel.onPresetSelected(preset)
@@ -232,17 +233,22 @@ fun AddEditFilmScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilmPresetsDialog(
+    initialFormat: String = Film.FORMAT_35MM,
     onDismiss: () -> Unit,
     onPresetSelected: (FilmPreset) -> Unit
 ) {
     val masterFilmBrands = remember {
         listOf("All") + FilmPresets.manufacturers.sorted()
     }
+    val formatOptions = listOf("All", Film.FORMAT_35MM, Film.FORMAT_120, Film.FORMAT_LARGE)
+
     var selectedBrandFilter by remember { mutableStateOf("All") }
+    var selectedFormatFilter by remember { mutableStateOf(if (initialFormat in formatOptions) initialFormat else "All") }
     var brandDropdownExpanded by remember { mutableStateOf(false) }
+    var formatDropdownExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
 
-    val filteredPresets = remember(selectedBrandFilter, searchQuery) {
+    val filteredPresets = remember(selectedBrandFilter, selectedFormatFilter, searchQuery) {
         FilmPresets.presets.filter { preset ->
             val matchesBrand = selectedBrandFilter == "All" || preset.manufacturer.equals(selectedBrandFilter, ignoreCase = true)
             val matchesQuery = searchQuery.isBlank() || (
@@ -309,6 +315,36 @@ fun FilmPresetsDialog(
                                 onClick = {
                                     selectedBrandFilter = b
                                     brandDropdownExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Filter by Film Format Dropdown
+                ExposedDropdownMenuBox(
+                    expanded = formatDropdownExpanded,
+                    onExpandedChange = { formatDropdownExpanded = !formatDropdownExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = selectedFormatFilter,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Filter by Film Format") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatDropdownExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = formatDropdownExpanded,
+                        onDismissRequest = { formatDropdownExpanded = false }
+                    ) {
+                        formatOptions.forEach { fOpt ->
+                            DropdownMenuItem(
+                                text = { Text(fOpt, fontWeight = if (fOpt == selectedFormatFilter) FontWeight.Bold else FontWeight.Normal) },
+                                onClick = {
+                                    selectedFormatFilter = fOpt
+                                    formatDropdownExpanded = false
                                 }
                             )
                         }

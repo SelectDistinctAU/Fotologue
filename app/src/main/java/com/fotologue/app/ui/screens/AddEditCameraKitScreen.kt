@@ -108,8 +108,14 @@ fun AddEditCameraKitScreen(
             ) {
                 val selectedLens = uiState.filteredLenses.find { it.id == uiState.lensId }
                 val selectedLensTitle = selectedLens?.let { l ->
-                    val cleanM = if (l.model.startsWith(l.make, ignoreCase = true)) l.model.substring(l.make.length).trim() else l.model
-                    "${l.make} $cleanM".trim()
+                    val trimmedMake = l.make.trim()
+                    val trimmedModel = l.model.trim()
+                    val subBrands = listOf("Yashinon", "Nikkor", "Zuiko", "Rokkor", "Takumar", "Carl Zeiss", "Summicron", "Summilux", "Hexanon", "Ektar", "Sekor", "Apo", "SMC", "Planar", "Xenar", "Tessar")
+                    if (trimmedModel.startsWith(trimmedMake, true) || trimmedModel.contains(trimmedMake, true) || subBrands.any { trimmedModel.startsWith(it, true) }) {
+                        trimmedModel
+                    } else {
+                        "$trimmedMake $trimmedModel"
+                    }
                 }
                 OutlinedTextField(
                     value = selectedLensTitle ?: stringResource(R.string.select_lens),
@@ -125,9 +131,16 @@ fun AddEditCameraKitScreen(
                     onDismissRequest = { lensExpanded = false }
                 ) {
                     uiState.filteredLenses.forEach { lens ->
-                        val cleanM = if (lens.model.startsWith(lens.make, ignoreCase = true)) lens.model.substring(lens.make.length).trim() else lens.model
+                        val trimmedMake = lens.make.trim()
+                        val trimmedModel = lens.model.trim()
+                        val subBrands = listOf("Yashinon", "Nikkor", "Zuiko", "Rokkor", "Takumar", "Carl Zeiss", "Summicron", "Summilux", "Hexanon", "Ektar", "Sekor", "Apo", "SMC", "Planar", "Xenar", "Tessar")
+                        val cleanTitle = if (trimmedModel.startsWith(trimmedMake, true) || trimmedModel.contains(trimmedMake, true) || subBrands.any { trimmedModel.startsWith(it, true) }) {
+                            trimmedModel
+                        } else {
+                            "$trimmedMake $trimmedModel"
+                        }
                         DropdownMenuItem(
-                            text = { Text("${lens.make} $cleanM".trim()) },
+                            text = { Text(cleanTitle) },
                             onClick = {
                                 viewModel.onLensSelected(lens.id)
                                 lensExpanded = false
