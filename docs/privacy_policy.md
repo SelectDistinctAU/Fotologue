@@ -1,35 +1,60 @@
-# Fotologue Privacy Policy
+# Privacy Policy for Fotologue 🔒
 
-**Effective Date:** September 2026
+**Version:** 3.0.0 | **Last Updated:** October 2026 | **Audience:** End Users, App Store Reviewers & Public  
+**Website:** [https://www.fotologue.au](https://www.fotologue.au) | **Online Policy:** [https://www.fotologue.au/privacy-policy](https://www.fotologue.au/privacy-policy)
 
-## 1. Local-First Architecture
-Fotologue is designed with a strict **Local-First, Offline-First** architecture. We believe that your photography, field logs, darkroom recipes, and physical geolocation data belong exclusively to you. 
+Fotologue is built from the ground up with a **local-first, privacy-by-design** architecture. We believe your photography, equipment records, location history, vendor contacts, and personal notes belong solely to you. Fotologue operates entirely on your device and does not collect, store, transmit, or monetise any user data.
 
-Fotologue **does not** use cloud synchronisation by default. All data—including your database graphs, exposure settings, GPS coordinates, and image thumbnails—is stored locally in the secure SQLite sandbox on your device (Android / Desktop).
+---
 
-## 2. Zero Analytics & Zero Tracking
-Fotologue contains:
-*   **NO** third-party analytics trackers.
-*   **NO** advertising SDKs.
-*   **NO** crash reporting telemetry that sends your data to remote servers without explicit consent.
+## 1. Zero Data Collection & Local-First Storage
 
-## 3. Location Data (GPS)
-Fotologue requests location permissions (`ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION`) solely for the purpose of appending latitude and longitude coordinates to your personal exposure logs. 
+* **100% On-Device Persistence:** All data created or imported into Fotologue—including your camera and lens library, film rolls, exposure logs, darkroom recipes, contacts directory, notes, GPS coordinates, and thumbnail images—is stored locally in your device's application-sandboxed database (SQLite/Room) and local preferences (DataStore).
+* **No User Accounts:** Fotologue does not require user registration, sign-in, email addresses, or accounts of any kind.
+* **No Cloud Servers or External Analytics:** Fotologue does not operate cloud servers for user telemetry and contains no third-party tracking, advertising, or analytics SDKs. Your data never leaves your device unless you explicitly export or share it yourself.
 
-This data is used exclusively to generate ISO 16684 XMP sidecars and Exif metadata for your personal digital archive (e.g., digiKam, Lightroom). **Your location data is never transmitted to us or any third party.**
+---
 
-## 4. Cloud Backup Integrations (Opt-In Only)
-Fotologue offers integrations with Google Drive and Network Attached Storage (NAS) via the Android Storage Access Framework (SAF) and native desktop file pickers.
+## 2. Device Permissions & Privacy-First Contracts
 
-These integrations are strictly **opt-in** and user-initiated. When you export a Master Archive (ZIP) or mount a directory:
-*   Fotologue only reads and writes to the specific directory you explicitly authorise.
-*   The connection is direct between your device and your chosen storage provider (e.g., your local Synology NAS or your personal Google Drive account). Fotologue does not intercept, relay, or process this data through any intermediate servers.
+Fotologue requests system permissions strictly to provide local photography utility features:
 
-## 5. Camera & Local Network Access
-*   **Camera:** Accessed locally to provide the CameraX Viewfinder for optical zoom emulation and spot-metering. No image pixel data is transmitted off-device.
-*   **Network:** Used solely to retrieve map tiles (e.g., web map intent) or to communicate with your specified NAS via SMB/WebDAV.
+### A. Privacy-First Contact Picker (`PickContact`)
+* **Purpose:** Used on-device when adding a contact in the Contacts Directory to select a vendor or friend's contact information.
+* **Zero Address Book Harvesting:** Fotologue leverages Android's native `ActivityResultContracts.PickContact()` contract. Fotologue **NEVER** requests broad read access to your phone's address book (`READ_CONTACTS`). You select the single contact you wish to import, and only that contact's display name is read into local memory.
 
-## 6. Changes to This Policy
-Because Fotologue is local-first, our data practices are fundamentally static. However, if any new features require external data transfer, we will update this policy and notify users in the release notes.
+### B. Location Permission (`ACCESS_FINE_LOCATION`)
+* **Purpose:** Used on-device when creating an exposure log or taking a light meter reading to determine your current geographic coordinates (latitude and longitude).
+* **Scope:** Location data is processed locally and stored exclusively inside your on-device database. It is never transmitted to the developer or any third parties. Location data is only included in your Export Master Archives (ZIP) or ISO 16684 XMP sidecar export files when you explicitly perform an export.
 
-If you have questions about your privacy, you can audit the open SQLite database (`fotologue_database`) stored on your device at any time using the in-app backup exporter.
+### C. Camera Permission (`CAMERA`)
+* **Purpose:** Used locally for live-view spot/centre-weighted light metering and generating optional shot thumbnail previews.
+* **Scope:** Live camera video frames are processed in-memory for exposure calculations. Camera images are saved as local thumbnails inside your app storage only if enabled in Settings. No photos, video streams, or camera metadata are ever transmitted off-device.
+
+### D. Optional Cloud Preset Refresh over HTTPS
+* **Purpose:** Used when you manually tap **`[ 🔄 Refresh Master Presets from Cloud ]`** in Settings to update your camera, lens, film, and gear preset catalog.
+* **Scope:** Fetches public, read-only JSON files over encrypted HTTPS directly from the official GitHub repository. **Zero user data, device identifiers, or telemetry are transmitted during this request.**
+
+---
+
+## 3. On-Device Machine Learning & Biometric Privacy
+
+* **Face-Aware Tagging:** Fotologue integrates Google ML Kit's on-device Face Detection library to detect human faces in local thumbnail previews, suggesting tags and assisting with exposure adjustments.
+* **Privacy Assurance:** All machine learning inference occurs **100% on-device**. No facial models, biometric vectors, face meshes, or photo imagery are ever stored, created as biometric profiles, or transmitted off your device.
+
+---
+
+## 4. Data Ownership & Portability
+
+You maintain complete sovereignty over your data:
+* **Export Anything:** You can export your exposure logs and metadata at any time using our comprehensive Master Archive format (ZIP), which encapsulates your thumbnails, notes, tags, and standard ISO 16684 XMP sidecars.
+* **Backup & Restore:** Complete database backups can be generated and restored locally at any time, allowing seamless synchronisation between the Mobile Field app and Desktop.
+* **Data Erasure:** Uninstalling Fotologue or clearing the application data via System Settings permanently erases all local database records and application files from your device.
+
+---
+
+## 5. Contact Us
+
+If you have questions about Fotologue's privacy practices or architecture, please contact us:
+* **Website:** [https://www.fotologue.au](https://www.fotologue.au)
+* **Privacy Policy:** [https://www.fotologue.au/privacy-policy](https://www.fotologue.au/privacy-policy)

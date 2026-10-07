@@ -23,8 +23,11 @@ This document serves as the single source of truth for terminology across the Fo
 | :--- | :--- | :--- |
 | **Frame** | Log, Log Entry, Exposure, Shot | A single photographic exposure. *Note: A Frame belongs to a Roll and is contextually a Roll Frame.* |
 | **Roll** (or **Film Roll** / **Plate**) | Session, Physical Sleeve | A collection of Frames on a single physical medium. |
-| **Kit** (or **Camera Kit**) | Loadout | A specific combination of camera, lens, and accessories used for a shoot. |
-| **Gear Collection** | Gear Library, Gear Inventory, Gear Locker, Equipment Pool | Represents the total sum of available hardware (owned, borrowed, or hired). |
+| **Kit Bag** (or **Camera Kit**) | Kit, Loadout | A specific combination of camera, lens, and accessories used for a shoot. |
+| **Camera Gear** | Gear Collection, Gear Library, Gear Inventory, Gear Locker, Equipment Pool | Represents the total sum of available hardware (owned, borrowed, or hired). |
+| **Contacts Directory** | People Directory, Address Book, Borrowers List | Central management of suppliers, labs, repair techs, borrowers, and friends. |
+| **Cloud Presets** | Remote Presets, Online Catalog | Master developer preset catalog refreshed over HTTPS directly from GitHub. |
+| **Data Grid** | Card Stack, List View | Tabular sortable presentation layer in Maintainer Tool and Master Rolls. |
 
 ## 4. Lab & Inventory
 
