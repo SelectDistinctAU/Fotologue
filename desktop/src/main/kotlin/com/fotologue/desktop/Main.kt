@@ -3393,6 +3393,39 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                             var isSupplierActive by remember { mutableStateOf(true) }
                             var selectedRoles by remember { mutableStateOf(setOf("#Supplier")) }
                             val roleTags = listOf("#Supplier", "#Lab", "#RepairTech", "#Borrower", "#Friend")
+                            var isSupplierPresetDropdownExpanded by remember { mutableStateOf(false) }
+
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                Button(
+                                    onClick = { isSupplierPresetDropdownExpanded = true },
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                                    colors = ButtonDefaults.filledTonalButtonColors()
+                                ) {
+                                    Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("Select Supplier / Vendor from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                                }
+                                DropdownMenu(
+                                    expanded = isSupplierPresetDropdownExpanded && DatabaseRepository.searchPresetSuppliers(item.name).isNotEmpty(),
+                                    onDismissRequest = { isSupplierPresetDropdownExpanded = false }
+                                ) {
+                                    DatabaseRepository.searchPresetSuppliers(item.name).forEach { preset ->
+                                        DropdownMenuItem(
+                                            text = { Text("${preset.name} (${preset.region ?: "Global"})") },
+                                            onClick = {
+                                                editingSupplier = item.copy(
+                                                    name = preset.name,
+                                                    region = preset.region,
+                                                    website = preset.website,
+                                                    notes = preset.notes
+                                                )
+                                                selectedRoles = setOf("#Supplier")
+                                                isSupplierPresetDropdownExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
 
                             OutlinedTextField(
                                 value = item.name,

@@ -102,6 +102,8 @@ fun MaintainerAppScreen() {
     val consumableBrands = listOf("Agfa / Adox", "Bellini", "Bergger", "Champion", "Cinestill", "Foma", "Fujifilm", "Ilford", "Jobo", "Kodak", "Paterson", "Photographers' Formulary", "Tetenal")
     val equipmentTypes = listOf("Enlarger", "Dev Tank", "Film Reel", "Developing Tray", "Measuring Cylinder / Beaker", "Film Squeegee", "Darkroom Timer / Exposure Timer", "Safelight", "Thermometer", "Film Changing Bag", "Graduated Pitcher", "Focus Finder / Grain Focus Scope")
     val equipmentBrands = listOf("Adox", "AP", "Beseler", "Durst", "Hama", "Ilford", "Jobo", "Kaiser", "Kindermann", "LPL / Saunders", "Meopta", "Omega / Saunders", "Paterson", "Peak")
+    val supplierTypes = listOf("Regional Supplier", "Online Retailer", "Film Processing Lab", "Repair Technician", "Equipment Rental")
+    val supplierRegions = listOf("Global / International", "North America (USA/Canada)", "Europe & UK", "Australia & Oceania", "Asia-Pacific")
     val mountOptions = listOf("Canon FD", "Nikon F", "Pentax K", "Leica M", "Leica L39", "Hasselblad V", "Contax C/Y", "Olympus OM", "Minolta SR/MD", "M42 Thread", "Fixed", "Bay I", "Bay II", "Bay III")
 
     val filterCompensationStops = listOf("+0.0 Stops (Clear / UV)", "+0.3 Stops", "+0.6 Stops", "+1.0 Stop (Yellow K2)", "+1.5 Stops (CPL / Polarizer)", "+2.0 Stops (Orange 16)", "+3.0 Stops (Red 25A / ND8)", "+6.0 Stops (ND64)", "+10.0 Stops (ND1000)")
@@ -182,17 +184,18 @@ fun MaintainerAppScreen() {
 
         // Tailored Attribute Visibility & Default Keys per Category
         val showAttr1 = selectedCategory != "TELECONVERTER"
-        val showAttr2 = selectedCategory == "CAMERA" || selectedCategory == "LENS" || selectedCategory == "TELECONVERTER"
+        val showAttr2 = selectedCategory == "CAMERA" || selectedCategory == "LENS" || selectedCategory == "TELECONVERTER" || selectedCategory == "SUPPLIER"
 
         val attr1KeyName = when (selectedCategory) {
-            "CAMERA", "LENS", "FILM", "VIEWFINDER", "FLASH", "CONSUMABLE", "EQUIPMENT" -> "type"
+            "CAMERA", "LENS", "FILM", "VIEWFINDER", "FLASH", "CONSUMABLE", "EQUIPMENT", "SUPPLIER" -> "type"
             "FILTER" -> "compensationStops"
             else -> newAttr1Key.ifBlank { "type" }
         }
 
         val attr2KeyName = when (selectedCategory) {
             "CAMERA", "LENS", "TELECONVERTER" -> "mount"
-            else -> newAttr2Key.ifBlank { "mount" }
+            "SUPPLIER" -> "region"
+            else -> newAttr2Key.ifBlank { "region" }
         }
 
         val attr1ValueOptions = when (selectedCategory) {
@@ -204,11 +207,13 @@ fun MaintainerAppScreen() {
             "FLASH" -> flashTypes
             "CONSUMABLE" -> consumableTypes
             "EQUIPMENT" -> equipmentTypes
+            "SUPPLIER" -> supplierTypes
             else -> emptyList()
         }
 
         val attr2ValueOptions = when (selectedCategory) {
             "CAMERA", "LENS", "TELECONVERTER" -> mountOptions
+            "SUPPLIER" -> supplierRegions
             else -> emptyList()
         }
 
@@ -223,42 +228,70 @@ fun MaintainerAppScreen() {
                     modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Controlled Brand Dropdown
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        OutlinedTextField(
-                            value = if (isEditing) (editingPresetItem?.brand ?: "") else newBrand,
-                            onValueChange = { input ->
-                                if (isEditing) {
-                                    editingPresetItem = editingPresetItem?.copy(brand = input)
-                                } else {
-                                    newBrand = input
-                                }
-                            },
-                            label = { Text("Brand") },
-                            modifier = Modifier.fillMaxWidth(),
-                            trailingIcon = {
-                                IconButton(onClick = { brandDropdownExpanded = !brandDropdownExpanded }) {
-                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                                }
-                            }
-                        )
-                        DropdownMenu(
-                            expanded = brandDropdownExpanded,
-                            onDismissRequest = { brandDropdownExpanded = false }
-                        ) {
-                            activeCategoryBrands.forEach { bOpt ->
-                                DropdownMenuItem(
-                                    text = { Text(bOpt) },
-                                    onClick = {
-                                        if (isEditing) {
-                                            editingPresetItem = editingPresetItem?.copy(brand = bOpt)
-                                        } else {
-                                            newBrand = bOpt
-                                        }
-                                        brandDropdownExpanded = false
+                    // Controlled Brand Dropdown (Hidden for SUPPLIER)
+                    if (selectedCategory != "SUPPLIER") {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            OutlinedTextField(
+                                value = if (isEditing) (editingPresetItem?.brand ?: "") else newBrand,
+                                onValueChange = { input ->
+                                    if (isEditing) {
+                                        editingPresetItem = editingPresetItem?.copy(brand = input)
+                                    } else {
+                                        newBrand = input
                                     }
-                                )
+                                },
+                                label = { Text("Brand") },
+                                modifier = Modifier.fillMaxWidth(),
+                                trailingIcon = {
+                                    IconButton(onClick = { brandDropdownExpanded = !brandDropdownExpanded }) {
+                                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                    }
+                                }
+                            )
+                            DropdownMenu(
+                                expanded = brandDropdownExpanded,
+                                onDismissRequest = { brandDropdownExpanded = false }
+                            ) {
+                                activeCategoryBrands.forEach { bOpt ->
+                                    DropdownMenuItem(
+                                        text = { Text(bOpt) },
+                                        onClick = {
+                                            if (isEditing) {
+                                                editingPresetItem = editingPresetItem?.copy(brand = bOpt)
+                                            } else {
+                                                newBrand = bOpt
+                                            }
+                                            brandDropdownExpanded = false
+                                        }
+                                    )
+                                }
                             }
+                        }
+                    }
+
+                    // Attribute 3 Row: Website URL for SUPPLIER
+                    if (selectedCategory == "SUPPLIER") {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = "website",
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Attribute 3 Key") },
+                                modifier = Modifier.weight(1f)
+                            )
+                            OutlinedTextField(
+                                value = if (isEditing) (editingPresetItem?.attributes?.get("website") ?: "") else "",
+                                onValueChange = { input ->
+                                    if (isEditing && editingPresetItem != null) {
+                                        val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                        currentAttrs["website"] = input
+                                        editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                    }
+                                },
+                                label = { Text("Website URL") },
+                                placeholder = { Text("https://www.bhphotovideo.com") },
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                     }
 
@@ -266,27 +299,30 @@ fun MaintainerAppScreen() {
                         value = if (isEditing) (editingPresetItem?.name ?: "") else newName,
                         onValueChange = { input ->
                             if (isEditing) {
-                                editingPresetItem = editingPresetItem?.copy(name = input)
+                                editingPresetItem = editingPresetItem?.copy(name = input, brand = if (selectedCategory == "SUPPLIER") input else editingPresetItem!!.brand)
                             } else {
                                 newName = input
+                                if (selectedCategory == "SUPPLIER") newBrand = input
                             }
                         },
-                        label = { Text("Preset Name (e.g. Pentax LX)") },
+                        label = { Text(if (selectedCategory == "SUPPLIER") "Vendor / Contact Name (e.g. B&H Photo, Vanbar Imaging)" else "Preset Name (e.g. Pentax LX)") },
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    OutlinedTextField(
-                        value = if (isEditing) (editingPresetItem?.modelNumber ?: "") else newModelNumber,
-                        onValueChange = { input ->
-                            if (isEditing) {
-                                editingPresetItem = editingPresetItem?.copy(modelNumber = input)
-                            } else {
-                                newModelNumber = input
-                            }
-                        },
-                        label = { Text("Model Number (Optional)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    if (selectedCategory != "SUPPLIER") {
+                        OutlinedTextField(
+                            value = if (isEditing) (editingPresetItem?.modelNumber ?: "") else newModelNumber,
+                            onValueChange = { input ->
+                                if (isEditing) {
+                                    editingPresetItem = editingPresetItem?.copy(modelNumber = input)
+                                } else {
+                                    newModelNumber = input
+                                }
+                            },
+                            label = { Text("Model Number (Optional)") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
                     // Attribute 1 Row (Conditional)
                     if (showAttr1) {
@@ -346,6 +382,32 @@ fun MaintainerAppScreen() {
                         }
                     }
 
+                    // Attribute 3 Row: Website URL for SUPPLIER
+                    if (selectedCategory == "SUPPLIER") {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = "website",
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Attribute 3 Key") },
+                                modifier = Modifier.weight(1f)
+                            )
+                            OutlinedTextField(
+                                value = if (isEditing) (editingPresetItem?.attributes?.get("website") ?: "") else "",
+                                onValueChange = { input ->
+                                    if (isEditing && editingPresetItem != null) {
+                                        val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                        currentAttrs["website"] = input
+                                        editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                    }
+                                },
+                                label = { Text("Website URL") },
+                                placeholder = { Text("https://www.bhphotovideo.com") },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+
                     // Attribute 2 Row (Conditional)
                     if (showAttr2) {
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -401,6 +463,32 @@ fun MaintainerAppScreen() {
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    // Attribute 3 Row: Website URL for SUPPLIER
+                    if (selectedCategory == "SUPPLIER") {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = "website",
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Attribute 3 Key") },
+                                modifier = Modifier.weight(1f)
+                            )
+                            OutlinedTextField(
+                                value = if (isEditing) (editingPresetItem?.attributes?.get("website") ?: "") else "",
+                                onValueChange = { input ->
+                                    if (isEditing && editingPresetItem != null) {
+                                        val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                        currentAttrs["website"] = input
+                                        editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                    }
+                                },
+                                label = { Text("Website URL") },
+                                placeholder = { Text("https://www.bhphotovideo.com") },
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                     }
 
@@ -468,6 +556,32 @@ fun MaintainerAppScreen() {
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    // Attribute 3 Row: Website URL for SUPPLIER
+                    if (selectedCategory == "SUPPLIER") {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = "website",
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Attribute 3 Key") },
+                                modifier = Modifier.weight(1f)
+                            )
+                            OutlinedTextField(
+                                value = if (isEditing) (editingPresetItem?.attributes?.get("website") ?: "") else "",
+                                onValueChange = { input ->
+                                    if (isEditing && editingPresetItem != null) {
+                                        val currentAttrs = editingPresetItem!!.attributes.toMutableMap()
+                                        currentAttrs["website"] = input
+                                        editingPresetItem = editingPresetItem!!.copy(attributes = currentAttrs)
+                                    }
+                                },
+                                label = { Text("Website URL") },
+                                placeholder = { Text("https://www.bhphotovideo.com") },
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                     }
                 }

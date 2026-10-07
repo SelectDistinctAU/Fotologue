@@ -3,7 +3,9 @@ package com.fotologue.feature.lab
 import android.provider.ContactsContract
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -128,14 +130,68 @@ fun AddEditSupplierScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Privacy-First Import Button
-            OutlinedButton(
-                onClick = { contactPickerLauncher.launch(null) },
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
-            ) {
-                Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Import from Phone Contacts", fontWeight = FontWeight.Bold)
+            var showSupplierPresetsDialog by remember { mutableStateOf(false) }
+
+            if (showSupplierPresetsDialog) {
+                val supplierPresets = remember {
+                    com.fotologue.core.data.preset.MasterPresetEngine.getPresetsByCategory("SUPPLIER")
+                }
+                androidx.compose.material3.AlertDialog(
+                    onDismissRequest = { showSupplierPresetsDialog = false },
+                    title = { Text("Select Vendor from Presets", fontWeight = FontWeight.Bold) },
+                    text = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            supplierPresets.forEach { preset ->
+                                androidx.compose.material3.Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            name = preset.name
+                                            region = preset.attributes["region"] ?: "Global / International"
+                                            website = preset.attributes["website"] ?: ""
+                                            notes = preset.attributes["type"] ?: "Vendor / Supplier"
+                                            selectedRoles = setOf("#Supplier")
+                                            showSupplierPresetsDialog = false
+                                        },
+                                    colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Column(modifier = Modifier.padding(12.dp)) {
+                                        Text(preset.name, fontWeight = FontWeight.Bold)
+                                        Text("Region: ${preset.attributes["region"] ?: "Global"} • Type: ${preset.attributes["type"] ?: "Vendor"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        androidx.compose.material3.TextButton(onClick = { showSupplierPresetsDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
+            // Privacy-First Import & Presets Buttons
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
+                OutlinedButton(
+                    onClick = { contactPickerLauncher.launch(null) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Import Phone", fontWeight = FontWeight.Bold)
+                }
+                OutlinedButton(
+                    onClick = { showSupplierPresetsDialog = true },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Select Preset", fontWeight = FontWeight.Bold)
+                }
             }
 
             // Field 1: Contact Name

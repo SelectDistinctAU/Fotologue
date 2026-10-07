@@ -1168,6 +1168,26 @@ object DatabaseRepository {
         return presets.filter { it.name.contains(query, ignoreCase = true) || (it.manufacturer?.contains(query, ignoreCase = true) == true) || it.category.contains(query, ignoreCase = true) }
     }
 
+    fun searchPresetSuppliers(query: String): List<ReferenceSupplierItem> {
+        val rawItems = loadRawMasterPresetItems("SUPPLIER")
+        val presets = rawItems.map { item ->
+            ReferenceSupplierItem(
+                name = item.name,
+                region = item.attributes["region"] ?: "Global / International",
+                website = item.attributes["website"] ?: "",
+                notes = item.attributes["type"] ?: "Vendor / Supplier"
+            )
+        }
+
+        val listToUse = if (presets.isNotEmpty()) presets else listOf(
+            ReferenceSupplierItem(name = "Vanbar Imaging", region = "Australia & Oceania", website = "https://www.vanbar.com.au"),
+            ReferenceSupplierItem(name = "B&H Photo Video", region = "North America (USA/Canada)", website = "https://www.bhphotovideo.com")
+        )
+
+        if (query.isBlank()) return listToUse
+        return listToUse.filter { it.name.contains(query, ignoreCase = true) || (it.region?.contains(query, ignoreCase = true) == true) }
+    }
+
     fun loadAllLovs(): List<ReferenceLovItem> {
         return transaction {
             ReferenceLovEntity.all().map {

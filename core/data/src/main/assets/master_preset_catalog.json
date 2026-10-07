@@ -3905,14 +3905,93 @@
     "isDeveloperPreset": true
   },
 {
+    "id": "sup_bh_photo",
+    "category": "SUPPLIER",
+    "subCategory": "Online Retailer",
+    "brand": "B&H Photo Video",
+    "name": "B&H Photo Video",
+    "attributes": {
+      "type": "Online Retailer",
+      "region": "North America (USA/Canada)",
+      "website": "https://www.bhphotovideo.com"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_adorama",
+    "category": "SUPPLIER",
+    "subCategory": "Online Retailer",
+    "brand": "Adorama",
+    "name": "Adorama",
+    "attributes": {
+      "type": "Online Retailer",
+      "region": "North America (USA/Canada)",
+      "website": "https://www.adorama.com"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_freestyle_photo",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "Freestyle Photographic Supplies",
+    "name": "Freestyle Photographic Supplies",
+    "attributes": {
+      "type": "Regional Supplier",
+      "region": "North America (USA/Canada)",
+      "website": "https://www.freestylephoto.biz"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_analogue_wonderland",
+    "category": "SUPPLIER",
+    "subCategory": "Online Retailer",
+    "brand": "Analogue Wonderland",
+    "name": "Analogue Wonderland",
+    "attributes": {
+      "type": "Online Retailer",
+      "region": "Europe & UK",
+      "website": "https://analoguewonderland.co.uk"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_macodirect",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "Macodirect",
+    "name": "Macodirect Germany",
+    "attributes": {
+      "type": "Regional Supplier",
+      "region": "Europe & UK",
+      "website": "https://www.macodirect.de"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "sup_vanbar",
     "category": "SUPPLIER",
     "subCategory": "Regional Supplier",
-    "brand": "Vanbar",
+    "brand": "Vanbar Imaging",
     "name": "Vanbar Imaging",
     "attributes": {
-      "region": "Australia",
+      "type": "Regional Supplier",
+      "region": "Australia & Oceania",
       "website": "https://www.vanbar.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_rewind_photo_lab",
+    "category": "SUPPLIER",
+    "subCategory": "Film Processing Lab",
+    "brand": "Rewind Photo Lab",
+    "name": "Rewind Photo Lab",
+    "attributes": {
+      "type": "Film Processing Lab",
+      "region": "Australia & Oceania",
+      "website": "https://rewindphotolab.com.au"
     },
     "isDeveloperPreset": true
   },
