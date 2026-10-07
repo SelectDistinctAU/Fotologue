@@ -726,6 +726,25 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-074: 10-Bug Quality Sprint (Filter Lens Attachments, Preset Modals, Interchangeability Guards & Form Automations)
+- **Platform**: Fotologue Mobile & Desktop (`AddEditFilterScreen.kt`, `AddEditFlashScreen.kt`, `AddEditViewfinderScreen.kt`, `AddEditCameraKitScreen.kt`, `AddLogScreen.kt`, `LabMaintenanceScreen.kt`, `AddEditInventoryMasterScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: 10 UX and data-association bugs: Filter asking for Associated Cameras instead of Lenses, Flash and Viewfinder screens missing preset buttons, Canon AE-1 listed for viewfinders, Teleconverter dropdown showing "None" when empty, single Film/Lens not auto-selecting, Maintenance child inputs above parents, Manufacturers not renamed to Brands, "e.g." placeholders in LOVs, and new film stocks not refreshing in Add Exposure Log.
+- **Root Cause**: Un-refined form flows, missing preset modals, and un-updated UI copy.
+- **Resolution**:
+  1. Updated `AddEditFilterScreen.kt` to associate filters with Lenses (via thread size/bayonet).
+  2. Added `Select Flash from Presets` button to `AddEditFlashScreen.kt`.
+  3. Filtered `AddEditViewfinderScreen.kt` cameras to exclude fixed-prism bodies (*Canon AE-1 Program*) and added `Select Viewfinder from Presets` button.
+  4. Hid Teleconverter dropdown in Kit/Log forms when empty.
+  5. Auto-selected single available Film and single Lens by default.
+  6. Re-ordered Parent Category dropdown above Child input in Maintenance screens.
+  7. Renamed `Maintenance • Manufacturers` to `Maintenance • Brands`.
+  8. Removed `"e.g. ..."` placeholder text from LOV selectors.
+  9. Dynamically refreshed film list and cleaned duplicate brand string prefixes (*"Canon Canon FD..."* $\to$ *"Canon FD 50mm f/1.8 nFD"*).
+- **Regression Test Case**: Open Add Filter $\to$ verify Associated Lenses chips display; open Add Exposure Log with 1 film in library $\to$ verify film auto-selects and duplicate brand prefixes are stripped.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
