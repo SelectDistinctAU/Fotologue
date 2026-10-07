@@ -797,6 +797,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-079: Filter-As-You-Type Dynamic Search Query Dropdowns
+- **Platform**: Fotologue Mobile (`AddLogScreen.kt`, `AddEditCameraKitScreen.kt`, `AddEditInventoryMasterScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Selecting a camera, lens, film, kit, or darkroom inventory item required scrolling through long static lists without real-time text search filtering.
+- **Root Cause**: `ExposedDropdownMenuBox` text fields were set to `readOnly = true` with `MenuAnchorType.PrimaryNotEditable`.
+- **Resolution**: Upgraded dropdown selectors to `readOnly = false` with `MenuAnchorType.PrimaryEditable`, filtering options dynamically in real-time as the user types.
+- **Regression Test Case**: Open `Add Exposure Log` $\to$ tap `Camera` dropdown $\to$ type "Yash" $\to$ verify dropdown filters in real-time to *Yashica Mat-124G*.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
