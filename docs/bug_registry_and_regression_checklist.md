@@ -807,6 +807,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-080: CameraX Surface Combination Concurrency Crash Guard in LightMeter
+- **Platform**: Fotologue Mobile (`LightMeterScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Tapping `Measure Exposure` crashed the app on certain hardware devices and emulators even when Camera and Location permissions were granted.
+- **Root Cause**: `LightMeterScreen.kt` bound 3 concurrent CameraX use cases (`preview` + `imageAnalysis` + `imageCapture`) simultaneously without `unbindAll()`, exceeding max surface combination capability limits on limited hardware devices.
+- **Resolution**:
+  1. Added `cameraProvider.unbindAll()` prior to every CameraX binding call.
+  2. Wrapped `bindToLifecycle` in a try-catch block to fall back to a 2-use-case binding (`preview` + `imageAnalysis`) if 3 concurrent streams are unsupported.
+- **Regression Test Case**: Open `Add Exposure Log` $\to$ tap `Measure Exposure` on an emulator or limited hardware device $\to$ verify live metering view loads smoothly without crashing.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
