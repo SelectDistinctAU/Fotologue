@@ -706,6 +706,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-072: Comprehensive Master Documentation Suite Alignment for v3.0 Release
+- **Platform**: Project Documentation (`README.md`, `user_guide.md`, `training_manual.md`, `master_preset_json_schema.md`, `store_listing_descriptions.md`, `PRIVACY_POLICY.md`, `lexicon.md`, `maintainer_preset_workflow_architecture.md`)
+- **Reported**: October 2026
+- **Symptom**: Documentation assets contained outdated v1.0 version numbers, lacked JSON schema specifications for all 10 categories, and omitted v3.0 features (Data Grid, Cloud Refresh, 82 Cameras, 93 Lenses, 35 Filters, 22 Suppliers).
+- **Root Cause**: Un-updated documentation files following rapid v3.0 preset and Maintainer Tool architecture expansions.
+- **Resolution**: Created `docs/master_preset_json_schema.md` with full JSON schema definitions for all 10 categories. Updated User Guide, Training Manual, README, Store Listings, Privacy Policy (documenting zero-harvesting native contact picker & read-only cloud refresh), Lexicon, and Maintainer Architecture.
+- **Regression Test Case**: Review all `.md` files $\to$ verify version 3.0.0 alignment, zero broken markdown links, and accurate feature descriptions.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
