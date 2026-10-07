@@ -226,13 +226,25 @@ fun LightMeterScreen(
 
                     val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-                    val camera = cameraProvider.bindToLifecycle(
-                        lifecycleOwner,
-                        cameraSelector,
-                        preview,
-                        imageAnalysis,
-                        imageCapture
-                    )
+                    cameraProvider.unbindAll()
+
+                    val camera = try {
+                        cameraProvider.bindToLifecycle(
+                            lifecycleOwner,
+                            cameraSelector,
+                            preview,
+                            imageAnalysis,
+                            imageCapture
+                        )
+                    } catch (_: Exception) {
+                        // Fallback: 2-use-case binding for hardware devices that don't support 3 concurrent streams
+                        cameraProvider.bindToLifecycle(
+                            lifecycleOwner,
+                            cameraSelector,
+                            preview,
+                            imageAnalysis
+                        )
+                    }
 
                     try {
                         val zoom = (uiState.currentFocalLength?.toFloat() ?: 50f) / 24.0f

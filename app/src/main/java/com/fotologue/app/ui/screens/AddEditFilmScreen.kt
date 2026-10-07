@@ -251,12 +251,13 @@ fun FilmPresetsDialog(
     val filteredPresets = remember(selectedBrandFilter, selectedFormatFilter, searchQuery) {
         FilmPresets.presets.filter { preset ->
             val matchesBrand = selectedBrandFilter == "All" || preset.manufacturer.equals(selectedBrandFilter, ignoreCase = true)
+            val matchesFormat = selectedFormatFilter == "All"
             val matchesQuery = searchQuery.isBlank() || (
                 preset.name.contains(searchQuery, ignoreCase = true) ||
                 preset.manufacturer.contains(searchQuery, ignoreCase = true) ||
                 preset.abbreviation.contains(searchQuery, ignoreCase = true)
             )
-            matchesBrand && matchesQuery
+            matchesBrand && matchesFormat && matchesQuery
         }
     }
 
@@ -382,8 +383,9 @@ fun FilmPresetsDialog(
                                 ) {
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(preset.displayName, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
+                                        val expDisplay = if (selectedFormatFilter.contains("120")) 12 else if (selectedFormatFilter.contains("Large")) 1 else preset.expectedExposures
                                         Text(
-                                            text = "${preset.type} • ISO ${preset.iso} • ${preset.expectedExposures} exp • Abbr: ${preset.abbreviation}",
+                                            text = "${preset.type} • ISO ${preset.iso} • $expDisplay exp • Abbr: ${preset.abbreviation}",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )

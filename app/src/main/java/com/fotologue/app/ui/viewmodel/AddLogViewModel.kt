@@ -422,23 +422,28 @@ class AddLogViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val camera = repository.getCameraById(cameraId).first()
-            _uiState.update { 
-                it.copy(
-                    selectedCameraId = cameraId,
-                    selectedKitId = null,
-                    availableShutterSpeeds = if (camera?.shutterSpeeds.isNullOrEmpty()) {
-                        ExposureSuggester.defaultShutterSpeeds
-                    } else {
-                        camera.shutterSpeeds
-                    },
-                    availableApertures = if (it.selectedLensId == null) {
-                        ExposureSuggester.commonApertures.map { apertureValue -> "f/${if ((apertureValue % 1.0) == 0.0) apertureValue.toInt() else apertureValue}" }
-                    } else {
-                        it.availableApertures
-                    },
-                )
+            if (camera != null) {
+                if ((camera.type == CameraType.TLR || camera.type == CameraType.MEDIUM_FORMAT) && camera.format != Film.FORMAT_120) {
+                    repository.updateCamera(camera.copy(format = Film.FORMAT_120))
+                }
+                _uiState.update { 
+                    it.copy(
+                        selectedCameraId = cameraId,
+                        selectedKitId = null,
+                        availableShutterSpeeds = if (camera.shutterSpeeds.isEmpty()) {
+                            ExposureSuggester.defaultShutterSpeeds
+                        } else {
+                            camera.shutterSpeeds
+                        },
+                        availableApertures = if (it.selectedLensId == null) {
+                            ExposureSuggester.commonApertures.map { apertureValue -> "f/${if ((apertureValue % 1.0) == 0.0) apertureValue.toInt() else apertureValue}" }
+                        } else {
+                            it.availableApertures
+                        },
+                    )
+                }
+                if (updatePersistent) syncGearToPersistent()
             }
-            if (updatePersistent) syncGearToPersistent()
         }
     }
 
