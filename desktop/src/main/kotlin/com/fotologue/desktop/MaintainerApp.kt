@@ -821,7 +821,7 @@ fun MaintainerAppScreen() {
                                     ascending = sortAscending,
                                     filterOptions = brandFilterOptions,
                                     activeFilter = filterBrand,
-                                    modifier = Modifier.weight(1.2f),
+                                    modifier = Modifier.weight(if (showMountFilter) 1.2f else 1.5f),
                                     onSelectSort = { toggleSort("Brand") },
                                     onSelectFilter = { filterBrand = it }
                                 )
@@ -831,7 +831,7 @@ fun MaintainerAppScreen() {
                                     ascending = sortAscending,
                                     filterOptions = emptyList(),
                                     activeFilter = "All",
-                                    modifier = Modifier.weight(2.5f),
+                                    modifier = Modifier.weight(if (showMountFilter) 2.5f else 3.2f),
                                     onSelectSort = { toggleSort("Name") },
                                     onSelectFilter = {}
                                 )
@@ -841,20 +841,22 @@ fun MaintainerAppScreen() {
                                     ascending = sortAscending,
                                     filterOptions = if (showTypeFilter) typeFilterOptions else emptyList(),
                                     activeFilter = filterType,
-                                    modifier = Modifier.weight(1.5f),
+                                    modifier = Modifier.weight(if (showMountFilter) 1.5f else 1.8f),
                                     onSelectSort = { toggleSort("Type") },
                                     onSelectFilter = { filterType = it }
                                 )
-                                GridHeaderCell(
-                                    title = "Mount / Spec",
-                                    activeColumn = sortColumn,
-                                    ascending = sortAscending,
-                                    filterOptions = if (showMountFilter) mountFilterOptions else emptyList(),
-                                    activeFilter = filterMount,
-                                    modifier = Modifier.weight(1.5f),
-                                    onSelectSort = { toggleSort("Mount") },
-                                    onSelectFilter = { filterMount = it }
-                                )
+                                if (showMountFilter) {
+                                    GridHeaderCell(
+                                        title = "Mount / Spec",
+                                        activeColumn = sortColumn,
+                                        ascending = sortAscending,
+                                        filterOptions = mountFilterOptions,
+                                        activeFilter = filterMount,
+                                        modifier = Modifier.weight(1.5f),
+                                        onSelectSort = { toggleSort("Mount") },
+                                        onSelectFilter = { filterMount = it }
+                                    )
+                                }
                                 GridHeaderCell(
                                     title = "Preset ID",
                                     activeColumn = sortColumn,
@@ -971,25 +973,27 @@ fun MaintainerAppScreen() {
                                             preset.brand,
                                             fontWeight = FontWeight.Bold,
                                             style = MaterialTheme.typography.bodyMedium,
-                                            modifier = Modifier.weight(1.2f)
+                                            modifier = Modifier.weight(if (showMountFilter) 1.2f else 1.5f)
                                         )
                                         Text(
                                             cleanName,
                                             style = MaterialTheme.typography.bodyMedium,
-                                            modifier = Modifier.weight(2.5f)
+                                            modifier = Modifier.weight(if (showMountFilter) 2.5f else 3.2f)
                                         )
                                         Text(
                                             typeVal,
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.weight(1.5f)
+                                            modifier = Modifier.weight(if (showMountFilter) 1.5f else 1.8f)
                                         )
-                                        Text(
-                                            mountVal,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.weight(1.5f)
-                                        )
+                                        if (showMountFilter) {
+                                            Text(
+                                                mountVal,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier.weight(1.5f)
+                                            )
+                                        }
                                         Text(
                                             preset.id,
                                             style = MaterialTheme.typography.bodySmall,
