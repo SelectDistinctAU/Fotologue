@@ -89,5 +89,200 @@
       "website": "https://rewindphotolab.com.au"
     },
     "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_camera_electronic",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "Camera Electronic",
+    "name": "Camera Electronic (Perth, WA)",
+    "attributes": {
+      "type": "Regional Supplier",
+      "region": "Australia & Oceania",
+      "website": "https://www.cameraelectronic.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_leederville_cameras",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "Leederville Cameras",
+    "name": "Leederville Cameras (Perth, WA)",
+    "attributes": {
+      "type": "Regional Supplier",
+      "region": "Australia & Oceania",
+      "website": "https://www.leedervillecameras.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_fitzgerald_photo",
+    "category": "SUPPLIER",
+    "subCategory": "Film Processing Lab",
+    "brand": "Fitzgerald Photo Imaging",
+    "name": "Fitzgerald Photo Imaging (Perth, WA)",
+    "attributes": {
+      "type": "Film Processing Lab",
+      "region": "Australia & Oceania",
+      "website": "https://www.fitzgeraldphoto.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_camera_house",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "Camera House",
+    "name": "Camera House",
+    "attributes": {
+      "type": "Regional Supplier",
+      "region": "Australia & Oceania",
+      "website": "https://www.camerahouse.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_georges_cameras",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "Georges Cameras",
+    "name": "Georges Cameras",
+    "attributes": {
+      "type": "Regional Supplier",
+      "region": "Australia & Oceania",
+      "website": "https://www.georges.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_digidirect",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "DigiDirect",
+    "name": "DigiDirect",
+    "attributes": {
+      "type": "Regional Supplier",
+      "region": "Australia & Oceania",
+      "website": "https://www.digidirect.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_teds_cameras",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "Ted's Cameras",
+    "name": "Ted's Cameras",
+    "attributes": {
+      "type": "Regional Supplier",
+      "region": "Australia & Oceania",
+      "website": "https://www.teds.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_camera_pro",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "Camera Pro",
+    "name": "Camera Pro",
+    "attributes": {
+      "type": "Regional Supplier",
+      "region": "Australia & Oceania",
+      "website": "https://www.camerapro.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_walkens",
+    "category": "SUPPLIER",
+    "subCategory": "Online Retailer",
+    "brand": "Walkens House of Film",
+    "name": "Walkens House of Film",
+    "attributes": {
+      "type": "Online Retailer",
+      "region": "Australia & Oceania",
+      "website": "https://walkens.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_hillvale_photo",
+    "category": "SUPPLIER",
+    "subCategory": "Film Processing Lab",
+    "brand": "Hillvale Photo",
+    "name": "Hillvale Photo",
+    "attributes": {
+      "type": "Film Processing Lab",
+      "region": "Australia & Oceania",
+      "website": "https://hillvale.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_filmneverdie",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "FilmNeverDie",
+    "name": "FilmNeverDie",
+    "attributes": {
+      "type": "Regional Supplier",
+      "region": "Australia & Oceania",
+      "website": "https://filmneverdie.com"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_do_film_lab",
+    "category": "SUPPLIER",
+    "subCategory": "Film Processing Lab",
+    "brand": "Do Film Lab",
+    "name": "Do Film Lab",
+    "attributes": {
+      "type": "Film Processing Lab",
+      "region": "Australia & Oceania",
+      "website": "https://dofilmlab.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_halide_supply",
+    "category": "SUPPLIER",
+    "subCategory": "Film Processing Lab",
+    "brand": "Halide Supply",
+    "name": "Halide Supply",
+    "attributes": {
+      "type": "Film Processing Lab",
+      "region": "Australia & Oceania",
+      "website": "https://halidesupply.com"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_sydney_film_lab",
+    "category": "SUPPLIER",
+    "subCategory": "Film Processing Lab",
+    "brand": "Sydney Film Lab",
+    "name": "Sydney Film Lab",
+    "attributes": {
+      "type": "Film Processing Lab",
+      "region": "Australia & Oceania",
+      "website": "https://sydneyfilmlab.com.au"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "sup_gold_street_studios",
+    "category": "SUPPLIER",
+    "subCategory": "Regional Supplier",
+    "brand": "Gold Street Studios",
+    "name": "Gold Street Studios",
+    "attributes": {
+      "type": "Regional Supplier",
+      "region": "Australia & Oceania",
+      "website": "https://www.goldstreetstudios.com.au"
+    },
+    "isDeveloperPreset": true
   }
 ]
