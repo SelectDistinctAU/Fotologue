@@ -769,6 +769,21 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-077: Skullinator Protocol Quality Sprint (Medium Format Camera Presets, Format Filters & CameraX Permission Guard)
+- **Platform**: Fotologue Mobile & Desktop (`cameras.json`, `AddEditFilmScreen.kt`, `AddLogScreen.kt`, `AddLogViewModel.kt`, `LightMeterScreen.kt`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Yashica Mat-124G TLR defaulted to 35mm format in presets causing film dropdown mismatches; Film Presets Dialog lacked a Film Format filter; lens dropdowns showed duplicate brand names; LightMeter crashed on fresh install before permission granted.
+- **Root Cause**: Unrepresented format attribute in `cameras.json`, missing format filter in film preset dialog, and unguarded CameraX lifecycle binding.
+- **Resolution**:
+  1. Updated `cameras.json` to explicitly define `"format": "120 (Medium Format)"` for all TLR and Medium Format camera presets.
+  2. Added **`Filter by Film Format`** dropdown (`All`, `35mm`, `120 (Medium Format)`, `Large Format / Sheet`) to `FilmPresetsDialog` on Mobile and Desktop.
+  3. Strict format filtering enforced (`formatsMatch(camera.format, film.format)`) with 1-click **`[ ➕ Add a {CameraFormat} Film Stock... ]`** pre-filled button when no matching film stock exists.
+  4. Updated `cleanLensName` to strip duplicate brand prefixes (*"Yashica Yashinon..."* $\to$ *"Yashinon 80mm f/3.5 Taking Lens"*).
+  5. Added `rememberPermissionState` and `ContextCompat.checkSelfPermission` guards in `LightMeterScreen.kt` to display a full-screen permission request layout if ungranted.
+- **Regression Test Case**: Clean install app $\to$ select *Yashica Mat-124G* TLR $\to$ verify format is `120 (Medium Format)` and 120 film stock appears in the Film dropdown; tap `Measure Exposure` with revoked permission $\to$ verify permission prompt renders without crashing.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
