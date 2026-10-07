@@ -646,6 +646,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-066: Unconstrained Equipment Brand LOV and Missing Controlled Type LOV
+- **Platform**: Fotologue Maintainer Tool (`desktop/src/main/kotlin/com/fotologue/desktop/MaintainerApp.kt`)
+- **Reported**: October 2026
+- **Symptom**: Editing an Equipment preset in the Maintainer Tool displayed camera body manufacturers (*Alpa*, *Leica*, *Phase One*) in the Brand dropdown, and `type` was an unconstrained text input.
+- **Root Cause**: Un-tailored `EQUIPMENT` category options in `MaintainerApp.kt`.
+- **Resolution**: Restricted Equipment Brand LOV to darkroom hardware manufacturers (*Beseler*, *Durst*, *Paterson*, *Jobo*, *Omega/Saunders*, *Kaiser*, *LPL*, *Hama*, *Peak*). Converted `type` into a **Controlled Dropdown Selector** (`Enlarger`, `Dev Tank`, `Film Reel`, `Developing Tray`, `Darkroom Timer`, `Safelight`, `Thermometer`, etc.), and enabled `TYPE ▾` column header filtering in the Data Grid.
+- **Regression Test Case**: Launch `./gradlew :desktop:runMaintainer` $\to$ select `EQUIPMENT` tab $\to$ click `Add New EQUIPMENT Preset Entry` $\to$ verify Brand dropdown lists darkroom hardware manufacturers and `type` is a controlled dropdown.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
