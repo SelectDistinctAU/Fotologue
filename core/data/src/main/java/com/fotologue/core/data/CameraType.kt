@@ -22,9 +22,16 @@ enum class CameraType(val displayName: String, val isInterchangeable: Boolean) {
 
     companion object {
         fun fromString(value: String): CameraType {
+            val v = value.trim()
+            if (v.equals("TLR", ignoreCase = true) || v.contains("TLR", ignoreCase = true)) return TLR
+            if (v.contains("Medium Format", ignoreCase = true)) return MEDIUM_FORMAT
+            if (v.contains("Film SLR", ignoreCase = true) || v.contains("SLR", ignoreCase = true)) return FILM_SLR
+            if (v.contains("Rangefinder", ignoreCase = true)) return RANGEFINDER
+            if (v.contains("Compact", ignoreCase = true)) return COMPACT
+
             return entries.find { 
-                it.displayName.equals(value, ignoreCase = true) || 
-                it.name.equals(value, ignoreCase = true) 
+                it.displayName.equals(v, ignoreCase = true) || 
+                it.name.equals(v, ignoreCase = true) 
             } ?: COMPACT
         }
     }

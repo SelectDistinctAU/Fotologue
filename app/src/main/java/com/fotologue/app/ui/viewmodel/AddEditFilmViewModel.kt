@@ -137,21 +137,23 @@ class AddEditFilmViewModel @Inject constructor(
         _uiState.update { it.copy(abbreviation = filteredAbbr) }
     }
 
-    fun onPresetSelected(preset: FilmPreset) {
+    fun onPresetSelected(preset: FilmPreset, chosenFormat: String = Film.FORMAT_35MM) {
         val newName = preset.displayName
         val newAbbr = preset.abbreviation
         val newIso = preset.iso.toString()
         val newType = preset.type
-        val newExpected = when (_uiState.value.format) {
+        val targetFormat = if (chosenFormat != "All") chosenFormat else _uiState.value.format
+        val newExpected = when (targetFormat) {
             Film.FORMAT_120 -> "12"
             Film.FORMAT_LARGE -> "1"
-            else -> preset.expectedExposures.toString()
+            else -> "36"
         }
         
         savedStateHandle["name"] = newName
         savedStateHandle["abbreviation"] = newAbbr
         savedStateHandle["iso"] = newIso
         savedStateHandle["type"] = newType
+        savedStateHandle["format"] = targetFormat
         savedStateHandle["expectedExposures"] = newExpected
         
         _uiState.update { 
@@ -160,6 +162,7 @@ class AddEditFilmViewModel @Inject constructor(
                 abbreviation = newAbbr,
                 iso = newIso,
                 type = newType,
+                format = targetFormat,
                 expectedExposures = newExpected,
                 filteredPresets = emptyList(),
                 isNameValid = true,

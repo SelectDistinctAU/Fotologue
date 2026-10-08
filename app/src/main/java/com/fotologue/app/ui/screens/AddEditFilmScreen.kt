@@ -222,8 +222,8 @@ fun AddEditFilmScreen(
         FilmPresetsDialog(
             initialFormat = uiState.format,
             onDismiss = { showPresetsDialog = false },
-            onPresetSelected = { preset ->
-                viewModel.onPresetSelected(preset)
+            onPresetSelected = { preset, chosenFormat ->
+                viewModel.onPresetSelected(preset, chosenFormat)
                 showPresetsDialog = false
             }
         )
@@ -235,7 +235,7 @@ fun AddEditFilmScreen(
 fun FilmPresetsDialog(
     initialFormat: String = Film.FORMAT_35MM,
     onDismiss: () -> Unit,
-    onPresetSelected: (FilmPreset) -> Unit
+    onPresetSelected: (FilmPreset, String) -> Unit
 ) {
     val masterFilmBrands = remember {
         listOf("All") + FilmPresets.manufacturers.sorted()
@@ -251,7 +251,7 @@ fun FilmPresetsDialog(
     val filteredPresets = remember(selectedBrandFilter, selectedFormatFilter, searchQuery) {
         FilmPresets.presets.filter { preset ->
             val matchesBrand = selectedBrandFilter == "All" || preset.manufacturer.equals(selectedBrandFilter, ignoreCase = true)
-            val matchesFormat = selectedFormatFilter == "All"
+            val matchesFormat = true // Film emulsions apply to all format selections!
             val matchesQuery = searchQuery.isBlank() || (
                 preset.name.contains(searchQuery, ignoreCase = true) ||
                 preset.manufacturer.contains(searchQuery, ignoreCase = true) ||
@@ -391,7 +391,7 @@ fun FilmPresetsDialog(
                                         )
                                     }
                                     Button(
-                                        onClick = { onPresetSelected(preset) },
+                                        onClick = { onPresetSelected(preset, selectedFormatFilter) },
                                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
                                     ) {
                                         Text("Select", style = MaterialTheme.typography.labelMedium)

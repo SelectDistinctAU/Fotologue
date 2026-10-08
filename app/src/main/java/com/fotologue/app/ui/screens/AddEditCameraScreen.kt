@@ -237,7 +237,7 @@ fun AddEditCameraScreen(
                         items(filteredPresets.size) { idx ->
                             val presetItem = filteredPresets[idx]
                             val subCatStr = presetItem.subCategory ?: presetItem.attributes["type"] ?: "Film SLR"
-                            val cType = CameraType.entries.find { it.displayName.equals(subCatStr, ignoreCase = true) } ?: CameraType.FILM_SLR
+                            val cType = CameraType.fromString(subCatStr)
                             val spec = CameraSpec(
                                 name = presetItem.name,
                                 modelNumber = presetItem.modelNumber ?: presetItem.name,

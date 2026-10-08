@@ -81,7 +81,7 @@ class AddEditCameraViewModel @Inject constructor(
 
                 val masterPresets = MasterPresetEngine.getPresetsByCategory("CAMERA").map { presetItem ->
                     val subCatStr = presetItem.subCategory ?: presetItem.attributes["type"] ?: "Film SLR"
-                    val cType = CameraType.entries.find { it.displayName.equals(subCatStr, ignoreCase = true) } ?: CameraType.FILM_SLR
+                    val cType = CameraType.fromString(subCatStr)
                     CameraSpec(
                         name = presetItem.name,
                         modelNumber = presetItem.modelNumber ?: presetItem.name,

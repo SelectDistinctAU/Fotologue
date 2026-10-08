@@ -240,8 +240,9 @@ fun LightMeterScreen(
                             imageAnalysis,
                             imageCapture
                         )
-                    } catch (_: Exception) {
+                    } catch (_: Throwable) {
                         // Fallback: 2-use-case binding for hardware devices that don't support 3 concurrent streams
+                        cameraProvider.unbindAll()
                         cameraProvider.bindToLifecycle(
                             lifecycleOwner,
                             cameraSelector,

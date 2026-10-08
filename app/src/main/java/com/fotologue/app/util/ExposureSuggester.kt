@@ -48,15 +48,17 @@ object ExposureSuggester {
 
         if (lens != null) {
             val lightLossStops = teleconverter?.lightLossStops ?: 0.0
-            val effectiveMaxAperture = lens.minAperture * 2.0.pow(lightLossStops / 2.0)
+            val minAp = minOf(lens.minAperture, lens.maxAperture)
+            val maxAp = maxOf(lens.minAperture, lens.maxAperture)
+            val effectiveMaxAperture = minAp * 2.0.pow(lightLossStops / 2.0)
             
-            // Filter out apertures that are wider (smaller f-number) than effectiveMaxAperture
-            // or smaller (larger f-number) than lens.maxAperture.
-            apertures = apertures.filter { it in effectiveMaxAperture..lens.maxAperture }
+            val rangeStart = minOf(effectiveMaxAperture, maxAp)
+            val rangeEnd = maxOf(effectiveMaxAperture, maxAp)
             
-            // Ensure the lens's own physical limits (adjusted by TC) are included if they are valid for the gear.
+            apertures = apertures.filter { it in rangeStart..rangeEnd }
+            
             if (!apertures.contains(effectiveMaxAperture)) apertures = apertures + effectiveMaxAperture
-            if (!apertures.contains(lens.maxAperture)) apertures = apertures + lens.maxAperture
+            if (!apertures.contains(maxAp)) apertures = apertures + maxAp
             apertures = apertures.sorted()
         }
 
