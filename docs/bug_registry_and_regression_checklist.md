@@ -921,6 +921,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-089: Desktop Interactive Taxonomy Tag Picker & Sub-Group Alignment
+- **Platform**: Fotologue Desktop (`Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Desktop QA Inspector used free-form comma-separated text entry for tags; Data Grid lacked Sub-Group/Parent Subject alignment with Mobile.
+- **Root Cause**: Un-aligned UI controls on Desktop Master Rolls QA Inspector.
+- **Resolution**:
+  1. Replaced comma-separated text box with Mobile's **Interactive Taxonomy Dropdown & Multi-Select Chip Picker** (`Subject` Dropdown $\to$ `Content` Chips, `Intent` Dropdown $\to$ `Intent Sub-Tags` Chips).
+  2. Added **`SUB-GROUP / PARENT SUBJECT`** column to Desktop `TaxonomyAdminPanel` Data Grid.
+  3. Aligned Desktop `Edit Tag` dialog to 2-tier structure (`Associated Subject` dropdown + `Content Name` text field).
+- **Regression Test Case**: Open Desktop App $\to$ Master Rolls QA Inspector $\to$ select frame $\to$ verify Subject dropdown and Content chips render and toggle tags dynamically.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
