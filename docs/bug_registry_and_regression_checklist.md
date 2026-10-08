@@ -845,6 +845,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-083: Filter-As-You-Type Soft Keyboard Search Across All Preset Modal Filter Dropdowns
+- **Platform**: Fotologue Mobile (`AddEditCameraScreen.kt`, `AddEditLensScreen.kt`, `AddEditFilmScreen.kt`, `AddEditFlashScreen.kt`, `AddEditViewfinderScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Tapping filter dropdowns inside preset modals did not launch the soft keyboard or permit text query filtering.
+- **Root Cause**: Filter dropdown text fields were configured with `readOnly = true` and `MenuAnchorType.PrimaryNotEditable`.
+- **Resolution**: Converted all filter dropdowns across all 5 preset modals to `readOnly = false` with `MenuAnchorType.PrimaryEditable`, launching the soft keyboard and filtering options in real-time as the user types.
+- **Regression Test Case**: Open `Select Camera Body from Presets` $\to$ tap `Filter by Camera Brand` $\to$ verify soft keyboard launches $\to$ type "Nik" $\to$ verify brand dropdown filters in real-time to *Nikon*.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
