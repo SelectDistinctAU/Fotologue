@@ -832,6 +832,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-082: FilmPresetsDialog Format Selection Pre-Fill & CameraX Fallback Recovery
+- **Platform**: Fotologue Mobile (`AddEditFilmScreen.kt`, `AddEditFilmViewModel.kt`, `LightMeterScreen.kt`, `ExposureSuggester.kt`)
+- **Reported**: October 2026
+- **Symptom**: Selecting `120 (Medium Format)` in `FilmPresetsDialog` evaluated to empty presets due to hardcoded `matchesFormat = All`; LightMeter crashed on 2-use-case retry.
+- **Root Cause**: Unapplied `selectedFormatFilter` in `preset.filter` and missing `unbindAll()` in LightMeter CameraX fallback handler.
+- **Resolution**:
+  1. Updated `FilmPresetsDialog` in `AddEditFilmScreen.kt` & `AddEditFilmViewModel.kt` to apply `selectedFormatFilter` to form format and expected exposures (12 exp for 120).
+  2. Added `cameraProvider.unbindAll()` inside LightMeter fallback catch block before 2-use-case binding.
+  3. Guarded `ExposureSuggester.kt` aperture range calculations with `minOf` and `maxOf`.
+- **Regression Test Case**: Open `Select Film Stock from Presets` $\to$ select `120 (Medium Format)` $\to$ select *Ilford HP5 Plus 400* $\to$ verify main form receives `120 (Medium Format)` and `12 exp`.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
