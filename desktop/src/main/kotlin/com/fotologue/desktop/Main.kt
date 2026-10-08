@@ -5598,6 +5598,47 @@ private fun FoundationAdminLeftRail(
                     )
                 }
             }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+            // Header 5: TAXONOMY & TAGS
+            var isTaxonomyExpanded by remember { mutableStateOf(true) }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isTaxonomyExpanded = !isTaxonomyExpanded }
+                    .padding(start = 6.dp, top = 6.dp, bottom = 4.dp, end = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "TAXONOMY & TAGS",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Icon(
+                    if (isTaxonomyExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            if (isTaxonomyExpanded) {
+                val isSel = selectedCategory == 14
+                NavigationDrawerItem(
+                    label = { Text("Taxonomy & Tags", style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    selected = isSel,
+                    onClick = { onSelectCategory(14) },
+                    icon = { Icon(Icons.Default.Filter, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    modifier = Modifier.height(36.dp),
+                    colors = NavigationDrawerItemDefaults.colors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                )
+            }
         }
 
         VerticalScrollbar(
@@ -6171,11 +6212,367 @@ private fun AdminDataGridContent(
                 }
             }
         }
+        14 -> { // Taxonomy & Tags
+            val rolls = remember { DatabaseRepository.loadAllRolls() }
+            TaxonomyAdminPanel(masterVaultRolls = rolls)
+        }
     }
 
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(gridListState),
             modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TaxonomyAdminPanel(
+    masterVaultRolls: List<DesktopMasterRollItem>
+) {
+    // 1. Gather all tags and calculate live usage frequency across all master vault rolls & frames
+    val tagUsageMap = remember(masterVaultRolls.toList()) {
+        val map = mutableMapOf<String, Int>()
+        masterVaultRolls.forEach { roll ->
+            roll.frames.forEach { frame ->
+                frame.tags.forEach { tag ->
+                    val clean = tag.trim()
+                    if (clean.isNotBlank()) {
+                        map[clean] = (map[clean] ?: 0) + 1
+                    }
+                }
+            }
+        }
+        map
+    }
+
+    // Default Seed Tags grouped by taxonomy category
+    val defaultSubjects = remember { mutableStateListOf("Portrait", "Landscape", "Architecture", "Macro") }
+    val defaultContent = remember { mutableStateListOf("Bike", "Street", "Outdoors", "Family", "Travel", "Night", "Abandoned") }
+    val defaultIntent = remember { mutableStateListOf("Portfolio", "Test Shot", "Documentary", "Experimental") }
+
+    var selectedTaxonomyFilter by remember { mutableStateOf("All") }
+    var searchQuery by remember { mutableStateOf("") }
+    var sortColumn by remember { mutableStateOf("NAME") }
+    var sortAscending by remember { mutableStateOf(true) }
+
+    var showAddTagDialog by remember { mutableStateOf(false) }
+    var editingTag by remember { mutableStateOf<Pair<String, String>?>(null) } // Pair(oldTagName, category)
+    var deletingTagName by remember { mutableStateOf<String?>(null) }
+
+    // Build flat tag list with taxonomy metadata
+    val allTaxonomyTags = remember(defaultSubjects.toList(), defaultContent.toList(), defaultIntent.toList(), tagUsageMap) {
+        val list = mutableListOf<Triple<String, String, Int>>() // Triple(tagName, category, usageCount)
+        defaultSubjects.forEach { list.add(Triple(it, "Subjects", tagUsageMap[it] ?: 0)) }
+        defaultContent.forEach { list.add(Triple(it, "Content", tagUsageMap[it] ?: 0)) }
+        defaultIntent.forEach { list.add(Triple(it, "Intent", tagUsageMap[it] ?: 0)) }
+        
+        // Include any custom tags found in masterVaultRolls
+        tagUsageMap.keys.forEach { tag ->
+            if (list.none { it.first.equals(tag, ignoreCase = true) }) {
+                list.add(Triple(tag, "Content", tagUsageMap[tag] ?: 0))
+            }
+        }
+        list
+    }
+
+    val filteredTags = remember(allTaxonomyTags, selectedTaxonomyFilter, searchQuery, sortColumn, sortAscending) {
+        var result = allTaxonomyTags.filter { item ->
+            val matchesCategory = selectedTaxonomyFilter == "All" || item.second.equals(selectedTaxonomyFilter, ignoreCase = true)
+            val matchesQuery = searchQuery.isBlank() || item.first.contains(searchQuery, ignoreCase = true) || item.second.contains(searchQuery, ignoreCase = true)
+            matchesCategory && matchesQuery
+        }
+
+        result = when (sortColumn) {
+            "NAME" -> if (sortAscending) result.sortedBy { it.first.lowercase() } else result.sortedByDescending { it.first.lowercase() }
+            "CATEGORY" -> if (sortAscending) result.sortedBy { it.second.lowercase() } else result.sortedByDescending { it.second.lowercase() }
+            "USAGE" -> if (sortAscending) result.sortedBy { it.third } else result.sortedByDescending { it.third }
+            else -> result
+        }
+        result
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize().padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        // TOP CONTROL HEADER
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text("🏷️ TAXONOMY & TAGS MANAGEMENT", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Text(
+                    "Subjects (${defaultSubjects.size}) • Content (${defaultContent.size}) • Intent (${defaultIntent.size}) • Total (${allTaxonomyTags.size})",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Button(onClick = { showAddTagDialog = true }) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Add New Tag", fontWeight = FontWeight.Bold)
+            }
+        }
+
+        // CATEGORY FILTER CHIPS & SEARCH
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                val categories = listOf("All", "Subjects", "Content", "Intent")
+                categories.forEach { cat ->
+                    FilterChip(
+                        selected = selectedTaxonomyFilter == cat,
+                        onClick = { selectedTaxonomyFilter = cat },
+                        label = { Text(cat) }
+                    )
+                }
+            }
+
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder = { Text("Search Tags...") },
+                modifier = Modifier.width(220.dp),
+                singleLine = true,
+                textStyle = MaterialTheme.typography.bodySmall,
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(16.dp)) }
+            )
+        }
+
+        // HIGH DENSITY SORTABLE DATA GRID
+        Card(
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                // COLUMN HEADERS
+                Row(
+                    modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant).padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "TAG NAME ${if (sortColumn == "NAME") (if (sortAscending) "▲" else "▼") else ""}",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1.5f).clickable {
+                            if (sortColumn == "NAME") sortAscending = !sortAscending else { sortColumn = "NAME"; sortAscending = true }
+                        }
+                    )
+                    Text(
+                        text = "CATEGORY ${if (sortColumn == "CATEGORY") (if (sortAscending) "▲" else "▼") else ""}",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1.2f).clickable {
+                            if (sortColumn == "CATEGORY") sortAscending = !sortAscending else { sortColumn = "CATEGORY"; sortAscending = true }
+                        }
+                    )
+                    Text(
+                        text = "USAGE FREQUENCY ${if (sortColumn == "USAGE") (if (sortAscending) "▲" else "▼") else ""}",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1.2f).clickable {
+                            if (sortColumn == "USAGE") sortAscending = !sortAscending else { sortColumn = "USAGE"; sortAscending = true }
+                        }
+                    )
+                    Text("SOURCE", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                    Text("ACTIONS", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, modifier = Modifier.width(90.dp))
+                }
+
+                HorizontalDivider()
+
+                // DATA GRID ROWS
+                LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                    items(filteredTags.size, key = { "tax_tag_${filteredTags[it].first}_${filteredTags[it].second}" }) { idx ->
+                        val (tagName, cat, usageCount) = filteredTags[idx]
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("#$tagName", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1.5f))
+                            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer), modifier = Modifier.weight(1.2f)) {
+                                Text(cat, modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                            }
+                            Text("$usageCount frames", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1.2f))
+                            Text(if (cat in listOf("Subjects", "Content", "Intent")) "System Core" else "Custom Tag", style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f))
+                            Row(modifier = Modifier.width(90.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                IconButton(
+                                    onClick = { editingTag = Pair(tagName, cat) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(16.dp))
+                                }
+                                IconButton(
+                                    onClick = { deletingTagName = tagName },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                                }
+                            }
+                        }
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                    }
+                }
+            }
+        }
+    }
+
+    // ADD TAG DIALOG
+    if (showAddTagDialog) {
+        var newTagName by remember { mutableStateOf("") }
+        var newTagCat by remember { mutableStateOf("Subjects") }
+
+        AlertDialog(
+            onDismissRequest = { showAddTagDialog = false },
+            title = { Text("Add New Taxonomy Tag", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    OutlinedTextField(
+                        value = newTagName,
+                        onValueChange = { newTagName = it },
+                        label = { Text("Tag Name") },
+                        placeholder = { Text("e.g. Street, Portrait") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text("Category:", style = MaterialTheme.typography.labelSmall)
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        listOf("Subjects", "Content", "Intent").forEach { cat ->
+                            FilterChip(
+                                selected = newTagCat == cat,
+                                onClick = { newTagCat = cat },
+                                label = { Text(cat) }
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val clean = newTagName.trim().removePrefix("#")
+                        if (clean.isNotBlank()) {
+                            when (newTagCat) {
+                                "Subjects" -> if (!defaultSubjects.contains(clean)) defaultSubjects.add(clean)
+                                "Content" -> if (!defaultContent.contains(clean)) defaultContent.add(clean)
+                                "Intent" -> if (!defaultIntent.contains(clean)) defaultIntent.add(clean)
+                            }
+                        }
+                        showAddTagDialog = false
+                    }
+                ) {
+                    Text("Save Tag")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAddTagDialog = false }) { Text("Cancel") }
+            }
+        )
+    }
+
+    // EDIT TAG DIALOG (Global Renaming across Master Vault)
+    editingTag?.let { (oldName, oldCat) ->
+        var editName by remember { mutableStateOf(oldName) }
+        var editCat by remember { mutableStateOf(oldCat) }
+
+        AlertDialog(
+            onDismissRequest = { editingTag = null },
+            title = { Text("Edit Tag: #$oldName", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    OutlinedTextField(
+                        value = editName,
+                        onValueChange = { editName = it },
+                        label = { Text("Tag Name") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text("Category:", style = MaterialTheme.typography.labelSmall)
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        listOf("Subjects", "Content", "Intent").forEach { cat ->
+                            FilterChip(
+                                selected = editCat == cat,
+                                onClick = { editCat = cat },
+                                label = { Text(cat) }
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val cleanNew = editName.trim().removePrefix("#")
+                        if (cleanNew.isNotBlank()) {
+                            // Remove from old category
+                            defaultSubjects.remove(oldName)
+                            defaultContent.remove(oldName)
+                            defaultIntent.remove(oldName)
+
+                            // Add to new category
+                            when (editCat) {
+                                "Subjects" -> if (!defaultSubjects.contains(cleanNew)) defaultSubjects.add(cleanNew)
+                                "Content" -> if (!defaultContent.contains(cleanNew)) defaultContent.add(cleanNew)
+                                "Intent" -> if (!defaultIntent.contains(cleanNew)) defaultIntent.add(cleanNew)
+                            }
+
+                            // Global Renaming across Master Vault Rolls
+                            if (!cleanNew.equals(oldName, ignoreCase = true)) {
+                                masterVaultRolls.forEach { roll ->
+                                    roll.frames.forEach { frame ->
+                                        if (frame.tags.contains(oldName)) {
+                                            val updatedTags = frame.tags.map { if (it == oldName) cleanNew else it }
+                                            frame.tags.toMutableList().apply {
+                                                clear()
+                                                addAll(updatedTags)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        editingTag = null
+                    }
+                ) {
+                    Text("Update Tag")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { editingTag = null }) { Text("Cancel") }
+            }
+        )
+    }
+
+    // DELETE TAG DIALOG
+    deletingTagName?.let { tagToDelete ->
+        AlertDialog(
+            onDismissRequest = { deletingTagName = null },
+            title = { Text("Delete Tag: #$tagToDelete", fontWeight = FontWeight.Bold) },
+            text = { Text("Are you sure you want to delete #$tagToDelete? This tag will be removed from taxonomy indices.") },
+            confirmButton = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    onClick = {
+                        defaultSubjects.remove(tagToDelete)
+                        defaultContent.remove(tagToDelete)
+                        defaultIntent.remove(tagToDelete)
+                        deletingTagName = null
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { deletingTagName = null }) { Text("Cancel") }
+            }
         )
     }
 }
