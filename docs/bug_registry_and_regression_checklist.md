@@ -819,6 +819,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-081: Permanent Elimination of CameraX ImageProxy Memory Leaks and Buffer Starvation Crashes
+- **Platform**: Fotologue Mobile (`LuminanceAnalyzer.kt`, `LightMeterScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: LightMeter crashed during live video analysis on devices/emulators with unhandled ML Kit errors or frozen video feeds.
+- **Root Cause**: Unhandled native `Throwable` errors during ML Kit async face processing prevented `image.close()` execution, leading to CameraX frame buffer starvation and fatal crashes.
+- **Resolution**:
+  1. Wrapped ML Kit face detection in a strict `try-catch (t: Throwable)` block with guaranteed `image.close()` execution in `finally`.
+  2. Applied safe byte buffer bounds checking (`index in 0 until buffer.limit()`).
+  3. Added `cameraProviderFuture.get()` `try-catch (t: Throwable)` exception handler in `LightMeterScreen.kt`.
+- **Regression Test Case**: Open `Add Exposure Log` $\to$ tap `Measure Exposure` $\to$ verify live metering view operates continuously without frame drops or crashes.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
