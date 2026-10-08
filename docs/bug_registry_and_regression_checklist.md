@@ -895,6 +895,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-087: Desktop Master Rolls QA Frame Inspector Notes & Tags Inline Editing
+- **Platform**: Fotologue Desktop (`Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: During Macro Copy scanning and Master Roll inspection on Desktop, frame Notes/Comments and Tags were read-only, preventing photographers from correcting comments and tags on the fly.
+- **Root Cause**: Static `Text("Notes: ...")` and `Text("Tags: ...")` UI rendering in `Main.kt`.
+- **Resolution**:
+  1. Replaced static text with interactive, multi-line `OutlinedTextField` for `Notes / Comments` and comma-separated `Tags`.
+  2. Implemented dynamic hashtag chip rendering (`#Bike`, `#Street`, `#Outdoor`).
+  3. Integrated direct database persistence via `DatabaseRepository.saveRoll()`.
+- **Regression Test Case**: Open Desktop App $\to$ Master Rolls QA Inspector $\to$ select a frame $\to$ edit Notes and Tags $\to$ verify hashtag chips render and edits persist automatically.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
