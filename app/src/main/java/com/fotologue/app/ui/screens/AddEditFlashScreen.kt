@@ -153,35 +153,53 @@ fun AddEditFlashScreen(
                             Text("Select a brand and type to search flash speedlights:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                             // Brand Filter
-                            ExposedDropdownMenuBox(expanded = brandExpanded, onExpandedChange = { brandExpanded = it }) {
+                            var brandQuery by remember { mutableStateOf("") }
+                            val filteredBrandOptions = remember(brandOptions, brandQuery) {
+                                if (brandQuery.isBlank()) brandOptions else brandOptions.filter { it.contains(brandQuery, ignoreCase = true) }
+                            }
+
+                            ExposedDropdownMenuBox(expanded = brandExpanded, onExpandedChange = { brandExpanded = !brandExpanded }) {
                                 OutlinedTextField(
-                                    value = selectedBrandFilter,
-                                    onValueChange = {},
-                                    readOnly = true,
+                                    value = if (brandExpanded) brandQuery else selectedBrandFilter,
+                                    onValueChange = {
+                                        brandQuery = it
+                                        brandExpanded = true
+                                    },
                                     label = { Text("Filter by Flash Brand") },
+                                    placeholder = { Text(selectedBrandFilter) },
                                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandExpanded) },
-                                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                                    singleLine = true,
+                                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
                                 )
-                                ExposedDropdownMenu(expanded = brandExpanded, onDismissRequest = { brandExpanded = false }) {
-                                    brandOptions.forEach { bOpt ->
-                                        DropdownMenuItem(text = { Text(bOpt) }, onClick = { selectedBrandFilter = bOpt; brandExpanded = false })
+                                ExposedDropdownMenu(expanded = brandExpanded && filteredBrandOptions.isNotEmpty(), onDismissRequest = { brandExpanded = false; brandQuery = "" }) {
+                                    filteredBrandOptions.forEach { bOpt ->
+                                        DropdownMenuItem(text = { Text(bOpt) }, onClick = { selectedBrandFilter = bOpt; brandExpanded = false; brandQuery = "" })
                                     }
                                 }
                             }
 
                             // Type Filter
-                            ExposedDropdownMenuBox(expanded = typeExpanded, onExpandedChange = { typeExpanded = it }) {
+                            var typeQuery by remember { mutableStateOf("") }
+                            val filteredTypeOptions = remember(typeOptions, typeQuery) {
+                                if (typeQuery.isBlank()) typeOptions else typeOptions.filter { it.contains(typeQuery, ignoreCase = true) }
+                            }
+
+                            ExposedDropdownMenuBox(expanded = typeExpanded, onExpandedChange = { typeExpanded = !typeExpanded }) {
                                 OutlinedTextField(
-                                    value = selectedTypeFilter,
-                                    onValueChange = {},
-                                    readOnly = true,
+                                    value = if (typeExpanded) typeQuery else selectedTypeFilter,
+                                    onValueChange = {
+                                        typeQuery = it
+                                        typeExpanded = true
+                                    },
                                     label = { Text("Filter by Flash Type") },
+                                    placeholder = { Text(selectedTypeFilter) },
                                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
-                                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                                    singleLine = true,
+                                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
                                 )
-                                ExposedDropdownMenu(expanded = typeExpanded, onDismissRequest = { typeExpanded = false }) {
-                                    typeOptions.forEach { tOpt ->
-                                        DropdownMenuItem(text = { Text(tOpt) }, onClick = { selectedTypeFilter = tOpt; typeExpanded = false })
+                                ExposedDropdownMenu(expanded = typeExpanded && filteredTypeOptions.isNotEmpty(), onDismissRequest = { typeExpanded = false; typeQuery = "" }) {
+                                    filteredTypeOptions.forEach { tOpt ->
+                                        DropdownMenuItem(text = { Text(tOpt) }, onClick = { selectedTypeFilter = tOpt; typeExpanded = false; typeQuery = "" })
                                     }
                                 }
                             }

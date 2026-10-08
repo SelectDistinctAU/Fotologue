@@ -293,29 +293,42 @@ fun FilmPresetsDialog(
                 )
 
                 // Filter by Film Brand Dropdown
+                var brandQuery by remember { mutableStateOf("") }
+                val filteredBrandOptions = remember(masterFilmBrands, brandQuery) {
+                    if (brandQuery.isBlank()) masterFilmBrands else masterFilmBrands.filter { it.contains(brandQuery, ignoreCase = true) }
+                }
+
                 ExposedDropdownMenuBox(
                     expanded = brandDropdownExpanded,
                     onExpandedChange = { brandDropdownExpanded = !brandDropdownExpanded },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
-                        value = selectedBrandFilter,
-                        onValueChange = {},
-                        readOnly = true,
+                        value = if (brandDropdownExpanded) brandQuery else selectedBrandFilter,
+                        onValueChange = {
+                            brandQuery = it
+                            brandDropdownExpanded = true
+                        },
                         label = { Text("Filter by Film Brand") },
+                        placeholder = { Text(selectedBrandFilter) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandDropdownExpanded) },
-                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                        singleLine = true,
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
-                        expanded = brandDropdownExpanded,
-                        onDismissRequest = { brandDropdownExpanded = false }
+                        expanded = brandDropdownExpanded && filteredBrandOptions.isNotEmpty(),
+                        onDismissRequest = {
+                            brandDropdownExpanded = false
+                            brandQuery = ""
+                        }
                     ) {
-                        masterFilmBrands.forEach { b ->
+                        filteredBrandOptions.forEach { b ->
                             DropdownMenuItem(
                                 text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
                                 onClick = {
                                     selectedBrandFilter = b
                                     brandDropdownExpanded = false
+                                    brandQuery = ""
                                 }
                             )
                         }
@@ -323,29 +336,42 @@ fun FilmPresetsDialog(
                 }
 
                 // Filter by Film Format Dropdown
+                var formatQuery by remember { mutableStateOf("") }
+                val filteredFormatOptions = remember(formatOptions, formatQuery) {
+                    if (formatQuery.isBlank()) formatOptions else formatOptions.filter { it.contains(formatQuery, ignoreCase = true) }
+                }
+
                 ExposedDropdownMenuBox(
                     expanded = formatDropdownExpanded,
                     onExpandedChange = { formatDropdownExpanded = !formatDropdownExpanded },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
-                        value = selectedFormatFilter,
-                        onValueChange = {},
-                        readOnly = true,
+                        value = if (formatDropdownExpanded) formatQuery else selectedFormatFilter,
+                        onValueChange = {
+                            formatQuery = it
+                            formatDropdownExpanded = true
+                        },
                         label = { Text("Filter by Film Format") },
+                        placeholder = { Text(selectedFormatFilter) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatDropdownExpanded) },
-                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                        singleLine = true,
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
-                        expanded = formatDropdownExpanded,
-                        onDismissRequest = { formatDropdownExpanded = false }
+                        expanded = formatDropdownExpanded && filteredFormatOptions.isNotEmpty(),
+                        onDismissRequest = {
+                            formatDropdownExpanded = false
+                            formatQuery = ""
+                        }
                     ) {
-                        formatOptions.forEach { fOpt ->
+                        filteredFormatOptions.forEach { fOpt ->
                             DropdownMenuItem(
                                 text = { Text(fOpt, fontWeight = if (fOpt == selectedFormatFilter) FontWeight.Bold else FontWeight.Normal) },
                                 onClick = {
                                     selectedFormatFilter = fOpt
                                     formatDropdownExpanded = false
+                                    formatQuery = ""
                                 }
                             )
                         }

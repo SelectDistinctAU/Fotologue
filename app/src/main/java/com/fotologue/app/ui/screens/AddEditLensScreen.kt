@@ -86,29 +86,42 @@ fun AddEditLensScreen(
                     Text("Select brand and mount filters to search lens presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     
                     // 1. FILTER BY LENS BRAND
+                    var brandQuery by remember { mutableStateOf("") }
+                    val filteredBrandOptions = remember(allBrands, brandQuery) {
+                        if (brandQuery.isBlank()) allBrands else allBrands.filter { it.contains(brandQuery, ignoreCase = true) }
+                    }
+
                     ExposedDropdownMenuBox(
                         expanded = brandDropdownExpanded,
                         onExpandedChange = { brandDropdownExpanded = !brandDropdownExpanded },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         OutlinedTextField(
-                            value = selectedBrandFilter,
-                            onValueChange = {},
-                            readOnly = true,
+                            value = if (brandDropdownExpanded) brandQuery else selectedBrandFilter,
+                            onValueChange = {
+                                brandQuery = it
+                                brandDropdownExpanded = true
+                            },
                             label = { Text("Filter by Brand") },
+                            placeholder = { Text(selectedBrandFilter) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandDropdownExpanded) },
-                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                            singleLine = true,
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
                         )
                         ExposedDropdownMenu(
-                            expanded = brandDropdownExpanded,
-                            onDismissRequest = { brandDropdownExpanded = false }
+                            expanded = brandDropdownExpanded && filteredBrandOptions.isNotEmpty(),
+                            onDismissRequest = {
+                                brandDropdownExpanded = false
+                                brandQuery = ""
+                            }
                         ) {
-                            allBrands.forEach { b ->
+                            filteredBrandOptions.forEach { b ->
                                 DropdownMenuItem(
                                     text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
                                     onClick = {
                                         selectedBrandFilter = b
                                         brandDropdownExpanded = false
+                                        brandQuery = ""
                                     }
                                 )
                             }
@@ -116,29 +129,42 @@ fun AddEditLensScreen(
                     }
 
                     // 2. FILTER BY LENS MOUNT
+                    var mountQuery by remember { mutableStateOf("") }
+                    val filteredMountOptions = remember(availableMountsForBrand, mountQuery) {
+                        if (mountQuery.isBlank()) availableMountsForBrand else availableMountsForBrand.filter { it.contains(mountQuery, ignoreCase = true) }
+                    }
+
                     ExposedDropdownMenuBox(
                         expanded = mountDropdownExpanded,
                         onExpandedChange = { mountDropdownExpanded = !mountDropdownExpanded },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         OutlinedTextField(
-                            value = selectedLensMountFilter,
-                            onValueChange = {},
-                            readOnly = true,
+                            value = if (mountDropdownExpanded) mountQuery else selectedLensMountFilter,
+                            onValueChange = {
+                                mountQuery = it
+                                mountDropdownExpanded = true
+                            },
                             label = { Text("Filter by Lens Mount") },
+                            placeholder = { Text(selectedLensMountFilter) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = mountDropdownExpanded) },
-                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                            singleLine = true,
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
                         )
                         ExposedDropdownMenu(
-                            expanded = mountDropdownExpanded,
-                            onDismissRequest = { mountDropdownExpanded = false }
+                            expanded = mountDropdownExpanded && filteredMountOptions.isNotEmpty(),
+                            onDismissRequest = {
+                                mountDropdownExpanded = false
+                                mountQuery = ""
+                            }
                         ) {
-                            availableMountsForBrand.forEach { mnt ->
+                            filteredMountOptions.forEach { mnt ->
                                 DropdownMenuItem(
                                     text = { Text(mnt, fontWeight = if (mnt == selectedLensMountFilter) FontWeight.Bold else FontWeight.Normal) },
                                     onClick = {
                                         selectedLensMountFilter = mnt
                                         mountDropdownExpanded = false
+                                        mountQuery = ""
                                     }
                                 )
                             }

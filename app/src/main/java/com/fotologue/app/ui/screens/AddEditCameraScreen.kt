@@ -120,29 +120,43 @@ fun AddEditCameraScreen(
                 )
 
                 // 1. FILTER BY CAMERA BRAND (Top Dropdown)
+                var brandQuery by remember { mutableStateOf("") }
+                val allBrandOptions = remember(masterBrands) { (listOf("All") + masterBrands.filter { it != "➕ Add new Brand..." }) }
+                val filteredBrandOptions = remember(allBrandOptions, brandQuery) {
+                    if (brandQuery.isBlank()) allBrandOptions else allBrandOptions.filter { it.contains(brandQuery, ignoreCase = true) }
+                }
+
                 ExposedDropdownMenuBox(
                     expanded = brandDropdownExpanded,
                     onExpandedChange = { brandDropdownExpanded = !brandDropdownExpanded },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
-                        value = selectedBrandFilter,
-                        onValueChange = {},
-                        readOnly = true,
+                        value = if (brandDropdownExpanded) brandQuery else selectedBrandFilter,
+                        onValueChange = {
+                            brandQuery = it
+                            brandDropdownExpanded = true
+                        },
                         label = { Text("Filter by Camera Brand") },
+                        placeholder = { Text(selectedBrandFilter) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandDropdownExpanded) },
-                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                        singleLine = true,
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
-                        expanded = brandDropdownExpanded,
-                        onDismissRequest = { brandDropdownExpanded = false }
+                        expanded = brandDropdownExpanded && filteredBrandOptions.isNotEmpty(),
+                        onDismissRequest = {
+                            brandDropdownExpanded = false
+                            brandQuery = ""
+                        }
                     ) {
-                        (listOf("All") + masterBrands.filter { it != "➕ Add new Brand..." }).forEach { b ->
+                        filteredBrandOptions.forEach { b ->
                             DropdownMenuItem(
                                 text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
                                 onClick = {
                                     selectedBrandFilter = b
                                     brandDropdownExpanded = false
+                                    brandQuery = ""
                                 }
                             )
                         }
@@ -150,29 +164,42 @@ fun AddEditCameraScreen(
                 }
 
                 // 2. FILTER BY CAMERA TYPE (Second Dropdown, Dynamic Cascade)
+                var typeQuery by remember { mutableStateOf("") }
+                val filteredTypeOptions = remember(availableTypesForBrand, typeQuery) {
+                    if (typeQuery.isBlank()) availableTypesForBrand else availableTypesForBrand.filter { it.contains(typeQuery, ignoreCase = true) }
+                }
+
                 ExposedDropdownMenuBox(
                     expanded = typeDropdownExpanded,
                     onExpandedChange = { typeDropdownExpanded = !typeDropdownExpanded },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
-                        value = selectedCategoryFilter,
-                        onValueChange = {},
-                        readOnly = true,
+                        value = if (typeDropdownExpanded) typeQuery else selectedCategoryFilter,
+                        onValueChange = {
+                            typeQuery = it
+                            typeDropdownExpanded = true
+                        },
                         label = { Text("Filter by Camera Type") },
+                        placeholder = { Text(selectedCategoryFilter) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeDropdownExpanded) },
-                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                        singleLine = true,
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
-                        expanded = typeDropdownExpanded,
-                        onDismissRequest = { typeDropdownExpanded = false }
+                        expanded = typeDropdownExpanded && filteredTypeOptions.isNotEmpty(),
+                        onDismissRequest = {
+                            typeDropdownExpanded = false
+                            typeQuery = ""
+                        }
                     ) {
-                        availableTypesForBrand.forEach { cat ->
+                        filteredTypeOptions.forEach { cat ->
                             DropdownMenuItem(
                                 text = { Text(cat, fontWeight = if (cat == selectedCategoryFilter) FontWeight.Bold else FontWeight.Normal) },
                                 onClick = {
                                     selectedCategoryFilter = cat
                                     typeDropdownExpanded = false
+                                    typeQuery = ""
                                 }
                             )
                         }
