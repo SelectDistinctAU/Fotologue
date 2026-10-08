@@ -40,9 +40,10 @@ class AddEditLensViewModelTest {
 
     @Test
     fun `onCameraToggled updates selection and type`() = runTest {
-        val camera = Camera(id = 1L, name = "Nikon F3", type = CameraType.FILM_SLR)
+        val camera1 = Camera(id = 1L, name = "Nikon F3", type = CameraType.FILM_SLR)
+        val camera2 = Camera(id = 2L, name = "Canon AE-1", type = CameraType.FILM_SLR)
         
-        every { repository.allCameras } returns flowOf(listOf(camera))
+        every { repository.allCameras } returns flowOf(listOf(camera1, camera2))
         viewModel = AddEditLensViewModel(repository, settingsRepository, SavedStateHandle())
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -70,8 +71,9 @@ class AddEditLensViewModelTest {
 
     @Test
     fun `saveLens with no camera selected fails validation if cameras exist`() = runTest {
-        val camera = Camera(id = 1L, name = "Nikon F3", type = CameraType.FILM_SLR)
-        every { repository.allCameras } returns flowOf(listOf(camera))
+        val camera1 = Camera(id = 1L, name = "Nikon F3", type = CameraType.FILM_SLR)
+        val camera2 = Camera(id = 2L, name = "Canon AE-1", type = CameraType.FILM_SLR)
+        every { repository.allCameras } returns flowOf(listOf(camera1, camera2))
         
         viewModel = AddEditLensViewModel(repository, settingsRepository, SavedStateHandle())
         testDispatcher.scheduler.advanceUntilIdle()

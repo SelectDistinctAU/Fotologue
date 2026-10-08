@@ -1,5 +1,6 @@
 package com.fotologue.app.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -113,6 +114,154 @@ fun AddEditFilterScreen(
                         )
                     }
                 }
+            }
+
+            if (uiState.selectedLensIds.isEmpty() && uiState.lenses.isNotEmpty()) {
+                OutlinedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(painterResource(R.drawable.ic_add), contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "⚠️ Please select at least one associated lens above",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+            // TOP PRIMARY SAVE BUTTON
+            Button(
+                onClick = { viewModel.saveFilter(onSuccess) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(painterResource(R.drawable.ic_check), contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.save_filter), fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(4.dp))
+
+            var showFilterPresetDialog by remember { mutableStateOf(false) }
+
+            if (showFilterPresetDialog) {
+                val filterPresets = remember {
+                    com.fotologue.core.data.preset.MasterPresetEngine.getPresetsByCategory("FILTER")
+                }
+                var selectedBrandFilter by remember { mutableStateOf("All") }
+                var selectedTypeFilter by remember { mutableStateOf("All") }
+                var presetSearchQuery by remember { mutableStateOf("") }
+                var brandExpanded by remember { mutableStateOf(false) }
+                var typeExpanded by remember { mutableStateOf(false) }
+
+                val brandOptions = remember(filterPresets) {
+                    listOf("All") + filterPresets.map { it.brand }.distinct().sorted()
+                }
+                val typeOptions = remember(filterPresets, selectedBrandFilter) {
+                    val baseList = if (selectedBrandFilter == "All") filterPresets else filterPresets.filter { it.brand.equals(selectedBrandFilter, true) }
+                    listOf("All") + baseList.mapNotNull { it.attributes["type"] }.distinct().sorted()
+                }
+
+                val filteredPresets = remember(filterPresets, selectedBrandFilter, selectedTypeFilter, presetSearchQuery) {
+                    filterPresets.filter { preset ->
+                        val matchesBrand = selectedBrandFilter == "All" || preset.brand.equals(selectedBrandFilter, true)
+                        val matchesType = selectedTypeFilter == "All" || (preset.attributes["type"] ?: "").equals(selectedTypeFilter, true)
+                        val matchesSearch = presetSearchQuery.isBlank() || preset.name.contains(presetSearchQuery, true) || preset.brand.contains(presetSearchQuery, true)
+                        matchesBrand && matchesType && matchesSearch
+                    }
+                }
+
+                AlertDialog(
+                    onDismissRequest = { showFilterPresetDialog = false },
+                    title = { Text("Select Filter from Presets", fontWeight = FontWeight.Bold) },
+                    text = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text("Select a brand to view curated filter presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                            var brandQuery by remember { mutableStateOf("") }
+                            val filteredBrandOptions = remember(brandOptions, brandQuery) {
+                                if (brandQuery.isBlank()) brandOptions else brandOptions.filter { it.contains(brandQuery, ignoreCase = true) }
+                            }
+
+                            ExposedDropdownMenuBox(expanded = brandExpanded, onExpandedChange = { brandExpanded = !brandExpanded }) {
+                                OutlinedTextField(
+                                    value = if (brandExpanded) brandQuery else selectedBrandFilter,
+                                    onValueChange = {
+                                        brandQuery = it
+                                        brandExpanded = true
+                                    },
+                                    label = { Text("Filter by Brand") },
+                                    placeholder = { Text(selectedBrandFilter) },
+                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandExpanded) },
+                                    singleLine = true,
+                                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+                                )
+                                ExposedDropdownMenu(expanded = brandExpanded && filteredBrandOptions.isNotEmpty(), onDismissRequest = { brandExpanded = false; brandQuery = "" }) {
+                                    filteredBrandOptions.forEach { bOpt ->
+                                        DropdownMenuItem(text = { Text(bOpt) }, onClick = { selectedBrandFilter = bOpt; brandExpanded = false; brandQuery = "" })
+                                    }
+                                }
+                            }
+
+                            OutlinedTextField(
+                                value = presetSearchQuery,
+                                onValueChange = { presetSearchQuery = it },
+                                label = { Text("Search Filter Presets") },
+                                leadingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            HorizontalDivider()
+
+                            filteredPresets.forEach { preset ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            viewModel.onNameChange(preset.name)
+                                            preset.attributes["threadSize"]?.let { viewModel.onThreadSizeChange(it) }
+                                            preset.attributes["type"]?.let { viewModel.onTypeChange(it) }
+                                            preset.attributes["compensationStops"]?.let { viewModel.onCompensationStopsChange(it) }
+                                            showFilterPresetDialog = false
+                                        },
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Column(modifier = Modifier.padding(12.dp)) {
+                                        Text(preset.name, fontWeight = FontWeight.Bold)
+                                        Text("Brand: ${preset.brand} • Size: ${preset.attributes["threadSize"] ?: "52mm"} • Stop Adjustment: +${preset.attributes["compensationStops"] ?: "0.0"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showFilterPresetDialog = false }) {
+                            Text("Close")
+                        }
+                    }
+                )
+            }
+
+            OutlinedButton(
+                onClick = { showFilterPresetDialog = true },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(painterResource(R.drawable.ic_settings), contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Select Filter from Presets", fontWeight = FontWeight.Bold)
             }
 
             Text(

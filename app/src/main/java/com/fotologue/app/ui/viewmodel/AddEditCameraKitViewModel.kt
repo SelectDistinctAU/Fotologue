@@ -3,16 +3,7 @@ package com.fotologue.app.ui.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fotologue.core.data.Camera
-import com.fotologue.core.data.CameraKit
-import com.fotologue.core.data.Film
-import com.fotologue.core.data.Flash
-import com.fotologue.core.data.Teleconverter
-import com.fotologue.core.data.Filter
-import com.fotologue.core.data.FotologueRepository
-import com.fotologue.core.data.Lens
-import com.fotologue.core.data.Viewfinder
-import com.fotologue.core.data.CameraLensCrossRef
+import com.fotologue.core.data.*
 import com.fotologue.core.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -184,10 +175,30 @@ class AddEditCameraKitViewModel @Inject constructor(
             }.collect {}
         }
         viewModelScope.launch {
-            repository.allFilms.collect { films ->
+            combine(
+                repository.allFilms,
+                repository.allCameras,
+                _uiState.map { it.cameraId }.distinctUntilChanged()
+            ) { films, cameras, cameraId ->
+                val camera = cameras.find { it.id == cameraId }
+                if (camera == null) {
+                    films
+                } else {
+                    val is120Cam = camera.format.contains("120", ignoreCase = true) || camera.type == CameraType.TLR || camera.type == CameraType.MEDIUM_FORMAT
+                    films.filter { film ->
+                        if (is120Cam) {
+                            film.format.contains("120", ignoreCase = true)
+                        } else {
+                            val normCam = camera.format.trim().lowercase()
+                            val normFilm = film.format.trim().lowercase()
+                            normCam == normFilm || (normCam.contains("35mm") && normFilm.contains("35mm"))
+                        }
+                    }
+                }
+            }.collect { filteredFilms ->
                 _uiState.update { state ->
-                    val autoFilmId = if (state.filmId == null && films.size == 1) films[0].id else state.filmId
-                    state.copy(allFilms = films, filmId = autoFilmId)
+                    val autoFilmId = if (state.filmId == null && filteredFilms.size == 1) filteredFilms[0].id else if (filteredFilms.any { it.id == state.filmId }) state.filmId else null
+                    state.copy(allFilms = filteredFilms, filmId = autoFilmId)
                 }
             }
         }

@@ -376,6 +376,36 @@ fun AddEditLensScreen(
                 }
             }
 
+            if (uiState.selectedCameraIds.isEmpty() && uiState.cameras.isNotEmpty()) {
+                OutlinedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(painterResource(R.drawable.ic_add), contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "⚠️ Please select at least one associated camera above",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+            Button(
+                onClick = { viewModel.saveLens(onBack) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(painterResource(R.drawable.ic_check), contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.save_lens), fontWeight = FontWeight.Bold)
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))

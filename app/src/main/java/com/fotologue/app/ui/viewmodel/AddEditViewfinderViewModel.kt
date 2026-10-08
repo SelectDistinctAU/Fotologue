@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fotologue.core.data.Camera
+import com.fotologue.core.data.CameraType
 import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.Viewfinder
 import com.fotologue.core.data.SettingsRepository
@@ -47,8 +48,8 @@ class AddEditViewfinderViewModel @Inject constructor(
             repository.allCameras.collect { cameras ->
                 val interchangeableFinderCameras = cameras.filter { camera ->
                     val name = camera.name.uppercase()
-                    val isExplicitAE1 = name.contains("AE-1") || name.contains("AE1")
-                    if (isExplicitAE1) return@filter false
+                    val isFixedPrism = name.contains("AE-1") || name.contains("AE1") || camera.type == CameraType.TLR || name.contains("MAT-124") || name.contains("ROLLEI")
+                    if (isFixedPrism) return@filter false
 
                     val isSupportedModel = name.contains("LX") ||
                         name.contains("HASSELBLAD") ||
@@ -56,18 +57,19 @@ class AddEditViewfinderViewModel @Inject constructor(
                         name.contains("MAMIYA") ||
                         name.contains("F-1") ||
                         name.contains("EXAKTA") ||
-                        name.contains("NIKON F2") ||
-                        name.contains("NIKON F3") ||
-                        name.contains("NIKON F4") ||
-                        name.contains("NIKON F5") ||
-                        camera.type.name.contains("MEDIUM_FORMAT", ignoreCase = true) ||
-                        camera.type.name.contains("RANGEFINDER", ignoreCase = true) ||
-                        camera.type.name.contains("TLR", ignoreCase = true) ||
-                        camera.type.name.contains("LARGE_FORMAT", ignoreCase = true)
+                        name.contains("NIKON F") ||
+                        name.contains("BRONICA") ||
+                        camera.type == CameraType.MEDIUM_FORMAT ||
+                        camera.type == CameraType.RANGEFINDER
 
                     isSupportedModel
                 }
-                _uiState.update { it.copy(cameras = interchangeableFinderCameras) }
+                _uiState.update { state ->
+                    val autoCameraIds = if (viewfinderId == null && state.selectedCameraIds.isEmpty() && interchangeableFinderCameras.size == 1) {
+                        setOf(interchangeableFinderCameras.first().id)
+                    } else state.selectedCameraIds
+                    state.copy(cameras = interchangeableFinderCameras, selectedCameraIds = autoCameraIds)
+                }
             }
         }
         loadViewfinder()

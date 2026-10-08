@@ -50,7 +50,12 @@ class AddEditFilterViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             repository.allLenses.collect { lenses ->
-                _uiState.update { it.copy(lenses = lenses) }
+                _uiState.update { state ->
+                    val autoLensIds = if (filterId == null && state.selectedLensIds.isEmpty() && lenses.size == 1) {
+                        setOf(lenses.first().id)
+                    } else state.selectedLensIds
+                    state.copy(lenses = lenses, selectedLensIds = autoLensIds)
+                }
             }
         }
         viewModelScope.launch {

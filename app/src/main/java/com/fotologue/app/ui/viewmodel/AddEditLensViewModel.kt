@@ -127,7 +127,12 @@ class AddEditLensViewModel @Inject constructor(
                         lensesList.none { l -> l.make.contains(c.name, ignoreCase = true) || l.model.contains(c.name, ignoreCase = true) }
                     }
                 }
-                _uiState.update { it.copy(cameras = filteredCameras) }
+                _uiState.update { state ->
+                    val autoCameraIds = if (lensId == null && state.selectedCameraIds.isEmpty() && filteredCameras.size == 1) {
+                        setOf(filteredCameras.first().id)
+                    } else state.selectedCameraIds
+                    state.copy(cameras = filteredCameras, selectedCameraIds = autoCameraIds)
+                }
             }
         }
         viewModelScope.launch {
