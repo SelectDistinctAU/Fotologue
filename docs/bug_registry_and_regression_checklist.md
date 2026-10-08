@@ -855,6 +855,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-084: LightMeter Navigation 60fps Coroutine Recomposition Crash Elimination
+- **Platform**: Fotologue Mobile (`MainActivity.kt`, `WelcomeScreen.kt`, `AddEditCameraViewModel.kt`)
+- **Reported**: October 2026
+- **Symptom**: Tapping `Measure Exposure` caused LightMeter to spawn hundreds of active coroutines per second, crashing the app due to coroutine stack overflow; Onboarding lacked GPS permission card; Edit Camera mode had blank Brand field.
+- **Root Cause**: `viewModel.setParams(...)` was invoked directly in the Composable body of `entry<Route.LightMeter>` without `LaunchedEffect(lightRoute)`.
+- **Resolution**:
+  1. Wrapped `viewModel.setParams(...)` inside `LaunchedEffect(lightRoute)` in `MainActivity.kt`.
+  2. Added an "Automatic GPS Location Tagging" permission card to `WelcomeScreen.kt`.
+  3. Pre-filled `make = c.name.substringBefore(" ")` in `loadCamera()` in `AddEditCameraViewModel.kt`.
+- **Regression Test Case**: Open `Add Exposure Log` $\to$ tap `Measure Exposure` $\to$ verify `LightMeterScreen` opens instantly and operates smoothly with zero crashes.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
