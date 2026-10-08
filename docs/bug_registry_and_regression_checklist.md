@@ -880,6 +880,21 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-086: Full-Screen Preset Catalog Browsers, Single-Camera Auto-Selection & Top Form Warning Save
+- **Platform**: Fotologue Mobile (`AddEditFilmScreen.kt`, `AddEditLensScreen.kt`, `AddEditFilterScreen.kt`, `AddEditFlashScreen.kt`, `AddEditViewfinderScreen.kt`, `AddEditCameraKitViewModel.kt`, `AddEditViewfinderViewModel.kt`)
+- **Reported**: October 2026
+- **Symptom**: Preset dialogs were cramped floating popups; Add Kit Bag allowed selecting 35mm film for 120 TLRs; Yashica Mat-124G appeared under Viewfinders; missing associated camera warnings were hidden at bottom of form.
+- **Root Cause**: Floating AlertDialog UI layout, un-filtered Kit Bag film flow, and missing TLR exclusion in Viewfinders.
+- **Resolution**:
+  1. Re-architected `Film`, `Lens`, `Filter`, `Flash`, and `Viewfinder` preset selection into Full-Screen Preset Catalog Browsers.
+  2. Filtered `Add Kit Bag` film dropdown by camera format (`camera.format`).
+  3. Excluded fixed TLRs (*Yashica Mat-124G*, *Rolleiflex 2.8F*) from `Add Viewfinder`.
+  4. Implemented single-camera auto-selection when 1 camera exists in user's library.
+  5. Added immediate top red error warning banner directly under `Associated Cameras` / `Associated Lenses` chips with a 1-tap top `[ 💾 Save ]` button.
+- **Regression Test Case**: Open `Add Film` or `Add Lens` $\to$ verify full-screen preset browser opens; open `Add Kit Bag` with *Yashica Mat-124G* TLR $\to$ verify Film dropdown lists only 120 films.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
