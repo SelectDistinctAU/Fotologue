@@ -1815,11 +1815,69 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                             Text("Camera: ${activeFrame.cameraName} • Film: ${activeFrame.filmName}", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold))
                                                             Text("Shutter: ${activeFrame.shutterSpeed} • Aperture: ${activeFrame.aperture} • ISO: ${activeFrame.iso} • Date: ${activeFrame.dateDisplay}", style = MaterialTheme.typography.bodyMedium)
 
+                                                            // EDITABLE NOTES / COMMENTS
+                                                            var editNotesText by remember(activeFrame) { mutableStateOf(activeFrame.notes) }
+                                                            OutlinedTextField(
+                                                                value = editNotesText,
+                                                                onValueChange = { newNotes ->
+                                                                    editNotesText = newNotes
+                                                                    val updatedFrames = activeFrames.toMutableList()
+                                                                    val idx = selectedFrameIndex.coerceIn(0, (updatedFrames.size - 1).coerceAtLeast(0))
+                                                                    if (idx in updatedFrames.indices) {
+                                                                        val updatedFrame = updatedFrames[idx].copy(notes = newNotes)
+                                                                        updatedFrames[idx] = updatedFrame
+                                                                        masterVaultRolls[selectedRollIndex] = activeRoll.copy(frames = updatedFrames)
+                                                                        DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
+                                                                    }
+                                                                },
+                                                                label = { Text("Notes / Comments") },
+                                                                placeholder = { Text("Add comments e.g. abandoned bike near fence") },
+                                                                modifier = Modifier.fillMaxWidth(),
+                                                                maxLines = 3,
+                                                                textStyle = MaterialTheme.typography.bodySmall
+                                                            )
+
+                                                            // EDITABLE TAGS
+                                                            var editTagsText by remember(activeFrame) { mutableStateOf(activeFrame.tags.joinToString(", ")) }
+                                                            OutlinedTextField(
+                                                                value = editTagsText,
+                                                                onValueChange = { newTagsStr ->
+                                                                    editTagsText = newTagsStr
+                                                                    val parsedTags = newTagsStr.split(",").map { it.trim() }.filter { it.isNotBlank() }
+                                                                    val updatedFrames = activeFrames.toMutableList()
+                                                                    val idx = selectedFrameIndex.coerceIn(0, (updatedFrames.size - 1).coerceAtLeast(0))
+                                                                    if (idx in updatedFrames.indices) {
+                                                                        val updatedFrame = updatedFrames[idx].copy(tags = parsedTags)
+                                                                        updatedFrames[idx] = updatedFrame
+                                                                        masterVaultRolls[selectedRollIndex] = activeRoll.copy(frames = updatedFrames)
+                                                                        DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
+                                                                    }
+                                                                },
+                                                                label = { Text("Tags (comma-separated)") },
+                                                                placeholder = { Text("e.g. Bike, Street, Outdoors") },
+                                                                modifier = Modifier.fillMaxWidth(),
+                                                                singleLine = true,
+                                                                textStyle = MaterialTheme.typography.bodySmall
+                                                            )
+
                                                             if (activeFrame.tags.isNotEmpty()) {
-                                                                Text("Tags: ${activeFrame.tags.joinToString(", ")}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
-                                                            }
-                                                            if (activeFrame.notes.isNotBlank()) {
-                                                                Text("Notes: ${activeFrame.notes}", style = MaterialTheme.typography.bodyMedium)
+                                                                Row(
+                                                                    modifier = Modifier.fillMaxWidth(),
+                                                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                                                ) {
+                                                                    activeFrame.tags.forEach { tag ->
+                                                                        Card(
+                                                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                                                                        ) {
+                                                                            Text(
+                                                                                "#$tag",
+                                                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                                                                style = MaterialTheme.typography.labelSmall,
+                                                                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                                                                            )
+                                                                        }
+                                                                    }
+                                                                }
                                                             }
 
                                                             // COMPACT INLINE GPS COORDINATES FOR THIS FRAME
