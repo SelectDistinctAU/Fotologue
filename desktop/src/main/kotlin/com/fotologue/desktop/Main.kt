@@ -1867,36 +1867,56 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                 )
                                                             }
 
-                                                            var selectedSubject by remember(activeFrame) { mutableStateOf("Events") }
-                                                            var selectedIntent by remember(activeFrame) { mutableStateOf("Study") }
+                                                            // Auto-detect Subject Group and Intent Category from frame's active tags
+                                                            val detectedSubject = remember(activeFrame.tags) {
+                                                                taxonomyContentMap.entries.find { entry ->
+                                                                    entry.value.any { chip -> activeFrame.tags.any { t -> t.equals(chip, ignoreCase = true) } }
+                                                                }?.key ?: "Events"
+                                                            }
+
+                                                            val detectedIntent = remember(activeFrame.tags) {
+                                                                taxonomyIntentMap.entries.find { entry ->
+                                                                    entry.value.any { chip -> activeFrame.tags.any { t -> t.equals(chip, ignoreCase = true) } }
+                                                                }?.key ?: "Study"
+                                                            }
+
+                                                            var selectedSubject by remember(activeFrame) { mutableStateOf(detectedSubject) }
+                                                            var selectedIntent by remember(activeFrame) { mutableStateOf(detectedIntent) }
                                                             var subjectExpanded by remember { mutableStateOf(false) }
                                                             var intentExpanded by remember { mutableStateOf(false) }
 
-                                                            // 1. Subject Dropdown & Content Chips
-                                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                                                                Box(modifier = Modifier.weight(1f)) {
-                                                                    OutlinedTextField(
-                                                                        value = selectedSubject,
-                                                                        onValueChange = {},
-                                                                        readOnly = true,
-                                                                        label = { Text("Subject Group") },
-                                                                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null) },
-                                                                        modifier = Modifier.clickable { subjectExpanded = true }.fillMaxWidth(),
-                                                                        textStyle = MaterialTheme.typography.bodySmall
-                                                                    )
-                                                                    DropdownMenu(
-                                                                        expanded = subjectExpanded,
-                                                                        onDismissRequest = { subjectExpanded = false }
-                                                                    ) {
-                                                                        taxonomyContentMap.keys.forEach { subj ->
-                                                                            DropdownMenuItem(
-                                                                                text = { Text(subj) },
-                                                                                onClick = {
-                                                                                    selectedSubject = subj
-                                                                                    subjectExpanded = false
-                                                                                }
-                                                                            )
+                                                            // 1. Subject Dropdown (Overlaid Clickable Box)
+                                                            Box(modifier = Modifier.fillMaxWidth()) {
+                                                                OutlinedTextField(
+                                                                    value = selectedSubject,
+                                                                    onValueChange = {},
+                                                                    readOnly = true,
+                                                                    label = { Text("Subject Group") },
+                                                                    trailingIcon = {
+                                                                        IconButton(onClick = { subjectExpanded = !subjectExpanded }) {
+                                                                            Icon(Icons.Default.ArrowDropDown, contentDescription = "Open Menu")
                                                                         }
+                                                                    },
+                                                                    modifier = Modifier.fillMaxWidth(),
+                                                                    textStyle = MaterialTheme.typography.bodySmall
+                                                                )
+                                                                Box(
+                                                                    modifier = Modifier
+                                                                        .matchParentSize()
+                                                                        .clickable { subjectExpanded = !subjectExpanded }
+                                                                )
+                                                                DropdownMenu(
+                                                                    expanded = subjectExpanded,
+                                                                    onDismissRequest = { subjectExpanded = false }
+                                                                ) {
+                                                                    taxonomyContentMap.keys.forEach { subj ->
+                                                                        DropdownMenuItem(
+                                                                            text = { Text(subj) },
+                                                                            onClick = {
+                                                                                selectedSubject = subj
+                                                                                subjectExpanded = false
+                                                                            }
+                                                                        )
                                                                     }
                                                                 }
                                                             }
@@ -1927,31 +1947,38 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                 }
                                                             }
 
-                                                            // 2. Intent Dropdown & Intent Sub-Tag Chips
-                                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                                                                Box(modifier = Modifier.weight(1f)) {
-                                                                    OutlinedTextField(
-                                                                        value = selectedIntent,
-                                                                        onValueChange = {},
-                                                                        readOnly = true,
-                                                                        label = { Text("Intent Category") },
-                                                                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null) },
-                                                                        modifier = Modifier.clickable { intentExpanded = true }.fillMaxWidth(),
-                                                                        textStyle = MaterialTheme.typography.bodySmall
-                                                                    )
-                                                                    DropdownMenu(
-                                                                        expanded = intentExpanded,
-                                                                        onDismissRequest = { intentExpanded = false }
-                                                                    ) {
-                                                                        taxonomyIntentMap.keys.forEach { intent ->
-                                                                            DropdownMenuItem(
-                                                                                text = { Text(intent) },
-                                                                                onClick = {
-                                                                                    selectedIntent = intent
-                                                                                    intentExpanded = false
-                                                                                }
-                                                                            )
+                                                            // 2. Intent Dropdown (Overlaid Clickable Box)
+                                                            Box(modifier = Modifier.fillMaxWidth()) {
+                                                                OutlinedTextField(
+                                                                    value = selectedIntent,
+                                                                    onValueChange = {},
+                                                                    readOnly = true,
+                                                                    label = { Text("Intent Category") },
+                                                                    trailingIcon = {
+                                                                        IconButton(onClick = { intentExpanded = !intentExpanded }) {
+                                                                            Icon(Icons.Default.ArrowDropDown, contentDescription = "Open Menu")
                                                                         }
+                                                                    },
+                                                                    modifier = Modifier.fillMaxWidth(),
+                                                                    textStyle = MaterialTheme.typography.bodySmall
+                                                                )
+                                                                Box(
+                                                                    modifier = Modifier
+                                                                        .matchParentSize()
+                                                                        .clickable { intentExpanded = !intentExpanded }
+                                                                )
+                                                                DropdownMenu(
+                                                                    expanded = intentExpanded,
+                                                                    onDismissRequest = { intentExpanded = false }
+                                                                ) {
+                                                                    taxonomyIntentMap.keys.forEach { intent ->
+                                                                        DropdownMenuItem(
+                                                                            text = { Text(intent) },
+                                                                            onClick = {
+                                                                                selectedIntent = intent
+                                                                                intentExpanded = false
+                                                                            }
+                                                                        )
                                                                     }
                                                                 }
                                                             }
@@ -1982,24 +2009,65 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                 }
                                                             }
 
-                                                            // DISPLAY ACTIVE HASHTAG CHIPS
+                                                            // CUSTOM TAG INPUT FIELD
+                                                            var customTagText by remember { mutableStateOf("") }
+                                                            Row(
+                                                                modifier = Modifier.fillMaxWidth(),
+                                                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                                                verticalAlignment = Alignment.CenterVertically
+                                                            ) {
+                                                                OutlinedTextField(
+                                                                    value = customTagText,
+                                                                    onValueChange = { customTagText = it },
+                                                                    label = { Text("Add Custom Tag") },
+                                                                    placeholder = { Text("e.g. Wildlife, Study") },
+                                                                    modifier = Modifier.weight(1f),
+                                                                    singleLine = true,
+                                                                    textStyle = MaterialTheme.typography.bodySmall
+                                                                )
+                                                                Button(
+                                                                    onClick = {
+                                                                        val clean = customTagText.trim().removePrefix("#")
+                                                                        if (clean.isNotBlank() && !activeFrame.tags.contains(clean)) {
+                                                                            val updatedTags = activeFrame.tags.toMutableList().apply { add(clean) }
+                                                                            val updatedFrames = activeFrames.toMutableList()
+                                                                            val idx = selectedFrameIndex.coerceIn(0, (updatedFrames.size - 1).coerceAtLeast(0))
+                                                                            if (idx in updatedFrames.indices) {
+                                                                                updatedFrames[idx] = updatedFrames[idx].copy(tags = updatedTags)
+                                                                                masterVaultRolls[selectedRollIndex] = activeRoll.copy(frames = updatedFrames)
+                                                                                DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
+                                                                            }
+                                                                            customTagText = ""
+                                                                        }
+                                                                    }
+                                                                ) {
+                                                                    Text("Add Tag", style = MaterialTheme.typography.labelSmall)
+                                                                }
+                                                            }
+
+                                                            // DISPLAY ACTIVE HASHTAG CHIPS WITH 1-TAP REMOVAL
                                                             if (activeFrame.tags.isNotEmpty()) {
-                                                                Text("Active Tags:", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                                                                Text("Active Tags (Tap × to remove):", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                                                                 Row(
                                                                     modifier = Modifier.fillMaxWidth(),
                                                                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                                                                 ) {
                                                                     activeFrame.tags.forEach { tag ->
-                                                                        Card(
-                                                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                                                                        ) {
-                                                                            Text(
-                                                                                "#$tag",
-                                                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                                                                style = MaterialTheme.typography.labelSmall,
-                                                                                color = MaterialTheme.colorScheme.onSecondaryContainer
-                                                                            )
-                                                                        }
+                                                                        FilterChip(
+                                                                            selected = true,
+                                                                            onClick = {
+                                                                                val updatedTags = activeFrame.tags.filter { it != tag }
+                                                                                val updatedFrames = activeFrames.toMutableList()
+                                                                                val idx = selectedFrameIndex.coerceIn(0, (updatedFrames.size - 1).coerceAtLeast(0))
+                                                                                if (idx in updatedFrames.indices) {
+                                                                                    updatedFrames[idx] = updatedFrames[idx].copy(tags = updatedTags)
+                                                                                    masterVaultRolls[selectedRollIndex] = activeRoll.copy(frames = updatedFrames)
+                                                                                    DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
+                                                                                }
+                                                                            },
+                                                                            label = { Text("#$tag", style = MaterialTheme.typography.labelSmall) },
+                                                                            trailingIcon = { Icon(Icons.Default.Close, contentDescription = "Remove Tag", modifier = Modifier.size(12.dp)) }
+                                                                        )
                                                                     }
                                                                 }
                                                             }
