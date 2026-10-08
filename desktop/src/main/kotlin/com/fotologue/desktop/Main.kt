@@ -159,6 +159,13 @@ enum class DesktopOS {
     WINDOWS, LINUX, MACOS, UNKNOWN
 }
 
+data class Quadruple<A, B, C, D>(
+    val first: A,
+    val second: B,
+    val third: C,
+    val fourth: D
+)
+
 data class ExifResult(
     val success: Boolean,
     val stdout: String,
@@ -1837,30 +1844,147 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                                 textStyle = MaterialTheme.typography.bodySmall
                                                             )
 
-                                                            // EDITABLE TAGS
-                                                            var editTagsText by remember(activeFrame) { mutableStateOf(activeFrame.tags.joinToString(", ")) }
-                                                            OutlinedTextField(
-                                                                value = editTagsText,
-                                                                onValueChange = { newTagsStr ->
-                                                                    editTagsText = newTagsStr
-                                                                    val parsedTags = newTagsStr.split(",").map { it.trim() }.filter { it.isNotBlank() }
-                                                                    val updatedFrames = activeFrames.toMutableList()
-                                                                    val idx = selectedFrameIndex.coerceIn(0, (updatedFrames.size - 1).coerceAtLeast(0))
-                                                                    if (idx in updatedFrames.indices) {
-                                                                        val updatedFrame = updatedFrames[idx].copy(tags = parsedTags)
-                                                                        updatedFrames[idx] = updatedFrame
-                                                                        masterVaultRolls[selectedRollIndex] = activeRoll.copy(frames = updatedFrames)
-                                                                        DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
-                                                                    }
-                                                                },
-                                                                label = { Text("Tags (comma-separated)") },
-                                                                placeholder = { Text("e.g. Bike, Street, Outdoors") },
-                                                                modifier = Modifier.fillMaxWidth(),
-                                                                singleLine = true,
-                                                                textStyle = MaterialTheme.typography.bodySmall
-                                                            )
+                                                            // INTERACTIVE TAXONOMY TAG PICKER (Matching Mobile)
+                                                            Text("Tags & Taxonomy", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
 
+                                                            val taxonomyContentMap = remember {
+                                                                mapOf(
+                                                                    "Events" to listOf("Wedding", "Concert", "Sport", "Festival", "Protest", "Celebration"),
+                                                                    "Nature" to listOf("Sunset/sunrise", "Landscape", "Animals", "Flora", "Seascape"),
+                                                                    "Urban/built environment" to listOf("Architecture", "Street", "Cityscape", "Building", "Bridge", "Interior", "Skyline"),
+                                                                    "People & Portraits" to listOf("Portrait", "Group", "Candid", "Self-Portrait"),
+                                                                    "Objects & Still Life" to listOf("Vehicle", "Food/Drink", "Art", "Document"),
+                                                                    "Abstract" to listOf("Pattern", "Texture", "Shadow", "Reflection")
+                                                                )
+                                                            }
+
+                                                            val taxonomyIntentMap = remember {
+                                                                mapOf(
+                                                                    "Study" to listOf("Light & Shadow Study", "Material & Film Test", "Composition Study"),
+                                                                    "Portfolio" to listOf("Exhibition", "Publication", "Client Work"),
+                                                                    "Experimental" to listOf("Push/Pull Test", "Double Exposure", "Expired Film Test"),
+                                                                    "Documentary" to listOf("Historical Record", "Journalism", "Family Archive")
+                                                                )
+                                                            }
+
+                                                            var selectedSubject by remember(activeFrame) { mutableStateOf("Events") }
+                                                            var selectedIntent by remember(activeFrame) { mutableStateOf("Study") }
+                                                            var subjectExpanded by remember { mutableStateOf(false) }
+                                                            var intentExpanded by remember { mutableStateOf(false) }
+
+                                                            // 1. Subject Dropdown & Content Chips
+                                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                                Box(modifier = Modifier.weight(1f)) {
+                                                                    OutlinedTextField(
+                                                                        value = selectedSubject,
+                                                                        onValueChange = {},
+                                                                        readOnly = true,
+                                                                        label = { Text("Subject Group") },
+                                                                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null) },
+                                                                        modifier = Modifier.clickable { subjectExpanded = true }.fillMaxWidth(),
+                                                                        textStyle = MaterialTheme.typography.bodySmall
+                                                                    )
+                                                                    DropdownMenu(
+                                                                        expanded = subjectExpanded,
+                                                                        onDismissRequest = { subjectExpanded = false }
+                                                                    ) {
+                                                                        taxonomyContentMap.keys.forEach { subj ->
+                                                                            DropdownMenuItem(
+                                                                                text = { Text(subj) },
+                                                                                onClick = {
+                                                                                    selectedSubject = subj
+                                                                                    subjectExpanded = false
+                                                                                }
+                                                                            )
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            val availableContentChips = taxonomyContentMap[selectedSubject] ?: emptyList()
+                                                            Text("Content Tags (${selectedSubject}):", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                            Row(
+                                                                modifier = Modifier.fillMaxWidth(),
+                                                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                                            ) {
+                                                                availableContentChips.forEach { chipTag ->
+                                                                    val isSelected = activeFrame.tags.contains(chipTag)
+                                                                    FilterChip(
+                                                                        selected = isSelected,
+                                                                        onClick = {
+                                                                            val updatedTags = activeFrame.tags.toMutableList()
+                                                                            if (isSelected) updatedTags.remove(chipTag) else updatedTags.add(chipTag)
+                                                                            val updatedFrames = activeFrames.toMutableList()
+                                                                            val idx = selectedFrameIndex.coerceIn(0, (updatedFrames.size - 1).coerceAtLeast(0))
+                                                                            if (idx in updatedFrames.indices) {
+                                                                                updatedFrames[idx] = updatedFrames[idx].copy(tags = updatedTags)
+                                                                                masterVaultRolls[selectedRollIndex] = activeRoll.copy(frames = updatedFrames)
+                                                                                DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
+                                                                            }
+                                                                        },
+                                                                        label = { Text(chipTag, style = MaterialTheme.typography.labelSmall) }
+                                                                    )
+                                                                }
+                                                            }
+
+                                                            // 2. Intent Dropdown & Intent Sub-Tag Chips
+                                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                                Box(modifier = Modifier.weight(1f)) {
+                                                                    OutlinedTextField(
+                                                                        value = selectedIntent,
+                                                                        onValueChange = {},
+                                                                        readOnly = true,
+                                                                        label = { Text("Intent Category") },
+                                                                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null) },
+                                                                        modifier = Modifier.clickable { intentExpanded = true }.fillMaxWidth(),
+                                                                        textStyle = MaterialTheme.typography.bodySmall
+                                                                    )
+                                                                    DropdownMenu(
+                                                                        expanded = intentExpanded,
+                                                                        onDismissRequest = { intentExpanded = false }
+                                                                    ) {
+                                                                        taxonomyIntentMap.keys.forEach { intent ->
+                                                                            DropdownMenuItem(
+                                                                                text = { Text(intent) },
+                                                                                onClick = {
+                                                                                    selectedIntent = intent
+                                                                                    intentExpanded = false
+                                                                                }
+                                                                            )
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            val availableIntentChips = taxonomyIntentMap[selectedIntent] ?: emptyList()
+                                                            Text("Intent Sub-Tags (${selectedIntent}):", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                            Row(
+                                                                modifier = Modifier.fillMaxWidth(),
+                                                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                                            ) {
+                                                                availableIntentChips.forEach { chipTag ->
+                                                                    val isSelected = activeFrame.tags.contains(chipTag)
+                                                                    FilterChip(
+                                                                        selected = isSelected,
+                                                                        onClick = {
+                                                                            val updatedTags = activeFrame.tags.toMutableList()
+                                                                            if (isSelected) updatedTags.remove(chipTag) else updatedTags.add(chipTag)
+                                                                            val updatedFrames = activeFrames.toMutableList()
+                                                                            val idx = selectedFrameIndex.coerceIn(0, (updatedFrames.size - 1).coerceAtLeast(0))
+                                                                            if (idx in updatedFrames.indices) {
+                                                                                updatedFrames[idx] = updatedFrames[idx].copy(tags = updatedTags)
+                                                                                masterVaultRolls[selectedRollIndex] = activeRoll.copy(frames = updatedFrames)
+                                                                                DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
+                                                                            }
+                                                                        },
+                                                                        label = { Text(chipTag, style = MaterialTheme.typography.labelSmall) }
+                                                                    )
+                                                                }
+                                                            }
+
+                                                            // DISPLAY ACTIVE HASHTAG CHIPS
                                                             if (activeFrame.tags.isNotEmpty()) {
+                                                                Text("Active Tags:", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                                                                 Row(
                                                                     modifier = Modifier.fillMaxWidth(),
                                                                     horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -6246,10 +6370,44 @@ private fun TaxonomyAdminPanel(
         map
     }
 
+    // Sub-group / Parent Subject Mapping (1-to-1 Parity with Mobile)
+    val subGroupMapping = remember {
+        mapOf(
+            "Architecture" to "Urban/built environment",
+            "Street" to "Urban/built environment",
+            "Cityscape" to "Urban/built environment",
+            "Building" to "Urban/built environment",
+            "Bridge" to "Urban/built environment",
+            "Interior" to "Urban/built environment",
+            "Skyline" to "Urban/built environment",
+            "Wedding" to "Events",
+            "Concert" to "Events",
+            "Sport" to "Events",
+            "Festival" to "Events",
+            "Protest" to "Events",
+            "Celebration" to "Events",
+            "Sunset/sunrise" to "Nature",
+            "Landscape" to "Nature",
+            "Animals" to "Nature",
+            "Flora" to "Nature",
+            "Seascape" to "Nature",
+            "Portrait" to "People & Portraits",
+            "Group" to "People & Portraits",
+            "Candid" to "People & Portraits",
+            "Light & Shadow Study" to "Study",
+            "Material & Film Test" to "Study",
+            "Composition Study" to "Study"
+        )
+    }
+
+    val availableSubGroups = remember {
+        listOf("Urban/built environment", "Events", "Nature", "People & Portraits", "Objects & Still Life", "Abstract & Fine Art", "Study", "General")
+    }
+
     // Default Seed Tags grouped by taxonomy category
     val defaultSubjects = remember { mutableStateListOf("Portrait", "Landscape", "Architecture", "Macro") }
-    val defaultContent = remember { mutableStateListOf("Bike", "Street", "Outdoors", "Family", "Travel", "Night", "Abandoned") }
-    val defaultIntent = remember { mutableStateListOf("Portfolio", "Test Shot", "Documentary", "Experimental") }
+    val defaultContent = remember { mutableStateListOf("Bike", "Street", "Outdoors", "Family", "Travel", "Night", "Abandoned", "Sunset/sunrise", "Building", "Bridge", "Interior", "Skyline", "Wedding", "Concert", "Sport", "Festival", "Celebration", "Animals", "Flora") }
+    val defaultIntent = remember { mutableStateListOf("Portfolio", "Test Shot", "Documentary", "Experimental", "Light & Shadow Study", "Material & Film Test", "Composition Study") }
 
     var selectedTaxonomyFilter by remember { mutableStateOf("All") }
     var searchQuery by remember { mutableStateOf("") }
@@ -6260,17 +6418,17 @@ private fun TaxonomyAdminPanel(
     var editingTag by remember { mutableStateOf<Pair<String, String>?>(null) } // Pair(oldTagName, category)
     var deletingTagName by remember { mutableStateOf<String?>(null) }
 
-    // Build flat tag list with taxonomy metadata
+    // Build flat tag list with taxonomy metadata: Quadruple(tagName, category, subGroup, usageCount)
     val allTaxonomyTags = remember(defaultSubjects.toList(), defaultContent.toList(), defaultIntent.toList(), tagUsageMap) {
-        val list = mutableListOf<Triple<String, String, Int>>() // Triple(tagName, category, usageCount)
-        defaultSubjects.forEach { list.add(Triple(it, "Subjects", tagUsageMap[it] ?: 0)) }
-        defaultContent.forEach { list.add(Triple(it, "Content", tagUsageMap[it] ?: 0)) }
-        defaultIntent.forEach { list.add(Triple(it, "Intent", tagUsageMap[it] ?: 0)) }
+        val list = mutableListOf<Quadruple<String, String, String, Int>>()
+        defaultSubjects.forEach { list.add(Quadruple(it, "Subjects", subGroupMapping[it] ?: "Primary Subject", tagUsageMap[it] ?: 0)) }
+        defaultContent.forEach { list.add(Quadruple(it, "Content", subGroupMapping[it] ?: "Urban/built environment", tagUsageMap[it] ?: 0)) }
+        defaultIntent.forEach { list.add(Quadruple(it, "Intent", subGroupMapping[it] ?: "Study", tagUsageMap[it] ?: 0)) }
         
         // Include any custom tags found in masterVaultRolls
         tagUsageMap.keys.forEach { tag ->
             if (list.none { it.first.equals(tag, ignoreCase = true) }) {
-                list.add(Triple(tag, "Content", tagUsageMap[tag] ?: 0))
+                list.add(Quadruple(tag, "Content", subGroupMapping[tag] ?: "General", tagUsageMap[tag] ?: 0))
             }
         }
         list
@@ -6279,14 +6437,15 @@ private fun TaxonomyAdminPanel(
     val filteredTags = remember(allTaxonomyTags, selectedTaxonomyFilter, searchQuery, sortColumn, sortAscending) {
         var result = allTaxonomyTags.filter { item ->
             val matchesCategory = selectedTaxonomyFilter == "All" || item.second.equals(selectedTaxonomyFilter, ignoreCase = true)
-            val matchesQuery = searchQuery.isBlank() || item.first.contains(searchQuery, ignoreCase = true) || item.second.contains(searchQuery, ignoreCase = true)
+            val matchesQuery = searchQuery.isBlank() || item.first.contains(searchQuery, ignoreCase = true) || item.second.contains(searchQuery, ignoreCase = true) || item.third.contains(searchQuery, ignoreCase = true)
             matchesCategory && matchesQuery
         }
 
         result = when (sortColumn) {
             "NAME" -> if (sortAscending) result.sortedBy { it.first.lowercase() } else result.sortedByDescending { it.first.lowercase() }
             "CATEGORY" -> if (sortAscending) result.sortedBy { it.second.lowercase() } else result.sortedByDescending { it.second.lowercase() }
-            "USAGE" -> if (sortAscending) result.sortedBy { it.third } else result.sortedByDescending { it.third }
+            "SUBGROUP" -> if (sortAscending) result.sortedBy { it.third.lowercase() } else result.sortedByDescending { it.third.lowercase() }
+            "USAGE" -> if (sortAscending) result.sortedBy { it.fourth } else result.sortedByDescending { it.fourth }
             else -> result
         }
         result
@@ -6375,6 +6534,14 @@ private fun TaxonomyAdminPanel(
                         }
                     )
                     Text(
+                        text = "SUB-GROUP / PARENT SUBJECT ${if (sortColumn == "SUBGROUP") (if (sortAscending) "▲" else "▼") else ""}",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1.8f).clickable {
+                            if (sortColumn == "SUBGROUP") sortAscending = !sortAscending else { sortColumn = "SUBGROUP"; sortAscending = true }
+                        }
+                    )
+                    Text(
                         text = "USAGE FREQUENCY ${if (sortColumn == "USAGE") (if (sortAscending) "▲" else "▼") else ""}",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
@@ -6391,7 +6558,7 @@ private fun TaxonomyAdminPanel(
                 // DATA GRID ROWS
                 LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
                     items(filteredTags.size, key = { "tax_tag_${filteredTags[it].first}_${filteredTags[it].second}" }) { idx ->
-                        val (tagName, cat, usageCount) = filteredTags[idx]
+                        val (tagName, cat, subGroup, usageCount) = filteredTags[idx]
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -6401,6 +6568,7 @@ private fun TaxonomyAdminPanel(
                             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer), modifier = Modifier.weight(1.2f)) {
                                 Text(cat, modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
                             }
+                            Text(subGroup, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1.8f))
                             Text("$usageCount frames", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1.2f))
                             Text(if (cat in listOf("Subjects", "Content", "Intent")) "System Core" else "Custom Tag", style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f))
                             Row(modifier = Modifier.width(90.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -6478,33 +6646,52 @@ private fun TaxonomyAdminPanel(
         )
     }
 
-    // EDIT TAG DIALOG (Global Renaming across Master Vault)
-    editingTag?.let { (oldName, oldCat) ->
+    // EDIT TAG DIALOG (1-to-1 Parity with Mobile Edit Content Dialog)
+    val currentEditingTag = editingTag
+    if (currentEditingTag != null) {
+        val oldName = currentEditingTag.first
+        val oldCat = currentEditingTag.second
         var editName by remember { mutableStateOf(oldName) }
-        var editCat by remember { mutableStateOf(oldCat) }
+        var editSubGroup by remember { mutableStateOf(subGroupMapping[oldName] ?: "Nature") }
+        var subGroupDropdownExpanded by remember { mutableStateOf(false) }
 
         AlertDialog(
             onDismissRequest = { editingTag = null },
-            title = { Text("Edit Tag: #$oldName", fontWeight = FontWeight.Bold) },
+            title = { Text("Edit $oldCat", fontWeight = FontWeight.Bold) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = editSubGroup,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Associated Subject") },
+                            trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null) },
+                            modifier = Modifier.clickable { subGroupDropdownExpanded = true }.fillMaxWidth()
+                        )
+                        DropdownMenu(
+                            expanded = subGroupDropdownExpanded,
+                            onDismissRequest = { subGroupDropdownExpanded = false }
+                        ) {
+                            availableSubGroups.forEach { sg ->
+                                DropdownMenuItem(
+                                    text = { Text(sg) },
+                                    onClick = {
+                                        editSubGroup = sg
+                                        subGroupDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
                     OutlinedTextField(
                         value = editName,
                         onValueChange = { editName = it },
-                        label = { Text("Tag Name") },
+                        label = { Text("Content Name") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Text("Category:", style = MaterialTheme.typography.labelSmall)
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        listOf("Subjects", "Content", "Intent").forEach { cat ->
-                            FilterChip(
-                                selected = editCat == cat,
-                                onClick = { editCat = cat },
-                                label = { Text(cat) }
-                            )
-                        }
-                    }
                 }
             },
             confirmButton = {
@@ -6512,18 +6699,6 @@ private fun TaxonomyAdminPanel(
                     onClick = {
                         val cleanNew = editName.trim().removePrefix("#")
                         if (cleanNew.isNotBlank()) {
-                            // Remove from old category
-                            defaultSubjects.remove(oldName)
-                            defaultContent.remove(oldName)
-                            defaultIntent.remove(oldName)
-
-                            // Add to new category
-                            when (editCat) {
-                                "Subjects" -> if (!defaultSubjects.contains(cleanNew)) defaultSubjects.add(cleanNew)
-                                "Content" -> if (!defaultContent.contains(cleanNew)) defaultContent.add(cleanNew)
-                                "Intent" -> if (!defaultIntent.contains(cleanNew)) defaultIntent.add(cleanNew)
-                            }
-
                             // Global Renaming across Master Vault Rolls
                             if (!cleanNew.equals(oldName, ignoreCase = true)) {
                                 masterVaultRolls.forEach { roll ->
@@ -6542,7 +6717,7 @@ private fun TaxonomyAdminPanel(
                         editingTag = null
                     }
                 ) {
-                    Text("Update Tag")
+                    Text("Save")
                 }
             },
             dismissButton = {
