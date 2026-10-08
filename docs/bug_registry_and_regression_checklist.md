@@ -934,6 +934,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-090: Desktop QA Inspector Dropdown Clickability & Auto-Subject Detection
+- **Platform**: Fotologue Desktop (`Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Clicking Subject Group or Intent Category dropdowns in Desktop QA Inspector failed to open menus due to OutlinedTextField click interception; active frame tags belonged to unselected subject groups.
+- **Root Cause**: OutlinedTextField internal pointer event consumption; hardcoded default selectedSubject = "Events".
+- **Resolution**:
+  1. Wrapped Subject/Intent dropdowns in overlaid clickable `Box` containers with explicit `IconButton`s.
+  2. Implemented automatic detection of `selectedSubject` and `selectedIntent` based on `activeFrame.tags` (e.g. `#Portrait` $\to$ `People & Portraits`).
+  3. Added 1-tap `[ × ]` tag removal on `Active Tags:` chips.
+  4. Added `Custom Tag` input field with `[ Add Tag ]` button.
+- **Regression Test Case**: Open Desktop App $\to$ Master Rolls QA Inspector $\to$ select frame with `#Portrait` $\to$ verify Subject Group auto-detects `People & Portraits` and dropdown opens on click.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist

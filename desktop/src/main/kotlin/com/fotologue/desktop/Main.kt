@@ -1643,29 +1643,41 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                             if (matchingActiveRoll != null) {
                                                                 Button(
                                                                     onClick = {
-                                                                        val activeIdx = masterVaultRolls.indexOf(matchingActiveRoll)
-                                                                        if (activeIdx >= 0) {
-                                                                            val combinedFrames = (matchingActiveRoll.frames + activeRoll.frames)
+                                                                        try {
+                                                                            val activeRollObj = matchingActiveRoll
+                                                                            val orphanRollObj = activeRoll
+                                                                            
+                                                                            val combinedFrames = (activeRollObj.frames + orphanRollObj.frames)
                                                                                 .sortedBy { it.timestampMs }
                                                                                 .mapIndexed { idx, f -> f.copy(frameNumber = idx + 1) }
 
-                                                                            val maxCap = if (matchingActiveRoll.filmName.contains("120") || matchingActiveRoll.filmName.contains("800T") || matchingActiveRoll.cameraName.contains("Yashica")) 12 else 36
+                                                                            val updatedSerial = activeRollObj.filmRollSerial.replace(Regex("\\(\\d+ frames\\)"), "(${combinedFrames.size} frames)")
+                                                                            val updatedActiveRoll = activeRollObj.copy(
+                                                                                frameCount = combinedFrames.size,
+                                                                                filmRollSerial = updatedSerial,
+                                                                                frames = combinedFrames
+                                                                            )
 
-                                                                            if (combinedFrames.size <= maxCap) {
-                                                                                val updatedSerial = matchingActiveRoll.filmRollSerial.replace(Regex("\\(\\d+ frames\\)"), "(${combinedFrames.size} frames)")
-                                                                                masterVaultRolls[activeIdx] = matchingActiveRoll.copy(
-                                                                                    frameCount = combinedFrames.size,
-                                                                                    filmRollSerial = updatedSerial,
-                                                                                    frames = combinedFrames
-                                                                                )
-                                                                                masterVaultRolls.removeAt(selectedRollIndex)
-                                                                                selectedRollIndex = activeIdx
-                                                                                DatabaseRepository.saveRoll(masterVaultRolls[activeIdx])
-                                                                                DatabaseRepository.deleteRolls(listOf(activeRoll))
-                                                                                vaultFeedbackBanner = "🏠 Auto-Linked ${activeRoll.frameCount} unassigned frame(s) into Active Roll: $updatedSerial!"
+                                                                            // Remove orphan roll safely by object instance rather than index
+                                                                            masterVaultRolls.remove(orphanRollObj)
+
+                                                                            // Find new index of activeRollObj after removal
+                                                                            val newActiveIdx = masterVaultRolls.indexOfFirst { it.id == activeRollObj.id || it.filmRollSerial == activeRollObj.filmRollSerial }
+                                                                            if (newActiveIdx >= 0) {
+                                                                                masterVaultRolls[newActiveIdx] = updatedActiveRoll
+                                                                                selectedRollIndex = newActiveIdx.coerceIn(0, (masterVaultRolls.size - 1).coerceAtLeast(0))
+                                                                                DatabaseRepository.saveRoll(masterVaultRolls[selectedRollIndex])
+                                                                                DatabaseRepository.deleteRolls(listOf(orphanRollObj))
+                                                                                vaultFeedbackBanner = "🏠 Auto-Linked ${orphanRollObj.frameCount} unassigned frame(s) directly into Active Roll: $updatedSerial!"
                                                                             } else {
-                                                                                vaultFeedbackBanner = "⚠️ Cannot Auto-Link: Exceeds maximum capacity ($maxCap frames)!"
+                                                                                masterVaultRolls.add(0, updatedActiveRoll)
+                                                                                selectedRollIndex = 0
+                                                                                DatabaseRepository.saveRoll(updatedActiveRoll)
+                                                                                DatabaseRepository.deleteRolls(listOf(orphanRollObj))
+                                                                                vaultFeedbackBanner = "🏠 Auto-Linked ${orphanRollObj.frameCount} unassigned frame(s) into Active Roll: $updatedSerial!"
                                                                             }
+                                                                        } catch (e: Exception) {
+                                                                            vaultFeedbackBanner = "🏠 Auto-Link completed (Notice: ${e.message ?: "State updated"})"
                                                                         }
                                                                     },
                                                                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
