@@ -868,6 +868,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-085: ExposureSuggester Shutter Speed Range Parse Crash Resolution
+- **Platform**: Fotologue Mobile (`ExposureSuggester.kt`)
+- **Reported**: October 2026
+- **Symptom**: Opening LightMeter or tapping Measure Exposure crashed with `NumberFormatException: For input string: "1s - 1"` when camera shutter speeds contained range strings.
+- **Root Cause**: `parseShutterSpeed()` split raw range strings like `"1s - 1/500s, B"` on `/`, producing `"1s - 1"` and attempting `Double.parseDouble()`.
+- **Resolution**:
+  1. Implemented `expandShutterSpeeds()` in `ExposureSuggester.kt` to expand raw shutter speed range strings into discrete shutter speed values.
+  2. Wrapped `parseShutterSpeed()` in a `try-catch` block returning `1.0` fallback on malformed input strings.
+- **Regression Test Case**: Select *Yashica Mat-124G* TLR $\to$ open `Add Exposure Log` $\to$ tap `Measure Exposure` $\to$ verify live Light Meter opens cleanly with zero crashes.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
