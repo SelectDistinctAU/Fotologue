@@ -908,6 +908,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-088: Desktop TAXONOMY & TAGS High-Density Management Module
+- **Platform**: Fotologue Desktop (`Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Desktop lacked a dedicated Taxonomy & Tags administration module to manage taxonomy categories and tags with high data density.
+- **Root Cause**: Unrepresented Taxonomy navigation destination in Desktop `FoundationAdminLeftRail`.
+- **Resolution**:
+  1. Integrated **`TAXONOMY & TAGS`** navigation section into `FoundationAdminLeftRail` with live count badges.
+  2. Built `TaxonomyAdminPanel` with a high-density Sortable Data Grid (`TAG NAME`, `CATEGORY`, `USAGE FREQUENCY`, `SOURCE`, `ACTIONS`).
+  3. Added `[ + Add New Tag ]`, `[ Edit Tag ]` (global tag renaming across Master Vault), `[ Delete Tag ]`, and `[ + Add Category ]` CRUD dialogs.
+- **Regression Test Case**: Open Desktop App $\to$ click `TAXONOMY & TAGS` on left rail $\to$ verify Data Grid loads with `Subjects`, `Content`, and `Intent` tags and supports global tag editing.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
