@@ -948,6 +948,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-091: Auto-Link Frames Flexible Capacity & Index Safety
+- **Platform**: Fotologue Desktop (`Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Clicking Auto-Link Frames threw `IndexOutOfBoundsException: index: 25, size: 25` and blocked merges when frame counts exceeded nominal capacity.
+- **Root Cause**: Hardcoded capacity checks and index removal `removeAt(selectedRollIndex)` causing array index shifts.
+- **Resolution**:
+  1. Removed blocking Auto-Link frame capacity check to support bulk-loaded ("rolling your own") and extended film rolls up to 45 exposures.
+  2. Replaced `removeAt(selectedRollIndex)` with object-based removal `masterVaultRolls.remove(orphanRoll)` and safe index clamping.
+  3. Wrapped Auto-Link execution in `try-catch (e: Exception)` block.
+- **Regression Test Case**: Open Desktop App $\to$ Master Rolls view $\to$ click `Auto-Link Frames` $\to$ verify unassigned frame merges cleanly with zero index errors or popup dialogs.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
