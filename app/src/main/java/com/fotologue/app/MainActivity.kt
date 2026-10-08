@@ -12,6 +12,7 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -420,16 +421,18 @@ class MainActivity : ComponentActivity() {
                                     val viewModel: LightMeterViewModel = hiltViewModel(
                                         key = "LightMeter_${lightRoute.targetIso}_${lightRoute.cameraId}_${lightRoute.lensId}_${lightRoute.teleconverterId}_${lightRoute.filterId}_${lightRoute.filmId}_${lightRoute.focalLength}_${lightRoute.autoStartCalibration}"
                                     )
-                                    viewModel.setParams(
-                                        targetIso = lightRoute.targetIso,
-                                        cameraId = lightRoute.cameraId,
-                                        lensId = lightRoute.lensId,
-                                        teleconverterId = lightRoute.teleconverterId,
-                                        filterId = lightRoute.filterId,
-                                        filmId = lightRoute.filmId,
-                                        focalLength = lightRoute.focalLength,
-                                        autoStartCalibration = lightRoute.autoStartCalibration
-                                    )
+                                    LaunchedEffect(lightRoute) {
+                                        viewModel.setParams(
+                                            targetIso = lightRoute.targetIso,
+                                            cameraId = lightRoute.cameraId,
+                                            lensId = lightRoute.lensId,
+                                            teleconverterId = lightRoute.teleconverterId,
+                                            filterId = lightRoute.filterId,
+                                            filmId = lightRoute.filmId,
+                                            focalLength = lightRoute.focalLength,
+                                            autoStartCalibration = lightRoute.autoStartCalibration
+                                        )
+                                    }
                                     LightMeterScreen(
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },

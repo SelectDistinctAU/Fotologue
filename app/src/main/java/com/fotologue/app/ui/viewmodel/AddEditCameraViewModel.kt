@@ -103,8 +103,10 @@ class AddEditCameraViewModel @Inject constructor(
         viewModelScope.launch {
             val camera = repository.getCameraById(id).first()
             camera?.let { c ->
+                val derivedMake = if (c.name.contains(" ")) c.name.substringBefore(" ") else "Yashica"
                 _uiState.update { 
                     it.copy(
+                        make = derivedMake,
                         name = c.name,
                         modelNumber = c.modelNumber,
                         serialNumber = c.serialNumber,

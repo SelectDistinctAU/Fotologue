@@ -48,11 +48,21 @@ fun WelcomeScreen(
         Manifest.permission.CAMERA
     )
 
-    // Defer location permission requests to active capture screens (AddLogScreen)
-    // Camera permission is requested only when enabling camera features or meter calibration
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { _ -> }
+
+    val hasLocationPermission = androidx.core.content.ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
 
     WelcomeScreenContent(
         uiState = uiState,
+        isLocationPermissionGranted = hasLocationPermission,
+        onRequestLocationPermission = {
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        },
         onAddCamera = onAddCamera,
         onAddLens = onAddLens,
         onAddFilm = onAddFilm,
@@ -91,6 +101,8 @@ fun WelcomeScreen(
 @Composable
 fun WelcomeScreenContent(
     uiState: OnboardingUiState,
+    isLocationPermissionGranted: Boolean = false,
+    onRequestLocationPermission: () -> Unit = {},
     onAddCamera: () -> Unit,
     onAddLens: () -> Unit,
     onAddFilm: () -> Unit,
@@ -243,6 +255,30 @@ fun WelcomeScreenContent(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    // Location / GPS Tagging Setting
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Automatic GPS Location Tagging",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                text = "Automatically attach GPS coordinates to exposure logs for geotagging.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = isLocationPermissionGranted,
+                            onCheckedChange = { onRequestLocationPermission() }
+                        )
+                    }
+
+                    HorizontalDivider()
+
                     // Capture Setting
                     Row(
                         modifier = Modifier.fillMaxWidth(),
