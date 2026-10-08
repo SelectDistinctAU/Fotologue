@@ -180,11 +180,15 @@ fun LightMeterScreen(
                 try {
                     val cameraProvider = cameraProviderFuture.get()
                     
-                    val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        context.display.rotation
-                    } else {
-                        @Suppress("DEPRECATION")
-                        (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
+                    val rotation = try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            context.display?.rotation ?: android.view.Surface.ROTATION_0
+                        } else {
+                            @Suppress("DEPRECATION")
+                            (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
+                        }
+                    } catch (_: Throwable) {
+                        android.view.Surface.ROTATION_0
                     }
 
                     val preview = Preview.Builder()

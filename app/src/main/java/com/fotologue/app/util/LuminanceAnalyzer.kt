@@ -69,10 +69,11 @@ class LuminanceAnalyzer(
 
                 val step = if ((right - left) * (bottom - top) > 10000) 4 else 1
 
+                val limit = buffer.limit()
                 for (y in top..bottom step step) {
                     for (x in left..right step step) {
                         val index = y * rowStride + x * pixelStride
-                        if (index >= 0 && index < buffer.capacity()) {
+                        if (index in 0 until limit) {
                             sum += buffer.get(index).toInt() and 0xFF
                             count++
                         }
@@ -116,21 +117,26 @@ class LuminanceAnalyzer(
             // 2. Face Detection (Async)
             val mediaImage = image.image
             if (mediaImage != null && isFaceDetectionEnabled()) {
-                isAsyncWorkStarted = true
-                val visionImage = InputImage.fromMediaImage(mediaImage, image.imageInfo.rotationDegrees)
-                faceDetector.process(visionImage)
-                    .addOnSuccessListener { faces ->
-                        onFaceDetected(faces.isNotEmpty())
-                    }
-                    .addOnCompleteListener {
-                        image.close()
-                    }
+                try {
+                    val visionImage = InputImage.fromMediaImage(mediaImage, image.imageInfo.rotationDegrees)
+                    isAsyncWorkStarted = true
+                    faceDetector.process(visionImage)
+                        .addOnSuccessListener { faces ->
+                            onFaceDetected(faces.isNotEmpty())
+                        }
+                        .addOnCompleteListener {
+                            try { image.close() } catch (_: Throwable) {}
+                        }
+                } catch (t: Throwable) {
+                    isAsyncWorkStarted = false
+                    t.printStackTrace()
+                }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (t: Throwable) {
+            t.printStackTrace()
         } finally {
             if (!isAsyncWorkStarted) {
-                image.close()
+                try { image.close() } catch (_: Throwable) {}
             }
         }
     }
