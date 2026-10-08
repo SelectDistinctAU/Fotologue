@@ -80,9 +80,9 @@ object ExposureSuggester {
     }
 
     private fun formatShutterSpeed(seconds: Double, cameraSpeeds: List<String>): String? {
-        if (seconds <= 0) return null
+        if (seconds <= 0 || seconds.isNaN() || seconds.isInfinite()) return null
         
-        val speedsToUse = if (cameraSpeeds.isNotEmpty()) cameraSpeeds else defaultShutterSpeeds
+        val speedsToUse = expandShutterSpeeds(cameraSpeeds)
 
         return speedsToUse.minByOrNull { speed ->
             val speedSeconds = parseShutterSpeed(speed)
@@ -90,14 +90,59 @@ object ExposureSuggester {
         }
     }
 
+    fun expandShutterSpeeds(cameraSpeeds: List<String>): List<String> {
+        if (cameraSpeeds.isEmpty()) return defaultShutterSpeeds
+
+        val discreteSpeeds = mutableListOf<String>()
+        for (raw in cameraSpeeds) {
+            val item = raw.trim()
+            if (item.contains(" - ") || (item.contains("-") && !item.startsWith("-"))) {
+                val parts = item.split(" - ", "-")
+                if (parts.size >= 2) {
+                    val minSec = parseShutterSpeed(parts[0])
+                    val maxSec = parseShutterSpeed(parts[1])
+                    val startSec = minOf(minSec, maxSec)
+                    val endSec = maxOf(minSec, maxSec)
+
+                    val matchingDefaults = defaultShutterSpeeds.filter { speedStr ->
+                        val sec = parseShutterSpeed(speedStr)
+                        sec in (startSec - 0.0001)..(endSec + 0.0001)
+                    }
+                    if (matchingDefaults.isNotEmpty()) {
+                        discreteSpeeds.addAll(matchingDefaults)
+                    } else {
+                        discreteSpeeds.addAll(defaultShutterSpeeds)
+                    }
+                } else {
+                    discreteSpeeds.addAll(defaultShutterSpeeds)
+                }
+            } else if (!item.equals("B", ignoreCase = true) && item.isNotBlank()) {
+                discreteSpeeds.add(item)
+            }
+        }
+        return if (discreteSpeeds.isNotEmpty()) discreteSpeeds.distinct() else defaultShutterSpeeds
+    }
+
     private fun parseShutterSpeed(speed: String): Double {
-        return if (speed.contains("/")) {
-            val parts = speed.split("/")
-            if (parts.size == 2) {
-                parts[0].toDouble() / parts[1].toDouble()
-            } else 1.0
-        } else {
-            speed.toDoubleOrNull() ?: 1.0
+        return try {
+            val cleanSpeed = speed.replace("s", "", ignoreCase = true)
+                .replace("B", "", ignoreCase = true)
+                .replace(",", "")
+                .trim()
+
+            if (cleanSpeed.isBlank()) return 1.0
+
+            if (cleanSpeed.contains("/")) {
+                val parts = cleanSpeed.split("/")
+                if (parts.size == 2) {
+                    val num = parts[0].trim().toDoubleOrNull() ?: 1.0
+                    val den = parts[1].trim().toDoubleOrNull() ?: 1.0
+                    return if (den != 0.0) num / den else 1.0
+                }
+            }
+            cleanSpeed.toDoubleOrNull() ?: 1.0
+        } catch (_: Throwable) {
+            1.0
         }
     }
 }
