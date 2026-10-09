@@ -976,6 +976,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-093: Official Circular 'fl' Fotologue Brand Logo Integration in Hub Header
+- **Platform**: Fotologue Mobile (`HubScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Mobile Staging Portal header used generic camera settings vector icon next to `Fotologue` title instead of the official brand logo.
+- **Root Cause**: Placeholder vector drawable in `HubScreen.kt` top app bar.
+- **Resolution**: Replaced placeholder vector icon with official high-resolution circular `fl` Fotologue logo (`R.mipmap.ic_launcher_round`), rendering silver gradient, red viewfinder grid lines, and italic `fl` typography.
+- **Regression Test Case**: Open Mobile Staging Portal $\to$ verify official circular `fl` logo renders next to `Fotologue` title in top bar.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
