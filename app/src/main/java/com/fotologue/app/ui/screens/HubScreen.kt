@@ -38,6 +38,7 @@ fun HubScreen(
     isSafelightActive: Boolean = false,
     onToggleSafelight: (() -> Unit)? = null,
     onNavigateToCameraGear: () -> Unit = {},
+    onNavigateToTaxonomy: () -> Unit = {},
     onNavigateToField: () -> Unit,
     onNavigateToContacts: () -> Unit = {},
     onNavigateToLab: () -> Unit,
@@ -60,17 +61,26 @@ fun HubScreen(
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                 title = {
-                    Column {
-                        Text(
-                            text = "Fotologue",
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                            color = safelightFg
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(com.fotologue.app.R.drawable.settings_photo_camera_24px),
+                            contentDescription = null,
+                            modifier = Modifier.size(28.dp),
+                            tint = safelightPrimary
                         )
-                        Text(
-                            text = "A Photographic Catalogue Suite",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = safelightPrimary
-                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "Fotologue",
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                color = safelightFg
+                            )
+                            Text(
+                                text = "A Photographic Catalogue Suite",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = safelightPrimary
+                            )
+                        }
                     }
                 },
                 actions = {
@@ -137,6 +147,20 @@ fun HubScreen(
                     subColor = safelightPrimary,
                     descColor = safelightSubFg,
                     onClick = onNavigateToCameraGear
+                )
+            }
+
+            item(key = "module_taxonomy") {
+                HubModuleCard(
+                    title = "TAXONOMY & TAGS",
+                    subtitle = "Subject, Content & Intent Indexing",
+                    description = "Subjects • Content • Intent • Hierarchical Tag Index",
+                    iconRes = com.fotologue.app.R.drawable.ic_label,
+                    cardBg = safelightCardBg,
+                    titleColor = safelightFg,
+                    subColor = safelightPrimary,
+                    descColor = safelightSubFg,
+                    onClick = onNavigateToTaxonomy
                 )
             }
 

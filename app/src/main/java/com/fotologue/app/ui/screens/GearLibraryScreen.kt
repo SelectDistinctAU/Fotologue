@@ -71,7 +71,7 @@ fun GearLibraryScreen(
     val contentTags by viewModel.allContent.collectAsStateWithLifecycle()
     val intents by viewModel.allIntents.collectAsStateWithLifecycle()
 
-    // New Order: Cameras, Lenses, Films, TCs, Filters, Flashes, Viewfinders, Kit Bags (Last!), Subjects, Content, Intent
+    // Strict Hardware Categories: Cameras, Lenses, Films, TCs, Filters, Flashes, Viewfinders, Kit Bags (Last)
     val categories = listOf(
         GearCategory(stringResource(R.string.category_cameras), iconRes = R.drawable.ic_photo_camera, count = cameras.size),
         GearCategory(stringResource(R.string.category_lenses), iconRes = R.drawable.lensd, count = lensesWithCameras.size),
@@ -80,10 +80,7 @@ fun GearLibraryScreen(
         GearCategory(stringResource(R.string.category_accessories_filters), iconRes = R.drawable.filter_24px, count = filters.size),
         GearCategory(stringResource(R.string.category_accessories_flashes), iconRes = R.drawable.ic_flash_on, count = flashes.size),
         GearCategory(stringResource(R.string.category_accessories_viewfinders), iconRes = R.drawable.ic_visibility, count = viewfinders.size),
-        GearCategory(stringResource(R.string.category_kits), iconRes = R.drawable.ic_inventory_2, count = kits.size),
-        GearCategory(stringResource(R.string.category_subjects), iconRes = R.drawable.ic_label, count = subjects.size),
-        GearCategory(stringResource(R.string.category_content), iconRes = R.drawable.ic_label, count = contentTags.size),
-        GearCategory(stringResource(R.string.category_intent), iconRes = R.drawable.ic_label, count = intents.size)
+        GearCategory(stringResource(R.string.category_kits), iconRes = R.drawable.ic_inventory_2, count = kits.size)
     )
 
     ListDetailPaneScaffold(
@@ -122,15 +119,6 @@ fun GearLibraryScreen(
                                     color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(start = 12.dp, top = 8.dp, bottom = 4.dp)
-                                )
-                            } else if (index == 8) {
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                                Text(
-                                    text = "TAXONOMY & TAGS",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(start = 12.dp, top = 4.dp, bottom = 4.dp)
                                 )
                             }
                             NavigationDrawerItem(

@@ -91,12 +91,20 @@ class MainActivity : ComponentActivity() {
                                         isSafelightActive = isSafelightActive,
                                         onToggleSafelight = { mainViewModel.toggleSafelight() },
                                         onNavigateToCameraGear = { backStack.add(Route.GearLibrary) },
+                                        onNavigateToTaxonomy = { backStack.add(Route.Taxonomy) },
                                         onNavigateToField = { backStack.add(Route.Timeline) },
                                         onNavigateToContacts = { backStack.add(Route.Lab(initialTab = 1)) },
                                         onNavigateToLab = { backStack.add(Route.Lab()) },
                                         onNavigateToStation = { backStack.add(Route.ContactSheet()) },
                                         onNavigateToArchive = { backStack.add(Route.ArchiveVault) },
                                         onNavigateToSettings = { backStack.add(Route.Settings) }
+                                    )
+                                }
+                                entry<Route.Taxonomy> {
+                                    val viewModel: TaxonomyViewModel = hiltViewModel()
+                                    TaxonomyScreen(
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
                                     )
                                 }
                                 entry<Route.ArchiveVault> {
@@ -143,6 +151,7 @@ class MainActivity : ComponentActivity() {
                                             backStack.add(Route.LogDetail(logId))
                                         },
                                         onGearLibraryClick = { backStack.add(Route.GearLibrary) },
+                                        onTaxonomyClick = { backStack.add(Route.Taxonomy) },
                                         onSettingsClick = { backStack.add(Route.Settings) },
                                         onContactSheetClick = { backStack.add(Route.ContactSheet()) },
                                         onLabClick = { backStack.add(Route.Lab()) },

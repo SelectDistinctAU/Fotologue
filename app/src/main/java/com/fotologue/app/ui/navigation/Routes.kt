@@ -60,6 +60,9 @@ sealed class Route : NavKey {
     data object GearLibrary : Route()
 
     @Serializable
+    data object Taxonomy : Route()
+
+    @Serializable
     data object AddCamera : Route()
 
     @Serializable

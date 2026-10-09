@@ -48,6 +48,7 @@ fun TimelineScreen(
     onAddLogClick: () -> Unit,
     onLogClick: (Long) -> Unit,
     onGearLibraryClick: () -> Unit,
+    onTaxonomyClick: () -> Unit = {},
     onSettingsClick: () -> Unit,
     onContactSheetClick: () -> Unit = {},
     onLabClick: () -> Unit = {},
@@ -104,6 +105,7 @@ fun TimelineScreenContent(
     onAddLogClick: () -> Unit,
     onLogClick: (Long) -> Unit,
     onGearLibraryClick: () -> Unit,
+    onTaxonomyClick: () -> Unit = {},
     onSettingsClick: () -> Unit,
     onContactSheetClick: () -> Unit = {},
     onLabClick: () -> Unit = {},
@@ -273,6 +275,9 @@ fun TimelineScreenContent(
                                     contentDescription = stringResource(R.string.action_select_all)
                                 )
                             }
+                        }
+                        IconButton(onClick = onTaxonomyClick) {
+                            Icon(painterResource(R.drawable.ic_label), contentDescription = "Taxonomy & Tags")
                         }
                         IconButton(onClick = onGearLibraryClick) {
                             Icon(painterResource(R.drawable.settings_photo_camera_24px), contentDescription = stringResource(R.string.gear_library_title))
