@@ -1023,6 +1023,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-097: Skullinator Protocol Alignment for Mobile Taxonomy Screen & Onboarding Camera-Format Pre-Filtering
+- **Platform**: Fotologue Mobile (`TaxonomyScreen.kt`, `TaxonomyViewModel.kt`, `AddEditFilmViewModel.kt`, `Skullinator.md`)
+- **Reported**: October 2026
+- **Symptom**: Mobile Taxonomy screen was non-interactive ("dead"); Onboarding film selection did not match chosen camera format.
+- **Root Cause**: Static hardcoded sub-group list in `TaxonomyScreen.kt` without SQLite flow binding; missing camera format inspection in `AddEditFilmViewModel.kt`.
+- **Resolution**:
+  1. Applied The Skullinator Protocol: Connected `TaxonomyViewModel` to `repository.allTags` Flow in SQLite with non-zero assertion and auto-seeding.
+  2. Implemented dynamic category tab filtering (`All`, `Subjects`, `Content`, `Intent`), 1-tap card edit dialogs, delete confirmation dialogs, and FAB `[ ➕ ]` tag creation.
+  3. Auto-detected primary camera format in `AddEditFilmViewModel.kt` during Onboarding/gear setup (e.g. 120 TLRs $\to$ `Film.FORMAT_120`), pre-selecting 120 film stock presets automatically.
+- **Regression Test Case**: Open Mobile App $\to$ `TAXONOMY & TAGS` $\to$ tap `Subjects` chip $\to$ verify list filters dynamically and tapping cards opens Edit Tag dialog.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
