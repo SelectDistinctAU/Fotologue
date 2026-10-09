@@ -1049,6 +1049,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-099: Add Taxonomy Tag Associated Subject Selector Integration
+- **Platform**: Fotologue Mobile (`TaxonomyScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Add Taxonomy Tag` dialog on Mobile lacked an `Associated Subject` selector, creating orphan content tags without parent subjects.
+- **Root Cause**: Un-implemented parent subject dropdown in Add Tag dialog.
+- **Resolution**: Added `Associated Subject` dropdown (populated with `Urban/built environment`, `Events`, `Nature`, `People`) to `Add Taxonomy Tag` dialog, persisting parent ID to SQLite upon creation.
+- **Regression Test Case**: Open Mobile App $\to$ `TAXONOMY & TAGS` $\to$ tap `[ ➕ ]` FAB $\to$ verify `Associated Subject` dropdown renders and links new content tag under chosen subject header.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
