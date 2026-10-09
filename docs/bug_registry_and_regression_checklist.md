@@ -986,6 +986,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-094: Launch Crash Resolution & Full-Screen Film Catalog Browser Architecture
+- **Platform**: Fotologue Mobile (`HubScreen.kt`, `AddEditFilmScreen.kt`, `WelcomeScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Cold launch crashed due to painterResource loading adaptive icon XML; Add Film preset selection displayed a cramped floating popup; form save actions were disconnected.
+- **Root Cause**: `painterResource(R.mipmap.ic_launcher_round)` called on adaptive icon; floating AlertDialog UI; missing save triggers on detail form view.
+- **Resolution**:
+  1. Replaced `R.mipmap.ic_launcher_round` in `HubScreen.kt` with `R.drawable.settings_photo_camera_24px` VectorDrawable, restoring 100% startup stability.
+  2. Re-architected `AddEditFilmScreen.kt` to remove `FilmPresetsDialog` `AlertDialog` and render `FilmPresetsBrowser` as a full-screen view.
+  3. Connected both bottom `[ Save Film ]` and top checkmark `✓` to `viewModel.saveFilm(onBack)`.
+  4. Added brand camera icon to `WelcomeScreen.kt` top app bar.
+- **Regression Test Case**: Clean launch Mobile app $\to$ verify cold launch succeeds $\to$ open `Add Film` $\to$ verify full-screen preset browser opens and saves cleanly.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
