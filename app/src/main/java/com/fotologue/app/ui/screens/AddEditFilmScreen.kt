@@ -31,20 +31,37 @@ fun AddEditFilmScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
-    var showPresetsDialog by remember { mutableStateOf(false) }
+    var isCustomFormView by remember { mutableStateOf(viewModel.filmId != null) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (viewModel.filmId == null) stringResource(R.string.add_film) else stringResource(R.string.edit_film)) },
+                title = {
+                    Text(
+                        if (!isCustomFormView && viewModel.filmId == null)
+                            "Select Film Stock from Presets"
+                        else if (viewModel.filmId == null)
+                            stringResource(R.string.add_film)
+                        else
+                            stringResource(R.string.edit_film)
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = {
+                        if (isCustomFormView && viewModel.filmId == null) {
+                            isCustomFormView = false
+                        } else {
+                            onBack()
+                        }
+                    }) {
                         Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.action_back))
                     }
                 },
                 actions = {
-                    IconButton(onClick = { viewModel.saveFilm(onBack) }) {
-                        Icon(painterResource(R.drawable.ic_check), contentDescription = stringResource(R.string.action_save))
+                    if (isCustomFormView) {
+                        IconButton(onClick = { viewModel.saveFilm(onBack) }) {
+                            Icon(painterResource(R.drawable.ic_check), contentDescription = stringResource(R.string.action_save))
+                        }
                     }
                 }
             )
@@ -53,180 +70,362 @@ fun AddEditFilmScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .consumeWindowInsets(innerPadding)
                 .padding(top = innerPadding.calculateTopPadding())
+                .consumeWindowInsets(innerPadding)
                 .imePadding()
-                .verticalScroll(scrollState)
-                .padding(16.dp)
-                .padding(bottom = innerPadding.calculateBottomPadding() + 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            if (viewModel.filmId == null) {
-                Button(
-                    onClick = { showPresetsDialog = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(painterResource(R.drawable.settings_panorama_24px), contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Select from Presets")
-                }
-                HorizontalDivider()
-            }
-
-            var nameExpanded by remember { mutableStateOf(false) }
-            
-            ExposedDropdownMenuBox(
-                expanded = nameExpanded && uiState.filteredPresets.isNotEmpty(),
-                onExpandedChange = { nameExpanded = it },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = uiState.name,
-                    onValueChange = {
-                        viewModel.onNameChange(it)
-                        nameExpanded = true
+            if (!isCustomFormView && viewModel.filmId == null) {
+                // PRIMARY TARGET: FULL-SCREEN PRESET CATALOG BROWSER
+                FilmPresetsBrowser(
+                    initialFormat = uiState.format,
+                    onPresetSelected = { preset, chosenFormat ->
+                        viewModel.onPresetSelected(preset, chosenFormat)
+                        isCustomFormView = true
                     },
-                    label = { Text(stringResource(R.string.film_name)) },
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth(),
-                    isError = !uiState.isNameValid,
-                    supportingText = { if (!uiState.isNameValid) Text(stringResource(R.string.error_name_empty)) }
-                )
-                
-                ExposedDropdownMenu(
-                    expanded = nameExpanded && uiState.filteredPresets.isNotEmpty(),
-                    onDismissRequest = { nameExpanded = false }
-                ) {
-                    uiState.filteredPresets.forEach { preset ->
-                        DropdownMenuItem(
-                            text = { Text(preset.displayName) },
-                            onClick = {
-                                viewModel.onPresetSelected(preset)
-                                nameExpanded = false
-                            },
-                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
-                        )
+                    onAddCustomFilm = {
+                        isCustomFormView = true
                     }
-                }
-            }
-
-            OutlinedTextField(
-                value = uiState.abbreviation,
-                onValueChange = viewModel::onAbbreviationChange,
-                label = { Text("Abbreviation (e.g. TX400, G200)") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                placeholder = { Text("Used for concise display") }
-            )
-
-            val filmFormats = Film.ALL_FORMATS
-            var formatExpanded by remember { mutableStateOf(false) }
-            
-            ExposedDropdownMenuBox(
-                expanded = formatExpanded,
-                onExpandedChange = { formatExpanded = !formatExpanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = uiState.format,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Film Format") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatExpanded) },
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
                 )
-                ExposedDropdownMenu(
-                    expanded = formatExpanded,
-                    onDismissRequest = { formatExpanded = false }
+            } else {
+                // MANUAL DETAIL FORM VIEW
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .padding(bottom = innerPadding.calculateBottomPadding() + 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    filmFormats.forEach { format ->
-                        DropdownMenuItem(
-                            text = { Text(format) },
-                            onClick = {
-                                viewModel.onFormatChange(format)
-                                formatExpanded = false
+                    var nameExpanded by remember { mutableStateOf(false) }
+
+                    ExposedDropdownMenuBox(
+                        expanded = nameExpanded && uiState.filteredPresets.isNotEmpty(),
+                        onExpandedChange = { nameExpanded = it },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.name,
+                            onValueChange = {
+                                viewModel.onNameChange(it)
+                                nameExpanded = true
                             },
-                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                            label = { Text(stringResource(R.string.film_name)) },
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth(),
+                            isError = !uiState.isNameValid,
+                            supportingText = { if (!uiState.isNameValid) Text(stringResource(R.string.error_name_empty)) }
                         )
-                    }
-                }
-            }
 
-            OutlinedTextField(
-                value = uiState.iso,
-                onValueChange = viewModel::onIsoChange,
-                label = { Text(stringResource(R.string.label_iso)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-            OutlinedTextField(
-                value = uiState.expectedExposures,
-                onValueChange = viewModel::onExpectedExposuresChange,
-                label = { Text("Expected Exposures (e.g. 12, 24, 36)") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-            
-            val filmTypes = Film.ALL_TYPES
-            var typeExpanded by remember { mutableStateOf(false) }
-
-            ExposedDropdownMenuBox(
-                expanded = typeExpanded,
-                onExpandedChange = { typeExpanded = !typeExpanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = uiState.type,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.film_type)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
-                    isError = !uiState.isTypeValid,
-                    supportingText = {
-                        if (!uiState.isTypeValid) {
-                            Text(stringResource(R.string.error_invalid_film_type))
+                        ExposedDropdownMenu(
+                            expanded = nameExpanded && uiState.filteredPresets.isNotEmpty(),
+                            onDismissRequest = { nameExpanded = false }
+                        ) {
+                            uiState.filteredPresets.forEach { preset ->
+                                DropdownMenuItem(
+                                    text = { Text(preset.displayName) },
+                                    onClick = {
+                                        viewModel.onPresetSelected(preset)
+                                        nameExpanded = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                            }
                         }
                     }
-                )
-                ExposedDropdownMenu(
-                    expanded = typeExpanded,
-                    onDismissRequest = { typeExpanded = false }
-                ) {
-                    filmTypes.forEach { type ->
-                        DropdownMenuItem(
-                            text = { Text(type) },
-                            onClick = {
-                                viewModel.onTypeChange(type)
-                                typeExpanded = false
-                            },
-                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+
+                    OutlinedTextField(
+                        value = uiState.abbreviation,
+                        onValueChange = viewModel::onAbbreviationChange,
+                        label = { Text("Abbreviation (e.g. TX400, G200)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        placeholder = { Text("Used for concise display") }
+                    )
+
+                    val filmFormats = Film.ALL_FORMATS
+                    var formatExpanded by remember { mutableStateOf(false) }
+
+                    ExposedDropdownMenuBox(
+                        expanded = formatExpanded,
+                        onExpandedChange = { formatExpanded = !formatExpanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.format,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Film Format") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatExpanded) },
+                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
                         )
+                        ExposedDropdownMenu(
+                            expanded = formatExpanded,
+                            onDismissRequest = { formatExpanded = false }
+                        ) {
+                            filmFormats.forEach { format ->
+                                DropdownMenuItem(
+                                    text = { Text(format) },
+                                    onClick = {
+                                        viewModel.onFormatChange(format)
+                                        formatExpanded = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                            }
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = uiState.iso,
+                        onValueChange = viewModel::onIsoChange,
+                        label = { Text(stringResource(R.string.label_iso)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+
+                    OutlinedTextField(
+                        value = uiState.expectedExposures,
+                        onValueChange = viewModel::onExpectedExposuresChange,
+                        label = { Text("Expected Exposures (e.g. 12, 24, 36)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+
+                    val filmTypes = Film.ALL_TYPES
+                    var typeExpanded by remember { mutableStateOf(false) }
+
+                    ExposedDropdownMenuBox(
+                        expanded = typeExpanded,
+                        onExpandedChange = { typeExpanded = !typeExpanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.type,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text(stringResource(R.string.film_type)) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
+                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
+                            isError = !uiState.isTypeValid,
+                            supportingText = {
+                                if (!uiState.isTypeValid) {
+                                    Text(stringResource(R.string.error_invalid_film_type))
+                                }
+                            }
+                        )
+                        ExposedDropdownMenu(
+                            expanded = typeExpanded,
+                            onDismissRequest = { typeExpanded = false }
+                        ) {
+                            filmTypes.forEach { type ->
+                                DropdownMenuItem(
+                                    text = { Text(type) },
+                                    onClick = {
+                                        viewModel.onTypeChange(type)
+                                        typeExpanded = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { viewModel.saveFilm(onBack) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.save_film))
                     }
                 }
             }
+        }
+    }
+}
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = { viewModel.saveFilm(onBack) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.save_film))
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ColumnScope.FilmPresetsBrowser(
+    initialFormat: String = Film.FORMAT_35MM,
+    onPresetSelected: (FilmPreset, String) -> Unit,
+    onAddCustomFilm: () -> Unit
+) {
+    val masterFilmBrands = remember {
+        listOf("All") + FilmPresets.manufacturers.sorted()
+    }
+    val formatOptions = listOf("All", Film.FORMAT_35MM, Film.FORMAT_120, Film.FORMAT_LARGE)
+
+    var selectedBrandFilter by remember { mutableStateOf("All") }
+    var selectedFormatFilter by remember { mutableStateOf(if (initialFormat in formatOptions) initialFormat else "All") }
+    var brandDropdownExpanded by remember { mutableStateOf(false) }
+    var formatDropdownExpanded by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredPresets = remember(selectedBrandFilter, selectedFormatFilter, searchQuery) {
+        FilmPresets.presets.filter { preset ->
+            val matchesBrand = selectedBrandFilter == "All" || preset.manufacturer.equals(selectedBrandFilter, ignoreCase = true)
+            val matchesQuery = searchQuery.isBlank() || (
+                preset.name.contains(searchQuery, ignoreCase = true) ||
+                preset.manufacturer.contains(searchQuery, ignoreCase = true) ||
+                preset.abbreviation.contains(searchQuery, ignoreCase = true)
+            )
+            matchesBrand && matchesQuery
+        }
+    }
+
+    Text(
+        text = "Select a brand and format to view curated film presets:",
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
+    // Filter by Film Brand Dropdown
+    var brandQuery by remember { mutableStateOf("") }
+    val filteredBrandOptions = remember(masterFilmBrands, brandQuery) {
+        if (brandQuery.isBlank()) masterFilmBrands else masterFilmBrands.filter { it.contains(brandQuery, ignoreCase = true) }
+    }
+
+    ExposedDropdownMenuBox(
+        expanded = brandDropdownExpanded,
+        onExpandedChange = { brandDropdownExpanded = !brandDropdownExpanded },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = if (brandDropdownExpanded) brandQuery else selectedBrandFilter,
+            onValueChange = {
+                brandQuery = it
+                brandDropdownExpanded = true
+            },
+            label = { Text("Filter by Film Brand") },
+            placeholder = { Text(selectedBrandFilter) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandDropdownExpanded) },
+            singleLine = true,
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+        )
+        ExposedDropdownMenu(
+            expanded = brandDropdownExpanded && filteredBrandOptions.isNotEmpty(),
+            onDismissRequest = {
+                brandDropdownExpanded = false
+                brandQuery = ""
+            }
+        ) {
+            filteredBrandOptions.forEach { b ->
+                DropdownMenuItem(
+                    text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
+                    onClick = {
+                        selectedBrandFilter = b
+                        brandDropdownExpanded = false
+                        brandQuery = ""
+                    }
+                )
             }
         }
     }
 
-    if (showPresetsDialog) {
-        FilmPresetsDialog(
-            initialFormat = uiState.format,
-            onDismiss = { showPresetsDialog = false },
-            onPresetSelected = { preset, chosenFormat ->
-                viewModel.onPresetSelected(preset, chosenFormat)
-                showPresetsDialog = false
-            }
+    // Filter by Film Format Dropdown
+    var formatQuery by remember { mutableStateOf("") }
+    val filteredFormatOptions = remember(formatOptions, formatQuery) {
+        if (formatQuery.isBlank()) formatOptions else formatOptions.filter { it.contains(formatQuery, ignoreCase = true) }
+    }
+
+    ExposedDropdownMenuBox(
+        expanded = formatDropdownExpanded,
+        onExpandedChange = { formatDropdownExpanded = !formatDropdownExpanded },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = if (formatDropdownExpanded) formatQuery else selectedFormatFilter,
+            onValueChange = {
+                formatQuery = it
+                formatDropdownExpanded = true
+            },
+            label = { Text("Filter by Film Format") },
+            placeholder = { Text(selectedFormatFilter) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatDropdownExpanded) },
+            singleLine = true,
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
         )
+        ExposedDropdownMenu(
+            expanded = formatDropdownExpanded && filteredFormatOptions.isNotEmpty(),
+            onDismissRequest = {
+                formatDropdownExpanded = false
+                formatQuery = ""
+            }
+        ) {
+            filteredFormatOptions.forEach { fOpt ->
+                DropdownMenuItem(
+                    text = { Text(fOpt, fontWeight = if (fOpt == selectedFormatFilter) FontWeight.Bold else FontWeight.Normal) },
+                    onClick = {
+                        selectedFormatFilter = fOpt
+                        formatDropdownExpanded = false
+                        formatQuery = ""
+                    }
+                )
+            }
+        }
+    }
+
+    // Search Bar
+    OutlinedTextField(
+        value = searchQuery,
+        onValueChange = { searchQuery = it },
+        label = { Text("Search Film Stocks") },
+        modifier = Modifier.fillMaxWidth(),
+        trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
+    )
+
+    // Fallback Action Button
+    OutlinedButton(
+        onClick = onAddCustomFilm,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Icon(painterResource(R.drawable.ic_add), contentDescription = null)
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(if (selectedBrandFilter != "All") "➕ Can't find stock? Add Custom $selectedBrandFilter Film" else "➕ Add Custom / Unlisted Film Stock", fontWeight = FontWeight.Bold)
+    }
+
+    HorizontalDivider()
+
+    if (filteredPresets.isEmpty()) {
+        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Text("No film presets found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(filteredPresets, key = { "preset_film_${it.manufacturer}_${it.name}" }) { preset ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(14.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(preset.displayName, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                            val expDisplay = if (selectedFormatFilter.contains("120")) 12 else if (selectedFormatFilter.contains("Large")) 1 else preset.expectedExposures
+                            Text(
+                                text = "${preset.type} • ISO ${preset.iso} • $expDisplay exp • Abbr: ${preset.abbreviation}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Button(
+                            onClick = { onPresetSelected(preset, selectedFormatFilter) },
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
+                        ) {
+                            Text("Select", style = MaterialTheme.typography.labelMedium)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
