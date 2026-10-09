@@ -1000,6 +1000,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-095: High-Res Circular 'fl' Fotologue Brand Logo Integration
+- **Platform**: Fotologue Mobile (`HubScreen.kt`, `WelcomeScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Header displayed camera gear settings icon instead of the official circular 'fl' brand logo.
+- **Root Cause**: Temporary fallback to `settings_photo_camera_24px` vector icon.
+- **Resolution**: Copied official 512x512 high-resolution `ic_launcher-playstore.png` to `res/drawable/ic_fotologue_logo.png` and rendered in `HubScreen.kt` and `WelcomeScreen.kt` headers.
+- **Regression Test Case**: Open Mobile App $\to$ verify official circular `fl` logo renders in top bar.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
