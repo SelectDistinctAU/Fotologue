@@ -1010,6 +1010,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-096: CircleShape Logo Clipping & Edit Film State Invariant Realignment
+- **Platform**: Fotologue Mobile (`HubScreen.kt`, `WelcomeScreen.kt`, `AddEditFilmScreen.kt`, `GearLibraryScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Outer green checkerboard pixels rendered around the logo; Edit Film opened as Preset Browser instead of Edit Form; Gear Library category indices were offset.
+- **Root Cause**: `ic_fotologue_logo.png` outer background; `isCustomFormView` remember state evaluation timing; legacy category index offset.
+- **Resolution**:
+  1. Applied `Modifier.clip(CircleShape)` to `Image` composables in `HubScreen.kt` and `WelcomeScreen.kt`, cleanly clipping away all outer green pixels.
+  2. Fixed `isCustomFormView` remember state in `AddEditFilmScreen.kt` (`var isCustomFormView by remember(uiState.name, viewModel.filmId) { mutableStateOf(viewModel.filmId != null || uiState.name.isNotBlank()) }`), displaying the Edit Form immediately when editing existing films.
+  3. Re-aligned `GearLibraryScreen.kt` category index handlers to match the 8 physical hardware categories (`0`=Cameras, `1`=Lenses, `2`=Films ... `7`=Kit Bags).
+- **Regression Test Case**: Open Mobile App $\to$ verify top bar renders clean circular `fl` logo $\to$ open `Camera Gear` $\to$ tap `Films` $\to$ tap an existing film $\to$ verify pre-filled Edit Film form opens cleanly.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
