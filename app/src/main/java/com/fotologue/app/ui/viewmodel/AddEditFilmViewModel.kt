@@ -3,11 +3,7 @@ package com.fotologue.app.ui.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fotologue.core.data.Film
-import com.fotologue.core.data.FilmPreset
-import com.fotologue.core.data.FilmPresets
-import com.fotologue.core.data.FotologueRepository
-import com.fotologue.core.data.SettingsRepository
+import com.fotologue.core.data.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -58,18 +54,34 @@ class AddEditFilmViewModel @Inject constructor(
         viewModelScope.launch {
             repository.allCameras.collect { cameras ->
                 if (cameras.isNotEmpty()) {
-                    val distinctFormats = cameras.map { it.format }.distinct()
-                    if (distinctFormats.size == 1) {
-                        val singleFormat = distinctFormats.first()
-                        val defaultExposures = when (singleFormat) {
-                            Film.FORMAT_120 -> "12"
-                            Film.FORMAT_LARGE -> "1"
-                            else -> "36"
-                        }
+                    val has120Camera = cameras.any { c ->
+                        c.format.contains("120", ignoreCase = true) ||
+                        c.type == CameraType.TLR ||
+                        c.type == CameraType.MEDIUM_FORMAT ||
+                        c.name.contains("Yashica", ignoreCase = true) ||
+                        c.name.contains("Rollei", ignoreCase = true) ||
+                        c.name.contains("Hasselblad", ignoreCase = true) ||
+                        c.name.contains("Mamiya", ignoreCase = true) ||
+                        c.name.contains("Bronica", ignoreCase = true)
+                    }
+
+                    val hasLargeFormat = cameras.any { c ->
+                        c.format.contains("Large", ignoreCase = true) ||
+                        c.name.contains("Linhof", ignoreCase = true) ||
+                        c.name.contains("Sinar", ignoreCase = true) ||
+                        c.name.contains("Chamonix", ignoreCase = true) ||
+                        c.name.contains("Toyo", ignoreCase = true) ||
+                        c.name.contains("Intrepid", ignoreCase = true)
+                    }
+
+                    val targetFormat = if (has120Camera) Film.FORMAT_120 else if (hasLargeFormat) Film.FORMAT_LARGE else Film.FORMAT_35MM
+                    val targetExposures = if (has120Camera) "12" else if (hasLargeFormat) "1" else "36"
+
+                    if (savedStateHandle.get<String>("format") == null) {
                         _uiState.update {
                             it.copy(
-                                format = singleFormat,
-                                expectedExposures = defaultExposures
+                                format = targetFormat,
+                                expectedExposures = targetExposures
                             )
                         }
                     }

@@ -258,7 +258,7 @@ private fun ColumnScope.FilmPresetsBrowser(
     val formatOptions = listOf("All", Film.FORMAT_35MM, Film.FORMAT_120, Film.FORMAT_LARGE)
 
     var selectedBrandFilter by remember { mutableStateOf("All") }
-    var selectedFormatFilter by remember { mutableStateOf(if (initialFormat in formatOptions) initialFormat else "All") }
+    var selectedFormatFilter by remember(initialFormat) { mutableStateOf(if (initialFormat in formatOptions) initialFormat else "All") }
     var brandDropdownExpanded by remember { mutableStateOf(false) }
     var formatDropdownExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
@@ -442,7 +442,7 @@ fun FilmPresetsDialog(
     val formatOptions = listOf("All", Film.FORMAT_35MM, Film.FORMAT_120, Film.FORMAT_LARGE)
 
     var selectedBrandFilter by remember { mutableStateOf("All") }
-    var selectedFormatFilter by remember { mutableStateOf(if (initialFormat in formatOptions) initialFormat else "All") }
+    var selectedFormatFilter by remember(initialFormat) { mutableStateOf(if (initialFormat in formatOptions) initialFormat else "All") }
     var brandDropdownExpanded by remember { mutableStateOf(false) }
     var formatDropdownExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
