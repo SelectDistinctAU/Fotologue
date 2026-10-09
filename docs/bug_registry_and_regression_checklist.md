@@ -1036,6 +1036,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-098: Mobile Taxonomy Parent-Child SQLite Hierarchy Resolution & 2-Field Edit Dialog
+- **Platform**: Fotologue Mobile (`TaxonomyScreen.kt`, `TaxonomyViewModel.kt`)
+- **Reported**: October 2026
+- **Symptom**: T&T screen displayed Parent Subject names (e.g. `Urban/built environment`) as individual tags under section `General`; category filtering failed.
+- **Root Cause**: Category string constant mismatch (`Tag.CATEGORY_SUBJECT` = `"Subject"` vs `"Subjects"`); missing `parentId` Subject lookup against SQLite tags.
+- **Resolution**:
+  1. Normalized category string matching across `"Subject"`, `"Subjects"`, `"Content"`, and `"Intent"`.
+  2. Mapped `parentId` to Parent Subject names directly from SQLite (`Urban/built environment`, `Events`, `Nature`, `People`), rendering them as section headers with child content tags (`Architecture`, `Street`, `Wedding`, `Landscape`) under each header.
+  3. Aligned `Edit Content` dialog to 2-field structure (`Associated Subject` dropdown + `Content Name` text field).
+- **Regression Test Case**: Open Mobile App $\to$ `TAXONOMY & TAGS` $\to$ verify `Urban/built environment`, `Events`, `Nature`, and `People` render as section headers with child tags underneath and tapping cards opens 2-field edit dialog.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist

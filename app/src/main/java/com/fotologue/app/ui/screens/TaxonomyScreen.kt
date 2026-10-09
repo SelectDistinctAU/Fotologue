@@ -275,20 +275,19 @@ fun TaxonomyScreen(
     if (uiState.showAddDialog) {
         var nameText by remember { mutableStateOf("") }
         var categoryText by remember { mutableStateOf(Tag.CATEGORY_CONTENT) }
+        var selectedSubjectId by remember { mutableStateOf(subjectsList.firstOrNull()?.id) }
+        var selectedIntentId by remember { mutableStateOf(intentList.filter { it.parentId == null }.firstOrNull()?.id) }
+        var subjectDropdownExpanded by remember { mutableStateOf(false) }
+        var intentDropdownExpanded by remember { mutableStateOf(false) }
+
+        val currentSubjectName = subjectsList.find { it.id == selectedSubjectId }?.name ?: "Select Subject"
+        val currentIntentName = intentList.find { it.id == selectedIntentId }?.name ?: "Select Intent"
 
         AlertDialog(
             onDismissRequest = { viewModel.dismissDialog() },
             title = { Text("Add Taxonomy Tag", fontWeight = FontWeight.Bold) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OutlinedTextField(
-                        value = nameText,
-                        onValueChange = { nameText = it },
-                        label = { Text("Tag Name") },
-                        placeholder = { Text("e.g. Sunset, Concert") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text("Category:", style = MaterialTheme.typography.labelSmall)
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         listOf(Tag.CATEGORY_SUBJECT, Tag.CATEGORY_CONTENT, Tag.CATEGORY_INTENT).forEach { cat ->
@@ -299,12 +298,83 @@ fun TaxonomyScreen(
                             )
                         }
                     }
+
+                    if (categoryText.equals(Tag.CATEGORY_CONTENT, true)) {
+                        ExposedDropdownMenuBox(
+                            expanded = subjectDropdownExpanded,
+                            onExpandedChange = { subjectDropdownExpanded = !subjectDropdownExpanded },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            OutlinedTextField(
+                                value = currentSubjectName,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Associated Subject") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = subjectDropdownExpanded) },
+                                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = subjectDropdownExpanded,
+                                onDismissRequest = { subjectDropdownExpanded = false }
+                            ) {
+                                subjectsList.forEach { subj ->
+                                    DropdownMenuItem(
+                                        text = { Text(subj.name) },
+                                        onClick = {
+                                            selectedSubjectId = subj.id
+                                            subjectDropdownExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    } else if (categoryText.equals(Tag.CATEGORY_INTENT, true)) {
+                        val parentIntents = remember(intentList) { intentList.filter { it.parentId == null } }
+                        ExposedDropdownMenuBox(
+                            expanded = intentDropdownExpanded,
+                            onExpandedChange = { intentDropdownExpanded = !intentDropdownExpanded },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            OutlinedTextField(
+                                value = currentIntentName,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Associated Intent Group") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = intentDropdownExpanded) },
+                                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = intentDropdownExpanded,
+                                onDismissRequest = { intentDropdownExpanded = false }
+                            ) {
+                                parentIntents.forEach { intent ->
+                                    DropdownMenuItem(
+                                        text = { Text(intent.name) },
+                                        onClick = {
+                                            selectedIntentId = intent.id
+                                            intentDropdownExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = nameText,
+                        onValueChange = { nameText = it },
+                        label = { Text("Tag Name") },
+                        placeholder = { Text("e.g. Skyscraper, Rally") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        viewModel.addTag(nameText, categoryText)
+                        val parentId = if (categoryText.equals(Tag.CATEGORY_CONTENT, true)) selectedSubjectId else if (categoryText.equals(Tag.CATEGORY_INTENT, true)) selectedIntentId else null
+                        viewModel.addTag(nameText, categoryText, parentId)
                     }
                 ) {
                     Text("Save")
