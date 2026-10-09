@@ -1,6 +1,8 @@
 package com.fotologue.app.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -66,7 +68,7 @@ fun HubScreen(
                         Image(
                             painter = painterResource(com.fotologue.app.R.drawable.ic_fotologue_logo),
                             contentDescription = "Fotologue Logo",
-                            modifier = Modifier.size(36.dp)
+                            modifier = Modifier.size(36.dp).clip(CircleShape)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {

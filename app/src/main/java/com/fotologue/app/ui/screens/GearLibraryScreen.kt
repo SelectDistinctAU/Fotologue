@@ -67,9 +67,6 @@ fun GearLibraryScreen(
     val viewfinders by viewModel.allViewfindersWithCameras.collectAsStateWithLifecycle()
     val films by viewModel.allFilms.collectAsStateWithLifecycle()
     val kits by viewModel.allCameraKits.collectAsStateWithLifecycle()
-    val subjects by viewModel.allSubjects.collectAsStateWithLifecycle()
-    val contentTags by viewModel.allContent.collectAsStateWithLifecycle()
-    val intents by viewModel.allIntents.collectAsStateWithLifecycle()
 
     // Strict Hardware Categories: Cameras, Lenses, Films, TCs, Filters, Flashes, Viewfinders, Kit Bags (Last)
     val categories = listOf(
@@ -247,42 +244,6 @@ fun GearLibraryScreen(
                             onMove = viewModel::moveKit,
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
-                        8 -> SubjectList(
-                            subjects = subjects,
-                            selectedIds = uiState.selectedSubjectIds,
-                            isReorderMode = uiState.isReorderMode,
-                            onSubjectClick = { sub ->
-                                if (uiState.isSelectionMode) viewModel.toggleSubjectSelection(sub.id) else viewModel.showEditTagDialog(sub)
-                            },
-                            onSubjectLongClick = { viewModel.toggleSubjectSelection(it) },
-                            onMove = viewModel::moveSubject,
-                            bottomPadding = paddingValues.calculateBottomPadding()
-                        )
-                        9 -> ContentList(
-                            contentItems = contentTags,
-                            subjects = subjects,
-                            selectedIds = uiState.selectedContentIds,
-                            isReorderMode = uiState.isReorderMode,
-                            onContentClick = { tag ->
-                                if (uiState.isSelectionMode) viewModel.toggleContentSelection(tag.id) else viewModel.showEditTagDialog(tag)
-                            },
-                            onContentLongClick = { viewModel.toggleContentSelection(it) },
-                            onMove = viewModel::moveContent,
-                            bottomPadding = paddingValues.calculateBottomPadding()
-                        )
-                        10 -> ContentList(
-                            contentItems = intents,
-                            subjects = intents.filter { it.parentId == null },
-                            selectedIds = uiState.selectedIntentIds,
-                            isReorderMode = uiState.isReorderMode,
-                            onContentClick = { tag ->
-                                if (uiState.isSelectionMode) viewModel.toggleIntentSelection(tag.id) else viewModel.showEditTagDialog(tag)
-                            },
-                            onContentLongClick = { viewModel.toggleIntentSelection(it) },
-                            onMove = viewModel::moveIntent,
-                            bottomPadding = paddingValues.calculateBottomPadding(),
-                            orphanHeaderTitle = "Intent Groups"
-                        )
                     }
                 }
 
@@ -383,51 +344,6 @@ fun GearLibraryScreen(
             }
         }
     )
-
-    val editingTag = uiState.editingTag
-    if (uiState.showTagDialog) {
-        SubjectDialog(
-            tag = editingTag,
-            onDismiss = viewModel::dismissTagDialog,
-            onConfirm = { name ->
-                if (editingTag == null) {
-                    viewModel.addTag(name, Tag.CATEGORY_SUBJECT, null)
-                } else {
-                    viewModel.updateTag(editingTag.copy(name = name))
-                }
-            }
-        )
-    }
-
-    if (uiState.showContentDialog) {
-        ContentDialog(
-            tag = editingTag,
-            subjects = subjects,
-            onDismiss = viewModel::dismissTagDialog,
-            onConfirm = { name, parentId ->
-                if (editingTag == null) {
-                    viewModel.addTag(name, Tag.CATEGORY_CONTENT, parentId)
-                } else {
-                    viewModel.updateTag(editingTag.copy(name = name, parentId = parentId))
-                }
-            }
-        )
-    }
-
-    if (uiState.showIntentDialog) {
-        IntentDialog(
-            tag = editingTag,
-            intents = intents,
-            onDismiss = viewModel::dismissTagDialog,
-            onConfirm = { name, parentId ->
-                if (editingTag == null) {
-                    viewModel.addTag(name, Tag.CATEGORY_INTENT, parentId)
-                } else {
-                    viewModel.updateTag(editingTag.copy(name = name, parentId = parentId))
-                }
-            }
-        )
-    }
 }
 
 data class GearCategory(

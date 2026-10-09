@@ -5,6 +5,8 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -158,7 +160,7 @@ fun WelcomeScreenContent(
                         Image(
                             painter = painterResource(com.fotologue.app.R.drawable.ic_fotologue_logo),
                             contentDescription = "Fotologue Logo",
-                            modifier = Modifier.size(32.dp)
+                            modifier = Modifier.size(32.dp).clip(CircleShape)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(stringResource(R.string.app_name), fontWeight = FontWeight.Bold)

@@ -31,7 +31,7 @@ fun AddEditFilmScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
-    var isCustomFormView by remember { mutableStateOf(viewModel.filmId != null) }
+    var isCustomFormView by remember(uiState.name, viewModel.filmId) { mutableStateOf(viewModel.filmId != null || uiState.name.isNotBlank()) }
 
     Scaffold(
         topBar = {
