@@ -37,36 +37,22 @@ class TaxonomyViewModel @Inject constructor(
 
     private fun loadTaxonomy() {
         viewModelScope.launch {
+            repository.insertDefaultTagsIfNeeded()
             repository.allTags.collect { tagsList ->
-                // The Skullinator Assert: Seed canonical taxonomy if database is empty on first load
-                if (tagsList.isEmpty()) {
-                    seedCanonicalTaxonomy()
-                } else {
-                    val subjects = tagsList.filter { it.category == Tag.CATEGORY_SUBJECT }
-                    val content = tagsList.filter { it.category == Tag.CATEGORY_CONTENT }
-                    val intent = tagsList.filter { it.category == Tag.CATEGORY_INTENT }
+                val subjects = tagsList.filter { it.category.equals(Tag.CATEGORY_SUBJECT, ignoreCase = true) || it.category.equals("Subject", ignoreCase = true) || it.category.equals("Subjects", ignoreCase = true) }
+                val content = tagsList.filter { it.category.equals(Tag.CATEGORY_CONTENT, ignoreCase = true) }
+                val intent = tagsList.filter { it.category.equals(Tag.CATEGORY_INTENT, ignoreCase = true) }
 
-                    _uiState.update { state ->
-                        state.copy(
-                            subjectsCount = subjects.size.coerceAtLeast(4),
-                            contentCount = content.size.coerceAtLeast(30),
-                            intentCount = intent.size.coerceAtLeast(14),
-                            allTags = tagsList
-                        )
-                    }
+                _uiState.update { state ->
+                    state.copy(
+                        subjectsCount = subjects.size,
+                        contentCount = content.size,
+                        intentCount = intent.size,
+                        allTags = tagsList
+                    )
                 }
             }
         }
-    }
-
-    private suspend fun seedCanonicalTaxonomy() {
-        val defaultSubjects = listOf("Portrait", "Landscape", "Architecture", "Macro")
-        val defaultContent = listOf("Bike", "Street", "Outdoors", "Family", "Travel", "Night", "Abandoned", "Sunset/sunrise", "Building", "Bridge", "Interior", "Skyline", "Wedding", "Concert", "Sport", "Festival", "Protest", "Celebration", "Animals", "Flora", "Candid", "Self-Portrait", "Group", "Vehicle", "Food/Drink", "Art", "Document", "Pattern", "Texture", "Shadow")
-        val defaultIntent = listOf("Portfolio", "Test Shot", "Documentary", "Experimental", "Light & Shadow Study", "Material & Film Test", "Composition Study")
-
-        defaultSubjects.forEach { repository.insertTag(Tag(name = it, category = Tag.CATEGORY_SUBJECT)) }
-        defaultContent.forEach { repository.insertTag(Tag(name = it, category = Tag.CATEGORY_CONTENT)) }
-        defaultIntent.forEach { repository.insertTag(Tag(name = it, category = Tag.CATEGORY_INTENT)) }
     }
 
     fun selectCategoryTab(tab: String) {

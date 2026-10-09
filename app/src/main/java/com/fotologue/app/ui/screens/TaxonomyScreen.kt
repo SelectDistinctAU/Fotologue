@@ -30,47 +30,33 @@ fun TaxonomyScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val filteredTags = remember(uiState.allTags, uiState.selectedCategoryTab) {
-        when (uiState.selectedCategoryTab) {
-            "Subjects" -> uiState.allTags.filter { it.category == Tag.CATEGORY_SUBJECT }
-            "Content" -> uiState.allTags.filter { it.category == Tag.CATEGORY_CONTENT }
-            "Intent" -> uiState.allTags.filter { it.category == Tag.CATEGORY_INTENT }
-            else -> uiState.allTags
-        }
+    val subjectsList = remember(uiState.allTags) {
+        uiState.allTags.filter { it.category.equals(Tag.CATEGORY_SUBJECT, true) || it.category.equals("Subject", true) || it.category.equals("Subjects", true) }
+    }
+    val contentList = remember(uiState.allTags) {
+        uiState.allTags.filter { it.category.equals(Tag.CATEGORY_CONTENT, true) }
+    }
+    val intentList = remember(uiState.allTags) {
+        uiState.allTags.filter { it.category.equals(Tag.CATEGORY_INTENT, true) }
     }
 
-    // Sub-Group Mapping for Mobile Hierarchical Cards
-    val subGroupMapping = remember {
-        mapOf(
-            "Architecture" to "Urban/built environment",
-            "Street" to "Urban/built environment",
-            "Cityscape" to "Urban/built environment",
-            "Building" to "Urban/built environment",
-            "Bridge" to "Urban/built environment",
-            "Interior" to "Urban/built environment",
-            "Skyline" to "Urban/built environment",
-            "Wedding" to "Events",
-            "Concert" to "Events",
-            "Sport" to "Events",
-            "Festival" to "Events",
-            "Protest" to "Events",
-            "Celebration" to "Events",
-            "Sunset/sunrise" to "Nature",
-            "Landscape" to "Nature",
-            "Animals" to "Nature",
-            "Flora" to "Nature",
-            "Seascape" to "Nature",
-            "Portrait" to "People & Portraits",
-            "Group" to "People & Portraits",
-            "Candid" to "People & Portraits",
-            "Light & Shadow Study" to "Study",
-            "Material & Film Test" to "Study",
-            "Composition Study" to "Study"
-        )
+    val subjectIdMap = remember(subjectsList) {
+        subjectsList.associate { it.id to it.name }
     }
 
-    val groupedTags = remember(filteredTags) {
-        filteredTags.groupBy { tag -> subGroupMapping[tag.name] ?: "General" }
+    val intentIdMap = remember(intentList) {
+        intentList.filter { it.parentId == null }.associate { it.id to it.name }
+    }
+
+    // Grouping for Content / All
+    val groupedContent = remember(contentList, subjectIdMap) {
+        contentList.groupBy { tag -> subjectIdMap[tag.parentId] ?: "General" }
+    }
+
+    // Grouping for Intent
+    val groupedIntent = remember(intentList, intentIdMap) {
+        val childIntents = intentList.filter { it.parentId != null }
+        childIntents.groupBy { tag -> intentIdMap[tag.parentId] ?: "Intent Groups" }
     }
 
     Scaffold(
@@ -157,21 +143,22 @@ fun TaxonomyScreen(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                groupedTags.forEach { (subGroupName, tagsList) ->
-                    item(key = "header_$subGroupName") {
+                if (uiState.selectedCategoryTab == "Subjects") {
+                    item(key = "header_subjects") {
                         Text(
-                            text = subGroupName,
+                            text = "Parent Subject Categories",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(top = 8.dp)
                         )
                     }
-                    items(tagsList, key = { "tag_${it.id}_${it.name}" }) { tag ->
+                    items(subjectsList, key = { "sub_${it.id}" }) { subjectTag ->
+                        val childCount = contentList.count { it.parentId == subjectTag.id }
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { viewModel.showEditTagDialog(tag) },
+                                .clickable { viewModel.showEditTagDialog(subjectTag) },
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                         ) {
                             Row(
@@ -187,24 +174,93 @@ fun TaxonomyScreen(
                                         tint = MaterialTheme.colorScheme.primary
                                     )
                                     Spacer(modifier = Modifier.width(10.dp))
-                                    Text(
-                                        text = tag.name,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Medium
-                                    )
+                                    Column {
+                                        Text(text = subjectTag.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                                        Text(text = "$childCount content tags", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
                                 }
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(
-                                        onClick = { viewModel.showEditTagDialog(tag) },
-                                        modifier = Modifier.size(32.dp)
-                                    ) {
+                                    IconButton(onClick = { viewModel.showEditTagDialog(subjectTag) }, modifier = Modifier.size(32.dp)) {
                                         Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(16.dp))
                                     }
-                                    IconButton(
-                                        onClick = { viewModel.showDeleteTagDialog(tag) },
-                                        modifier = Modifier.size(32.dp)
-                                    ) {
+                                    IconButton(onClick = { viewModel.showDeleteTagDialog(subjectTag) }, modifier = Modifier.size(32.dp)) {
                                         Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if (uiState.selectedCategoryTab == "Intent") {
+                    groupedIntent.forEach { (intentHeader, subIntentList) ->
+                        item(key = "header_intent_$intentHeader") {
+                            Text(
+                                text = intentHeader,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                        items(subIntentList, key = { "tag_${it.id}_${it.name}" }) { tag ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth().clickable { viewModel.showEditTagDialog(tag) },
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                        Icon(painterResource(R.drawable.ic_label), contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Text(text = tag.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                                    }
+                                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        IconButton(onClick = { viewModel.showEditTagDialog(tag) }, modifier = Modifier.size(32.dp)) {
+                                            Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(16.dp))
+                                        }
+                                        IconButton(onClick = { viewModel.showDeleteTagDialog(tag) }, modifier = Modifier.size(32.dp)) {
+                                            Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    groupedContent.forEach { (subGroupName, tagsList) ->
+                        item(key = "header_content_$subGroupName") {
+                            Text(
+                                text = subGroupName,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                        items(tagsList, key = { "tag_${it.id}_${it.name}" }) { tag ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth().clickable { viewModel.showEditTagDialog(tag) },
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                        Icon(painterResource(R.drawable.ic_label), contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Text(text = tag.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                                    }
+                                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        IconButton(onClick = { viewModel.showEditTagDialog(tag) }, modifier = Modifier.size(32.dp)) {
+                                            Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(16.dp))
+                                        }
+                                        IconButton(onClick = { viewModel.showDeleteTagDialog(tag) }, modifier = Modifier.size(32.dp)) {
+                                            Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                                        }
                                     }
                                 }
                             }
@@ -260,39 +316,63 @@ fun TaxonomyScreen(
         )
     }
 
-    // EDIT TAG DIALOG
+    // EDIT TAG DIALOG (Category-Tailored 2-Field Dialog)
     uiState.editingTag?.let { tagToEdit ->
         var nameText by remember(tagToEdit) { mutableStateOf(tagToEdit.name) }
-        var categoryText by remember(tagToEdit) { mutableStateOf(tagToEdit.category) }
+        var selectedSubjectId by remember(tagToEdit) { mutableStateOf(tagToEdit.parentId ?: subjectsList.firstOrNull()?.id) }
+        var subjectDropdownExpanded by remember { mutableStateOf(false) }
+
+        val currentSubjectName = subjectsList.find { it.id == selectedSubjectId }?.name ?: "Select Subject"
 
         AlertDialog(
             onDismissRequest = { viewModel.dismissDialog() },
             title = { Text("Edit ${tagToEdit.category.replaceFirstChar { it.uppercase() }}", fontWeight = FontWeight.Bold) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (tagToEdit.category.equals(Tag.CATEGORY_CONTENT, true)) {
+                        ExposedDropdownMenuBox(
+                            expanded = subjectDropdownExpanded,
+                            onExpandedChange = { subjectDropdownExpanded = !subjectDropdownExpanded },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            OutlinedTextField(
+                                value = currentSubjectName,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Associated Subject") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = subjectDropdownExpanded) },
+                                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = subjectDropdownExpanded,
+                                onDismissRequest = { subjectDropdownExpanded = false }
+                            ) {
+                                subjectsList.forEach { subj ->
+                                    DropdownMenuItem(
+                                        text = { Text(subj.name) },
+                                        onClick = {
+                                            selectedSubjectId = subj.id
+                                            subjectDropdownExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
                     OutlinedTextField(
                         value = nameText,
                         onValueChange = { nameText = it },
-                        label = { Text("Tag Name") },
+                        label = { Text("Content Name") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Text("Category:", style = MaterialTheme.typography.labelSmall)
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        listOf(Tag.CATEGORY_SUBJECT, Tag.CATEGORY_CONTENT, Tag.CATEGORY_INTENT).forEach { cat ->
-                            FilterChip(
-                                selected = categoryText == cat,
-                                onClick = { categoryText = cat },
-                                label = { Text(cat.replaceFirstChar { it.uppercase() }) }
-                            )
-                        }
-                    }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        viewModel.updateTag(tagToEdit.copy(name = nameText, category = categoryText))
+                        viewModel.updateTag(tagToEdit.copy(name = nameText, parentId = selectedSubjectId))
                     }
                 ) {
                     Text("Save")
