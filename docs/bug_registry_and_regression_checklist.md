@@ -961,6 +961,21 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-092: Standalone Mobile Taxonomy Screen & Hub Brand Icon Integration
+- **Platform**: Fotologue Mobile (`HubScreen.kt`, `TaxonomyScreen.kt`, `TaxonomyViewModel.kt`, `GearLibraryScreen.kt`, `TimelineScreen.kt`, `Routes.kt`, `MainActivity.kt`)
+- **Reported**: October 2026
+- **Symptom**: Taxonomy metadata sat buried inside Camera Gear; Hub header lacked official brand camera icon.
+- **Root Cause**: Unrepresented Taxonomy route; unaligned Information Architecture on Mobile Staging Portal.
+- **Resolution**:
+  1. Added official Fotologue brand camera icon (`settings_photo_camera_24px`) to top header of `HubScreen.kt`.
+  2. Elevated **`TAXONOMY & TAGS`** to dedicated Module Card #2 on `HubScreen.kt` with `ic_label` icon.
+  3. Created standalone `TaxonomyScreen.kt` and `TaxonomyViewModel.kt` displaying `Subjects (4)`, `Content (30)`, and `Intent (14)` with sub-group navigation.
+  4. Cleaned `GearLibraryScreen.kt` so `CAMERA GEAR` remains 100% focused on physical equipment.
+  5. Added `Taxonomy & Tags` quick-access icon (`ic_label`) alongside `Camera Gear` in `FIELD` top bar (`TimelineScreen.kt`).
+- **Regression Test Case**: Open Mobile Staging Portal $\to$ verify brand camera icon renders in top bar and `TAXONOMY & TAGS` appears as Module Card #2.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
