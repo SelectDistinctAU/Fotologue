@@ -1,5 +1,6 @@
 package com.fotologue.app.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -62,11 +63,10 @@ fun HubScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(com.fotologue.app.R.drawable.settings_photo_camera_24px),
-                            contentDescription = null,
-                            modifier = Modifier.size(28.dp),
-                            tint = safelightPrimary
+                        Image(
+                            painter = painterResource(com.fotologue.app.R.drawable.ic_fotologue_logo),
+                            contentDescription = "Fotologue Logo",
+                            modifier = Modifier.size(36.dp)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
