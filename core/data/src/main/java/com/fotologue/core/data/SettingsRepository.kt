@@ -78,9 +78,9 @@ class SettingsRepository(private val context: Context) {
     val isThumbnailEnabled: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
             try {
-                preferences[IS_THUMBNAIL_ENABLED] ?: true
+                preferences[IS_THUMBNAIL_ENABLED] ?: false
             } catch (e: ClassCastException) {
-                true
+                false
             }
         }
 
