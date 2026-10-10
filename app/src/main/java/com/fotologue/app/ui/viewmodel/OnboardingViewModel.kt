@@ -22,7 +22,7 @@ data class OnboardingUiState(
     val hasLens: Boolean = false,
     val hasFilm: Boolean = false,
     val isOnboardingComplete: Boolean = false,
-    val isThumbnailEnabled: Boolean = false,
+    val isThumbnailEnabled: Boolean = true,
     val isFaceDetectionEnabled: Boolean = false,
     val faceDetectionDisclosureShown: Boolean = false,
     val pictureExportSize: PictureExportSize = PictureExportSize.NATURAL,
