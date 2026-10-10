@@ -1079,6 +1079,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-102: M3 Segmented Safelight Control, Darkroom Light Guard & FlatLaf Themes
+- **Platform**: Core & Mobile App (`Theme.kt`, `SettingsRepository.kt`, `DarkroomLightGuard.kt`, `HubScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Need for M3 Segmented Safelight control (`Auto` / `On` / `Off`), ambient light sensor darkroom guard, ISO 3664 photo review canvas, and FlatLaf/photographic theme engine.
+- **Root Cause**: Unrepresented M3 Segmented Button control and theme palette options.
+- **Resolution**:
+  1. Built `DarkroomLightGuard.kt` utilizing `Sensor.TYPE_LIGHT` ($< 0.01\text{ mA}$) for `Auto` Safelight control (ON $\le 3$ lux, OFF $\ge 20$ lux).
+  2. Implemented Material 3 `SingleChoiceSegmentedButtonRow` (`Auto` / `On` / `Off`) in `HubScreen.kt` top app bar.
+  3. Expanded `Theme.kt` with `PhotographicTheme` (`FLAT_DARCULA`, `FLAT_MAC_DARK`, `FLAT_NORD`, `SILVER_GELATIN`, `WARM_SEPIA`, `SAFELIGHT_RED`) and `PhotoCanvasMode` (`ISO_MID_GRAY`, `PITCH_BLACK`, `FLAT_WHITE`).
+- **Regression Test Case**: Open Mobile App $\to$ tap `On` on Safelight Segmented Button $\to$ verify UI converts to Red Safelight $\to$ tap `Off` $\to$ verify UI reverts to standard theme palette.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
