@@ -1059,6 +1059,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-100: Default Enablement of Automatic Thumbnail Capture for Metered Logs
+- **Platform**: Core & Mobile App (`SettingsRepository.kt`, `OnboardingViewModel.kt`)
+- **Reported**: October 2026
+- **Symptom**: Metering an exposure log on a new install did not render a photo thumbnail on the log list item.
+- **Root Cause**: `SettingsRepository.kt` defaulted `IS_THUMBNAIL_ENABLED` to `false`, causing LightMeter to skip camera thumbnail capture during metering.
+- **Resolution**: Updated `SettingsRepository.kt` and `OnboardingViewModel.kt` to default `IS_THUMBNAIL_ENABLED` to `true`. Camera thumbnail photos are now captured during metering and rendered as 64dp thumbnails on log cards.
+- **Regression Test Case**: Clean install Mobile app $\to$ complete Onboarding $\to$ Add Log $\to$ Measure Exposure $\to$ tap Use $\to$ Save Log $\to$ verify 64dp photo thumbnail renders on log list card.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
