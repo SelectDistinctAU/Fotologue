@@ -1069,6 +1069,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-101: Reversion of Automatic Thumbnail Capture Default to User Choice
+- **Platform**: Core & Mobile App (`SettingsRepository.kt`, `OnboardingViewModel.kt`, `LightMeterScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: User requested reverting Automatic Thumbnail Capture back to disabled by default.
+- **Root Cause**: Overly assertive default setting.
+- **Resolution**: Reverted `IS_THUMBNAIL_ENABLED` default setting back to `false` in `SettingsRepository.kt` and `OnboardingViewModel.kt`, while preserving instant 0ms `previewView.bitmap` capture whenever the photographer explicitly toggles it ON.
+- **Regression Test Case**: Clean install Mobile app $\to$ verify Automatic Thumbnail Capture defaults to OFF in Quick Settings.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
