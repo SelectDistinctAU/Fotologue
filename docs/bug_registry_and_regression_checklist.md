@@ -1092,6 +1092,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-103: Clean Transparent Circular Logo & Red Shift Night Vision Mode
+- **Platform**: Core, Mobile & Desktop (`Theme.kt`, `SettingsScreen.kt`, `HubScreen.kt`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Green background box appeared around circular logo; top bar title squashed on HubScreen; need for Red Shift night vision mode & neutral alias placeholder.
+- **Root Cause**: Un-cropped logo PNG files; wide top bar controls; `e.g. GB` placeholder in Settings.
+- **Resolution**:
+  1. Processed `logo.png` and `ic_fotologue_logo.png` into clean transparent circular PNGs with `CircleShape` clipping.
+  2. Implemented **`Red Shift`** night vision mode with custom deep crimson fills (`#330000`/`#FF0000`/`#000000`) and scientific transparency notice.
+  3. Restored `HubScreen.kt` top bar title layout with `Modifier.weight(1f, fill = false)`.
+  4. Neutralized Settings placeholder to `Alias / Shortcode (e.g. P1)`.
+- **Regression Test Case**: Open Mobile App $\to$ verify `Fotologue` title renders on single line without text squashing and logo is clean circular PNG $\to$ open `Settings` $\to$ verify `Alias / Shortcode (e.g. P1)`.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
