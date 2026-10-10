@@ -23,6 +23,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -86,30 +93,32 @@ fun HubScreen(
                     }
                 },
                 actions = {
-                    if (onToggleSafelight != null) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(end = 4.dp)
-                        ) {
-                            Text(
-                                text = "Safelight",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = safelightPrimary,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Switch(
-                                checked = isSafelightActive,
-                                onCheckedChange = { onToggleSafelight() },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = Color(0xFFFF0000),
-                                    checkedTrackColor = Color(0xFF660000),
-                                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                                )
-                            )
+                    val safelightOptions = listOf("Auto", "On", "Off")
+                    var selectedIndex by remember(isSafelightActive) {
+                        mutableStateOf(if (isSafelightActive) 1 else 2)
+                    }
+
+                    SingleChoiceSegmentedButtonRow(
+                        modifier = Modifier.padding(end = 6.dp)
+                    ) {
+                        safelightOptions.forEachIndexed { index, label ->
+                            SegmentedButton(
+                                selected = selectedIndex == index,
+                                onClick = {
+                                    selectedIndex = index
+                                    when (index) {
+                                        0 -> { /* Auto Safelight Mode */ }
+                                        1 -> { if (!isSafelightActive) onToggleSafelight?.invoke() }
+                                        2 -> { if (isSafelightActive) onToggleSafelight?.invoke() }
+                                    }
+                                },
+                                shape = SegmentedButtonDefaults.itemShape(index = index, count = safelightOptions.size)
+                            ) {
+                                Text(label, style = MaterialTheme.typography.labelSmall)
+                            }
                         }
                     }
+
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(
                             painter = painterResource(R.drawable.settings_24px),

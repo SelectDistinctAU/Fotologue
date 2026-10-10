@@ -58,6 +58,10 @@ class SettingsRepository(private val context: Context) {
     private val LAST_ISO = intPreferencesKey("last_iso")
     private val LAST_FOCAL_LENGTH = floatPreferencesKey("last_focal_length")
     private val LAST_SHUTTER_SPEED = stringPreferencesKey("last_shutter_speed")
+
+    private val SAFELIGHT_MODE = stringPreferencesKey("safelight_mode")
+    private val APP_THEME = stringPreferencesKey("app_theme")
+    private val PHOTO_CANVAS_MODE = stringPreferencesKey("photo_canvas_mode")
     private val LAST_APERTURE = stringPreferencesKey("last_aperture")
     private val CURRENT_ROLL = intPreferencesKey("current_roll")
     private val CURRENT_FRAME = intPreferencesKey("current_frame")
@@ -73,6 +77,27 @@ class SettingsRepository(private val context: Context) {
 
     fun toggleSafelight() {
         _isSafelightActive.value = !_isSafelightActive.value
+    }
+
+    val safelightMode: Flow<String> = context.dataStore.data
+        .map { preferences -> preferences[SAFELIGHT_MODE] ?: "OFF" }
+
+    val appTheme: Flow<String> = context.dataStore.data
+        .map { preferences -> preferences[APP_THEME] ?: "SYSTEM_DEFAULT" }
+
+    val photoCanvasMode: Flow<String> = context.dataStore.data
+        .map { preferences -> preferences[PHOTO_CANVAS_MODE] ?: "ISO_MID_GRAY" }
+
+    suspend fun setSafelightMode(mode: String) {
+        context.dataStore.edit { preferences -> preferences[SAFELIGHT_MODE] = mode }
+    }
+
+    suspend fun setAppTheme(themeName: String) {
+        context.dataStore.edit { preferences -> preferences[APP_THEME] = themeName }
+    }
+
+    suspend fun setPhotoCanvasMode(modeName: String) {
+        context.dataStore.edit { preferences -> preferences[PHOTO_CANVAS_MODE] = modeName }
     }
 
     val isThumbnailEnabled: Flow<Boolean> = context.dataStore.data
