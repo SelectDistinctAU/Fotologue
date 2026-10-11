@@ -700,29 +700,29 @@ enum class DesktopPhotographicTheme {
 }
 
 private val FlatDarculaColorScheme = darkColorScheme(
-    primary = Color(0xFFAFB1B3),
-    onPrimary = Color(0xFF2B2B2B),
-    primaryContainer = Color(0xFF3C3F41),
-    onPrimaryContainer = Color(0xFFE8E8E8),
+    primary = Color(0xFF589DF6),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFF35373B),
+    onPrimaryContainer = Color(0xFFF0F0F0),
     surface = Color(0xFF2B2B2B),
-    onSurface = Color(0xFFAFB1B3),
+    onSurface = Color(0xFFF0F0F0),
     surfaceVariant = Color(0xFF3C3F41),
-    onSurfaceVariant = Color(0xFFA9A9A9),
-    background = Color(0xFF2B2B2B),
-    onBackground = Color(0xFFAFB1B3)
+    onSurfaceVariant = Color(0xFFE0E0E0),
+    background = Color(0xFF212224),
+    onBackground = Color(0xFFF0F0F0)
 )
 
 private val FlatMacDarkColorScheme = darkColorScheme(
     primary = Color(0xFF3574F0),
     onPrimary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xFF2B2D30),
-    onPrimaryContainer = Color(0xFFDFE1E5),
+    onPrimaryContainer = Color(0xFFF0F2F5),
     surface = Color(0xFF1E1F22),
-    onSurface = Color(0xFFDFE1E5),
+    onSurface = Color(0xFFF0F2F5),
     surfaceVariant = Color(0xFF2B2D30),
-    onSurfaceVariant = Color(0xFF9DA0A8),
+    onSurfaceVariant = Color(0xFFE3E5E8),
     background = Color(0xFF1E1F22),
-    onBackground = Color(0xFFDFE1E5)
+    onBackground = Color(0xFFF0F2F5)
 )
 
 private val FlatNordColorScheme = darkColorScheme(
@@ -733,7 +733,7 @@ private val FlatNordColorScheme = darkColorScheme(
     surface = Color(0xFF2E3440),
     onSurface = Color(0xFFECEFF4),
     surfaceVariant = Color(0xFF3B4252),
-    onSurfaceVariant = Color(0xFFD8DEE9),
+    onSurfaceVariant = Color(0xFFE5E9F0),
     background = Color(0xFF2E3440),
     onBackground = Color(0xFFECEFF4)
 )
