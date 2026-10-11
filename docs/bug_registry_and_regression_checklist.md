@@ -1106,6 +1106,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-104: Reactive Location Permission State & Instant GPS Switch Response
+- **Platform**: Fotologue Mobile (`WelcomeScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: GPS Location Tagging switch on WelcomeScreen did not move to checked state immediately upon approving location permission until an unrelated click occurred.
+- **Root Cause**: Non-reactive local permission check and empty permission launcher callback `{ _ -> }`.
+- **Resolution**: Wrapped location permission check in reactive Compose state (`isLocationPermissionGranted`) updated in real-time by the permission launcher callback and `LifecycleEventEffect(Lifecycle.Event.ON_RESUME)`.
+- **Regression Test Case**: Clean install Mobile app $\to$ tap GPS Location Tagging switch $\to$ approve permission $\to$ verify switch flips instantly to checked (`ON`).
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
