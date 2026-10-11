@@ -14,9 +14,6 @@ import androidx.compose.ui.platform.LocalContext
 enum class PhotographicTheme {
     SYSTEM_DEFAULT,
     DAYLIGHT_LIGHT,
-    FLAT_DARCULA,
-    FLAT_MAC_DARK,
-    FLAT_NORD,
     SILVER_GELATIN,
     WARM_SEPIA,
     SAFELIGHT_RED
@@ -42,49 +39,7 @@ private val DaylightLightColorScheme = lightColorScheme(
     onBackground = Color(0xFF1C1B1F)
 )
 
-// 1. Flat Darcula (IntelliJ / FlatLaf Dark)
-private val FlatDarculaColorScheme = darkColorScheme(
-    primary = Color(0xFF4B6EAF),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFF323232),
-    onPrimaryContainer = Color(0xFFBBBBBB),
-    surface = Color(0xFF2B2B2B),
-    onSurface = Color(0xFFA9B7C6),
-    surfaceVariant = Color(0xFF3C3F41),
-    onSurfaceVariant = Color(0xFFB8B8B8),
-    background = Color(0xFF2B2B2B),
-    onBackground = Color(0xFFA9B7C6)
-)
-
-// 2. Flat Mac Dark (macOS FlatLaf Dark)
-private val FlatMacDarkColorScheme = darkColorScheme(
-    primary = Color(0xFF3574F0),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFF2B2D30),
-    onPrimaryContainer = Color(0xFFF0F2F5),
-    surface = Color(0xFF1E1F22),
-    onSurface = Color(0xFFF0F2F5),
-    surfaceVariant = Color(0xFF2B2D30),
-    onSurfaceVariant = Color(0xFFE3E5E8),
-    background = Color(0xFF1E1F22),
-    onBackground = Color(0xFFF0F2F5)
-)
-
-// 3. Flat Nord (Arctic Cyan FlatLaf)
-private val FlatNordColorScheme = darkColorScheme(
-    primary = Color(0xFF88C0D0),
-    onPrimary = Color(0xFF2E3440),
-    primaryContainer = Color(0xFF3B4252),
-    onPrimaryContainer = Color(0xFFECEFF4),
-    surface = Color(0xFF2E3440),
-    onSurface = Color(0xFFECEFF4),
-    surfaceVariant = Color(0xFF3B4252),
-    onSurfaceVariant = Color(0xFFE5E9F0),
-    background = Color(0xFF2E3440),
-    onBackground = Color(0xFFECEFF4)
-)
-
-// 4. Silver Gelatin (High-Contrast B&W Darkroom)
+// 1. Silver Gelatin (High-Contrast B&W Darkroom)
 private val SilverGelatinColorScheme = darkColorScheme(
     primary = Color(0xFFFFFFFF),
     onPrimary = Color(0xFF000000),
@@ -148,9 +103,6 @@ fun FotologueTheme(
     val context = LocalContext.current
     val colorScheme = when (photographicTheme) {
         PhotographicTheme.DAYLIGHT_LIGHT -> DaylightLightColorScheme
-        PhotographicTheme.FLAT_DARCULA -> FlatDarculaColorScheme
-        PhotographicTheme.FLAT_MAC_DARK -> FlatMacDarkColorScheme
-        PhotographicTheme.FLAT_NORD -> FlatNordColorScheme
         PhotographicTheme.SILVER_GELATIN -> SilverGelatinColorScheme
         PhotographicTheme.WARM_SEPIA -> WarmSepiaColorScheme
         PhotographicTheme.SAFELIGHT_RED -> SafelightRedColorScheme

@@ -6630,7 +6630,7 @@ private fun AdminDataGridContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun ThemeAdminPanel(
     desktopAppTheme: String,
@@ -6643,17 +6643,19 @@ private fun ThemeAdminPanel(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text("App Theme Palette", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-        Text("Select FlatLaf or Photographic color palettes for app controls:", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Select photographic color palettes for app controls:", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             listOf(
                 "SYSTEM_DEFAULT" to "System Default",
                 "DAYLIGHT_LIGHT" to "Daylight Clean (Light)",
-                "FLAT_DARCULA" to "Flat Darcula (IntelliJ)",
-                "FLAT_MAC_DARK" to "Flat Mac Dark (macOS)",
-                "FLAT_NORD" to "Flat Nord (Arctic Cyan)",
                 "SILVER_GELATIN" to "Silver Gelatin (B&W)",
-                "WARM_SEPIA" to "Warm Sepia (Toned)"
+                "WARM_SEPIA" to "Warm Sepia (Toned)",
+                "SAFELIGHT_RED" to "Red Shift (Night Vision)"
             ).forEach { (themeKey, themeName) ->
                 FilterChip(
                     selected = desktopAppTheme == themeKey,
@@ -6672,7 +6674,11 @@ private fun ThemeAdminPanel(
         Text("Photo Review Canvas (ISO 3664)", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
         Text("Isolated neutral background color for zero-bias image evaluation:", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             listOf(
                 "ISO_MID_GRAY" to "ISO Gray (#505050)",
                 "PITCH_BLACK" to "Pitch Black (#00)",

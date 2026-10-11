@@ -256,16 +256,19 @@ fun SettingsScreen(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf(
                     "SYSTEM_DEFAULT" to "System Default",
-                    "FLAT_DARCULA" to "Flat Darcula (IntelliJ)",
-                    "FLAT_MAC_DARK" to "Flat Mac Dark (macOS)",
-                    "FLAT_NORD" to "Flat Nord (Arctic Cyan)",
+                    "DAYLIGHT_LIGHT" to "Daylight Clean (Light)",
                     "SILVER_GELATIN" to "Silver Gelatin (B&W)",
-                    "WARM_SEPIA" to "Warm Sepia (Toned)"
+                    "WARM_SEPIA" to "Warm Sepia (Toned)",
+                    "SAFELIGHT_RED" to "Red Shift (Night Vision)"
                 ).forEach { (themeKey, themeName) ->
                     FilterChip(
                         selected = appTheme == themeKey,
                         onClick = { viewModel.setAppTheme(themeKey) },
                         label = { Text(themeName) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -296,7 +299,11 @@ fun SettingsScreen(
                     FilterChip(
                         selected = photoCanvasMode == canvasKey,
                         onClick = { viewModel.setPhotoCanvasMode(canvasKey) },
-                        label = { Text(canvasName, style = MaterialTheme.typography.labelSmall) }
+                        label = { Text(canvasName, style = MaterialTheme.typography.labelSmall) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     )
                 }
             }
