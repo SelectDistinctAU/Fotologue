@@ -1141,6 +1141,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-107: Hub Header Top Bar Un-Squashing & Red Shift Icon Integration
+- **Platform**: Fotologue Mobile (`HubScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Top bar title on `HubScreen.kt` was squashed into `Fotolo` / `gue` due to a 220dp wide SegmentedButton in `TopAppBar.actions`.
+- **Root Cause**: Excessive horizontal width of SegmentedButton row inside TopAppBar.actions.
+- **Resolution**:
+  1. Replaced the 220dp wide SegmentedButton in `HubScreen.kt` `TopAppBar.actions` with a compact 48dp Red Shift `IconButton`.
+  2. Restored 100% of the top bar title width for `Fotologue` and `A Photographic Catalogue Suite`, completely eliminating text squashing.
+- **Regression Test Case**: Open Mobile App $\to$ verify `Fotologue` title renders on single line without text squashing.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
