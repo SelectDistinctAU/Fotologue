@@ -1116,6 +1116,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-105: WCAG 2.1 AA 48dp Minimum Touch Target & TalkBack Semantics Sweep
+- **Platform**: Fotologue Mobile (`HubScreen.kt`, `TaxonomyScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Need for strict WCAG 2.1 AA accessibility compliance across touch targets and TalkBack screen reader announcements.
+- **Root Cause**: Touch targets under 48dp; missing explicit card semantics.
+- **Resolution**:
+  1. Enforced minimum 48dp x 48dp touch targets on all Edit and Delete icon buttons in `TaxonomyScreen.kt`.
+  2. Added explicit TalkBack accessibility semantics (`contentDescription = "$title module. $subtitle. $description"`) to `HubModuleCard`s in `HubScreen.kt`.
+- **Regression Test Case**: Open Mobile App $\to$ inspect `TAXONOMY & TAGS` $\to$ verify all Edit/Delete icon buttons pass 48dp minimum touch target bounds.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
