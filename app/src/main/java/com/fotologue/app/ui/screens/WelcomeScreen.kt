@@ -52,18 +52,34 @@ fun WelcomeScreen(
         Manifest.permission.CAMERA
     )
 
+    var isLocationPermissionGranted by remember {
+        mutableStateOf(
+            androidx.core.content.ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        )
+    }
+
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
-    ) { _ -> }
+    ) { isGranted ->
+        isLocationPermissionGranted = isGranted || androidx.core.content.ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    }
 
-    val hasLocationPermission = androidx.core.content.ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+        isLocationPermissionGranted = androidx.core.content.ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    }
 
     WelcomeScreenContent(
         uiState = uiState,
-        isLocationPermissionGranted = hasLocationPermission,
+        isLocationPermissionGranted = isLocationPermissionGranted,
         onRequestLocationPermission = {
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         },
