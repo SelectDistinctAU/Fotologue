@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -84,13 +85,14 @@ fun LogDetailContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(240.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF505050)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 AsyncImage(
                     model = uri,
                     contentDescription = "Thumbnail",
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Fit
                 )
             }
         }

@@ -37,7 +37,13 @@ class SettingsViewModelTest {
         every { repository.isAutoCopyrightEnabled } returns flowOf(false)
         every { repository.copyrightNotice } returns flowOf("")
         every { repository.contactInfo } returns flowOf("")
+        every { repository.contributorId } returns flowOf(1)
+        every { repository.contributorAlias } returns flowOf("P1")
+        every { repository.contributorFullName } returns flowOf("")
         every { repository.macroCopyPresets } returns flowOf(MacroCopyPreset.DEFAULT_PRESETS)
+        every { repository.appTheme } returns flowOf("SYSTEM_DEFAULT")
+        every { repository.photoCanvasMode } returns flowOf("ISO_MID_GRAY")
+        every { repository.safelightMode } returns flowOf("OFF")
         
         viewModel = SettingsViewModel(repository, configurationManager)
     }

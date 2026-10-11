@@ -57,10 +57,24 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            FotologueTheme {
-                val mainViewModel: MainViewModel = hiltViewModel()
-                val isOnboardingComplete by mainViewModel.isOnboardingComplete.collectAsStateWithLifecycle(initialValue = null)
-                val isSafelightActive by mainViewModel.isSafelightActive.collectAsStateWithLifecycle(initialValue = false)
+            val mainViewModel: MainViewModel = hiltViewModel()
+            val isOnboardingComplete by mainViewModel.isOnboardingComplete.collectAsStateWithLifecycle(initialValue = null)
+            val isSafelightActive by mainViewModel.isSafelightActive.collectAsStateWithLifecycle(initialValue = false)
+            val activeThemeString by mainViewModel.appTheme.collectAsStateWithLifecycle(initialValue = "SYSTEM_DEFAULT")
+
+            val activeTheme = remember(activeThemeString, isSafelightActive) {
+                if (isSafelightActive) {
+                    com.fotologue.core.designsystem.PhotographicTheme.SAFELIGHT_RED
+                } else {
+                    try {
+                        com.fotologue.core.designsystem.PhotographicTheme.valueOf(activeThemeString)
+                    } catch (_: Exception) {
+                        com.fotologue.core.designsystem.PhotographicTheme.SYSTEM_DEFAULT
+                    }
+                }
+            }
+
+            FotologueTheme(photographicTheme = activeTheme) {
 
                 if (isOnboardingComplete != null) {
                     key(isOnboardingComplete) {

@@ -239,6 +239,94 @@ fun SettingsScreen(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(16.dp))
 
+            val appTheme by viewModel.appTheme.collectAsStateWithLifecycle()
+            val photoCanvasMode by viewModel.photoCanvasMode.collectAsStateWithLifecycle()
+
+            // 1. APP THEME PALETTE SECTION
+            Text(
+                text = "App Theme Palette",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "Select FlatLaf or Photographic color palettes for app controls:",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf(
+                    "SYSTEM_DEFAULT" to "System Default",
+                    "FLAT_DARCULA" to "Flat Darcula (IntelliJ)",
+                    "FLAT_MAC_DARK" to "Flat Mac Dark (macOS)",
+                    "FLAT_NORD" to "Flat Nord (Arctic Cyan)",
+                    "SILVER_GELATIN" to "Silver Gelatin (B&W)",
+                    "WARM_SEPIA" to "Warm Sepia (Toned)"
+                ).forEach { (themeKey, themeName) ->
+                    FilterChip(
+                        selected = appTheme == themeKey,
+                        onClick = { viewModel.setAppTheme(themeKey) },
+                        label = { Text(themeName) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 2. ISO 3664 PHOTO REVIEW CANVAS SECTION
+            Text(
+                text = "Photo Review Canvas (ISO 3664)",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "Isolated neutral background color for zero-bias image evaluation:",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf(
+                    "ISO_MID_GRAY" to "ISO Gray (#505050)",
+                    "PITCH_BLACK" to "Pitch Black (#00)",
+                    "FLAT_WHITE" to "White (#FFF)"
+                ).forEach { (canvasKey, canvasName) ->
+                    FilterChip(
+                        selected = photoCanvasMode == canvasKey,
+                        onClick = { viewModel.setPhotoCanvasMode(canvasKey) },
+                        label = { Text(canvasName, style = MaterialTheme.typography.labelSmall) }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 3. RED SHIFT & NIGHT VISION NOTICE CARD
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            ) {
+                Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        text = "ℹ️ Red Shift & Night Vision Notice",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "Red Shift eliminates blue light to preserve night-adapted vision during astrophotography and darkroom logbook duties. Digital screens cannot replace optical darkroom safelights. Always test with your specific paper stock, maintain distance from paper areas, and load panchromatic film in total darkness.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = stringResource(R.string.header_photographer_info),
                 style = MaterialTheme.typography.titleMedium,
@@ -623,7 +711,7 @@ fun SettingsScreen(
             OutlinedTextField(
                 value = contributorAlias,
                 onValueChange = { viewModel.setContributorProfile(contributorId, it, contributorFullName) },
-                label = { Text("Alias / Shortcode (e.g. GB)") },
+                label = { Text("Alias / Shortcode (e.g. P1)") },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             )
 

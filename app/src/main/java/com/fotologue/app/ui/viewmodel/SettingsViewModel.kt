@@ -49,6 +49,15 @@ class SettingsViewModel @Inject constructor(
     val pictureExportSize: StateFlow<PictureExportSize> = repository.pictureExportSize
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PictureExportSize.NATURAL)
 
+    val appTheme: StateFlow<String> = repository.appTheme
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "SYSTEM_DEFAULT")
+
+    val photoCanvasMode: StateFlow<String> = repository.photoCanvasMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "ISO_MID_GRAY")
+
+    val safelightMode: StateFlow<String> = repository.safelightMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "OFF")
+
     val macroCopyPresets: StateFlow<List<MacroCopyPreset>> = repository.macroCopyPresets
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MacroCopyPreset.DEFAULT_PRESETS)
 
@@ -145,6 +154,24 @@ class SettingsViewModel @Inject constructor(
     fun setPictureExportSize(size: PictureExportSize) {
         viewModelScope.launch {
             repository.setPictureExportSize(size)
+        }
+    }
+
+    fun setAppTheme(themeName: String) {
+        viewModelScope.launch {
+            repository.setAppTheme(themeName)
+        }
+    }
+
+    fun setPhotoCanvasMode(modeName: String) {
+        viewModelScope.launch {
+            repository.setPhotoCanvasMode(modeName)
+        }
+    }
+
+    fun setSafelightMode(modeName: String) {
+        viewModelScope.launch {
+            repository.setSafelightMode(modeName)
         }
     }
 
