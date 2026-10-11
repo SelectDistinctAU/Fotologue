@@ -1191,6 +1191,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-111: FlowRow Theme Multi-Line Wrapping & Streamlined Photographic Suite
+- **Platform**: Core, Mobile & Desktop (`Theme.kt`, `SettingsScreen.kt`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Theme picker row suffered right-edge overflow on constrained window widths; generic Flat themes created palette clutter.
+- **Root Cause**: Rigid single-line `Row` wrapper and unneeded Flat theme definitions.
+- **Resolution**:
+  1. Replaced `Row` with `FlowRow` in `SettingsScreen.kt` and Desktop `Main.kt` for automatic multi-line chip wrapping.
+  2. Streamlined `PhotographicTheme` enum to 5 core photographic palettes (`SYSTEM_DEFAULT`, `DAYLIGHT_LIGHT`, `SILVER_GELATIN`, `WARM_SEPIA`, `SAFELIGHT_RED`).
+- **Regression Test Case**: Open Desktop App $\to$ `Reference & Admin` $\to$ `Theme & Canvas Mode` $\to$ verify theme chips wrap cleanly across multiple lines with **ZERO OVERFLOW OR TEXT SQUASHING**.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
