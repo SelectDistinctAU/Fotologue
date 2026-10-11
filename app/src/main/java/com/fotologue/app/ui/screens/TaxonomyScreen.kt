@@ -180,11 +180,11 @@ fun TaxonomyScreen(
                                     }
                                 }
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(onClick = { viewModel.showEditTagDialog(subjectTag) }, modifier = Modifier.size(32.dp)) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(16.dp))
+                                    IconButton(onClick = { viewModel.showEditTagDialog(subjectTag) }, modifier = Modifier.size(48.dp)) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit ${subjectTag.name}", modifier = Modifier.size(20.dp))
                                     }
-                                    IconButton(onClick = { viewModel.showDeleteTagDialog(subjectTag) }, modifier = Modifier.size(32.dp)) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                                    IconButton(onClick = { viewModel.showDeleteTagDialog(subjectTag) }, modifier = Modifier.size(48.dp)) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete ${subjectTag.name}", modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.error)
                                     }
                                 }
                             }
@@ -217,11 +217,11 @@ fun TaxonomyScreen(
                                         Text(text = tag.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                                     }
                                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                        IconButton(onClick = { viewModel.showEditTagDialog(tag) }, modifier = Modifier.size(32.dp)) {
-                                            Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(16.dp))
+                                        IconButton(onClick = { viewModel.showEditTagDialog(tag) }, modifier = Modifier.size(48.dp)) {
+                                            Icon(Icons.Default.Edit, contentDescription = "Edit ${tag.name}", modifier = Modifier.size(20.dp))
                                         }
-                                        IconButton(onClick = { viewModel.showDeleteTagDialog(tag) }, modifier = Modifier.size(32.dp)) {
-                                            Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                                        IconButton(onClick = { viewModel.showDeleteTagDialog(tag) }, modifier = Modifier.size(48.dp)) {
+                                            Icon(Icons.Default.Delete, contentDescription = "Delete ${tag.name}", modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.error)
                                         }
                                     }
                                 }
@@ -255,11 +255,11 @@ fun TaxonomyScreen(
                                         Text(text = tag.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                                     }
                                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                        IconButton(onClick = { viewModel.showEditTagDialog(tag) }, modifier = Modifier.size(32.dp)) {
-                                            Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(16.dp))
+                                        IconButton(onClick = { viewModel.showEditTagDialog(tag) }, modifier = Modifier.size(48.dp)) {
+                                            Icon(Icons.Default.Edit, contentDescription = "Edit ${tag.name}", modifier = Modifier.size(20.dp))
                                         }
-                                        IconButton(onClick = { viewModel.showDeleteTagDialog(tag) }, modifier = Modifier.size(32.dp)) {
-                                            Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                                        IconButton(onClick = { viewModel.showDeleteTagDialog(tag) }, modifier = Modifier.size(48.dp)) {
+                                            Icon(Icons.Default.Delete, contentDescription = "Delete ${tag.name}", modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.error)
                                         }
                                     }
                                 }

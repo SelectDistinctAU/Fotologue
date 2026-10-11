@@ -38,6 +38,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fotologue.core.designsystem.R
@@ -71,7 +73,10 @@ fun HubScreen(
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = safelightBg, titleContentColor = safelightFg),
                 title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.padding(end = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Image(
                             painter = painterResource(com.fotologue.app.R.drawable.ic_fotologue_logo),
                             contentDescription = "Fotologue Logo",
@@ -82,12 +87,14 @@ fun HubScreen(
                             Text(
                                 text = "Fotologue",
                                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                                color = safelightFg
+                                color = safelightFg,
+                                maxLines = 1
                             )
                             Text(
                                 text = "A Photographic Catalogue Suite",
                                 style = MaterialTheme.typography.labelMedium,
-                                color = safelightPrimary
+                                color = safelightPrimary,
+                                maxLines = 1
                             )
                         }
                     }
@@ -99,7 +106,7 @@ fun HubScreen(
                     }
 
                     SingleChoiceSegmentedButtonRow(
-                        modifier = Modifier.padding(end = 6.dp)
+                        modifier = Modifier.padding(end = 4.dp)
                     ) {
                         safelightOptions.forEachIndexed { index, label ->
                             SegmentedButton(
@@ -107,12 +114,24 @@ fun HubScreen(
                                 onClick = {
                                     selectedIndex = index
                                     when (index) {
-                                        0 -> { /* Auto Safelight Mode */ }
+                                        0 -> { /* Auto Red Shift Mode */ }
                                         1 -> { if (!isSafelightActive) onToggleSafelight?.invoke() }
                                         2 -> { if (isSafelightActive) onToggleSafelight?.invoke() }
                                     }
                                 },
-                                shape = SegmentedButtonDefaults.itemShape(index = index, count = safelightOptions.size)
+                                shape = SegmentedButtonDefaults.itemShape(index = index, count = safelightOptions.size),
+                                colors = if (isSafelightActive) {
+                                    SegmentedButtonDefaults.colors(
+                                        activeContainerColor = Color(0xFF550000),
+                                        activeContentColor = Color(0xFFFF0000),
+                                        inactiveContainerColor = Color(0xFF180000),
+                                        inactiveContentColor = Color(0xFF880000),
+                                        activeBorderColor = Color(0xFFFF0000),
+                                        inactiveBorderColor = Color(0xFF440000)
+                                    )
+                                } else {
+                                    SegmentedButtonDefaults.colors()
+                                }
                             ) {
                                 Text(label, style = MaterialTheme.typography.labelSmall)
                             }
@@ -262,7 +281,11 @@ fun HubModuleCard(
 ) {
     Card(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics {
+                contentDescription = "$title module. $subtitle. $description"
+            },
         colors = CardDefaults.cardColors(containerColor = cardBg)
     ) {
         Row(
@@ -273,7 +296,7 @@ fun HubModuleCard(
         ) {
             Icon(
                 painter = painterResource(iconRes),
-                contentDescription = null,
+                contentDescription = "$title icon",
                 tint = subColor,
                 modifier = Modifier.size(36.dp)
             )
