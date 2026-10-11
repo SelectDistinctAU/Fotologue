@@ -1153,6 +1153,31 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-108: Desktop Theme Engine & ISO 3664 Photo Canvas Integration
+- **Platform**: Fotologue Desktop (`Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Need for live 1-tap theme palette switching and ISO 3664 photo review canvas controls on Desktop.
+- **Root Cause**: Unwired `FotologueTheme` at root level in Desktop `Main.kt`.
+- **Resolution**:
+  1. Wrapped root Desktop `Main.kt` window in `FotologueTheme(photographicTheme = activeTheme)` enabling live 1-tap theme recoloring across the entire Desktop app.
+  2. Added **App Theme Palette** chips (*Flat Darcula*, *Flat Mac Dark*, *Flat Nord*, *Silver Gelatin*, *Warm Sepia*, *Red Shift*) and **Photo Review Canvas (ISO 3664)** controls to Desktop Reference Admin.
+  3. Wrapped Desktop active frame photo preview panel inside isolated neutral canvas colors (`#505050` ISO Mid-Gray).
+- **Regression Test Case**: Open Desktop App $\to$ `Reference & Admin` $\to$ `Theme & Canvas Mode` $\to$ click `Flat Darcula` $\to$ verify entire Desktop window recolors to IntelliJ Darcula `#2B2B2B` live.
+
+---
+
+### BUG-109: Desktop Theme Palette Re-Calibration & System Default Restoration
+- **Platform**: Fotologue Desktop (`Main.kt`, `Theme.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Flat Darcula`, `Flat Mac Dark`, and `Flat Nord` rendered with low-contrast washed-out grey text; `System Default` lost its original rich Material 3 primary color.
+- **Root Cause**: Low-contrast `#AFB1B3` / `#A9A9A9` text color definitions and missing M3 default primary values.
+- **Resolution**:
+  1. Restored `System Default` to original rich Material 3 Dark ColorScheme (`#D0BCFF` primary, `#1C1B1F` background, `#E6E1E5` crisp white text).
+  2. Re-calibrated `Flat Darcula` (`#589DF6` IntelliJ blue accent, `#F0F0F0` crisp text), `Flat Mac Dark` (`#3574F0` macOS blue accent, `#F0F2F5` crisp text), and `Flat Nord` (`#88C0D0` cyan accent, `#ECEFF4` Nord snow white text).
+- **Regression Test Case**: Open Desktop App $\to$ `Reference & Admin` $\to$ `Theme & Canvas Mode` $\to$ click `System Default` $\to$ verify original rich M3 primary and high-contrast text render with zero wash-out.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
