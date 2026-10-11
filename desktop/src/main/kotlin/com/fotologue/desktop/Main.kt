@@ -1,5 +1,6 @@
 package com.fotologue.desktop
 
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -688,6 +689,94 @@ fun main() = application {
     }
 }
 
+enum class DesktopPhotographicTheme {
+    SYSTEM_DEFAULT,
+    FLAT_DARCULA,
+    FLAT_MAC_DARK,
+    FLAT_NORD,
+    SILVER_GELATIN,
+    WARM_SEPIA,
+    SAFELIGHT_RED
+}
+
+private val FlatDarculaColorScheme = darkColorScheme(
+    primary = Color(0xFFAFB1B3),
+    onPrimary = Color(0xFF2B2B2B),
+    primaryContainer = Color(0xFF3C3F41),
+    onPrimaryContainer = Color(0xFFE8E8E8),
+    surface = Color(0xFF2B2B2B),
+    onSurface = Color(0xFFAFB1B3),
+    surfaceVariant = Color(0xFF3C3F41),
+    onSurfaceVariant = Color(0xFFA9A9A9),
+    background = Color(0xFF2B2B2B),
+    onBackground = Color(0xFFAFB1B3)
+)
+
+private val FlatMacDarkColorScheme = darkColorScheme(
+    primary = Color(0xFF3574F0),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFF2B2D30),
+    onPrimaryContainer = Color(0xFFDFE1E5),
+    surface = Color(0xFF1E1F22),
+    onSurface = Color(0xFFDFE1E5),
+    surfaceVariant = Color(0xFF2B2D30),
+    onSurfaceVariant = Color(0xFF9DA0A8),
+    background = Color(0xFF1E1F22),
+    onBackground = Color(0xFFDFE1E5)
+)
+
+private val FlatNordColorScheme = darkColorScheme(
+    primary = Color(0xFF88C0D0),
+    onPrimary = Color(0xFF2E3440),
+    primaryContainer = Color(0xFF3B4252),
+    onPrimaryContainer = Color(0xFFECEFF4),
+    surface = Color(0xFF2E3440),
+    onSurface = Color(0xFFECEFF4),
+    surfaceVariant = Color(0xFF3B4252),
+    onSurfaceVariant = Color(0xFFD8DEE9),
+    background = Color(0xFF2E3440),
+    onBackground = Color(0xFFECEFF4)
+)
+
+private val SilverGelatinColorScheme = darkColorScheme(
+    primary = Color(0xFFE0E0E0),
+    onPrimary = Color(0xFF121212),
+    primaryContainer = Color(0xFF242424),
+    onPrimaryContainer = Color(0xFFFFFFFF),
+    surface = Color(0xFF121212),
+    onSurface = Color(0xFFE0E0E0),
+    surfaceVariant = Color(0xFF242424),
+    onSurfaceVariant = Color(0xFFB0B0B0),
+    background = Color(0xFF121212),
+    onBackground = Color(0xFFE0E0E0)
+)
+
+private val WarmSepiaColorScheme = darkColorScheme(
+    primary = Color(0xFFD4A373),
+    onPrimary = Color(0xFF1C1917),
+    primaryContainer = Color(0xFF2E2822),
+    onPrimaryContainer = Color(0xFFFAEDCD),
+    surface = Color(0xFF1C1917),
+    onSurface = Color(0xFFFAEDCD),
+    surfaceVariant = Color(0xFF2E2822),
+    onSurfaceVariant = Color(0xFFD4A373),
+    background = Color(0xFF1C1917),
+    onBackground = Color(0xFFFAEDCD)
+)
+
+private val SafelightRedColorScheme = darkColorScheme(
+    primary = Color(0xFFFF0000),
+    onPrimary = Color(0xFF000000),
+    primaryContainer = Color(0xFF400000),
+    onPrimaryContainer = Color(0xFFFF6666),
+    surface = Color(0xFF000000),
+    onSurface = Color(0xFFFF0000),
+    surfaceVariant = Color(0xFF1F0000),
+    onSurfaceVariant = Color(0xFFFF3333),
+    background = Color(0xFF000000),
+    onBackground = Color(0xFFFF0000)
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
@@ -695,6 +784,21 @@ fun DesktopApp(logoPainter: Painter? = null) {
     val scope = rememberCoroutineScope()
     val exifToolManager = remember { DesktopExifToolManager() }
     var selectedTab by remember { mutableIntStateOf(0) } // Default to Stage 1 Ingestion!
+
+    var desktopAppTheme by remember { mutableStateOf("SYSTEM_DEFAULT") }
+    var desktopPhotoCanvasMode by remember { mutableStateOf("ISO_MID_GRAY") }
+
+    val activeColorScheme = remember(desktopAppTheme) {
+        when (desktopAppTheme) {
+            "FLAT_DARCULA" -> FlatDarculaColorScheme
+            "FLAT_MAC_DARK" -> FlatMacDarkColorScheme
+            "FLAT_NORD" -> FlatNordColorScheme
+            "SILVER_GELATIN" -> SilverGelatinColorScheme
+            "WARM_SEPIA" -> WarmSepiaColorScheme
+            "SAFELIGHT_RED" -> SafelightRedColorScheme
+            else -> darkColorScheme()
+        }
+    }
 
     var logOutputText by remember { mutableStateOf("ExifTool Engine Ready. Detected Operating System: ${exifToolManager.currentOS.name}") }
     var isProcessingJobLot by remember { mutableStateOf(false) }
@@ -882,7 +986,7 @@ fun DesktopApp(logoPainter: Painter? = null) {
         )
     }
 
-    MaterialTheme {
+    MaterialTheme(colorScheme = activeColorScheme) {
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -1796,11 +1900,19 @@ fun DesktopApp(logoPainter: Painter? = null) {
                                                             byteArrayToImageBitmap(activeFrame.imageBytes)
                                                         }
 
+                                                        val canvasColor = remember(desktopPhotoCanvasMode) {
+                                                            when (desktopPhotoCanvasMode) {
+                                                                "PITCH_BLACK" -> Color(0xFF000000)
+                                                                "FLAT_WHITE" -> Color(0xFFFFFFFF)
+                                                                else -> Color(0xFF505050)
+                                                            }
+                                                        }
+
                                                         Box(
                                                             modifier = Modifier
                                                                 .size(240.dp, 240.dp)
                                                                 .clip(RoundedCornerShape(12.dp))
-                                                                .background(MaterialTheme.colorScheme.surfaceVariant),
+                                                                .background(canvasColor),
                                                             contentAlignment = Alignment.Center
                                                         ) {
                                                             if (decodedBitmap != null) {
@@ -2197,6 +2309,10 @@ fun DesktopApp(logoPainter: Painter? = null) {
                         3 -> {
                             // STAGE 4: ADMINISTRATION
                             FoundationAdminTab(
+                                desktopAppTheme = desktopAppTheme,
+                                desktopPhotoCanvasMode = desktopPhotoCanvasMode,
+                                onUpdateTheme = { desktopAppTheme = it },
+                                onUpdateCanvas = { desktopPhotoCanvasMode = it },
                                 onPublishManifest = {
                                     val detectedDrive = detectGoogleDrivePath() ?: System.getProperty("user.home")
                                     val targetDir = chooseDirectoryOrFile(detectedDrive)
@@ -2310,7 +2426,14 @@ class FoundationAdminFormState {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Unit) {
+fun FoundationAdminTab(
+    desktopAppTheme: String = "SYSTEM_DEFAULT",
+    desktopPhotoCanvasMode: String = "ISO_MID_GRAY",
+    onUpdateTheme: (String) -> Unit = {},
+    onUpdateCanvas: (String) -> Unit = {},
+    onPublishManifest: () -> Unit,
+    onImportManifest: () -> Unit
+) {
     val masterBrands = remember {
         listOf(
             "Alpa", "Arca-Swiss", "Arax", "Bronica", "Canon", "Chamonix", "Chroma", "Contax",
@@ -5517,6 +5640,10 @@ fun FoundationAdminTab(onPublishManifest: () -> Unit, onImportManifest: () -> Un
                     Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
                         AdminDataGridContent(
                             selectedCategory = selectedCategory,
+                            desktopAppTheme = desktopAppTheme,
+                            desktopPhotoCanvasMode = desktopPhotoCanvasMode,
+                            onUpdateTheme = onUpdateTheme,
+                            onUpdateCanvas = onUpdateCanvas,
                             cameras = cameras, lenses = lenses, films = films, kits = kits,
                             teleconverters = teleconverters, filters = filters, flashes = flashes, viewfinders = viewfinders,
                             suppliers = suppliers, consumables = consumables, labEquipment = labEquipment,
@@ -5845,6 +5972,47 @@ private fun FoundationAdminLeftRail(
                     )
                 )
             }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+            // Header 6: APP THEME PALETTE
+            var isThemeExpanded by remember { mutableStateOf(true) }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isThemeExpanded = !isThemeExpanded }
+                    .padding(start = 6.dp, top = 6.dp, bottom = 4.dp, end = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "APP THEME PALETTE",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Icon(
+                    if (isThemeExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            if (isThemeExpanded) {
+                val isSel = selectedCategory == 15
+                NavigationDrawerItem(
+                    label = { Text("Theme & Canvas Mode", style = MaterialTheme.typography.labelMedium, fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    selected = isSel,
+                    onClick = { onSelectCategory(15) },
+                    icon = { Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    modifier = Modifier.height(36.dp),
+                    colors = NavigationDrawerItemDefaults.colors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                )
+            }
         }
 
         VerticalScrollbar(
@@ -5858,6 +6026,10 @@ private fun FoundationAdminLeftRail(
 @Composable
 private fun AdminDataGridContent(
     selectedCategory: Int,
+    desktopAppTheme: String = "SYSTEM_DEFAULT",
+    desktopPhotoCanvasMode: String = "ISO_MID_GRAY",
+    onUpdateTheme: (String) -> Unit = {},
+    onUpdateCanvas: (String) -> Unit = {},
     cameras: List<ReferenceCameraItem>,
     lenses: List<ReferenceLensItem>,
     films: List<ReferenceFilmItem>,
@@ -6422,12 +6594,85 @@ private fun AdminDataGridContent(
             val rolls = remember { DatabaseRepository.loadAllRolls() }
             TaxonomyAdminPanel(masterVaultRolls = rolls)
         }
+        15 -> { // Theme & Canvas Admin
+            ThemeAdminPanel(
+                desktopAppTheme = desktopAppTheme,
+                desktopPhotoCanvasMode = desktopPhotoCanvasMode,
+                onUpdateTheme = onUpdateTheme,
+                onUpdateCanvas = onUpdateCanvas
+            )
+        }
     }
 
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(gridListState),
             modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ThemeAdminPanel(
+    desktopAppTheme: String,
+    desktopPhotoCanvasMode: String,
+    onUpdateTheme: (String) -> Unit,
+    onUpdateCanvas: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text("App Theme Palette", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+        Text("Select FlatLaf or Photographic color palettes for app controls:", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            listOf(
+                "SYSTEM_DEFAULT" to "System Default",
+                "FLAT_DARCULA" to "Flat Darcula (IntelliJ)",
+                "FLAT_MAC_DARK" to "Flat Mac Dark (macOS)",
+                "FLAT_NORD" to "Flat Nord (Arctic Cyan)",
+                "SILVER_GELATIN" to "Silver Gelatin (B&W)",
+                "WARM_SEPIA" to "Warm Sepia (Toned)"
+            ).forEach { (themeKey, themeName) ->
+                FilterChip(
+                    selected = desktopAppTheme == themeKey,
+                    onClick = { onUpdateTheme(themeKey) },
+                    label = { Text(themeName) }
+                )
+            }
+        }
+
+        HorizontalDivider()
+
+        Text("Photo Review Canvas (ISO 3664)", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+        Text("Isolated neutral background color for zero-bias image evaluation:", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            listOf(
+                "ISO_MID_GRAY" to "ISO Gray (#505050)",
+                "PITCH_BLACK" to "Pitch Black (#00)",
+                "FLAT_WHITE" to "White (#FFF)"
+            ).forEach { (canvasKey, canvasName) ->
+                FilterChip(
+                    selected = desktopPhotoCanvasMode == canvasKey,
+                    onClick = { onUpdateCanvas(canvasKey) },
+                    label = { Text(canvasName) }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("ℹ️ Red Shift & Night Vision Notice", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                Text("Red Shift eliminates blue light to preserve night-adapted vision during astrophotography and darkroom logbook duties. Digital screens cannot replace optical darkroom safelights. Always test with your specific paper stock, maintain distance from paper areas, and load panchromatic film in total darkness.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
     }
 }
 
