@@ -1178,6 +1178,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-110: Mobile & Desktop Theme Palette Recalibration for Zero-Washout High Contrast
+- **Platform**: Core, Mobile & Desktop (`Theme.kt`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Warm Sepia` rendered with harsh electric yellow `#E6B800`; `Flat Darcula`, `Flat Mac Dark`, and `Flat Nord` rendered with low-contrast washed-out grey text.
+- **Root Cause**: Un-calibrated primary accent and surface variant color definitions.
+- **Resolution**:
+  1. Recalibrated `Warm Sepia` with gentle warm sepia gold (`#D4A373`) on deep dark espresso (`#191512`) and soft warm ivory text (`#F5E6D3`).
+  2. Aligned `Flat Darcula` (`#4B6EAF` Darcula blue accent, `#2B2B2B` background, `#A9B7C6` text), `Flat Mac Dark` (`#3574F0` macOS blue, `#1E1F22` background, `#DFE1E5` text), and `Flat Nord` (`#88C0D0` Frost cyan, `#2E3440` Polar Night background, `#ECEFF4` Nord snow white text).
+  3. Added `Daylight Clean (Light)` theme palette with crisp white background (`#FFFFFF`) and high-contrast pitch black text (`#1C1B1F`).
+- **Regression Test Case**: Open Desktop App $\to$ `Reference & Admin` $\to$ `Theme & Canvas Mode` $\to$ click `Warm Sepia` $\to$ verify gentle warm sepia gold `#D4A373` accent renders on deep dark espresso background with zero harshness.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
