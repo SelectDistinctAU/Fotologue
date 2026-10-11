@@ -1,6 +1,8 @@
 package com.fotologue.desktop
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -77,6 +79,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -691,6 +694,7 @@ fun main() = application {
 
 enum class DesktopPhotographicTheme {
     SYSTEM_DEFAULT,
+    DAYLIGHT_LIGHT,
     FLAT_DARCULA,
     FLAT_MAC_DARK,
     FLAT_NORD,
@@ -699,30 +703,43 @@ enum class DesktopPhotographicTheme {
     SAFELIGHT_RED
 }
 
-private val FlatDarculaColorScheme = darkColorScheme(
-    primary = Color(0xFF589DF6),
+private val DaylightLightColorScheme = lightColorScheme(
+    primary = Color(0xFF1976D2),
     onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFF35373B),
-    onPrimaryContainer = Color(0xFFF0F0F0),
+    primaryContainer = Color(0xFFE3F2FD),
+    onPrimaryContainer = Color(0xFF0D47A1),
+    surface = Color(0xFFFFFFFF),
+    onSurface = Color(0xFF1C1B1F),
+    surfaceVariant = Color(0xFFF0F2F5),
+    onSurfaceVariant = Color(0xFF44474E),
+    background = Color(0xFFF8F9FA),
+    onBackground = Color(0xFF1C1B1F)
+)
+
+private val FlatDarculaColorScheme = darkColorScheme(
+    primary = Color(0xFF4B6EAF),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFF323232),
+    onPrimaryContainer = Color(0xFFBBBBBB),
     surface = Color(0xFF2B2B2B),
-    onSurface = Color(0xFFF0F0F0),
+    onSurface = Color(0xFFA9B7C6),
     surfaceVariant = Color(0xFF3C3F41),
-    onSurfaceVariant = Color(0xFFE0E0E0),
-    background = Color(0xFF212224),
-    onBackground = Color(0xFFF0F0F0)
+    onSurfaceVariant = Color(0xFFB8B8B8),
+    background = Color(0xFF2B2B2B),
+    onBackground = Color(0xFFA9B7C6)
 )
 
 private val FlatMacDarkColorScheme = darkColorScheme(
     primary = Color(0xFF3574F0),
     onPrimary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xFF2B2D30),
-    onPrimaryContainer = Color(0xFFF0F2F5),
+    onPrimaryContainer = Color(0xFFDFE1E5),
     surface = Color(0xFF1E1F22),
-    onSurface = Color(0xFFF0F2F5),
+    onSurface = Color(0xFFDFE1E5),
     surfaceVariant = Color(0xFF2B2D30),
-    onSurfaceVariant = Color(0xFFE3E5E8),
+    onSurfaceVariant = Color(0xFFB0B4BC),
     background = Color(0xFF1E1F22),
-    onBackground = Color(0xFFF0F2F5)
+    onBackground = Color(0xFFDFE1E5)
 )
 
 private val FlatNordColorScheme = darkColorScheme(
@@ -733,35 +750,35 @@ private val FlatNordColorScheme = darkColorScheme(
     surface = Color(0xFF2E3440),
     onSurface = Color(0xFFECEFF4),
     surfaceVariant = Color(0xFF3B4252),
-    onSurfaceVariant = Color(0xFFE5E9F0),
+    onSurfaceVariant = Color(0xFFD8DEE9),
     background = Color(0xFF2E3440),
     onBackground = Color(0xFFECEFF4)
 )
 
 private val SilverGelatinColorScheme = darkColorScheme(
-    primary = Color(0xFFE0E0E0),
-    onPrimary = Color(0xFF121212),
-    primaryContainer = Color(0xFF242424),
+    primary = Color(0xFFFFFFFF),
+    onPrimary = Color(0xFF000000),
+    primaryContainer = Color(0xFF333333),
     onPrimaryContainer = Color(0xFFFFFFFF),
-    surface = Color(0xFF121212),
-    onSurface = Color(0xFFE0E0E0),
-    surfaceVariant = Color(0xFF242424),
-    onSurfaceVariant = Color(0xFFB0B0B0),
-    background = Color(0xFF121212),
-    onBackground = Color(0xFFE0E0E0)
+    surface = Color(0xFF141414),
+    onSurface = Color(0xFFFFFFFF),
+    surfaceVariant = Color(0xFF262626),
+    onSurfaceVariant = Color(0xFFE5E5E5),
+    background = Color(0xFF141414),
+    onBackground = Color(0xFFFFFFFF)
 )
 
 private val WarmSepiaColorScheme = darkColorScheme(
     primary = Color(0xFFD4A373),
-    onPrimary = Color(0xFF1C1917),
-    primaryContainer = Color(0xFF2E2822),
-    onPrimaryContainer = Color(0xFFFAEDCD),
-    surface = Color(0xFF1C1917),
-    onSurface = Color(0xFFFAEDCD),
-    surfaceVariant = Color(0xFF2E2822),
-    onSurfaceVariant = Color(0xFFD4A373),
-    background = Color(0xFF1C1917),
-    onBackground = Color(0xFFFAEDCD)
+    onPrimary = Color(0xFF191512),
+    primaryContainer = Color(0xFF3D3024),
+    onPrimaryContainer = Color(0xFFF5E6D3),
+    surface = Color(0xFF191512),
+    onSurface = Color(0xFFF5E6D3),
+    surfaceVariant = Color(0xFF2A221C),
+    onSurfaceVariant = Color(0xFFE6CBB2),
+    background = Color(0xFF191512),
+    onBackground = Color(0xFFF5E6D3)
 )
 
 private val SafelightRedColorScheme = darkColorScheme(
@@ -788,15 +805,17 @@ fun DesktopApp(logoPainter: Painter? = null) {
     var desktopAppTheme by remember { mutableStateOf("SYSTEM_DEFAULT") }
     var desktopPhotoCanvasMode by remember { mutableStateOf("ISO_MID_GRAY") }
 
-    val activeColorScheme = remember(desktopAppTheme) {
+    val isDarkOS = isSystemInDarkTheme()
+    val activeColorScheme = remember(desktopAppTheme, isDarkOS) {
         when (desktopAppTheme) {
+            "DAYLIGHT_LIGHT" -> DaylightLightColorScheme
             "FLAT_DARCULA" -> FlatDarculaColorScheme
             "FLAT_MAC_DARK" -> FlatMacDarkColorScheme
             "FLAT_NORD" -> FlatNordColorScheme
             "SILVER_GELATIN" -> SilverGelatinColorScheme
             "WARM_SEPIA" -> WarmSepiaColorScheme
             "SAFELIGHT_RED" -> SafelightRedColorScheme
-            else -> darkColorScheme()
+            else -> if (isDarkOS) FlatDarculaColorScheme else DaylightLightColorScheme
         }
     }
 
@@ -6629,6 +6648,7 @@ private fun ThemeAdminPanel(
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             listOf(
                 "SYSTEM_DEFAULT" to "System Default",
+                "DAYLIGHT_LIGHT" to "Daylight Clean (Light)",
                 "FLAT_DARCULA" to "Flat Darcula (IntelliJ)",
                 "FLAT_MAC_DARK" to "Flat Mac Dark (macOS)",
                 "FLAT_NORD" to "Flat Nord (Arctic Cyan)",
@@ -6638,7 +6658,11 @@ private fun ThemeAdminPanel(
                 FilterChip(
                     selected = desktopAppTheme == themeKey,
                     onClick = { onUpdateTheme(themeKey) },
-                    label = { Text(themeName) }
+                    label = { Text(themeName) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 )
             }
         }
@@ -6657,7 +6681,11 @@ private fun ThemeAdminPanel(
                 FilterChip(
                     selected = desktopPhotoCanvasMode == canvasKey,
                     onClick = { onUpdateCanvas(canvasKey) },
-                    label = { Text(canvasName) }
+                    label = { Text(canvasName) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 )
             }
         }

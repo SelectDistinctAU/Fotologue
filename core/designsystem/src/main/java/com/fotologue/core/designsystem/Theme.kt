@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 
 enum class PhotographicTheme {
     SYSTEM_DEFAULT,
+    DAYLIGHT_LIGHT,
     FLAT_DARCULA,
     FLAT_MAC_DARK,
     FLAT_NORD,
@@ -27,18 +28,32 @@ enum class PhotoCanvasMode(val colorHex: Long, val displayName: String) {
     FLAT_WHITE(0xFFFFFFFF, "Flat White (#FFFFFF)")
 }
 
+// 0. Daylight Clean (Light Theme Interface)
+private val DaylightLightColorScheme = lightColorScheme(
+    primary = Color(0xFF1976D2),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFE3F2FD),
+    onPrimaryContainer = Color(0xFF0D47A1),
+    surface = Color(0xFFFFFFFF),
+    onSurface = Color(0xFF1C1B1F),
+    surfaceVariant = Color(0xFFF0F2F5),
+    onSurfaceVariant = Color(0xFF44474E),
+    background = Color(0xFFF8F9FA),
+    onBackground = Color(0xFF1C1B1F)
+)
+
 // 1. Flat Darcula (IntelliJ / FlatLaf Dark)
 private val FlatDarculaColorScheme = darkColorScheme(
-    primary = Color(0xFF589DF6),
+    primary = Color(0xFF4B6EAF),
     onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFF35373B),
-    onPrimaryContainer = Color(0xFFF0F0F0),
+    primaryContainer = Color(0xFF323232),
+    onPrimaryContainer = Color(0xFFBBBBBB),
     surface = Color(0xFF2B2B2B),
-    onSurface = Color(0xFFF0F0F0),
+    onSurface = Color(0xFFA9B7C6),
     surfaceVariant = Color(0xFF3C3F41),
-    onSurfaceVariant = Color(0xFFE0E0E0),
-    background = Color(0xFF212224),
-    onBackground = Color(0xFFF0F0F0)
+    onSurfaceVariant = Color(0xFFB8B8B8),
+    background = Color(0xFF2B2B2B),
+    onBackground = Color(0xFFA9B7C6)
 )
 
 // 2. Flat Mac Dark (macOS FlatLaf Dark)
@@ -71,30 +86,30 @@ private val FlatNordColorScheme = darkColorScheme(
 
 // 4. Silver Gelatin (High-Contrast B&W Darkroom)
 private val SilverGelatinColorScheme = darkColorScheme(
-    primary = Color(0xFFE0E0E0),
-    onPrimary = Color(0xFF121212),
-    primaryContainer = Color(0xFF242424),
+    primary = Color(0xFFFFFFFF),
+    onPrimary = Color(0xFF000000),
+    primaryContainer = Color(0xFF333333),
     onPrimaryContainer = Color(0xFFFFFFFF),
-    surface = Color(0xFF121212),
-    onSurface = Color(0xFFE0E0E0),
-    surfaceVariant = Color(0xFF242424),
-    onSurfaceVariant = Color(0xFFB0B0B0),
-    background = Color(0xFF121212),
-    onBackground = Color(0xFFE0E0E0)
+    surface = Color(0xFF141414),
+    onSurface = Color(0xFFFFFFFF),
+    surfaceVariant = Color(0xFF262626),
+    onSurfaceVariant = Color(0xFFE5E5E5),
+    background = Color(0xFF141414),
+    onBackground = Color(0xFFFFFFFF)
 )
 
 // 5. Warm Sepia (Vintage Toned Print)
 private val WarmSepiaColorScheme = darkColorScheme(
     primary = Color(0xFFD4A373),
-    onPrimary = Color(0xFF1C1917),
-    primaryContainer = Color(0xFF2E2822),
-    onPrimaryContainer = Color(0xFFFAEDCD),
-    surface = Color(0xFF1C1917),
-    onSurface = Color(0xFFFAEDCD),
-    surfaceVariant = Color(0xFF2E2822),
-    onSurfaceVariant = Color(0xFFD4A373),
-    background = Color(0xFF1C1917),
-    onBackground = Color(0xFFFAEDCD)
+    onPrimary = Color(0xFF191512),
+    primaryContainer = Color(0xFF3D3024),
+    onPrimaryContainer = Color(0xFFF5E6D3),
+    surface = Color(0xFF191512),
+    onSurface = Color(0xFFF5E6D3),
+    surfaceVariant = Color(0xFF2A221C),
+    onSurfaceVariant = Color(0xFFE6CBB2),
+    background = Color(0xFF191512),
+    onBackground = Color(0xFFF5E6D3)
 )
 
 // 6. Safelight Red (In-situ Darkroom)
@@ -132,6 +147,7 @@ fun FotologueTheme(
 ) {
     val context = LocalContext.current
     val colorScheme = when (photographicTheme) {
+        PhotographicTheme.DAYLIGHT_LIGHT -> DaylightLightColorScheme
         PhotographicTheme.FLAT_DARCULA -> FlatDarculaColorScheme
         PhotographicTheme.FLAT_MAC_DARK -> FlatMacDarkColorScheme
         PhotographicTheme.FLAT_NORD -> FlatNordColorScheme
