@@ -100,49 +100,28 @@ fun HubScreen(
                     }
                 },
                 actions = {
-                    val safelightOptions = listOf("Auto", "On", "Off")
-                    var selectedIndex by remember(isSafelightActive) {
-                        mutableStateOf(if (isSafelightActive) 1 else 2)
-                    }
-
-                    SingleChoiceSegmentedButtonRow(
-                        modifier = Modifier.padding(end = 4.dp)
-                    ) {
-                        safelightOptions.forEachIndexed { index, label ->
-                            SegmentedButton(
-                                selected = selectedIndex == index,
-                                onClick = {
-                                    selectedIndex = index
-                                    when (index) {
-                                        0 -> { /* Auto Red Shift Mode */ }
-                                        1 -> { if (!isSafelightActive) onToggleSafelight?.invoke() }
-                                        2 -> { if (isSafelightActive) onToggleSafelight?.invoke() }
-                                    }
-                                },
-                                shape = SegmentedButtonDefaults.itemShape(index = index, count = safelightOptions.size),
-                                colors = if (isSafelightActive) {
-                                    SegmentedButtonDefaults.colors(
-                                        activeContainerColor = Color(0xFF550000),
-                                        activeContentColor = Color(0xFFFF0000),
-                                        inactiveContainerColor = Color(0xFF180000),
-                                        inactiveContentColor = Color(0xFF880000),
-                                        activeBorderColor = Color(0xFFFF0000),
-                                        inactiveBorderColor = Color(0xFF440000)
-                                    )
-                                } else {
-                                    SegmentedButtonDefaults.colors()
-                                }
-                            ) {
-                                Text(label, style = MaterialTheme.typography.labelSmall)
-                            }
+                    if (onToggleSafelight != null) {
+                        IconButton(
+                            onClick = onToggleSafelight,
+                            modifier = Modifier.size(48.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.experiment_24px),
+                                contentDescription = if (isSafelightActive) "Disable Red Shift" else "Enable Red Shift",
+                                tint = safelightPrimary,
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
                     }
-
-                    IconButton(onClick = onNavigateToSettings) {
+                    IconButton(
+                        onClick = onNavigateToSettings,
+                        modifier = Modifier.size(48.dp)
+                    ) {
                         Icon(
                             painter = painterResource(R.drawable.settings_24px),
                             contentDescription = "Settings",
-                            tint = safelightPrimary
+                            tint = safelightPrimary,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
