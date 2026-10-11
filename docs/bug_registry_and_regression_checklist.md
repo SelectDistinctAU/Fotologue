@@ -1128,6 +1128,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-106: Live App Theme Palette Switcher & ISO 3664 Photo Review Canvas
+- **Platform**: Core, Mobile & Desktop (`Theme.kt`, `SettingsScreen.kt`, `LogDetailScreen.kt`, `MainActivity.kt`)
+- **Reported**: October 2026
+- **Symptom**: Need for 1-tap live theme palette switching (FlatLaf & Photographic) and isolated ISO 3664 photo review canvas backgrounds.
+- **Root Cause**: Unwired `appTheme` flow and unrepresented photo canvas modes in photo detail views.
+- **Resolution**:
+  1. Added **App Theme Palette** chips (*System Default*, *Flat Darcula*, *Flat Mac Dark*, *Flat Nord*, *Silver Gelatin*, *Warm Sepia*) to `SettingsScreen.kt` and wired `appTheme` to root `MainActivity.kt` for live 1-tap theme recoloring.
+  2. Added **Photo Review Canvas (ISO 3664)** selector (*ISO Mid-Gray #505050*, *Pitch Black #000000*, *Flat White #FFFFFF*) and wrapped photo previews in `LogDetailScreen.kt` inside isolated neutral canvas colors.
+  3. Added Red Shift Safety Notice card in Settings.
+- **Regression Test Case**: Open Mobile App $\to$ `Settings` $\to$ tap `Flat Darcula` $\to$ verify entire app UI converts to IntelliJ Darcula colors live $\to$ open `Field Log Detail` $\to$ verify photo preview sits on an isolated `#505050` ISO Mid-Gray canvas.
+
+---
+
 ## 📋 Comprehensive Regression Test Checklist
 
 ### 1. Mobile Regression Test Checklist
