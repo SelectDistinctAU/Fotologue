@@ -1,7 +1,7 @@
-# Theme FlowRow Wrapping & Streamlined Photographic Theme Suite Plan
+# FlowRow Theme Multi-Line Wrapping & Streamlined Photographic Suite Plan
 
 - **Approval Status**: Approved
-- **Approval Date & Time**: October 11, 2026, 02:45 AM UTC
+- **Approval Date & Time**: October 11, 2026, 03:15 AM UTC
 
 ---
 
