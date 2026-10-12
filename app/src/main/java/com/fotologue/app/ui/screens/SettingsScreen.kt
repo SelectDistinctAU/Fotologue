@@ -257,6 +257,9 @@ fun SettingsScreen(
                 listOf(
                     "SYSTEM_DEFAULT" to "System Default",
                     "DAYLIGHT_LIGHT" to "Daylight Clean (Light)",
+                    "FLAT_DARCULA" to "Flat Darcula (IntelliJ)",
+                    "FLAT_MAC_DARK" to "Flat Mac Dark (macOS)",
+                    "FLAT_NORD" to "Flat Nord (Arctic Cyan)",
                     "SILVER_GELATIN" to "Silver Gelatin (B&W)",
                     "WARM_SEPIA" to "Warm Sepia (Toned)",
                     "SAFELIGHT_RED" to "Red Shift (Night Vision)"
@@ -287,9 +290,10 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Row(
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 listOf(
                     "ISO_MID_GRAY" to "ISO Gray (#505050)",

@@ -6653,9 +6653,11 @@ private fun ThemeAdminPanel(
             listOf(
                 "SYSTEM_DEFAULT" to "System Default",
                 "DAYLIGHT_LIGHT" to "Daylight Clean (Light)",
+                "FLAT_DARCULA" to "Flat Darcula (IntelliJ)",
+                "FLAT_MAC_DARK" to "Flat Mac Dark (macOS)",
+                "FLAT_NORD" to "Flat Nord (Arctic Cyan)",
                 "SILVER_GELATIN" to "Silver Gelatin (B&W)",
-                "WARM_SEPIA" to "Warm Sepia (Toned)",
-                "SAFELIGHT_RED" to "Red Shift (Night Vision)"
+                "WARM_SEPIA" to "Warm Sepia (Toned)"
             ).forEach { (themeKey, themeName) ->
                 FilterChip(
                     selected = desktopAppTheme == themeKey,
