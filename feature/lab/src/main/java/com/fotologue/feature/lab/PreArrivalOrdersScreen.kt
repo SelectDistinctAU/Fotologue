@@ -539,11 +539,11 @@ fun PreArrivalOrdersScreen(
                                 }
 
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(onClick = { openAddEditDialog(order) }) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    IconButton(onClick = { openAddEditDialog(order) }, modifier = Modifier.size(48.dp)) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit pre-arrival order", modifier = Modifier.size(20.dp))
                                     }
-                                    IconButton(onClick = { viewModel.deleteOrder(order) }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    IconButton(onClick = { viewModel.deleteOrder(order) }, modifier = Modifier.size(48.dp)) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete pre-arrival order", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
                                     }
                                 }
                             }

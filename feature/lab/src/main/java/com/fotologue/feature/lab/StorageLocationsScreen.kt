@@ -193,11 +193,11 @@ fun StorageLocationsScreen(
                                 }
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                IconButton(onClick = { openDialog(loc) }) {
-                                    Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                IconButton(onClick = { openDialog(loc) }, modifier = Modifier.size(48.dp)) {
+                                    Icon(Icons.Default.Edit, contentDescription = "Edit storage location", modifier = Modifier.size(20.dp))
                                 }
-                                IconButton(onClick = { viewModel.deleteStorageLocation(loc) }) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                IconButton(onClick = { viewModel.deleteStorageLocation(loc) }, modifier = Modifier.size(48.dp)) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Delete storage location", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
                                 }
                             }
                         }

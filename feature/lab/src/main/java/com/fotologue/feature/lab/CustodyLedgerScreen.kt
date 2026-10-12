@@ -403,11 +403,11 @@ fun CustodyLedgerScreen(
                                 }
 
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(onClick = { openAddEditDialog(item) }) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(18.dp))
+                                    IconButton(onClick = { openAddEditDialog(item) }, modifier = Modifier.size(48.dp)) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit custody interaction", modifier = Modifier.size(20.dp))
                                     }
-                                    IconButton(onClick = { viewModel.deleteOrder(item) }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    IconButton(onClick = { viewModel.deleteOrder(item) }, modifier = Modifier.size(48.dp)) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete custody interaction", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
                                     }
                                 }
                             }
