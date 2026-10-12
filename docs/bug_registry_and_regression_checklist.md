@@ -1231,6 +1231,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-115: Option 4 1-Tap Cloud Sync & XMP Desktop Sidecar Dispatcher Validation
+- **Platform**: Core, Mobile & Desktop (`LogEntryXmpExporter.kt`, `LogEntryZipExporter.kt`, `ArchiveScreen.kt`, `Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Finalization of Option 4 1-Tap Cloud Sync & XMP Desktop Sidecar Dispatcher.
+- **Root Cause**: Need for Adobe & digiKam XMP Core 5.6 compliant metadata sidecar exports with EXIF, IPTC, and 3-axis taxonomy paths.
+- **Resolution**:
+  1. Verified `LogEntryXmpExporter.kt` generates Adobe XMP Core 5.6 compliant `.xmp` sidecars with EXIF exposure (`exif:FNumber`, `exif:ExposureTime`, `exif:ISOSpeedRatings`), GPS coordinates, IPTC creator/copyright, and Lightroom/digiKam 3-level taxonomy paths (`lr:hierarchicalSubject`).
+  2. Verified `LogEntryZipExporter.kt` packages XMP sidecars, metadata JSON, and digital contact sheets into a single 1-tap backup package for cloud syncing and Desktop DAM ingestion.
+- **Regression Test Case**: Open Mobile App $\to$ `ARCHIVE` $\to$ tap `Export XMP Sidecars` $\to$ verify generated `.xmp` file contains valid XML with EXIF exposure, GPS coordinates, and 3-axis taxonomy paths.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
