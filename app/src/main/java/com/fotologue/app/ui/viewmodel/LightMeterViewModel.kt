@@ -150,7 +150,20 @@ class LightMeterViewModel @Inject constructor(
     private var lastSuggestionUpdateTime = 0L
 
     fun onEvCalculated(ev: Double) {
-        _uiState.update { it.copy(currentEv = ev) }
+        val currentHistory = (_uiState.value.spotEvHistory + ev).takeLast(10)
+        val baseline = if (_uiState.value.spotEvHistory.isNotEmpty()) _uiState.value.spotEvHistory.first() else ev
+        val analysis = com.fotologue.app.util.ZoneSystemAnalysis.calculate(
+            spotEv = ev,
+            baselineEv = baseline,
+            allSpotEvs = currentHistory
+        )
+        _uiState.update { state ->
+            state.copy(
+                currentEv = ev,
+                spotEvHistory = currentHistory,
+                zoneAnalysis = analysis
+            )
+        }
         
         // Throttle suggestion updates to ~10fps to reduce UI load and power consumption
         val currentTime = System.currentTimeMillis()
@@ -298,6 +311,8 @@ data class LightMeterUiState(
     val suggestions: List<ExposureSettings> = emptyList(),
     val meteringMode: MeteringMode = MeteringMode.CENTER_WEIGHTED,
     val spotRect: Rect? = null,
+    val zoneAnalysis: com.fotologue.app.util.ZoneSystemAnalysis? = null,
+    val spotEvHistory: List<Double> = emptyList(),
     val effectiveFocalLength: Double? = null,
     val effectiveMaxAperture: Double? = null,
     val currentFocalLength: Int? = null,

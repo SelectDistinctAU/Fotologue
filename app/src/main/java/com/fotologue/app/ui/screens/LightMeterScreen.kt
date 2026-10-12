@@ -632,6 +632,35 @@ private fun InputSettingsColumn(
             }
         }
 
+        uiState.zoneAnalysis?.let { zone ->
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = "🎯 ${zone.currentZone.romanNumeral}: ${zone.currentZone.description}",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "📊 Contrast Range: %.1f Stops (Min EV %.1f ... Max EV %.1f)".format(
+                            zone.contrastRangeStops, zone.minSpotEv, zone.maxSpotEv
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "🧪 ${zone.recommendation.displayName}: ${zone.recommendation.description}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.height(12.dp))
 
         // Large [-] and [+] Focal Length Fine-Tuning Controls
