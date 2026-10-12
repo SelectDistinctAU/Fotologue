@@ -1243,6 +1243,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-116: Option 1 Zone System Viewfinder & Spot Metering Engine Integration
+- **Platform**: Fotologue Mobile (`app` / `ZoneSystemCalculator.kt`, `LightMeterViewModel.kt`, `LightMeterScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Finalization of Option 1 Zone System Viewfinder & Spot Metering Engine.
+- **Root Cause**: Need for Ansel Adams 10-Zone System spot metering, dynamic range contrast calculator, and N±1 push/pull recommendations.
+- **Resolution**:
+  1. Implemented `ZoneSystemCalculator.kt` with Ansel Adams Zone mapping ($\text{Zone} = 5.0 + \Delta EV$), scene dynamic range calculation, and $N \pm 1$ development recommendation logic.
+  2. Updated `LightMeterViewModel.kt` and `LightMeterScreen.kt` to display live Ansel Adams Zone badges on spot tap, scene contrast range bar (in stops), and $N \pm 1$ push/pull development recommendation cards.
+- **Regression Test Case**: Open Mobile App $\to$ `FIELD` $\to$ `Measure Exposure` $\to$ tap a spot on viewfinder $\to$ verify Ansel Adams Zone badge and scene contrast range display live.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
