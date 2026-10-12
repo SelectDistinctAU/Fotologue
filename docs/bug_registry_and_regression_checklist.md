@@ -1205,6 +1205,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ## 📋 Comprehensive Regression Test Checklist
 
+### BUG-113: Option 2 LAB Wet Darkroom Session Engine Integration
+- **Platform**: Fotologue Mobile (`feature:lab` / `FilmProcessingSessionScreen.kt`, `EnlargerPrintingSessionScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Finalization of Option 2 LAB Session Engine (film development agitation timer and enlarger print recipe logger).
+- **Root Cause**: Need for integrated darkroom timer guidance, agitation alerts, and print recipe outcome tracking.
+- **Resolution**:
+  1. Finalized `FilmProcessingSessionScreen.kt` with multi-stage development wizard, agitation countdown alerts (`AGITATE NOW: 10s`), and auto-recommended development times.
+  2. Finalized `EnlargerPrintingSessionScreen.kt` with paper stock tracking, grade filters (0–5), test strip steps, dodge/burn map, and KEEPER vs REJECT print outcome logging.
+  3. Integrated 100% zero-white red shift mode and `DarkroomLightGuard` sensor monitoring during active sessions.
+- **Regression Test Case**: Open Mobile App $\to$ `LAB` $\to$ start **Film Processing Session** $\to$ verify agitation timer countdown renders in strict zero-white red shift mode.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
