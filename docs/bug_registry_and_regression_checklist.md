@@ -1218,6 +1218,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-114: Option 3 Gear Custody, Loan & Repair Ledger Finalization
+- **Platform**: Fotologue Mobile (`feature:lab` / `CustodyLedgerScreen.kt`, `PreArrivalOrdersScreen.kt`, `StorageLocationsScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Finalization of Option 3 Gear Custody, Loan & Repair Ledger.
+- **Root Cause**: Need for 3-Pillar Asset+Contact+Location custody tracking, pre-arrival orders, and WCAG 2.1 AA 48dp touch targets.
+- **Resolution**:
+  1. Finalized `CustodyLedgerScreen.kt` with native phone contact picker for borrower selection, active vs returned tracking, and assigned storage locations.
+  2. Finalized `PreArrivalOrdersScreen.kt` with pre-arrival order tracking (*Waitlisted*, *In Transit*) and 1-tap `[ Mark Delivered ]` storage location assignment.
+  3. Enforced minimum 48dp x 48dp touch targets on all edit, delete, and delivery buttons.
+- **Regression Test Case**: Open Mobile App $\to$ `LAB` $\to$ `Custody Ledger` $\to$ log a Service / Repair ticket $\to$ verify active custody record renders with expected return date.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
