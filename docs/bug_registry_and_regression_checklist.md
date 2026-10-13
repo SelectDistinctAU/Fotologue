@@ -1255,6 +1255,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-117: Intent Parent Group Dropdown, Field Tags Action & Prominent FAB Styling
+- **Platform**: Fotologue Mobile (`TaxonomyScreen.kt`, `TimelineScreen.kt`, `LightMeterScreen.kt`, `AddLogScreen.kt`, `GearLibraryScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Intent edit dialog lacked parent category dropdown and mislabeled field as `Content Name`; Field top-bar Tags icon was unhandled; Light Meter calibration icon used generic tools; FABs had low visibility.
+- **Root Cause**: Unhandled navigation lambda; default M3 FAB surface colors.
+- **Resolution**:
+  1. Added `Parent Intent Group` dropdown selector to `TaxonomyScreen.kt` edit dialog and updated field label to `Intent Name`.
+  2. Wired `onTaxonomyClick` in `TimelineScreen.kt` to open `TaxonomyScreen`.
+  3. Created `brightness_auto_24px.xml` M3 vector icon and updated Light Meter calibration top-bar icon.
+  4. Upgraded FABs across all screens to high-visibility primary container fills (`containerColor = primary`, `contentColor = onPrimary`) and elevated 8dp shadow.
+- **Regression Test Case**: Open Mobile App $\to$ `FIELD` $\to$ tap top-right **Tags** icon $\to$ verify `Taxonomy & Tags` opens $\to$ edit an Intent tag $\to$ verify `Parent Intent Group` dropdown renders.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
