@@ -2419,6 +2419,9 @@ class FoundationAdminFormState {
     var showEquipmentPresetsDialog by mutableStateOf(false)
     var selectedEquipmentCategoryFilter by mutableStateOf("All")
     var equipmentSearchQuery by mutableStateOf("")
+    var showConsumablePresetsDialog by mutableStateOf(false)
+    var selectedConsumableCategoryFilter by mutableStateOf("All")
+    var consumableSearchQuery by mutableStateOf("")
     var isPresetDropdownExpanded by mutableStateOf(false)
 
     var editingCamera by mutableStateOf<ReferenceCameraItem?>(null)
@@ -2502,6 +2505,9 @@ fun FoundationAdminTab(
     var showEquipmentPresetsDialog by formState::showEquipmentPresetsDialog
     var selectedEquipmentCategoryFilter by formState::selectedEquipmentCategoryFilter
     var equipmentSearchQuery by formState::equipmentSearchQuery
+    var showConsumablePresetsDialog by formState::showConsumablePresetsDialog
+    var selectedConsumableCategoryFilter by formState::selectedConsumableCategoryFilter
+    var consumableSearchQuery by formState::consumableSearchQuery
     var isPresetDropdownExpanded by formState::isPresetDropdownExpanded
     var editingCamera by formState::editingCamera
     var fixedLensName by formState::fixedLensName
@@ -3933,7 +3939,7 @@ fun FoundationAdminTab(
 
                             Box(modifier = Modifier.fillMaxWidth()) {
                                 Button(
-                                    onClick = { showEquipmentPresetsDialog = true },
+                                    onClick = { showConsumablePresetsDialog = true },
                                     modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
                                     colors = ButtonDefaults.filledTonalButtonColors()
                                 ) {
@@ -4171,7 +4177,7 @@ fun FoundationAdminTab(
 
                             Box(modifier = Modifier.fillMaxWidth()) {
                                 Button(
-                                    onClick = { showEquipmentPresetsDialog = true },
+                                    onClick = { showConsumablePresetsDialog = true },
                                     modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
                                     colors = ButtonDefaults.filledTonalButtonColors()
                                 ) {
@@ -5489,6 +5495,119 @@ fun FoundationAdminTab(
             },
             confirmButton = {
                 Button(onClick = { showEquipmentPresetsDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    if (showConsumablePresetsDialog) {
+        val categories = listOf("All", "Chemistry", "Paper", "Film Stock", "Safety Gear", "Supplies")
+        var consumableCategoryDropdownExpanded by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            modifier = Modifier.width(620.dp),
+            onDismissRequest = { showConsumablePresetsDialog = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Build, contentDescription = null, modifier = Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Select Consumable Chemistry from Presets", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth().height(440.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Select a category filter or type to search consumable presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = selectedConsumableCategoryFilter,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Filter by Consumable Category") },
+                            trailingIcon = { IconButton(onClick = { consumableCategoryDropdownExpanded = !consumableCategoryDropdownExpanded }) { Icon(Icons.Default.ArrowDropDown, contentDescription = null) } },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        DropdownMenu(
+                            expanded = consumableCategoryDropdownExpanded,
+                            onDismissRequest = { consumableCategoryDropdownExpanded = false }
+                        ) {
+                            categories.forEach { cat ->
+                                DropdownMenuItem(
+                                    text = { Text(cat, fontWeight = if (cat == selectedConsumableCategoryFilter) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedConsumableCategoryFilter = cat
+                                        consumableCategoryDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = consumableSearchQuery,
+                        onValueChange = { consumableSearchQuery = it },
+                        label = { Text("Search Consumables (Name, Brand)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+                    )
+
+                    HorizontalDivider()
+
+                    val allPresets = DatabaseRepository.searchPresetConsumables(consumableSearchQuery)
+                    val filteredPresets = if (selectedConsumableCategoryFilter == "All") {
+                        allPresets
+                    } else {
+                        allPresets.filter { it.category.equals(selectedConsumableCategoryFilter, ignoreCase = true) }
+                    }
+
+                    if (filteredPresets.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("No consumable presets found for $selectedConsumableCategoryFilter.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            items(filteredPresets.size) { idx ->
+                                val preset = filteredPresets[idx]
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            editingConsumable = preset
+                                            showConsumablePresetsDialog = false
+                                        },
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(preset.name, fontWeight = FontWeight.Bold)
+                                            Text("Brand: ${preset.manufacturer ?: "Generic"} • Category: ${preset.category}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                        Button(
+                                            onClick = {
+                                                editingConsumable = preset
+                                                showConsumablePresetsDialog = false
+                                            },
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                                        ) {
+                                            Text("Select", style = MaterialTheme.typography.labelSmall)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showConsumablePresetsDialog = false }) {
                     Text("Close")
                 }
             }
