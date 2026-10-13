@@ -1282,6 +1282,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-119: Milestone A Real-Time Viewfinder Histogram & Exposure Clipping Zebra Overlays Integration
+- **Platform**: Fotologue Mobile (`app` / `LuminanceAnalyzer.kt`, `LightMeterViewModel.kt`, `LightMeterScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Need for live 11-Zone histogram visualization and highlight/shadow clipping zebra overlays on live camera meter feed.
+- **Root Cause**: Unrepresented histogram array and clipping state in LightMeterUiState.
+- **Resolution**:
+  1. Updated `LuminanceAnalyzer.kt` to compute 256-bin luminance histogram, 11-Zone bin mapping array, and highlight/shadow clipping flags.
+  2. Updated `LightMeterViewModel.kt` and `LightMeterScreen.kt` to render a live 11-Zone histogram overlay box and animated red/blue zebra clipping stripes over live camera preview.
+- **Regression Test Case**: Open Mobile App $\to$ `FIELD` $\to$ `Measure Exposure` $\to$ point camera at bright light $\to$ verify red zebra clipping stripes and Zone X histogram spike render live.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
