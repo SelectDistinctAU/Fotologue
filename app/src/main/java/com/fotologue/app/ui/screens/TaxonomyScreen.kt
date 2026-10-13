@@ -84,9 +84,16 @@ fun TaxonomyScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.showAddTagDialog() },
-                containerColor = MaterialTheme.colorScheme.primary
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp, pressedElevation = 12.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add New Tag")
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Add New Tag",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(28.dp)
+                )
             }
         }
     ) { innerPadding ->
@@ -388,11 +395,17 @@ fun TaxonomyScreen(
 
     // EDIT TAG DIALOG (Category-Tailored 2-Field Dialog)
     uiState.editingTag?.let { tagToEdit ->
+        val parentIntents = remember(intentList) { intentList.filter { it.parentId == null } }
         var nameText by remember(tagToEdit) { mutableStateOf(tagToEdit.name) }
         var selectedSubjectId by remember(tagToEdit) { mutableStateOf(tagToEdit.parentId ?: subjectsList.firstOrNull()?.id) }
+        var selectedIntentParentId by remember(tagToEdit) { mutableStateOf(tagToEdit.parentId ?: parentIntents.firstOrNull()?.id) }
         var subjectDropdownExpanded by remember { mutableStateOf(false) }
+        var intentDropdownExpanded by remember { mutableStateOf(false) }
 
         val currentSubjectName = subjectsList.find { it.id == selectedSubjectId }?.name ?: "Select Subject"
+        val currentIntentParentName = parentIntents.find { it.id == selectedIntentParentId }?.name ?: "Select Intent Parent"
+
+        val categoryLabel = if (tagToEdit.category.equals(Tag.CATEGORY_INTENT, true)) "Intent Name" else if (tagToEdit.category.equals(Tag.CATEGORY_CONTENT, true)) "Content Name" else "Subject Name"
 
         AlertDialog(
             onDismissRequest = { viewModel.dismissDialog() },
@@ -428,12 +441,41 @@ fun TaxonomyScreen(
                                 }
                             }
                         }
+                    } else if (tagToEdit.category.equals(Tag.CATEGORY_INTENT, true) && parentIntents.isNotEmpty()) {
+                        ExposedDropdownMenuBox(
+                            expanded = intentDropdownExpanded,
+                            onExpandedChange = { intentDropdownExpanded = !intentDropdownExpanded },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            OutlinedTextField(
+                                value = currentIntentParentName,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Parent Intent Group") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = intentDropdownExpanded) },
+                                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = intentDropdownExpanded,
+                                onDismissRequest = { intentDropdownExpanded = false }
+                            ) {
+                                parentIntents.forEach { intent ->
+                                    DropdownMenuItem(
+                                        text = { Text(intent.name) },
+                                        onClick = {
+                                            selectedIntentParentId = intent.id
+                                            intentDropdownExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
 
                     OutlinedTextField(
                         value = nameText,
                         onValueChange = { nameText = it },
-                        label = { Text("Content Name") },
+                        label = { Text(categoryLabel) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -442,7 +484,8 @@ fun TaxonomyScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        viewModel.updateTag(tagToEdit.copy(name = nameText, parentId = selectedSubjectId))
+                        val parentId = if (tagToEdit.category.equals(Tag.CATEGORY_CONTENT, true)) selectedSubjectId else if (tagToEdit.category.equals(Tag.CATEGORY_INTENT, true)) selectedIntentParentId else null
+                        viewModel.updateTag(tagToEdit.copy(name = nameText, parentId = parentId))
                     }
                 ) {
                     Text("Save")

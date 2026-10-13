@@ -325,9 +325,17 @@ fun GearLibraryScreen(
                                         10 -> viewModel.showAddIntentDialog()
                                     }
                                 },
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp, pressedElevation = 12.dp),
                                 modifier = Modifier.navigationBarsPadding()
                             ) {
-                                Icon(painterResource(R.drawable.ic_add), contentDescription = stringResource(R.string.action_add))
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_add),
+                                    contentDescription = stringResource(R.string.action_add),
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(28.dp)
+                                )
                             }
                         }
                     }

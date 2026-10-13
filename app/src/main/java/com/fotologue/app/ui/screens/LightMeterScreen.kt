@@ -381,8 +381,9 @@ fun LightMeterScreenContent(
                 actions = {
                     IconButton(onClick = onStartCalibration) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_handyman),
-                            contentDescription = "Pro Calibration Wizard"
+                            painter = painterResource(R.drawable.brightness_auto_24px),
+                            contentDescription = "Sensor Calibration Wizard",
+                            tint = Color.White
                         )
                     }
                 },

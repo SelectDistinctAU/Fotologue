@@ -76,6 +76,7 @@ fun TimelineScreen(
         onAddLogClick = onAddLogClick,
         onLogClick = onLogClick,
         onGearLibraryClick = onGearLibraryClick,
+        onTaxonomyClick = onTaxonomyClick,
         onSettingsClick = onSettingsClick,
         onContactSheetClick = onContactSheetClick,
         onLabClick = onLabClick,
@@ -137,8 +138,8 @@ fun TimelineScreenContent(
     if (showFoundationSyncDialog) {
         AlertDialog(
             onDismissRequest = { showFoundationSyncDialog = false },
-            title = { Text("Share Foundation Additions?") },
-            text = { Text("You have added new gear or materials locally. Would you like to submit these additions to the Base Camp for review?\n\nSelecting 'Export Logs Only' will exclude your new items.") },
+            title = { Text("Share Reference Data with Station?") },
+            text = { Text("You have added new gear or materials locally. Would you like to submit these additions to Station for review?\n\nSelecting 'Export Logs Only' will exclude your new items.") },
             confirmButton = {
                 Button(onClick = {
                     showFoundationSyncDialog = false
@@ -148,7 +149,7 @@ fun TimelineScreenContent(
                     onSetIncludeFoundationData(true)
                     zipExportLauncher.launch("fotologue_export_${dateFormat.format(Date())}.zip")
                 }) {
-                    Text("Share with Base")
+                    Text("Share with Station")
                 }
             },
             dismissButton = {
@@ -290,9 +291,17 @@ fun TimelineScreenContent(
             if (!isSelectionMode && isOnboardingComplete) {
                 FloatingActionButton(
                     onClick = onAddLogClick,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp, pressedElevation = 12.dp),
                     modifier = Modifier.navigationBarsPadding()
                 ) {
-                    Icon(painterResource(R.drawable.list_alt_add_24px), contentDescription = stringResource(R.string.add_log))
+                    Icon(
+                        painter = painterResource(R.drawable.list_alt_add_24px),
+                        contentDescription = stringResource(R.string.add_log),
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(28.dp)
+                    )
                 }
             }
         }

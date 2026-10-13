@@ -105,11 +105,16 @@ fun AddLogScreen(
                 onClick = {
                     viewModel.saveLog()
                     onBack()
-                }
+                },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp, pressedElevation = 12.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_check),
-                    contentDescription = if (viewModel.editingLogId != null) stringResource(R.string.save_changes) else stringResource(R.string.save_log)
+                    contentDescription = if (viewModel.editingLogId != null) stringResource(R.string.save_changes) else stringResource(R.string.save_log),
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(28.dp)
                 )
             }
         }
