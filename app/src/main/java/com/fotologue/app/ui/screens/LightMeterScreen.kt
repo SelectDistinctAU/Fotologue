@@ -223,6 +223,7 @@ fun LightMeterScreen(
                         isFaceDetectionEnabled = { viewModel.isFaceDetectionEnabled.value },
                         onEvCalculated = { viewModel.onEvCalculated(it) },
                         onRawLuminanceCalculated = { viewModel.onRawLuminanceCalculated(it) },
+                        onHistogramCalculated = viewModel::onHistogramCalculated,
                         onFaceDetected = viewModel::onFaceDetected
                     ))
 
@@ -552,6 +553,60 @@ private fun CameraPreviewContent(
                 mode = uiState.meteringMode,
                 spotRect = uiState.spotRect
             )
+
+            // ZEBRA CLIPPING OVERLAY CANVAS
+            if (uiState.hasHighlightClipping || uiState.hasShadowClipping) {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val w = size.width
+                    val h = size.height
+                    val stripeWidth = 16f
+                    if (uiState.hasHighlightClipping) {
+                        for (i in -h.toInt()..w.toInt() step 36) {
+                            drawLine(
+                                color = Color.Red.copy(alpha = 0.35f),
+                                start = Offset(i.toFloat(), 0f),
+                                end = Offset(i.toFloat() + h, h),
+                                strokeWidth = stripeWidth
+                            )
+                        }
+                    }
+                    if (uiState.hasShadowClipping) {
+                        for (i in -h.toInt()..w.toInt() step 36) {
+                            drawLine(
+                                color = Color.Blue.copy(alpha = 0.35f),
+                                start = Offset(i.toFloat() + h, 0f),
+                                end = Offset(i.toFloat(), h),
+                                strokeWidth = stripeWidth
+                            )
+                        }
+                    }
+                }
+            }
+
+            // LIVE 11-ZONE HISTOGRAM BOX OVERLAY
+            if (uiState.histogramBins.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(12.dp)
+                        .size(130.dp, 60.dp)
+                        .background(Color.Black.copy(alpha = 0.6f), shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp))
+                        .padding(6.dp)
+                ) {
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        val maxCount = (uiState.histogramBins.maxOrNull() ?: 1).coerceAtLeast(1)
+                        val stepX = size.width / 11f
+                        uiState.histogramBins.forEachIndexed { index, binCount ->
+                            val barHeight = (binCount.toFloat() / maxCount) * size.height
+                            drawRect(
+                                color = if (index == 0) Color.Blue else if (index == 10) Color.Red else Color.LightGray,
+                                topLeft = Offset(index * stepX, size.height - barHeight),
+                                size = Size(stepX - 2f, barHeight)
+                            )
+                        }
+                    }
+                }
+            }
         }
     } else {
         PermissionRequestContent(

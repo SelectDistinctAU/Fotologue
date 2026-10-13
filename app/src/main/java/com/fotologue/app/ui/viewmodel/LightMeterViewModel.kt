@@ -177,6 +177,16 @@ class LightMeterViewModel @Inject constructor(
         _uiState.update { it.copy(rawLuminance = luminance) }
     }
 
+    fun onHistogramCalculated(bins: IntArray, highlightClipped: Boolean, shadowClipped: Boolean) {
+        _uiState.update {
+            it.copy(
+                histogramBins = bins,
+                hasHighlightClipping = highlightClipped,
+                hasShadowClipping = shadowClipped
+            )
+        }
+    }
+
     fun onFaceDetected(detected: Boolean) {
         _uiState.update { it.copy(faceDetected = detected) }
         updateSuggestions()
@@ -313,6 +323,9 @@ data class LightMeterUiState(
     val spotRect: Rect? = null,
     val zoneAnalysis: com.fotologue.app.util.ZoneSystemAnalysis? = null,
     val spotEvHistory: List<Double> = emptyList(),
+    val histogramBins: IntArray = IntArray(11),
+    val hasHighlightClipping: Boolean = false,
+    val hasShadowClipping: Boolean = false,
     val effectiveFocalLength: Double? = null,
     val effectiveMaxAperture: Double? = null,
     val currentFocalLength: Int? = null,

@@ -22,6 +22,7 @@ class LuminanceAnalyzer(
     private val isFaceDetectionEnabled: () -> Boolean = { false },
     private val onEvCalculated: (Double) -> Unit,
     private val onRawLuminanceCalculated: (Double) -> Unit = {},
+    private val onHistogramCalculated: (IntArray, Boolean, Boolean) -> Unit = { _, _, _ -> },
     private val onFaceDetected: (Boolean) -> Unit = {}
 ) : ImageAnalysis.Analyzer {
 
@@ -69,19 +70,34 @@ class LuminanceAnalyzer(
 
                 val step = if ((right - left) * (bottom - top) > 10000) 4 else 1
 
+                var highlightClippedCount = 0
+                var shadowClippedCount = 0
+                val zoneHistogram = IntArray(11)
+
                 val limit = buffer.limit()
                 for (y in top..bottom step step) {
                     for (x in left..right step step) {
                         val index = y * rowStride + x * pixelStride
                         if (index in 0 until limit) {
-                            sum += buffer.get(index).toInt() and 0xFF
+                            val lum = buffer.get(index).toInt() and 0xFF
+                            sum += lum
                             count++
+
+                            if (lum >= 250) highlightClippedCount++
+                            if (lum <= 5) shadowClippedCount++
+
+                            val zoneIdx = (lum * 11 / 256).coerceIn(0, 10)
+                            zoneHistogram[zoneIdx]++
                         }
                     }
                 }
 
                 val avgLuminance = if (count > 0) sum.toDouble() / count else 0.0
                 onRawLuminanceCalculated(avgLuminance)
+
+                val hasHighlightClipping = count > 0 && highlightClippedCount > (count * 0.01)
+                val hasShadowClipping = count > 0 && shadowClippedCount > (count * 0.01)
+                onHistogramCalculated(zoneHistogram, hasHighlightClipping, hasShadowClipping)
 
                 val metadata = getLatestCaptureResult()
                 
