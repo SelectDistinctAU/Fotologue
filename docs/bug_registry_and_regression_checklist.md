@@ -1269,6 +1269,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-118: Desktop Consumables Form Preset Button Target Fix
+- **Platform**: Fotologue Desktop (`Main.kt`)
+- **Reported**: October 2026
+- **Symptom**: Clicking "Select from Presets" in Consumables form opened Lab Equipment presets modal.
+- **Root Cause**: Misdirected button click handler target calling `showEquipmentPresetsDialog = true`.
+- **Resolution**:
+  1. Implemented dedicated `ConsumablePresetsDialog` (`showConsumablePresetsDialog`) in `Main.kt` searching consumable presets (*Ilford Rapid Fixer*, *Kodak D-76*, *Adox Rodinal*, *Ilford Multigrade RC Paper*).
+  2. Updated Consumables form preset button to open `showConsumablePresetsDialog`.
+  3. Audited all 14 Reference Admin form targets across Desktop.
+- **Regression Test Case**: Open Desktop App $\to$ `Reference & Admin` $\to$ `Consumables` $\to$ click `[ Select from Presets ]` $\to$ verify `Select Consumable Chemistry from Presets` modal opens cleanly.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
