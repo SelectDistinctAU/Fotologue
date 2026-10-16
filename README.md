@@ -1,10 +1,10 @@
 # Fotologue 📸🎞️
 
-**Version:** 3.0.0 | **Last Updated:** October 2026 | **Audience:** Photographers, Directors of Photography (DPs), Maintainers & Developers
+**Version:** 3.0.0 | **Last Updated:** October 2026 | **Audience:** Photographers, Directors of Photography (DPs), Darkroom Printers, Maintainers & Developers
 
 **A Photographic Catalogue Suite — Equally Empowering All Painting-With-Light Artists.**
 
-Fotologue (*Foto* + *Catalogue*) is a high-precision, privacy-first cross-platform application designed to bridge physical film shooting, wet darkroom craftsmanship, and lifetime digital archiving. Built around the **4-Stage Division of Labour (`Field → Lab → Station → Archive`)**, Fotologue replaces paper shot lists and darkroom notebooks with a robust, metadata-rich catalogue ecosystem.
+Fotologue (*Foto* + *Catalogue*) is a high-precision, privacy-first cross-platform application designed to bridge physical film shooting, wet darkroom craftsmanship, and lifetime digital archiving. Built around a **Modular Operational Architecture**, Fotologue replaces paper shot lists and darkroom notebooks with a robust, metadata-rich catalogue ecosystem across Mobile and Desktop.
 
 ---
 
@@ -14,40 +14,86 @@ Fotologue (*Foto* + *Catalogue*) is a high-precision, privacy-first cross-platfo
 
 ---
 
-## 🏛️ Application Division of Labour (`Field → Lab → Station → Archive`)
+## 🏛️ Modular Application Architecture
+
+Fotologue provides an integrated, non-linear workflow tailored to whatever photographic task you are performing:
 
 ```
                           FOTOLOGUE APPLICATION HUB
                                       │
-     ┌──────────────────┬─────────────┴────────────┬──────────────────┐
-     ▼                  ▼                          ▼                  ▼
-1. FIELD             2. LAB                     3. STATION         4. ARCHIVE
-Exposures & Metering Darkroom Processing        Digital Contact    Master Negative
-Roll & Frame Logs    Chemistry & Paper Stock    Sheets & Exposure  Registry & JSON
-Smart Gear Kits      Contacts Directory         Analytics          Vault / XMP Export
+     ┌────────────────────────────────┴────────────────────────────────┐
+     ▼                                                                 ▼
+1. MOBILE STAGING PORTAL (7 OPERATIONAL MODULES)            2. DESKTOP COMMAND CENTER (4 STAGES)
+• Module 1: CAMERA GEAR (Cameras, Lenses, Kits)              • Stage 1: Ingestion & Vault Inflow
+• Module 2: TAXONOMY & TAGS (Subject, Content, Intent)       • Stage 2: Master QA & Detail Workbench
+• Module 3: FIELD (In-situ Exposure & Zone System)           • Stage 3: Multi-Frame Image Tagging
+• Module 4: CONTACTS DIRECTORY (People & Vendors)            • Stage 4: Reference Data Administration
+• Module 5: LAB (Wet Processing & Enlarger Recipes)            (14-Category Sortable Data Grid)
+• Module 6: STATION (Contact Sheets & Analytics)
+• Module 7: ARCHIVE (JSON Vault & XMP Sidecar Exports)
 ```
 
-### 1. 🟢 FIELD (In-situ Exposure & Observation)
-*   **Tactile Field Logging**: Record Who, What, When, Where, Why, and How for every exposure in seconds.
-*   **Pro Light Meter**: Calibrated spot/centre-weighted light metering with live C-41, E-6, and B&W pre-visualization previews. Automatic exposure compensation calculation for ND filters (*Hoya ND8* +3 stops), polarizers (*CPL* +1.5 stops), and contrast filters (*Yellow K2* +1 stop).
-*   **Relational Gear Library & Cloud Presets**: Instant 1-tap setup covering **82 Master Cameras**, **93 Master Lenses**, Viewfinders, Teleconverters, Filters, and Flashes.
-*   **1-Click Cloud Preset Refreshing**: Tap **`[ 🔄 Refresh Master Presets from Cloud ]`** in Settings to fetch live catalog updates over HTTPS directly from GitHub without needing an App Store update.
-*   **Smart Kits**: One-tap loading for favourite Camera + Lens + Film/Digital Sensor + Accessory combinations.
+---
 
-### 2. 🧪 LAB (Wet Darkroom Processing & Inventory)
-*   **Master Item Catalogue**: 30 Darkroom Chemistry & Paper Presets (*Kodak D-76, Xtol, HC-110; Ilford ID-11, DD-X, Rapid Fixer, Multigrade Papers; Rodinal; Cinestill Cs41 & Cs63; Tetenal*) and 37 Lab Equipment Presets (*Beseler 23C III, Durst M605/L1200, LPL 7700/4500II, Paterson Super System 4, Jobo 1520/2520, GraLab 300, Peak Grain Scope*).
-*   **Physical Stock Lots**: Track stock in-flow from vendor to darkroom (*`🚚 IN_TRANSIT` $\to$ `🟢 ON_HAND` $\to$ `🟡 IN_USE` $\to$ `🔴 EXHAUSTED`*).
-*   **Contacts Directory & 1-Click Vendor Import**: Import top international and Australian suppliers & processing labs (*B&H Photo Video, Adorama, Analogue Wonderland, Camera Electronic Perth, Leederville Cameras, Fitzgerald Photo, Rewind Photo Lab, Vanbar, Walkens, Hillvale*).
+## 📱 Mobile Staging Portal (7 Specialized Operational Modules)
 
-### 3. 🔬 STATION (Studio Research, Analytics & Reflection)
-*   **Digital Contact Sheets**: Interactive grid views organized by film roll / digital shoot session with 1-to-1 rebate frame-gap alignment.
-*   **Performance Logs & Knowledge Base**: Track frame quality (*Keepers vs. Rejects*) and classify errors between **System Errors** (*Expired Chemistry, Fogged Paper, Light Leak*) and **Photographer Learning** (*Framing, Exposure, Focus*).
-*   **Printable PDF Proof Sheets**: A4 PDF proof sheet generator ready for printing or binder archiving.
+### 1. ⚙️ CAMERA GEAR
+* **82 Master Cameras & 26 Master Lenses**: Pre-loaded catalog covering SLR, Rangefinder, TLR, Medium Format, and Large Format bodies from Leica, Hasselblad, Nikon, Canon, Pentax, Olympus, Yashica, Rolleiflex, and Mamiya.
+* **Integrated Fixed Taking Lenses**: Normalized taking lens specs (*Yashinon 80mm f/3.5*, *Canonet 40mm f/1.7*) for TLRs and fixed-lens rangefinders.
+* **Complete Accessories Suite**: Teleconverters, Filters with exposure compensation factors (*Hoya ND8* +3 stops, *CPL* +1.5 stops, *Yellow K2* +1 stop), Flashes, Viewfinders, and Kit Bags.
 
-### 4. 🏛️ ARCHIVE (Lifetime Preservation & Master Vault)
-*   **Canonical Native JSON Vault**: Single-source-of-truth backup files (`backup_YYYYMMDD_HHMM.json`) containing the full relational data graph.
-*   **Non-Destructive Merge Import**: Re-import historical `Roll.Frame ID` records from Google Drive / Base Camp archives without thumbnail disk bloat.
-*   **ISO 16684 (XMP) Export**: Generates industry-standard sidecars with 3-Axis Tag hierarchies (`Subject`, `Content`, `Intent`) for desktop DAMs (digiKam, Lightroom, darktable).
+### 2. 🏷️ TAXONOMY & TAGS
+* **3-Axis Hierarchical Indexing**: Categorize every exposure across **Subject** (Who/What), **Content** (Scene elements), and **Intent** (Creative purpose).
+* **Parent Category Grouping**: Organize Content under parent Subjects (*Urban/built environment*, *Nature*, *People & Portraits*) and Intent under parent Intent Groups (*Study*, *Series*, *Portfolio*, *Commercial*, *Experimental*).
+* **Custom Tag Curation**: Create, edit, and reorganize custom tags directly in app.
+
+### 3. 🥾 FIELD (In-situ Exposure Logging & Zone System Spot Metering)
+* **Ansel Adams 10-Zone System Viewfinder**: Tap any spot on the live camera viewfinder feed to inspect its exact Ansel Adams Zone (**Zone 0 Deep Shadow $\to$ Zone V 18% Mid-Gray $\to$ Zone X Specular Highlight**).
+* **Dynamic Range Contrast Calculator**: Measures total scene contrast range (in EV/Stops) and calculates $N \pm 1$ development recommendations (**$N-1$ Pull** for high contrast $>10$ stops; **$N+1$ Push** for flat contrast $<5$ stops).
+* **Real-Time 11-Zone Histogram & Zebra Clipping Overlays**: Live 11-zone histogram graph with animated **Red Zebra Stripes** on blown highlights ($\ge 250$) and **Blue Zebra Stripes** on crushed shadows ($\le 5$).
+* **Pro Calibration Wizard (`brightness_auto_24px`)**: 2-stage hardware sensor tuning (*The Void* noise floor & *The Balance* 18% grey card signal gain multiplier).
+
+### 4. 🎴 CONTACTS DIRECTORY (People & Vendor Management)
+* **Pillar 2 Directory**: Manage Suppliers, Processing Labs, Repair Technicians, Friends, and Gear Borrowers.
+* **Native Phone Contact Import**: 1-tap contact picker imports contacts directly from your phone address book without address book harvesting.
+
+### 5. 🧪 LAB (Wet Darkroom Processing & Enlarger Print Recipes)
+* **Film Processing Timer Session**: Multi-stage development wizard (*Developer $\to$ Stop Bath $\to$ Fixer $\to$ Wash*) with auto-recommended times (*HP5+ ID-11* 11m, *Tri-X D-76* 9m45s, *C-41* 3m15s, *E-6* 6m00s) and haptic/audio agitation alerts (**"🔔 AGITATE NOW: 10s"**).
+* **Enlarger Print Recipe Engine**: Track paper stock, contrast grade filters (0–5 in half-stop steps), test strip increments, dodge/burn notes, **✓ KEEPER** vs **✕ REJECT** outcomes, controlled **Darkroom Defect Causes** (*Dust/Scratch*, *Exhausted Chemistry*, *Paper Fogged*), and multi-select learning tags with custom tag creation.
+* **3-Pillar Custody, Loan & Repair Ledger**: Track gear loans, rentals in, service/repair tickets, pre-arrival orders (*In Transit* $\to$ *Mark Delivered*), and physical storage locations (*Cabinet*, *Shelf*, *Dry Box*, *Vault*).
+* **Darkroom Red Shift & White Light Sensor Guard**: 100% zero-white red shift mode with `DarkroomLightGuard` (`Sensor.TYPE_LIGHT`) white light intrusion alerts during active darkroom sessions.
+
+### 6. 🔬 STATION (Studio Analysis & Reflection)
+* **Digital Contact Sheets**: Interactive grid views organized by film roll / shoot session with 1-to-1 rebate frame-gap alignment.
+* **Printable PDF Proof Sheets**: High-resolution A4/Letter PDF contact sheets ready for printing or binder archiving.
+
+### 7. 🏛️ ARCHIVE (Master Vault & XMP Sidecar Exports)
+* **Canonical JSON Vault**: Single-source-of-truth backup files (`backup_YYYYMMDD_HHMM.json`) containing the full relational data graph.
+* **Non-Destructive Merge Import**: Re-import historical `Roll.Frame ID` records without thumbnail disk bloat.
+* **Adobe XMP Core 5.6 Export**: Generates compliant `.xmp` sidecars with EXIF exposure, GPS coordinates, IPTC creator/copyright, and Lightroom/digiKam 3-level taxonomy paths (`lr:hierarchicalSubject`).
+
+---
+
+## 🖥️ Desktop Command Center (4 Processing Stages)
+
+* **Stage 1: Ingestion & Vault Inflow**: Import ZIP backup archives, process Job Lots, and extract scan thumbnails.
+* **Stage 2: Master QA & Detail Workbench**: Full-fidelity Master Rolls, frame inspection with **ISO 3664 Neutral Photo Review Canvas (#505050 Mid-Gray)**, ExifTool geotagging, and XMP sidecar dispatcher.
+* **Stage 3: Multi-Frame Image Tagging**: Batch 3-axis taxonomy tagging across multiple frames.
+* **Stage 4: Reference Data Administration**: 14-Category Sortable Data Grid for Cameras, Lenses, Films, Kit Bags, Teleconverters, Filters, Flashes, Viewfinders, Contacts, Consumables, Lab Equipment, Storage Locations, Pre-Arrival Orders, and Custody Ledger.
+
+---
+
+## 🎨 Theme Palette Suite & ISO 3664 Photo Canvas
+
+Customizable across Mobile and Desktop with 1-tap live recoloring:
+- **System Default**: Dynamic Material You / M3 Dark.
+- **Daylight Clean (Light)**: High-contrast bright daylight interface (`#FFFFFF` background, `#1976D2` blue accent, `#1C1B1F` pitch black text).
+- **Flat Darcula (IntelliJ)**: Canonical Darcula IDE (`#2B2B2B` surface, `#82AAFF` ice blue accent, `#FFFFFF` crisp text).
+- **Flat Mac Dark (macOS)**: Canonical macOS Dark (`#1E1F22` surface, `#64B5F6` luminous sky blue, `#FFFFFF` crisp text).
+- **Flat Nord (Arctic Cyan)**: Canonical Nord (`#2E3440` Polar Night, `#88C0D0` Frost cyan, `#ECEFF4` Nord snow white text).
+- **Silver Gelatin (B&W)**: High-contrast platinum silver darkroom print (`#141414` charcoal, `#FFFFFF` platinum white text).
+- **Warm Sepia (Toned)**: Gentle warm sepia gold (`#D4A373`) on deep dark espresso (`#191512`) with soft warm ivory text (`#F5E6D3`).
+- **Red Shift (Night Vision - Mobile Only)**: 100% zero-white crimson red (`#FF0000` / `#330000` on `#000000` pitch black) for astrophotography and wet darkrooms.
 
 ---
 
@@ -63,30 +109,17 @@ For catalog maintainers, Fotologue includes a visual **Master Preset Authoring G
 
 ---
 
-## 🎬 For Directors of Photography (DPs), Hybrid & Digital Artists
-
-> *"Discipline for Digital, Freedom for Film"*
-
-Fotologue provides digital photographers, DPs, and hybrid artists with **unmatched field metadata control, RAW sequence matching, and zero-trust privacy**:
-- 🎯 **Capture Intent at Exposure**: Record creative lighting intent before SD cards are dumped and context is lost.
-- ⚡ **RAW & Scanner Sequence Matching**: Auto-names exported `.xmp` sidecars (*e.g. `_DSF1024.xmp`*) to match RAW file sequences from Fujifilm, Nikon, Canon, Sony, or flatbed scanners.
-- 🧰 **Assignment Smart Kits**: One-tap pre-loading for commercial editorial, street, or landscape kits.
-
-👉 **Read the full [WIIFY Guide for DPs & Digital Photographers](docs/dp_and_digital_photographers_guide.md)** for detailed feature breakdowns and workflow comparisons.
-
----
-
 ## 🔒 Privacy & Security
 
 **Privacy is the core of Fotologue's architecture.** See our full [Privacy Policy](PRIVACY_POLICY.md) for complete details.
-*   **100% Local-First**: No required user accounts, no cloud database tracking, and zero user telemetry.
-*   **Privacy-First Contact Picker**: Leverages Android's native `PickContact()` contract (zero address book harvesting).
-*   **Optional HTTPS Cloud Refresh**: Optional 1-click cloud refresh fetches public read-only catalog JSON files with zero user data transmitted.
+* **100% Local-First**: No required user accounts, no cloud database tracking, and zero user telemetry.
+* **Privacy-First Contact Picker**: Leverages Android's native `PickContact()` contract (zero address book harvesting).
+* **Optional HTTPS Cloud Refresh**: Optional 1-click cloud refresh fetches public read-only catalog JSON files directly from GitHub with zero user data transmitted.
 
 ---
 
 ## 🧪 Quality Assurance
 
 Fotologue is built to professional engineering standards.
-*   **Unit Tests**: 62 core logic unit tests covering light meter calibration math, session management, camera-gear cross-referencing, macro copy preset formatting, PDF proof sheet generation, Room migrations v29 to v48, and JSON merge imports.
-*   **Verification**: Field-tested on Pixel devices, emulators, and Windows 11 Desktop builds.
+* **Unit Tests**: 62 core logic unit tests covering light meter calibration math, Ansel Adams zone system calculations, session management, camera-gear cross-referencing, macro copy preset formatting, PDF proof sheet generation, Room migrations v29 to v50, and JSON merge imports.
+* **Verification**: Field-tested on Pixel devices, emulators, and Windows 11 Desktop builds.
