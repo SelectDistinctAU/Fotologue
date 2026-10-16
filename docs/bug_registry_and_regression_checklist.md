@@ -1306,6 +1306,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-121: Un-Squashed Exposure Selection & Auto-Scroll Sweet Spot
+- **Platform**: Fotologue Mobile (`app` / `LightMeterScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: LightMeterScreen ran out of vertical space on mobile screens, squashing exposure setting selection cards (`f/stop Shutter [Use]`) at the bottom.
+- **Root Cause**: Excessive vertical height consumed by 3-line Zone Card and standalone 60dp Focal Length row.
+- **Resolution**:
+  1. De-cluttered tool header into a single 1-line horizontal row with compact Zone Badge (`🎯 Zone V`).
+  2. Hidden focal length adjustment controls for prime/fixed lenses (`isZoomLens == false`), rendering compact inline controls only for Zoom lenses.
+  3. Implemented `LazyListState` initial auto-scroll to the recommended exposure "sweet spot" index (bypassing unusable overexposures at the top).
+  4. Allocated 100% of reclaimed bottom panel height to Exposure Selection cards.
+- **Regression Test Case**: Open Mobile App $\to$ `FIELD` $\to$ `Measure Exposure` $\to$ verify exposure selection cards render as unobstructed primary centerpiece with initial auto-scroll to recommended sweet spot.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
