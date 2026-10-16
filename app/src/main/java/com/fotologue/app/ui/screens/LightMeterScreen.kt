@@ -20,6 +20,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -631,156 +633,124 @@ private fun InputSettingsColumn(
     targetIso: Int,
     bottomPadding: Dp = 0.dp
 ) {
+    val listState = rememberLazyListState()
+    val isZoomLens = remember(uiState.lens) {
+        uiState.lens != null && uiState.lens.minFocalLength != null && uiState.lens.maxFocalLength != null && uiState.lens.minFocalLength != uiState.lens.maxFocalLength
+    }
+
+    val recommendedIndex = remember(uiState.suggestions) {
+        if (uiState.suggestions.isNotEmpty()) {
+            val sweetSpotIndex = uiState.suggestions.indexOfFirst { it.aperture == "f/5.6" || it.aperture == "f/8" || it.aperture == "f/8.0" }
+            if (sweetSpotIndex >= 0) sweetSpotIndex else uiState.suggestions.size / 2
+        } else 0
+    }
+
+    LaunchedEffect(uiState.suggestions) {
+        if (uiState.suggestions.isNotEmpty()) {
+            listState.animateScrollToItem(recommendedIndex)
+        }
+    }
+
     Column(modifier = modifier) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            val evText = stringResource(R.string.ev_display, uiState.currentEv)
-            Text(
-                text = evText,
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            
-            if (uiState.film != null) {
-                Spacer(modifier = Modifier.width(16.dp))
-                IconButton(onClick = onToggleFilmSimulation) {
-                    Icon(
-                        painter = painterResource(R.drawable.filter_b_and_w_24px),
-                        contentDescription = "Toggle Film Simulation",
-                        tint = if (uiState.isSimulatingFilm) MaterialTheme.colorScheme.primary 
-                               else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(onClick = onToggleMeteringMode) {
-                Text(
-                    if (uiState.meteringMode == MeteringMode.SPOT) stringResource(R.string.metering_mode_spot)
-                    else stringResource(R.string.metering_mode_center)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                stringResource(R.string.label_iso) + " $targetIso",
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-            )
-            uiState.filter?.let {
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "| ${it.name} (-${it.compensationStops} stops)",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                )
-            }
-        }
-
-        uiState.effectiveFocalLength?.let { ef ->
-            uiState.effectiveMaxAperture?.let { em ->
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "%.0fmm f/%.1f (Effective)".format(ef, em),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-
-        uiState.zoneAnalysis?.let { zone ->
-            Card(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-            ) {
-                Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(
-                        text = "🎯 ${zone.currentZone.romanNumeral}: ${zone.currentZone.description}",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "📊 Contrast Range: %.1f Stops (Min EV %.1f ... Max EV %.1f)".format(
-                            zone.contrastRangeStops, zone.minSpotEv, zone.maxSpotEv
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = "🧪 ${zone.recommendation.displayName}: ${zone.recommendation.description}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Large [-] and [+] Focal Length Fine-Tuning Controls
+        // ROW 1: EV READOUT, COMPACT ZONE BADGE & METERING MODE
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            val currentFL = uiState.currentFocalLength ?: 50
-            Text(
-                text = "Focal Length (${currentFL}mm):",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
             Row(verticalAlignment = Alignment.CenterVertically) {
-                FilledTonalIconButton(
-                    onClick = { onFocalLengthChanged((currentFL - 5).coerceAtLeast(14)) },
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Text("-", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold))
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
+                val evText = stringResource(R.string.ev_display, uiState.currentEv)
                 Text(
-                    text = "${currentFL}mm",
+                    text = evText,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Spacer(modifier = Modifier.width(12.dp))
+                uiState.zoneAnalysis?.let { zone ->
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Text(
+                            text = "🎯 ${zone.currentZone.romanNumeral}",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+            }
 
-                FilledTonalIconButton(
-                    onClick = { onFocalLengthChanged((currentFL + 5).coerceAtMost(800)) },
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Text("+", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold))
+            Button(
+                onClick = onToggleMeteringMode,
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    if (uiState.meteringMode == MeteringMode.SPOT) stringResource(R.string.metering_mode_spot)
+                    else stringResource(R.string.metering_mode_center),
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        // ROW 2: ISO, FILTER, EFFECTIVE SPECS & ZOOM CONTROLS (ZOOM LENSES ONLY)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "ISO $targetIso",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                )
+                uiState.filter?.let {
+                    Text(
+                        " | ${it.name} (-${it.compensationStops}st)",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                    )
+                }
+            }
+
+            if (isZoomLens) {
+                val currentFL = uiState.currentFocalLength ?: uiState.lens?.minFocalLength ?: 50
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    FilledTonalIconButton(
+                        onClick = { onFocalLengthChanged((currentFL - 5).coerceAtLeast(uiState.lens?.minFocalLength ?: 14)) },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Text("-", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "${currentFL}mm",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    FilledTonalIconButton(
+                        onClick = { onFocalLengthChanged((currentFL + 5).coerceAtMost(uiState.lens?.maxFocalLength ?: 800)) },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Text("+", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                    }
                 }
             }
         }
 
-        if (uiState.lens != null && (uiState.lens.minFocalLength != uiState.lens.maxFocalLength)) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                stringResource(
-                    R.string.focal_length_display,
-                    uiState.currentFocalLength ?: uiState.lens.minFocalLength
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall
-            )
-            Slider(
-                value = (uiState.currentFocalLength ?: uiState.lens.minFocalLength).toFloat(),
-                onValueChange = { onFocalLengthChanged(it.toInt()) },
-                valueRange = uiState.lens.minFocalLength.toFloat()..uiState.lens.maxFocalLength.toFloat(),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        Spacer(modifier = Modifier.height(10.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
+        // PRIMARY SHOT CATALOGUING WORKBENCH: UNOBSTRUCTED EXPOSURE SELECTION LIST
         LazyColumn(
+            state = listState,
             modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(bottom = bottomPadding + 16.dp)
         ) {
             items(uiState.suggestions) { suggestion ->
