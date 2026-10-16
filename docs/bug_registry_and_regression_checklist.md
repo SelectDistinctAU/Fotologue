@@ -1294,6 +1294,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-120: Documentation Alignment with Modular Application Architecture
+- **Platform**: Core Documentation (`README.md`, `docs/user_guide.md`)
+- **Reported**: October 2026
+- **Symptom**: Legacy documentation described a rigid linear "4-Stage Division of Labour", which no longer held true for the app's modular architecture.
+- **Root Cause**: Un-updated documentation files predating the Staging Portal module architecture.
+- **Resolution**:
+  1. Overhauled `README.md` and `docs/user_guide.md` to document the **Modular Operational Architecture**: 7 Mobile Staging Portal Modules (`CAMERA GEAR`, `TAXONOMY & TAGS`, `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE`) and 4 Desktop Command Center Stages (`1. Ingestion`, `2. Master QA`, `3. Image Tagging`, `4. Reference Data Administration`).
+  2. Documented all newly implemented capabilities: Zone System Viewfinder spot metering, 11-Zone real-time histogram, red/blue zebra clipping overlays, wet darkroom agitation countdown timer, enlarger print recipe logger, 3-pillar custody ledger, live theme switcher suite, and ISO 3664 neutral photo review canvas.
+- **Regression Test Case**: Review `README.md` $\to$ verify all 7 Mobile Staging Portal Modules and 4 Desktop Command Center Stages are accurately documented.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
