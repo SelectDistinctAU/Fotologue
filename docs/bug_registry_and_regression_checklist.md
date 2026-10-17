@@ -1332,6 +1332,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-123: Exact Material Symbols Mobile Wrench Vector Icon
+- **Platform**: Fotologue Mobile (`app` / `mobile_wrench_24px.xml`)
+- **Reported**: October 2026
+- **Symptom**: Top-bar sensor calibration icon did not match the user-supplied Material Symbols Mobile Wrench specification.
+- **Root Cause**: Standalone wrench vector path instead of phone frame + wrench overlay composite vector path.
+- **Resolution**: Updated `mobile_wrench_24px.xml` to match the exact Material Symbols Mobile Wrench specification (rounded smartphone frame with top camera dot and bottom-right wrench overlay).
+- **Regression Test Case**: Open Mobile App $\to$ `FIELD` $\to$ `Measure Exposure` $\to$ verify top-bar calibration button displays the exact Mobile Wrench icon.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
