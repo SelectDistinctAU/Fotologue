@@ -384,7 +384,7 @@ fun LightMeterScreenContent(
                 actions = {
                     IconButton(onClick = onStartCalibration) {
                         Icon(
-                            painter = painterResource(R.drawable.brightness_auto_24px),
+                            painter = painterResource(R.drawable.mobile_wrench_24px),
                             contentDescription = "Sensor Calibration Wizard",
                             tint = Color.White
                         )
@@ -747,25 +747,64 @@ private fun InputSettingsColumn(
         Spacer(modifier = Modifier.height(10.dp))
 
         // PRIMARY SHOT CATALOGUING WORKBENCH: UNOBSTRUCTED EXPOSURE SELECTION LIST
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(bottom = bottomPadding + 16.dp)
-        ) {
-            items(uiState.suggestions) { suggestion ->
-                ExposureSuggestionItem(
-                    suggestion = suggestion,
-                    onClick = {
-                        if (isThumbnailEnabled) {
-                            onTakeThumbnail { uri ->
-                                onUseSettings(suggestion.copy(thumbnailUri = uri))
+        Box(modifier = Modifier.weight(1f)) {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(bottom = bottomPadding + 16.dp, end = 10.dp)
+            ) {
+                items(uiState.suggestions) { suggestion ->
+                    ExposureSuggestionItem(
+                        suggestion = suggestion,
+                        onClick = {
+                            if (isThumbnailEnabled) {
+                                onTakeThumbnail { uri ->
+                                    onUseSettings(suggestion.copy(thumbnailUri = uri))
+                                }
+                            } else {
+                                onUseSettings(suggestion)
                             }
-                        } else {
-                            onUseSettings(suggestion)
                         }
-                    }
-                )
+                    )
+                }
+            }
+
+            // HIGH-VISIBILITY VERTICAL SCROLLBAR INDICATOR
+            if (uiState.suggestions.size > 1) {
+                val primaryColor = MaterialTheme.colorScheme.primary
+                val totalItems = uiState.suggestions.size
+                val firstVisible = listState.firstVisibleItemIndex
+                val thumbRatio = (1f / totalItems.toFloat()).coerceAtLeast(0.18f)
+                val scrollRatio = (firstVisible.toFloat() / (totalItems - 1).coerceAtLeast(1).toFloat()).coerceIn(0f, 1f)
+
+                Canvas(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .fillMaxHeight()
+                        .width(6.dp)
+                        .padding(vertical = 4.dp)
+                ) {
+                    val trackHeight = size.height
+                    val thumbHeight = trackHeight * thumbRatio
+                    val thumbY = (trackHeight - thumbHeight) * scrollRatio
+
+                    // Track Background Line
+                    drawRoundRect(
+                        color = Color.Gray.copy(alpha = 0.25f),
+                        topLeft = Offset(0f, 0f),
+                        size = Size(size.width, trackHeight),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(3f, 3f)
+                    )
+
+                    // Active Thumb Indicator
+                    drawRoundRect(
+                        color = primaryColor.copy(alpha = 0.85f),
+                        topLeft = Offset(0f, thumbY),
+                        size = Size(size.width, thumbHeight),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(3f, 3f)
+                    )
+                }
             }
         }
     }
