@@ -1320,6 +1320,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-122: Sensor Calibration Wrench Icon & Exposure List Vertical Scrollbar Integration
+- **Platform**: Fotologue Mobile (`app` / `mobile_wrench_24px.xml`, `LightMeterScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Sensor calibration wizard icon was ambiguous; exposure settings list lacked a visual scrollbar making scrollable alternatives non-obvious.
+- **Root Cause**: Ambiguous top-bar icon resource; missing LazyColumn scrollbar decorator.
+- **Resolution**:
+  1. Created `mobile_wrench_24px.xml` M3 vector icon and updated Light Meter top bar calibration button.
+  2. Implemented a custom high-visibility vertical scrollbar canvas indicator on the right edge of the exposure settings `LazyColumn` in `LightMeterScreen.kt`.
+- **Regression Test Case**: Open Mobile App $\to$ `FIELD` $\to$ `Measure Exposure` $\to$ verify top-bar calibration button displays clear Wrench icon and exposure settings list renders a visible vertical scrollbar.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
