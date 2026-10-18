@@ -1342,6 +1342,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-124: Native Windows Desktop Distribution Toolchain Setup
+- **Platform**: Fotologue Desktop (`desktop/build.gradle.kts`)
+- **Reported**: October 2026
+- **Symptom**: Executing `./gradlew :desktop:packageMsi` failed with `jpackage.exe is missing`.
+- **Root Cause**: Android Studio embedded JBR lacks jpackage.exe installer tool.
+- **Resolution**: Configured `compose.desktop.application.javaHome` in `desktop/build.gradle.kts` targeting JDK 21 runtime with jpackage.exe, and added convenience `:desktop:packageWindows` Gradle task generating standalone Windows `.msi` and `.exe` installers.
+- **Regression Test Case**: Run `./gradlew :desktop:packageWindows` $\to$ verify build finishes successfully and generates `FotologueDesktop-1.0.0.msi` (122.5MB) and `FotologueDesktop-1.0.0.exe` (123.2MB).
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
