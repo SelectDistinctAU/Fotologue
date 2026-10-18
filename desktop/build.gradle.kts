@@ -23,6 +23,7 @@ compose.desktop {
     application {
         mainClass = "com.fotologue.desktop.MainKt"
         jvmArgs("--enable-native-access=ALL-UNNAMED")
+        javaHome = "C:/Users/geewy/.jdks/jbr-21.0.11"
         nativeDistributions {
             targetFormats(
                 TargetFormat.Exe,
@@ -43,4 +44,10 @@ tasks.register<JavaExec>("runMaintainer") {
     mainClass.set("com.fotologue.desktop.MaintainerAppKt")
     classpath = sourceSets["main"].runtimeClasspath
     jvmArgs("--enable-native-access=ALL-UNNAMED")
+}
+
+tasks.register("packageWindows") {
+    group = "distribution"
+    description = "Packages both Windows MSI and EXE native installers for Fotologue Desktop"
+    dependsOn("packageMsi", "packageExe")
 }
