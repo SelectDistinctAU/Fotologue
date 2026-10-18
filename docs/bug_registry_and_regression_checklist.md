@@ -1352,6 +1352,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-125: Java 21 Bytecode Target Alignment for Packaged Desktop Application
+- **Platform**: Fotologue Desktop (`desktop/build.gradle.kts`)
+- **Reported**: October 2026
+- **Symptom**: `FotologueDesktop.exe` exited silently on startup with `UnsupportedClassVersionError: class file version 69.0` (Java 25).
+- **Root Cause**: Kotlin compiler targeted Java 25 while jpackage bundled Java 21 JRE runtime.
+- **Resolution**:
+  1. Configured `kotlin { jvmToolchain(21) }` in `desktop/build.gradle.kts` to target Java 21 bytecode (class file version 65.0).
+  2. Enabled `windows { upgradeUuid = "a2d1847e-8c3b-4b10-a7d1-9a101038dd80" }` for seamless in-place Windows installer upgrades.
+- **Regression Test Case**: Install `FotologueDesktop-1.0.1.msi` $\to$ launch `C:\Program Files\FotologueDesktop\FotologueDesktop.exe` $\to$ verify application launches and remains running cleanly.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
