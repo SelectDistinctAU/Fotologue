@@ -7,6 +7,10 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 dependencies {
     implementation(compose.desktop.currentOs)
     implementation(compose.material3)
@@ -25,15 +29,21 @@ compose.desktop {
         jvmArgs("--enable-native-access=ALL-UNNAMED")
         javaHome = "C:/Users/geewy/.jdks/jbr-21.0.11"
         nativeDistributions {
+            includeAllModules = true
             targetFormats(
                 TargetFormat.Exe,
                 TargetFormat.Msi,
                 TargetFormat.Deb
             )
             packageName = "FotologueDesktop"
-            packageVersion = "1.0.0"
+            packageVersion = "1.0.1"
             description = "Fotologue Analogue & Hybrid Photography Desktop Command Center"
             copyright = "© 2026 Fotologue. All rights reserved."
+            windows {
+                upgradeUuid = "a2d1847e-8c3b-4b10-a7d1-9a101038dd80"
+                menu = true
+                shortcut = true
+            }
         }
     }
 }
