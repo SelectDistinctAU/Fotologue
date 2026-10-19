@@ -737,7 +737,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
             Surface(
-                onClick = { uriHandler.openUri("https://www.fotologue.au/privacy-policy") },
+                onClick = { uriHandler.openUri("https://github.com/SelectDistinctAU/Fotologue/blob/main/PRIVACY_POLICY.md") },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(vertical = 8.dp)) {
