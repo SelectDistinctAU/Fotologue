@@ -36,7 +36,7 @@ compose.desktop {
                 TargetFormat.Deb
             )
             packageName = "FotologueDesktop"
-            packageVersion = "1.0.1"
+            packageVersion = "1.0.2"
             description = "Fotologue Analogue & Hybrid Photography Desktop Command Center"
             copyright = "© 2026 Fotologue. All rights reserved."
             windows {
