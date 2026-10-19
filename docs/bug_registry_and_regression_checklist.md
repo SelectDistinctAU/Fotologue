@@ -1376,6 +1376,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-127: Official GitHub Privacy Policy URL Domain Migration
+- **Platform**: Core Documentation & Mobile App (`PRIVACY_POLICY.md`, `docs/privacy_policy.md`, `SettingsScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Privacy policy and settings screen referenced legacy website domain (`fotologue.au`).
+- **Root Cause**: Un-migrated placeholder web domain strings.
+- **Resolution**:
+  1. Updated `PRIVACY_POLICY.md` and `docs/privacy_policy.md` to reference the official GitHub Privacy Policy URL (`https://github.com/SelectDistinctAU/Fotologue/blob/main/PRIVACY_POLICY.md`).
+  2. Updated `SettingsScreen.kt` privacy policy click handler to launch `https://github.com/SelectDistinctAU/Fotologue/blob/main/PRIVACY_POLICY.md` via `UriHandler`.
+- **Regression Test Case**: Open Mobile App $\to$ `Settings` $\to$ tap `Privacy Policy` $\to$ verify official GitHub Privacy Policy URL opens cleanly.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
