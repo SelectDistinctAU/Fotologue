@@ -19,7 +19,7 @@ data class MasterPresetItem(
 
 object MasterPresetEngine {
 
-    const val DEFAULT_REMOTE_CATALOG_URL = "https://raw.githubusercontent.com/geewy/Fotologue/main/core/data/src/main/resources/master_preset_catalog.json"
+    const val DEFAULT_REMOTE_CATALOG_URL = "https://raw.githubusercontent.com/SelectDistinctAU/Fotologue/main/core/data/src/main/resources/master_preset_catalog.json"
 
     private val json = Json {
         prettyPrint = true

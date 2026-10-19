@@ -1,7 +1,7 @@
 # Privacy Policy for Fotologue 🔒
 
 **Version:** 3.0.0 | **Last Updated:** October 2026 | **Audience:** End Users, App Store Reviewers & Public  
-**Repository:** [https://github.com/SelectDistinctAU/Fotologue](https://github.com/SelectDistinctAU/Fotologue) | **Online Policy:** [https://github.com/SelectDistinctAU/Fotologue/blob/main/PRIVACY_POLICY.md](https://github.com/SelectDistinctAU/Fotologue/blob/main/PRIVACY_POLICY.md)
+**Website:** [https://www.selectdistinct.au](https://www.selectdistinct.au) | **Online Policy:** [https://github.com/SelectDistinctAU/Fotologue/blob/main/PRIVACY_POLICY.md](https://github.com/SelectDistinctAU/Fotologue/blob/main/PRIVACY_POLICY.md)
 
 Fotologue is built from the ground up with a **local-first, privacy-by-design** architecture. We believe your photography, equipment records, location history, vendor contacts, and personal notes belong solely to you. Fotologue operates entirely on your device and does not collect, store, transmit, or monetise any user data.
 
@@ -56,5 +56,6 @@ You maintain complete sovereignty over your data:
 ## 5. Contact Us
 
 If you have questions about Fotologue's privacy practices or architecture, please contact us:
+* **Website:** [https://www.selectdistinct.au](https://www.selectdistinct.au)
 * **GitHub Repository:** [https://github.com/SelectDistinctAU/Fotologue](https://github.com/SelectDistinctAU/Fotologue)
 * **Privacy Policy:** [https://github.com/SelectDistinctAU/Fotologue/blob/main/PRIVACY_POLICY.md](https://github.com/SelectDistinctAU/Fotologue/blob/main/PRIVACY_POLICY.md)
