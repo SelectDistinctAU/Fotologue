@@ -1400,6 +1400,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-129: Taxonomy Category Filter Chips FlowRow Multi-Line Wrapping Fix
+- **Platform**: Fotologue Mobile (`app` / `TaxonomyScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Category filter chips (`[ All ] [ Subjects ] [ Content ] [ Intent ]`) suffered right-edge overflow and squashing on physical phones (`I n t e n t`).
+- **Root Cause**: Rigid single-line `Row` wrapper.
+- **Resolution**: Replaced `Row` with `FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp))` in `TaxonomyScreen.kt` for automatic multi-line chip wrapping.
+- **Regression Test Case**: Open Mobile App $\to$ `TAXONOMY & TAGS` $\to$ verify `[ Intent ]` chip renders cleanly on the screen with zero text squashing or right-edge clipping.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
