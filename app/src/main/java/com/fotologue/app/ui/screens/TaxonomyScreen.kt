@@ -130,9 +130,11 @@ fun TaxonomyScreen(
             }
 
             // Category Filter Chips
-            Row(
+            @OptIn(ExperimentalLayoutApi::class)
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 listOf("All", "Subjects", "Content", "Intent").forEach { tab ->
                     FilterChip(
