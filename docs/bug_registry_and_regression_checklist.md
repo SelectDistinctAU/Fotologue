@@ -1388,6 +1388,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-128: Android 15 (SDK 35) Edge-to-Edge System Bar Appearance Compliance
+- **Platform**: Fotologue Mobile (`core/designsystem` / `Theme.kt`, `MainActivity.kt`)
+- **Reported**: October 2026
+- **Symptom**: Google Play Console warning regarding deprecated edge-to-edge system bar parameters on Android 15 (SDK 35).
+- **Root Cause**: Un-managed status/navigation bar appearance flags when switching between light and dark photographic themes.
+- **Resolution**:
+  1. Integrated `WindowCompat.getInsetsController` `SideEffect` in `Theme.kt` to dynamically update `isAppearanceLightStatusBars` and `isAppearanceLightNavigationBars` based on active photographic theme (`Daylight Clean` vs `Dark/Red Shift`).
+  2. Maintained `enableEdgeToEdge()` call in `MainActivity.kt` before `setContent` and set `isNavigationBarContrastEnforced = false` for SDK 29+.
+- **Regression Test Case**: Open Mobile App $\to$ `Settings` $\to$ toggle between `Daylight Clean (Light)` and `Red Shift` $\to$ verify system status and navigation bar icon colors switch dynamically between dark and light icons.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
