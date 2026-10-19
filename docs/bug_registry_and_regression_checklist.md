@@ -1364,6 +1364,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-126: Android Release Version Bump to v1.0.18 (versionCode 19)
+- **Platform**: Fotologue Mobile (`app/build.gradle.kts`)
+- **Reported**: October 2026
+- **Symptom**: Preparing Android release update for Google Play Store submission (version 18 / 1.0.17 currently in production on Play Console).
+- **Root Cause**: Need to increment versionCode and versionName for Play Console submission.
+- **Resolution**:
+  1. Updated `versionCode = 19` and `versionName = "1.0.18"` in `app/build.gradle.kts`.
+  2. Compiled release App Bundle (`app-release.aab`, 27.0MB) and release APK (`app-release.apk`, 42.1MB) via `./gradlew :app:bundleRelease :app:assembleRelease`.
+- **Regression Test Case**: Verify `app/build/outputs/bundle/release/app-release.aab` exists and contains version code 19.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
