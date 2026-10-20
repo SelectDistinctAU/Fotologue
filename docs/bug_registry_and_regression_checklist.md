@@ -1423,6 +1423,34 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-131: Red Shift Terminology Standardization & Scope Removal in Contacts Directory
+- **Platform**: Fotologue Mobile (`HubScreen.kt`, `GearLibraryScreen.kt`, `AddEditSupplierScreen.kt`, `LabHomeScreen.kt`, `ContactSheetScreen.kt`, `ArchiveScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Top-bar toggle was labeled `"Safelight"` instead of `"Red Shift"` (inconsistent with Settings); Contacts Directory contained unneeded Red Shift toggle and crossed-tools icon; Camera Gear top bar lacked a module icon.
+- **Root Cause**: Un-aligned top-bar title icons and inconsistent terminology strings.
+- **Resolution**:
+  1. Replaced `science_24px` with `night_sight_max_24px` vector icon for Red Shift button in `HubScreen.kt`.
+  2. Added `settings_photo_camera_24px` vector icon to `GearLibraryScreen.kt` top bar.
+  3. Replaced `warehouse_24px` with `patient_list_24px` in `AddEditSupplierScreen.kt` top bar, and removed `ic_handyman` and Red Shift toggle switch.
+  4. Standardized top-bar toggle label to **`"Red Shift"`** in `LabHomeScreen.kt`, `ContactSheetScreen.kt`, and `ArchiveScreen.kt`.
+- **Regression Test Case**: Open Mobile App $\to$ verify Staging Portal displays `night_sight_max_24px` Red Shift button $\to$ open `CONTACTS DIRECTORY` $\to$ verify top bar displays `patient_list_24px` icon without Red Shift toggle.
+
+---
+
+### BUG-132: Red Shift Terminology & Top-Bar Scope Refinements
+- **Platform**: Fotologue Mobile (`HubScreen.kt`, `GearLibraryScreen.kt`, `AddEditSupplierScreen.kt`, `LabHomeScreen.kt`, `ContactSheetScreen.kt`, `ArchiveScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Top-bar toggle was labeled `"Safelight"` instead of `"Red Shift"`; Contacts Directory contained unneeded Red Shift toggle and crossed-tools icon; Camera Gear top bar lacked a module icon.
+- **Root Cause**: Un-aligned top-bar title icons and inconsistent terminology strings.
+- **Resolution**:
+  1. Replaced `science_24px` with `night_sight_max_24px` vector icon for Red Shift button on Staging Portal (`HubScreen.kt`).
+  2. Added `settings_photo_camera_24px` vector icon to `GearLibraryScreen.kt` top bar.
+  3. Replaced `warehouse_24px` with `patient_list_24px` in `AddEditSupplierScreen.kt` top bar, and removed `ic_handyman` and Red Shift toggle switch.
+  4. Standardized top-bar toggle label to **`"Red Shift"`** in `LabHomeScreen.kt`, `ContactSheetScreen.kt`, and `ArchiveScreen.kt`.
+- **Regression Test Case**: Open Mobile App $\to$ verify Staging Portal displays `night_sight_max_24px` Red Shift button $\to$ open `CONTACTS DIRECTORY` $\to$ verify top bar displays `patient_list_24px` icon without Red Shift toggle.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
