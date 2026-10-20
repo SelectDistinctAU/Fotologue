@@ -1528,6 +1528,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-140: Full-Fidelity Rendering of Official Fotologue Logo PNG Across All Themes
+- **Platform**: Fotologue Mobile (`app` / `HubScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Staging Portal top-left logo rendered as a solid red circle in Red Shift mode due to a color tint filter on a PNG image with a white background.
+- **Root Cause**: Excessive ColorFilter.tint on non-transparent PNG.
+- **Resolution**: Removed the tint filter from `HubScreen.kt` logo Image composable, rendering the official `ic_fotologue_logo.png` in full-color crisp fidelity (italic `fl` ligature with red focal grid lines) across all themes.
+- **Regression Test Case**: Open Mobile App $\to$ toggle Red Shift mode $\to$ verify top-left logo renders the full-color `fl` ligature logo PNG cleanly.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
