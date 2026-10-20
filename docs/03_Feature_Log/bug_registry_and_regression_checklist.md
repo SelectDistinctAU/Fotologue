@@ -1518,6 +1518,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-139: Ansel Adams 11-Zone System Scale Specification & Design System Documentation
+- **Platform**: Core Specifications (`docs/02_Specifications/design_system.md`)
+- **Reported**: October 2026
+- **Symptom**: User-facing documentation lacked formal specification of the 11-zone scale ($EV \in [-5.0, +5.0]$).
+- **Root Cause**: Un-documented color science engine specification.
+- **Resolution**: Documented the 11 discrete Ansel Adams Zones (Zone 0 through Zone X) in `docs/02_Specifications/design_system.md`, explaining how Zone X was added in later editions for specular highlights.
+- **Regression Test Case**: Review `docs/02_Specifications/design_system.md` $\to$ verify Section 4 accurately details the 11-Zone scale.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
