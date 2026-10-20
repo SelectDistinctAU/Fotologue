@@ -266,7 +266,15 @@ fun GearLibraryScreen(
                                 } else if (uiState.isReorderMode) {
                                     Text("Reorder Items")
                                 } else {
-                                    Text(categories[uiState.selectedCategoryIndex].name)
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.settings_photo_camera_24px),
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.padding(end = 8.dp)
+                                        )
+                                        Text(categories[uiState.selectedCategoryIndex].name)
+                                    }
                                 }
                             },
                             navigationIcon = {

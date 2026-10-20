@@ -3,6 +3,7 @@ package com.fotologue.app.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
+import com.fotologue.core.designsystem.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,7 +43,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.fotologue.core.designsystem.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,7 +106,7 @@ fun HubScreen(
                             modifier = Modifier.size(48.dp)
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.experiment_24px),
+                                painter = painterResource(R.drawable.night_sight_max_24px),
                                 contentDescription = if (isSafelightActive) "Disable Red Shift" else "Enable Red Shift",
                                 tint = safelightPrimary,
                                 modifier = Modifier.size(24.dp)

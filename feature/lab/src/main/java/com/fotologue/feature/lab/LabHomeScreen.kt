@@ -196,7 +196,8 @@ fun LabHomeScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         val headerIconRes = when (currentView) {
-                            LabView.SUPPLIERS, LabView.STORAGE_LOCATIONS -> R.drawable.warehouse_24px
+                            LabView.SUPPLIERS -> R.drawable.patient_list_24px
+                            LabView.STORAGE_LOCATIONS -> R.drawable.warehouse_24px
                             LabView.EQUIPMENT -> R.drawable.camera_indoor_24px
                             LabView.INVENTORY, LabView.INVENTORY_CATEGORY_ITEMS -> R.drawable.inventory_24px
                             else -> R.drawable.experiment_24px
@@ -225,35 +226,36 @@ fun LabHomeScreen(
                     }
                 },
                 actions = {
-                    // UNAMBIGUOUS SAFELIGHT TOGGLE SWITCH
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(end = 4.dp)
-                    ) {
-                        Text(
-                            text = "Safelight",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = safelightPrimary,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Switch(
-                            checked = isSafelightActive,
-                            onCheckedChange = { viewModel.setSafelightActive(it) },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color(0xFFFF0000),
-                                checkedTrackColor = Color(0xFF660000),
-                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                    if (currentView != LabView.SUPPLIERS) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(end = 4.dp)
+                        ) {
+                            Text(
+                                text = "Red Shift",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = safelightPrimary,
+                                fontWeight = FontWeight.Bold
                             )
-                        )
-                    }
-                    IconButton(onClick = onNavigateToMaintenance) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_handyman),
-                            contentDescription = "Maintenance",
-                            tint = safelightPrimary
-                        )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Switch(
+                                checked = isSafelightActive,
+                                onCheckedChange = { viewModel.setSafelightActive(it) },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = Color(0xFFFF0000),
+                                    checkedTrackColor = Color(0xFF660000),
+                                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                                )
+                            )
+                        }
+                        IconButton(onClick = onNavigateToMaintenance) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_handyman),
+                                contentDescription = "Maintenance",
+                                tint = safelightPrimary
+                            )
+                        }
                     }
                 }
             )

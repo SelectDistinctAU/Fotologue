@@ -475,7 +475,7 @@ fun ContactSheetScreenContent(
                                 modifier = Modifier.padding(end = 4.dp)
                             ) {
                                 Text(
-                                    text = "Safelight",
+                                    text = "Red Shift",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = safelightPrimary,
                                     fontWeight = FontWeight.Bold
