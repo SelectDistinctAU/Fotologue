@@ -54,6 +54,9 @@ class FotologueRepository @Inject constructor(
     val allFilmRollSessions: Flow<List<FilmRollSession>> = filmRollSessionDao.getAllSessions()
     val allPerformanceLogs: Flow<List<PerformanceLog>> = performanceLogDao.getAllPerformanceLogs()
     val allLabProcessEvents: Flow<List<LabProcessEvent>> = labProcessEventDao.getAllProcessEvents()
+
+    suspend fun insertLabProcessEvent(event: LabProcessEvent): Long = labProcessEventDao.insertProcessEvent(event)
+    suspend fun insertPerformanceLog(log: PerformanceLog): Long = performanceLogDao.insertLog(log)
     val allCameraKits: Flow<List<CameraKit>> = cameraKitDao.getAllCameraKits()
     val allCameraKitsWithGear: Flow<List<CameraKitWithGear>> = cameraKitDao.getAllCameraKitsWithGear()
     val allTags: Flow<List<Tag>> = tagDao.getAllTags()
