@@ -320,14 +320,23 @@ fun SettingsScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             ) {
                 Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(com.fotologue.core.designsystem.R.drawable.night_sight_max_24px),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Red Shift & Night Vision Notice",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     Text(
-                        text = "ℹ️ Red Shift & Night Vision Notice",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Red Shift eliminates blue light to preserve night-adapted vision during astrophotography and darkroom logbook duties. Digital screens cannot replace optical darkroom safelights. Always test with your specific paper stock, maintain distance from paper areas, and load panchromatic film in total darkness.",
+                        text = "Tap the Night Sight icon (🌙+) in top bars for 1-tap Red Shift toggling. Red Shift eliminates blue light to preserve night-adapted vision during astrophotography and darkroom logbook duties. Digital screens cannot replace optical darkroom safelights. Always test with your specific paper stock, maintain distance from paper areas, and load panchromatic film in total darkness.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

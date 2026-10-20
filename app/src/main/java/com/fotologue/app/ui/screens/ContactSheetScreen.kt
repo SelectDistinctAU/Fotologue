@@ -470,26 +470,15 @@ fun ContactSheetScreenContent(
                     },
                     actions = {
                         if (onToggleSafelight != null) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(end = 4.dp)
+                            IconButton(
+                                onClick = onToggleSafelight,
+                                modifier = Modifier.size(48.dp)
                             ) {
-                                Text(
-                                    text = "Red Shift",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = safelightPrimary,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Switch(
-                                    checked = isSafelightActive,
-                                    onCheckedChange = { onToggleSafelight() },
-                                    colors = SwitchDefaults.colors(
-                                        checkedThumbColor = Color(0xFFFF0000),
-                                        checkedTrackColor = Color(0xFF660000),
-                                        uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                                    )
+                                Icon(
+                                    painter = painterResource(com.fotologue.core.designsystem.R.drawable.night_sight_max_24px),
+                                    contentDescription = if (isSafelightActive) "Disable Red Shift" else "Enable Red Shift",
+                                    tint = safelightPrimary,
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
                         }

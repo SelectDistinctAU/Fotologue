@@ -88,7 +88,17 @@ fun GearLibraryScreen(
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text(stringResource(R.string.gear_library_title)) },
+                            title = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.settings_photo_camera_24px),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.padding(end = 8.dp)
+                                    )
+                                    Text(stringResource(R.string.gear_library_title))
+                                }
+                            },
                             navigationIcon = {
                                 IconButton(onClick = onBack) {
                                     Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.action_back_to_categories))
