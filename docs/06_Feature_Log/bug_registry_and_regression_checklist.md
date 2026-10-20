@@ -1486,6 +1486,38 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-136: Open-Source Governance & Community Documentation Integration
+- **Platform**: Core Repository (`CHANGELOG.md`, `SECURITY.md`, `SUPPORT.md`)
+- **Reported**: October 2026
+- **Symptom**: Lack of standard open-source governance and security disclosure documentation.
+- **Root Cause**: Un-created governance boilerplate files.
+- **Resolution**: Created `CHANGELOG.md`, `SECURITY.md` (private vulnerability reporting to `security@selectdistinct.au`), and `SUPPORT.md` in repository root.
+- **Regression Test Case**: Verify `CHANGELOG.md`, `SECURITY.md`, and `SUPPORT.md` exist and render cleanly on GitHub.
+
+---
+
+### BUG-137: Domain Use Case Extraction for Color Science & Chemical Timing
+- **Platform**: Core Data (`core/data` / `CalculateZoneExposureUseCase.kt`, `ProcessDarkroomSessionUseCase.kt`)
+- **Reported**: October 2026
+- **Symptom**: Complex Ansel Adams Zone System calculations and wet darkroom chemical timing were coupled inside ViewModels.
+- **Root Cause**: Missing explicit Domain Use Cases layer.
+- **Resolution**:
+  1. Created `CalculateZoneExposureUseCase.kt` encapsulating Ansel Adams 10-Zone mapping, scene contrast calculation, and $N \pm 1$ recommendations.
+  2. Created `ProcessDarkroomSessionUseCase.kt` encapsulating darkroom chemical timing, agitation countdowns, and enlarger print recipe outcome logging.
+- **Regression Test Case**: Run `./gradlew :core:data:assembleMasterCatalog :app:testDebugUnitTest :feature:lab:testDebugUnitTest` $\to$ verify domain Use Cases build and pass unit tests 100%.
+
+---
+
+### BUG-138: Categorized ISO-Style Documentation Folder Hierarchy Re-Organization
+- **Platform**: Core Documentation (`docs/`)
+- **Reported**: October 2026
+- **Symptom**: Un-categorized flat directory structure containing 20+ loose markdown files in `docs/`.
+- **Root Cause**: Un-organized documentation directory structure.
+- **Resolution**: Re-organized `docs/` into 4 ISO-style subdirectories: `01_Governance/`, `02_Specifications/`, `06_Feature_Log/`, and `07_Public_Guides/`.
+- **Regression Test Case**: Verify `docs/` directory is organized into the 4 subdirectories with zero loose markdown files at root.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
