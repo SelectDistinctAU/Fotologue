@@ -41,4 +41,10 @@ When submitting a PR:
 *   Provide a clear summary of the problem and the proposed solution.
 *   Include screenshots or screen recordings if the PR introduces UI changes.
 
+## 6. Licensing
+
+Fotologue is released under the GNU General Public License v3.0 (see [LICENSE](LICENSE)).
+
+By submitting a pull request, you confirm that you have the right to submit the work, and you agree that your contributions are accepted under the same GPL-3.0 licence.
+
 Thank you for helping us build the ultimate command center for analogue photographers!
