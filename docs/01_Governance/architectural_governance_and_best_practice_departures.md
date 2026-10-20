@@ -66,4 +66,14 @@ This document serves as the permanent **Architectural Governance Register** for 
 
 ---
 
+### Decision 006: Clean Architecture Domain Use Case Layer for Complex Logic
+- **Category**: Clean Architecture & Domain Layer Isolation
+- **Standard Convention**: Couple complex calculations, color science, and process workflows directly inside ViewModels.
+- **Fotologue Departure**: Extract non-trivial domain logic (Ansel Adams 11-Zone System calculations, wet darkroom chemical timing, $N \pm 1$ recommendations, enlarger print outcomes) into explicit **Domain Use Cases** (`core/data/src/main/java/com/fotologue/core/data/usecase/`).
+- **Domain Rationale**: Preserves testability, isolates core optical/chemical color science from Android lifecycle components, and enables seamless reuse across Mobile (`:app`) and Desktop (`:desktop`).
+- **Impact & Trade-offs**: Requires injecting Use Case classes into ViewModels via Hilt/Dagger rather than inline private functions.
+- **Approval Status**: Approved (October 2026).
+
+---
+
 *Governance Register maintained for Fotologue v3.0.*

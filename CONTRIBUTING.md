@@ -13,35 +13,42 @@ Fotologue is architected with a strict **Local-First, Offline-First** philosophy
 
 To minimize cognitive load, we maintain a strict **Ubiquitous Language** across the codebase, database schemas, and UI copy.
 
-Before naming a new variable, database table, or UI button, you **must** consult the [Fotologue Lexicon](docs/lexicon.md).
+Before naming a new variable, database table, or UI button, you **must** consult the [Fotologue Lexicon](docs/02_Specifications/lexicon.md).
 *   *Example:* We use `Fotologue Desktop` and `Fotologue Mobile`, never "CCC" or "Field Device".
 *   *Example:* A photo is a `Frame`, never an "Exposure", "Shot", or "Log".
 *   *Example:* A physical purchased bottle of developer is a `Stock Item`, never a "Stock Lot" or "Batch".
 
-## 3. Language & Tone: Australian English
+## 3. Respect the Architecture
+
+Fotologue follows a multi-module, local-first architecture with strict separation between UI orchestration and domain business logic:
+
+- **Domain Use Cases:** Business logic (color science, chemical timing, exposure calculations) lives in `core/data/src/main/java/com/fotologue/core/data/usecase/*.kt`. Examples: `CalculateZoneExposureUseCase`, `ProcessDarkroomSessionUseCase`.
+- **ViewModels:** UI orchestration only. Delegate computation and repository operations directly to Use Cases.
+- **Mobile (`:app`, `:core:data`, `:feature:lab`):** UI is built with 100% Jetpack Compose. Use Room for local persistence. Use Hilt (`@HiltViewModel`, `@Inject`) for Dependency Injection.
+- **Desktop (`:desktop`):** UI is built with Compose Multiplatform. Use JetBrains Exposed and SQLite JDBC for local persistence.
+
+## 4. Language & Tone: Australian English
 
 Fotologue is proudly Australian. All UI copy, documentation, and user-facing strings must be written in **Australian English (en-AU)**.
 *   Use `-ise` instead of `-ize` (e.g., `Standardise`, `Synchronise`, `Digitise`).
 *   Use `-our` instead of `-or` (e.g., `Colour`).
 *   Keep the tone professional, warm, and geared toward photographers and archivists.
 
-## 4. Development Workflow
+## 5. Development Workflow
 
 1.  **Fork & Branch:** Create a feature branch from `main`. Use descriptive names (e.g., `feat/add-print-recipe-ui` or `fix/exiftool-path-resolution`).
 2.  **Write Tests:** We maintain a high standard for test coverage. If you are modifying ViewModels or Data Repositories, please update or add corresponding Unit Tests.
-3.  **Respect the Architecture:**
-    *   **Mobile (`:app`, `:core:data`, `:feature:lab`):** UI is built with Jetpack Compose. Use Room for persistence. Use Hilt for Dependency Injection.
-    *   **Desktop (`:desktop`):** UI is built with Compose Multiplatform. Use JetBrains Exposed and SQLite JDBC for persistence.
+3.  **Run Build Verification:** Ensure `./gradlew test` passes locally and `./gradlew :app:assembleDebug :desktop:packageWindows` builds cleanly.
 
-## 5. Pull Request Process
+## 6. Pull Request Process
 
 When submitting a PR:
 *   Ensure `./gradlew test` passes locally.
-*   Ensure `./gradlew assembleDebug` and `./gradlew :desktop:assemble` build cleanly.
+*   Ensure `./gradlew assembleDebug` and `./gradlew :desktop:packageWindows` build cleanly.
 *   Provide a clear summary of the problem and the proposed solution.
 *   Include screenshots or screen recordings if the PR introduces UI changes.
 
-## 6. Licensing
+## 7. Licensing
 
 Fotologue is released under the GNU General Public License v3.0 (see [LICENSE](LICENSE)).
 

@@ -44,3 +44,24 @@ All shared visual assets, colour tokens, typography scales, and reusable Composa
 *   Form input fields use `OutlinedTextField` with clear, non-promotional label strings (e.g., `"Supplier Name"`, `"Item Name"`, `"Container Size"`).
 *   Never use brand/vendor hints in text fields that look like advertisements.
 *   Multiline text fields (Notes, Reflection) take full width with flexible height.
+
+---
+
+## 4. Ansel Adams 11-Zone Scale Specification
+
+In Ansel Adams' original 1948 first edition of *The Negative*, 10 zones (0 through IX) were defined. In later expanded printings, Ansel Adams added **Zone X** to represent specular highlights and pure light sources, making a total of **11 discrete zones** ($EV \in [-5.0, +5.0]$ relative to Zone V 18% neutral mid-gray).
+
+### The 11 Ansel Adams Zones in Fotologue:
+1. **Zone 0**: $EV \le -5.0$ (Pure Black / Maximum Density / Threshold)
+2. **Zone I**: $EV = -4.0$ (Deep Shadow / First Exposure)
+3. **Zone II**: $EV = -3.0$ (Shadow Detail / First Texture)
+4. **Zone III**: $EV = -2.0$ (Textured Shadow / Fully Detailed)
+5. **Zone IV**: $EV = -1.0$ (Average Shadow / Dark Foliage)
+6. **Zone V**: $EV = 0.0$ (18% Neutral Mid-Gray Baseline)
+7. **Zone VI**: $EV = +1.0$ (Average Skin Tone / Bright Foliage)
+8. **Zone VII**: $EV = +2.0$ (Textured Highlight Detail)
+9. **Zone VIII**: $EV = +3.0$ (First Blank Highlight)
+10. **Zone IX**: $EV = +4.0$ (Pure White / Specular Highlight)
+11. **Zone X**: $EV \ge +5.0$ (Pure White Light Source / Blown Specular)
+
+Fotologue's color science engine (`LuminanceAnalyzer.kt`, `ZoneSystemCalculator.kt`, `CalculateZoneExposureUseCase.kt`) processes **11 discrete zone buckets**.

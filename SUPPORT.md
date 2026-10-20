@@ -8,9 +8,9 @@ Thank you for using **Fotologue — A Photographic Catalogue Suite**.
 
 Before opening a support request, please explore our comprehensive on-device and online documentation:
 
-* 📖 **[User Guide](docs/07_Public_Guides/user_guide.md)**: Feature walkthroughs for Mobile and Desktop.
-* 🎥 **[User Journeys & Walkthrough](docs/07_Public_Guides/user_journeys_walkthrough.md)**: Real-world film shooting and darkroom workflows.
-* 🎬 **[DP & Digital Photographers Guide](docs/07_Public_Guides/dp_and_digital_photographers_guide.md)**: RAW matching and field intent capture for commercial DPs.
+* 📖 **[User Guide](docs/07_Docs_Public/user_guide.md)**: Feature walkthroughs for Mobile and Desktop.
+* 🎥 **[User Journeys & Walkthrough](docs/07_Docs_Public/user_journeys_walkthrough.md)**: Real-world film shooting and darkroom workflows.
+* 🎬 **[DP & Digital Photographers Guide](docs/07_Docs_Public/dp_and_digital_photographers_guide.md)**: RAW matching and field intent capture for commercial DPs.
 * 🔒 **[Privacy Policy](PRIVACY_POLICY.md)**: Local-first architecture and data sovereignty guarantees.
 
 ---
