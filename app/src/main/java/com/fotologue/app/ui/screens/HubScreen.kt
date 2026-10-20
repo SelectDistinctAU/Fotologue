@@ -80,7 +80,6 @@ fun HubScreen(
                         Image(
                             painter = painterResource(com.fotologue.app.R.drawable.ic_fotologue_logo),
                             contentDescription = "Fotologue Logo",
-                            colorFilter = if (isSafelightActive) androidx.compose.ui.graphics.ColorFilter.tint(Color(0xFFFF0000)) else null,
                             modifier = Modifier.size(36.dp).clip(CircleShape)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
