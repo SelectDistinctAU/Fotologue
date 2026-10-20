@@ -1451,6 +1451,41 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-133: Camera Gear Top-Bar Module Icon Omission
+- **Platform**: Fotologue Mobile (`app` / `GearLibraryScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Camera Gear screen top bar showed `← Camera Gear` without a leading module icon.
+- **Root Cause**: Missing icon composable in `TopAppBar` title parameter.
+- **Resolution**: Inserted `settings_photo_camera_24px` vector icon into `TopAppBar` title row next to `Camera Gear` on both list pane and detail pane top bars.
+- **Regression Test Case**: Open Mobile App $\to$ `CAMERA GEAR` $\to$ verify top bar displays `← 📷 Camera Gear` with `settings_photo_camera_24px` icon on both list pane and detail pane.
+
+---
+
+### BUG-134: Contacts Directory Filter Chips FlowRow Wrapping & Red Shift Removal
+- **Platform**: Fotologue Mobile (`feature:lab` / `LabHomeScreen.kt`, `AddEditSupplierScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: `[ USA / Global ]` filter chip suffered right-edge overflow on physical phones; Contacts Directory top bar contained unneeded Red Shift toggle and crossed-tools icon.
+- **Root Cause**: Rigid single-line `Row` wrapper; unneeded top-bar action buttons.
+- **Resolution**:
+  1. Replaced `Row` with `FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp))` in `LabHomeScreen.kt`.
+  2. Replaced `warehouse_24px` with `patient_list_24px` icon for `LabView.SUPPLIERS` top-bar header icon.
+  3. Removed `ic_handyman` and Red Shift toggle switch from Contacts Directory top bar.
+- **Regression Test Case**: Open Mobile App $\to$ `CONTACTS DIRECTORY` $\to$ verify filter chips wrap cleanly and top bar displays `patient_list_24px` icon without Red Shift toggle.
+
+---
+
+### BUG-135: Staging Portal Dynamic Red Shift Logo Tinting & Settings Notice Reinforcement
+- **Platform**: Fotologue Mobile (`app` / `HubScreen.kt`, `SettingsScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Staging Portal top-left logo retained green/white colors during Red Shift mode, leaking light in darkrooms; Settings notice card lacked Night Sight icon reinforcement.
+- **Root Cause**: Hardcoded logo image without dynamic tint filter; generic info emoji in notice header.
+- **Resolution**:
+  1. Applied `colorFilter = if (isSafelightActive) ColorFilter.tint(Color(0xFFFF0000)) else null` to top-left logo in `HubScreen.kt`.
+  2. Replaced `ℹ️` in Settings `Red Shift & Night Vision Notice` header with `R.drawable.night_sight_max_24px` icon and updated notice text.
+- **Regression Test Case**: Open Mobile App $\to$ activate Red Shift Mode $\to$ verify top-left logo tints to pure crimson red (`#FF0000`) and Settings notice card renders `night_sight_max_24px` icon.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
