@@ -1538,6 +1538,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-141: Latin Small Letter F with Hook (ƒ / U+0192) Florin Geometry Vector Logo Refinement
+- **Platform**: Core Design System (`core/designsystem` / `ic_fotologue_logo_vector.xml`)
+- **Reported**: October 2026
+- **Symptom**: Vector logo 'f' letter resembled 't' and red focal grid lines extended past the outer circular frame.
+- **Root Cause**: Un-clipped vector grid path and non-standard 'f' curve.
+- **Resolution**:
+  1. Re-architected vector logo using the exact mathematical geometry of **Latin Small Letter F with Hook (`ƒ` / U+0192)** florin/f-stop aperture symbol.
+  2. Wrapped red grid lines inside a `<clip-path>` mask restricting them 100% strictly inside the outer circular frame.
+- **Regression Test Case**: Open Mobile App $\to$ toggle Red Shift mode $\to$ verify top-left vector logo renders the florin `ƒ` ligature and clipped grid lines cleanly.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
