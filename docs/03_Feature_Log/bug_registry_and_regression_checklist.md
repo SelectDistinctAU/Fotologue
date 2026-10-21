@@ -1660,6 +1660,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-151: Film Processing Top-Bar Red Shift Control Standardization
+- **Platform**: Fotologue Mobile (`feature:lab` / `FilmProcessingSessionScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Film Processing` screen top bar retained legacy `Safelight` labeled switch instead of standardizing to the Crescent Moon + icon button (`night_sight_max_24px`).
+- **Root Cause**: Un-updated top-bar actions parameter.
+- **Resolution**: Replaced `Row(Text("Safelight") + Switch)` in `FilmProcessingSessionScreen.kt` with standard 48dp `IconButton` using `night_sight_max_24px`.
+- **Regression Test Case**: Open Mobile App $\to$ `LAB` $\to$ **Develop Roll** $\to$ verify top bar displays standard 48dp `night_sight_max_24px` Red Shift icon button.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
