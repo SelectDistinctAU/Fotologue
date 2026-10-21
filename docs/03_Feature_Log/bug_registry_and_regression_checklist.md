@@ -1570,6 +1570,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-144: Darkroom-Safe Solid Red Shift Logo Asset Integration & Feature Audit
+- **Platform**: Fotologue Mobile (`app` / `HubScreen.kt`, `fotologueredshift.png`)
+- **Reported**: October 2026
+- **Symptom**: Top-left logo rendered white/green in darkrooms, leaking unwanted light.
+- **Root Cause**: Need dedicated darkroom-safe red-shifted logo asset.
+- **Resolution**: Integrated `fotologueredshift.png` asset directly into `HubScreen.kt` top bar for Red Shift mode, ensuring 0% white/green light leakage.
+- **Regression Test Case**: Open Mobile App $\to$ toggle Red Shift mode $\to$ verify top-left logo displays `fotologueredshift.png` cleanly with 100% darkroom safelight compliance.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
