@@ -1580,6 +1580,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-145: Production Release Build v1.0.20 (versionCode 21) & Desktop v1.0.3 Push
+- **Platform**: Core, Mobile & Desktop (`app/build.gradle.kts`, `desktop/build.gradle.kts`, `CHANGELOG.md`)
+- **Reported**: October 2026
+- **Symptom**: Preparing production release artifacts for Google Play Console and Windows Desktop distribution.
+- **Root Cause**: Regular production release cycle.
+- **Resolution**:
+  1. Updated `app/build.gradle.kts` to `versionCode = 21` and `versionName = "1.0.20"`.
+  2. Updated `desktop/build.gradle.kts` to `packageVersion = "1.0.3"`.
+  3. Recompiled release App Bundle (`app-release.aab`, 27.2MB), release APK (`app-release.apk`, 42.2MB), and Windows installers (`FotologueDesktop-1.0.3.msi` and `FotologueDesktop-1.0.3.exe`).
+  4. Updated `CHANGELOG.md` and pushed all commits to GitHub remote (`SelectDistinctAU/Fotologue.git`).
+- **Regression Test Case**: Verify release deliverables compile cleanly and all 62 unit tests pass 100%.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
