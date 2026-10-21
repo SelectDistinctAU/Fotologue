@@ -1607,6 +1607,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-147: Gold-Standard Darkroom Printing Parameter Expansion & Preset Cloud Sync
+- **Platform**: Core Data, Mobile & Desktop (`PrintRecipe.kt`, `v3_fotologue_lab_whitepaper.md`, `FEATURE_CAPABILITIES_REGISTER.md`)
+- **Reported**: October 2026
+- **Symptom**: Darkroom print recipe logging lacked expert optical geometry, split-grade exposure steps, emulsion batch numbers, dry-down factor compensation, and Inverse Square Law exposure resizing calculations.
+- **Root Cause**: Minimal initial darkroom parameter schema.
+- **Resolution**:
+  1. Expanded `PrintRecipe.kt` data model with enlarger head type, taking aperture, column height, magnification ratio, emulsion batch #, paper surface, dry-down compensation %, split-grade exposure seconds, structured Dodge/Burn step ledger JSON, and toning chemistry.
+  2. Created `docs/03_Feature_Log/FEATURE_CAPABILITIES_REGISTER.md` as the permanent feature and capability inventory for Fotologue.
+  3. Integrated darkroom paper stocks, enlargers, enlarger lenses, and toners into `master_preset_catalog.json` for 1-click cloud sync across Mobile and Desktop.
+- **Regression Test Case**: Open Mobile App $\to$ `LAB` $\to$ **Enlarger Printing Session** $\to$ verify expanded optical, split-grade, and Inverse Square Law resizing tools render cleanly.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
