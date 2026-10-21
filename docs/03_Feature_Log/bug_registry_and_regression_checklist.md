@@ -1550,6 +1550,26 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-142: Solid Filled Italic fl Ligature Vector Logo Path Geometry
+- **Platform**: Core Design System (`core/designsystem` / `ic_fotologue_logo_vector.xml`)
+- **Reported**: October 2026
+- **Symptom**: Vector logo 'f' ligature rendered as disconnected thin hair lines.
+- **Root Cause**: Fragmented path definitions.
+- **Resolution**: Re-architected `ic_fotologue_logo_vector.xml` with solid, filled, continuous path curves for both 'f' and 'l' ligatures.
+- **Regression Test Case**: Open Mobile App $\to$ toggle Red Shift mode $\to$ verify vector logo renders as a solid, filled italic `fl` ligature with zero thin hairline gaps.
+
+---
+
+### BUG-143: Dedicated fotologueredshift.png Asset Integration
+- **Platform**: Fotologue Mobile (`app` / `HubScreen.kt`, `fotologueredshift.png`)
+- **Reported**: October 2026
+- **Symptom**: Need dedicated red-shifted logo asset for Staging Portal top bar.
+- **Root Cause**: Request for dedicated Red Shift logo PNG asset.
+- **Resolution**: Integrated `fotologueredshift.png` asset directly into `HubScreen.kt` for top-bar rendering when `isSafelightActive == true`.
+- **Regression Test Case**: Open Mobile App $\to$ toggle Red Shift mode $\to$ verify top-left logo displays `fotologueredshift.png` cleanly.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
