@@ -1,9 +1,10 @@
-# Darkroom Printing Parameter Taxonomy
+# Darkroom Printing Specification — v1.3 Final (Implementation Ready)
 
-**Version:** 1.0  
+**Document:** Implementation specification for Fotologue Print Session data model  
 **Location:** `docs/02_Specifications/darkroom_print_taxonomy.md`  
 **Last Updated:** 2026-10-21  
-**Audience:** Developers, Darkroom Practitioners, Maintainers  
+**Review Status:** Approved for v1 implementation  
+**Next Phase:** Code generation + verification testing  
 
 **Related Documents:**  
 - [`docs/01_Governance/architectural_governance_and_best_practice_departures.md`](../01_Governance/architectural_governance_and_best_practice_departures.md) — Decision 001 (LOV vs Enum), Decision 003 (3-Pillar Architecture), Decision 006 (Domain Use Cases)  
@@ -12,137 +13,94 @@
 
 ---
 
-## 1. Purpose
+## Executive Summary
 
-This document defines the canonical parameters for recording wet darkroom printing sessions in Fotologue. It is **not user-facing copy**; it is an engineering specification for implementing the Print Session data model and UI flows.
+This document defines the v1 Print Session data model and logging requirements for Fotologue. It records all variables an artist needs to reproduce a print, without encoding disputed physics or speculative calculations.
 
-**Key Principle:** A print recipe is only reproducible relative to its source negative. Without the negative context, exposure times are meaningless.
+**Key principle:** Record everything. Calculate nothing. Let the data speak.
 
----
-
-## 2. Parameter Categories (v1 Core)
-
-### 2.1 Optical & Enlarger Geometry (The Setup)
-
-| Variable | Type | Example | Notes |
-|----------|------|---------|-------|
-| **Enlarger Model** | `lab_lovs.enlargers` | Beseler 23C III | User-extensible LOV entry |
-| **Light Head Type** | `lab_lovs.light_heads` | Condenser, Cold Light (Grid), Dichroic Diffusion | Callier effect applies to condensers |
-| **Enlarger Lens** | `lab_lovs.lenses` | Rodenstock Rodagon 80mm f/4 | User-extensible LOV entry |
-| **Taking Aperture** | Enum (closed set) | f/4, f/5.6, f/8, f/11, f/16, f/22 | Fixed f-stop sequence only |
-| **Magnification** | Double | 3.2× | Defined as (image diagonal / negative diagonal) |
-
-**Calculation:** Exposure adjustment when resizing uses the inverse-square law in magnification form:
-
-$$E_2 = E_1 \times \left( \frac{M_2 + 1}{M_1 + 1} \right)^2$$
-
-Where $M$ is magnification ratio (e.g., $M=2$ for 4×5 at 8×10).
-
-> **Note:** Do not use column height as a proxy for magnification. Column height varies by manufacturer; lens board thickness, baseboard elevation, and head travel differ across enlargers. Capture actual magnification or measured lens-to-paper distance.
+**Disputed elements:** Dry-down tonal region (shadows vs. highlights) remains unresolved against primary sources. The spec does not encode any claim; it only provides an advisory field for practitioner observation.
 
 ---
 
-### 2.2 Paper & Filtering Variables (The Medium)
+## v1 Scope (Implement Now)
 
-| Variable | Type | Example | Notes |
-|----------|------|---------|-------|
-| **Paper Brand & Product** | `lab_lovs.papers` | Ilford Multigrade FB Classic Glossy | User-extensible LOV entry |
-| **Paper Size** | Enum (closed set) | 5×7", 8×10", 11×14", 16×20" | Standard sizes only |
-| **Surface Finish** | Part of LOV | Glossy, Semimatt, Satin | Included in `lab_lovs.papers` entry |
-| **Emulsion Batch #** | String | IL20240815-B | **Stored on consumable record**, referenced by print session |
-| **Filter System** | `lab_lovs.filter_systems` | Ilford Above-Lens, Dichroic Y/M | User-extensible LOV entry |
-| **Exposure Mode** | Enum (closed set) | Single-Grade, Split-Grade | Fixed modes only |
-
-**Contrast Filtering:**
-
-| Mode | Fields Required |
-|------|-----------------|
-| **Single-Grade** | Filter grade (e.g., 2.5), Base time (seconds) |
-| **Split-Grade** | Soft grade (00–1), Soft time (seconds); Hard grade (4–5), Hard time (seconds) |
-
-> **Correction Note:** Standard Ilford grades: Soft (00, 0, 1), Hard (4, 5). Dichroic filters use yellow/magenta values (Y00–M20). Validate against `lab_lovs.filter_systems` definitions.
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Print Session entity | ✅ Ready | All fields defined in §3 |
+| Exposure Steps table | ✅ Ready | Split-grade support included |
+| Lab LOVs infrastructure | ✅ Ready | User-extensible, per-category schemas |
+| Test Strip fields | ✅ Ready | Base/Soft/Hard ranges (§2.6) |
+| Fixer/Wash tracking | ✅ Ready | Evidentiary for archival claims |
+| **Dry-down calculator** | ❌ Removed | No calculation in v1 |
+| **Dry-down prediction** | ❌ Not implemented | Advisory field only |
+| PDF Certificate Export | ❌ Deferred | v2+ (ROI: low reach, high cost) |
 
 ---
 
-### 2.3 Exposure & Mapping Ledger (The Recipe Steps)
+## §1. Required Fields (Non-Negotiable)
 
-| Step Type | Enum Value | Description |
-|-----------|------------|-------------|
-| **Base Exposure** | `BASE` | Full-frame exposure at selected grade(s) |
-| **Dodge** | `DODGE` | Reduce exposure on specific region (tool: wand, card, cotton) |
-| **Burn** | `BURN` | Add exposure on specific region (tool: card with hole, finger) |
-| **Edge Burn** | `EDGE_BURN` | Vignette control along print perimeter |
+These fields must exist and be populated for every Print Session:
 
-Each step records:
-```kotlin
-data class ExposureStep(
-    val type: StepType,
-    val grade: Float?,         // Null for dodge/burn using base grade
-    val timeSeconds: Float,
-    val region: String?,       // "foreground rocks", "sky / clouds"
-    val tool: String?          // "wand", "card with hole"
-)
-```
+| Field | Type | Constraint | Rationale |
+|-------|------|------------|-----------|
+| `frame_id` | FK → `frames.id` | **NOT NULL** | Without negative reference, nothing is reproducible |
+| `enlarger_id` | FK → `lab_lovs.enlargers` | NOT NULL | Core setup parameter |
+| `lens_id` | FK → `lab_lovs.lenses` | NOT NULL | Core setup parameter |
+| `paper_id` | FK → `lab_lovs.papers` | NOT NULL | Paper stock affects results |
+| `batch_number` | String | Nullable | Batch-to-batch variation tracked |
+| `developer_id` | FK → `lab_lovs.developers` | NOT NULL | Chemistry exhaustion matters |
+| `exposure_mode` | Enum | NOT NULL | Defines workflow (single/split-grade) |
+| `exposure_steps[]` | Array | **Must contain ≥1 BASE step** | The actual recipe |
+| `fixer_age_or_capacity` | String | Nullable | Evidence for archival claims |
+| `wash_time_minutes` | Int | Nullable | Evidence for archival permanence |
 
-Sequence Rule: Base exposure first, then dodge/burn steps in user-defined order. Store as ordered list.
+**Optional (v1):** Test strip fields, dry-down note, toning data — record if known, leave null if not.
 
 ---
 
-### 2.4 Chemistry & Processing Variables (The Wet Sink)
+## §2. Normative Rules (Enforce in Code)
 
-| Variable | Type | Example | Notes |
-|----------|------|---------|-------|
-| **Developer Name** | `lab_lovs.developers` | Ilford Multigrade, Ansco 130 | User-extensible LOV entry |
-| **Dilution** | String | 1+9, 1+1 | Format: "A+B" where A=developer, B=water |
-| **Temperature** | Float (°C) | 20.0 ± 0.5 | Target temperature |
-| **Immersion Time** | Int (seconds) | 120 | Total time in tray |
-| **Agitation Interval** | Int (seconds) | 10 | Agitate every N seconds |
-| **Toning Chemistry** | `lab_lovs.toners` | Selenium 1+19, Sepia/Sulfide, Gold Protective | Optional, user-extensible LOV |
-| **Toning Duration** | Int (seconds) | 180 | If toning applied |
-| **Dry-Down Factor** | Float (%) | 8%–12% (Baryta/FB) | Paper-specific compensation; auto-calculate wet-preview |
-
-> **Warning:** Dry-down compensation is a multiplier on final exposure preview, not a new calculation. Formula: $\text{previewTime} = \frac{\text{actualTime}}{1 + \frac{\text{dryDownFactor}}{100}}$.
+| Rule | Enforcement | Consequence |
+|------|-------------|-------------|
+| **R1: Multiple BASE steps** | Allow ≥2 BASE steps in split-grade | Single `baseExposureSeconds` removed from session |
+| **R2: Grade required for split-grade** | Validate `grade != null` when `exposureMode == SPLIT_GRADE` | Dodge/burn inherit no default grade |
+| **R3: No dry-down calculation** | Remove any auto-calculation logic | Advisory field only |
+| **R4: No microwave drying** | UI warning text only | Damages prints, invalid data |
+| **R5: LOV lookup for user choices** | Enlarge/lens/paper/developer/toner via `lab_lovs` | Decision 001 compliance |
 
 ---
 
-### 2.5 Negative Reference (The Anchor) ⚠️ CRITICAL
-This field is mandatory. A print recipe without a negative reference has no reproducibility value.
-
-| Field | Type | Notes |
-|-------|------|-------|
-| **Negative Frame ID** | Foreign key → `frames.id` | Links to existing Frame entity from Archive pillar |
-| **Negative Contrast Index** | Float? | Measured density range (optional; inferred from test strip if not recorded) |
-| **Test Strip Results** | Reference to `test_strips` table? | Optional link to associated test strip session |
-
-Relationship: `PrintSession.frame_id` $\to$ `Frame.id` (many prints may derive from one negative over time; version the print session, not the frame).
-
----
-
-## 3. Data Model (v1 Core Entities)
+## §3. Data Model (Final Schema)
 
 ```kotlin
 @Entity(tableName = "print_sessions")
 data class PrintSession(
     @PrimaryKey val id: String,
-    @ColumnInfo(name = "frame_id") val negativeFrameId: String,  // FK → frames
-    val enlargerId: String,                                   // FK → lab_lovs.enlargers
-    val lightHeadType: String,                                // FK → lab_lovs.light_heads
-    val lensId: String,                                       // FK → lab_lovs.lenses
-    val aperture: Int,                                        // f-stop index
-    val magnification: Float,                                 // calculated ratio
-    val paperId: String,                                      // FK → lab_lovs.papers
-    val paperSize: String,                                    // enum
-    val batchNumber: String?,                                 // from consumable record
-    val filterSystemId: String,                               // FK → lab_lovs.filter_systems
-    val exposureMode: ExposureMode,                           // enum
-    val contrastFilter: Float?,                               // single-grade or soft/hard
-    val baseExposureSeconds: Float,
-    val developerId: String,                                  // FK → lab_lovs.developers
-    val dilution: String,                                     // "1+9"
-    val tempCelsius: Float,
+    @ColumnInfo(name = "frame_id") val negativeFrameId: String,      // FK, NOT NULL
+    val enlargerId: String,
+    val lightHeadTypeId: String,
+    val lensId: String,
+    val apertureIndex: Int,
+    val magnification: Float,
+    val paperId: String,
+    val paperSize: String,
+    val batchNumber: String?,
+    val filterSystemId: String,
+    val exposureMode: ExposureMode,
+    val developerId: String,
+    val dilution: String,
+    val tempCelsius: Float,                                        // precision: 0.1
     val immersionSeconds: Int,
-    val tonerId: String?,                                     // FK → lab_lovs.toners, nullable
-    val dryDownPercent: Float?,                               // nullable
+    val agitationIntervalSeconds: Int,
+    val tonerId: String?,
+    val tonerDurationSeconds: Int?,
+    val dryDownNote: String?,                                      // advisory only
+    val testStripBaseRange: String?,
+    val testStripSoftRange: String?,
+    val testStripHardRange: String?,
+    val fixerAgeOrCapacity: String?,
+    val washTimeMinutes: Int?,
     val createdAt: Long,
     val updatedAt: Long
 )
@@ -150,97 +108,81 @@ data class PrintSession(
 @Entity(tableName = "exposure_steps")
 data class ExposureStep(
     @PrimaryKey val id: String,
-    @ColumnInfo(name = "session_id") val sessionId: String,    // FK → print_sessions
-    val stepType: StepType,                                   // enum: BASE/DODGE/BURN/EDGE_BURN
-    val grade: Float?,                                        // null for dodge/burn
-    val timeSeconds: Float,
-    val region: String?,                                      // human-readable
-    val tool: String?,                                        // human-readable
-    val sortOrder: Int                                        // ordering within session
+    @ColumnInfo(name = "session_id") val sessionId: String,        // FK, NOT NULL
+    val stepType: StepType,
+    val grade: Float?,                                            // required when SPLIT_GRADE
+    val timeSeconds: Float,                                       // precision: 0.1
+    val region: String?,
+    val tool: String?,
+    val sortOrder: Int
 )
 
-// All user-extensible LOVs stored in lab_lovs table with type discriminator
 @Entity(tableName = "lab_lovs")
 data class LovEntry(
     @PrimaryKey val id: String,
-    val category: LovCategory,                                // enum: enlargers/papers/lenses/etc.
-    val name: String,                                         // display name
-    val metadata: String,                                     // JSON blob for extensible attributes
+    val category: LovCategory,
+    val name: String,
+    val metadata: String,                                         // per-category schema required
     val createdAt: Long
 )
 ```
 
 ---
 
-## 4. Out of Scope (v2+)
-These items were evaluated using Distinct Routes' ROI formula and deferred:
+## §4. Errata Log (Permanent Record)
 
-| Feature | Rationale |
-|---------|-----------|
-| **PDF Certificate Export** | Low reach (< 10% of users sell prints); high implementation cost |
-| **"1-Click Copy Recipe"** | Already covered by session cloning (base Room CRUD) |
-| **Pre-exposure Flashing Support** | Advanced technique; add when 5+ users request |
-| **Chemistry Exhaustion Tracking** | Requires inventory system; defer until consumables pillar ships |
+| # | Version | Source | Issue | Resolution |
+|---|---------|--------|-------|------------|
+| **E1** | 1.0 | ASAI | f/4→f/11 = 2 stops | Corrected: 3 stops |
+| **E2** | 1.0 | Lumo | Flashing "recovers shadow separation" | Incorrect; suppressed |
+| **E3** | 1.0 | ASAI | Emulsion batch per-print field | Moved to stock item |
+| **E4** | 1.0 | ASAI | No negative reference | `frame_id` mandatory |
+| **E5** | 1.0 | ASAI | Single `baseExposureSeconds` | Multiple BASE steps allowed |
+| **E6** | 1.0 | Leo | Dry-down tonal region (shadows vs highlights) | Disputed; no claim encoded |
+| **E7** | 1.2 | Lumo | Microwave drying test suggested | Rejected; damages prints |
+| **E8** | 1.2 | Lumo | Tonal region unverified against primary sources | Deferred to practitioner validation |
 
----
-
-## 5. Governance Compliance
-
-### 5.1 Decision 001: Dynamic User-Extendable LOVs
-Every enumerated user choice must be stored as `lab_lovs` entries, not Kotlin enums, except for:
-
-| Element | Reason for Enum |
-|---------|-----------------|
-| **StepType** (`BASE`, `DODGE`, `BURN`, `EDGE_BURN`) | Finite, unchanging set |
-| **ExposureMode** (`SINGLE_GRADE`, `SPLIT_GRADE`) | Finite, unchanging set |
-| **PaperSize** | Industry-standard fixed set |
-
-All other user choices (enlarger models, papers, lenses, developers, toners, filter systems) must use LOV lookups.
-
-### 5.2 Decision 006: Domain Use Cases
-Calculations must live in `core/data/src/main/java/com/fotologue/core/data/usecase/`, not ViewModels:
-
-| Calculation | Use Case |
-|-------------|----------|
-| **Inverse-square resize** | `CalculateResizeExposureUseCase` |
-| **Dry-down compensation** | `ApplyDryDownFactorUseCase` |
-| **Zone system mapping** | `CalculateZoneExposureUseCase` (existing) |
-
-### 5.3 Ubiquitous Language
-Terms must match `docs/02_Specifications/lexicon.md`:
-
-| Term | Definition |
-|------|------------|
-| **Print Session** | Complete darkroom printing record (negative + recipe + processing) |
-| **Recipe** | Informal term for Print Session; use Print Session in code/UI |
-| **Stock Item** | Purchased consumable with batch tracking (paper, developer, toner) |
+> **Key Takeaway**: Three reviewers produced three errors (E2, E6, E7). The review loop caught them all. The spec ships conservative — no calculator, no disputed physics, only data recording.
 
 ---
 
-## 6. Errata Corrections
+## §5. References (Authoritative Sources)
 
-This document corrects errors from earlier proposals:
+| Topic | Primary Source | Status |
+|-------|----------------|--------|
+| **Zone System** | Ansel Adams, *The Negative* / *The Print* | Canon |
+| **Dry-Down Physics** | Tim Rudman, *The Print*, Ch. 10 | Referenced |
+| **Split-Grade Printing** | Ilford Photo Technical Guides | Practice Standard |
+| **Archival Processing** | ISO 18902 (Imaging Materials) | Compliance |
+| **Physical Logbooks** | Analogbook Darkroom Notebooks | Industry Standard |
+| **Workbooks** | *The Ultimate Film & Darkroom Workbook* | Reference |
+| **Open Source** | `jaapjan14/darkroom-log` | Reference |
 
-| Original Error | Correction |
-|----------------|------------|
-| *"Flashing lowers threshold for extreme highlights"* | Wrong. Flashing raises the toe to recover shadow separation in high-contrast negatives. Highlights compress slightly. |
-| *"f/4 to f/11 is 2 stops"* | Wrong. f/4 to f/11 is 3 stops. |
-| *"Emulsion Batch # is a per-print field"* | Wrong. Batch belongs on the consumable record; print session references the stock item. |
-| *"No negative reference"* | Critical omission added. Print sessions require `frame_id` foreign key. |
-
----
-
-## 7. Appendix: Verification Checklist
-
-Before implementation merge, confirm:
-- [x] All LOV-backed fields query `lab_lovs` table via foreign keys.
-- [x] `PrintSession.frame_id` is NOT NULL (mandatory constraint).
-- [x] Calculations in `core/data/src/main/java/com/fotologue/core/data/usecase/` package, not ViewModels.
-- [x] `CONTRIBUTING.md` Section 3 updated to reflect Use Case pattern.
-- [x] Cross-document links verified (no 404s) under the `docs/02_Specifications/` hierarchy.
+*Do not implement: Anything not in the schema above. No dry-down calculator. No resize auto-scaling for dodge/burn. No PDF certificates.*
 
 ---
 
-*Maintained by: Fotologue Engineering*  
-*Last Reviewed: 2026-10-21*  
-*Next Review: v1.1 release cycle*
+## §6. Implementation Checklist
+
+### Week 1 — Data Layer
+- [x] Create `print_sessions` table with all fields
+- [x] Create `exposure_steps` table with `sortOrder`
+- [x] Create `lab_lovs` table with per-category metadata
+- [x] Enforce `NOT NULL` on `frame_id`, `stepType`
+- [x] Add validation: `grade != null` when `exposureMode == SPLIT_GRADE`
+
+### Week 2 — Integration
+- [x] Wire up LOV pickers for enlarger/lens/paper/developer
+- [x] Implement multi-step exposure entry (BASE + dodge/burn)
+- [x] Add dry-down advisory UI text
+- [x] Disable any calculator logic (none exists)
+
+### Week 3 — Verification
+- [x] Unit test: multiple BASE steps serialize correctly
+- [x] Unit test: split-grade requires grade on each step
+- [x] Manual test: create print session with split-grade, verify query
+- [x] Manual test: dry-down note persists, no computation triggered
+
+*Maintained by: Select Distinct*  
+*Approved by: Gerard Bendotti*  
+*Next Review: Post-v1-alpha verification report*
