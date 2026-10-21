@@ -336,7 +336,7 @@ fun SettingsScreen(
                         )
                     }
                     Text(
-                        text = "Tap the Night Sight icon (🌙+) in top bars for 1-tap Red Shift toggling. Red Shift eliminates blue light to preserve night-adapted vision during astrophotography and darkroom logbook duties. Digital screens cannot replace optical darkroom safelights. Always test with your specific paper stock, maintain distance from paper areas, and load panchromatic film in total darkness.",
+                        text = "Tap the Night Sight icon in top bars for 1-tap Red Shift toggling. Red Shift eliminates blue light to preserve night-adapted vision during astrophotography and darkroom logbook duties. Digital screens cannot replace optical darkroom safelights. Always test with your specific paper stock, maintain distance from paper areas, and load panchromatic film in total darkness.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
