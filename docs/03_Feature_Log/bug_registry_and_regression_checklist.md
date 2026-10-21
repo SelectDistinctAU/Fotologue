@@ -1632,6 +1632,34 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-149: Canonical Darkroom Printing Parameter Specification (v1.3 Final) & Schema Alignment
+- **Platform**: Core Data, Mobile & Desktop (`darkroom_print_taxonomy.md`, `PrintSession.kt`, `ExposureStep.kt`, `LovEntry.kt`)
+- **Reported**: October 2026
+- **Symptom**: Darkroom print recipe parameters needed explicit canonical taxonomy v1.3 Final, mandatory negative reference foreign key, `print_sessions` and `exposure_steps` multi-table architecture, and archival evidence fields.
+- **Root Cause**: Requirement for implementation-ready v1.3 Final darkroom printing specification.
+- **Resolution**:
+  1. Authored `docs/02_Specifications/darkroom_print_taxonomy.md` (v1.3 Final) with mandatory `negativeFrameId` (`frame_id` FK $\to$ `frames.id`, NOT NULL), §3 schema, Errata Log (§4), and References (§5).
+  2. Created `PrintSession`, `ExposureStep`, and `LovEntry` data entities in `core:data` with Room migration `MIGRATION_50_51`.
+  3. Retained `CalculateResizeExposureUseCase.kt` and deleted speculative `ApplyDryDownFactorUseCase.kt`.
+- **Regression Test Case**: Verify `docs/02_Specifications/darkroom_print_taxonomy.md` v1.3 text exists, database migration `MIGRATION_50_51` executes cleanly, and `CalculateResizeExposureUseCase` passes unit tests 100%.
+
+---
+
+### BUG-150: Real-Phone Screen Overflow & Top-Bar Title Streamlining
+- **Platform**: Fotologue Mobile (`LabHomeScreen.kt`, `ArchiveScreen.kt`, `EnlargerPrintingSessionScreen.kt`, `SettingsScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Top-bar titles ("Fotologue Lab", "Archive Vault & Desktop Bridge") overflowed on real phones; Settings notice displayed raw `"(moon+)"` text; Archive card action buttons wrapped text awkwardly; Enlarger Session retained legacy Safelight switch.
+- **Root Cause**: Un-streamlined top-bar string titles and rigid button padding.
+- **Resolution**:
+  1. Streamlined top-bar titles to `"Lab"` and `"Archive"`.
+  2. Standardized Red Shift controls across all top bars to 48dp `IconButton` using `night_sight_max_24px`.
+  3. Cleaned up Settings notice card text.
+  4. Reduced button padding on Archive vault/manifest cards to prevent `Export \n Vault` text wrapping.
+  5. Wrapped supplier/vendor card website URLs and action rows in `LabHomeScreen.kt` with `FlowRow` and responsive weights to prevent right-edge overflow.
+- **Regression Test Case**: Launch Mobile App on physical narrow phone $\to$ verify top-bar titles read "Lab" and "Archive" on 1 line with `night_sight_max_24px` icon buttons and zero text wrapping on action buttons.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
