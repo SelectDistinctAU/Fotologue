@@ -1,0 +1,28 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+  <!-- Clip Group: Ensures Red Grid Lines stay strictly INSIDE the Circle -->
+  <group>
+    <clip-path
+        android:pathData="M50,5 A45,45 0 1,0 50,95 A45,45 0 1,0 50,5"/>
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FF0000"
+        android:strokeWidth="3"
+        android:pathData="M24,0 V100 M76,0 V100 M0,26 H100 M0,74 H100"/>
+  </group>
+
+  <!-- Outer Circle Frame -->
+  <path
+      android:fillColor="#00000000"
+      android:strokeColor="#1C1B1F"
+      android:strokeWidth="6"
+      android:pathData="M50,5 A45,45 0 1,0 50,95 A45,45 0 1,0 50,5"/>
+
+  <!-- Latin Small Letter F with Hook (ƒ / U+0192) + Italic l Ligature -->
+  <path
+      android:fillColor="#1C1B1F"
+      android:pathData="M 44,18 C 38,18 33,22 31,28 L 28,40 H 22 V 46 H 26 L 19,68 C 17,75 20,82 26,82 C 30,82 33,78 35,74 L 31,72 C 30,74 28,76 27,76 C 25,76 24,74 25,68 L 31,46 H 40 V 40 H 33 L 37,28 C 38,23 40,22 44,22 C 46,22 47,23 47,25 L 50,24 C 49,20 47,18 44,18 Z M 62,26 C 59,26 56,30 54,36 L 45,68 C 43,75 46,82 51,82 C 55,82 58,78 60,74 L 58,72 C 56,74 57,75 53,76 C 51,76 51,74 52,68 L 60,36 C 61,31 62,29 64,28 L 62,26 Z"/>
+</vector>
