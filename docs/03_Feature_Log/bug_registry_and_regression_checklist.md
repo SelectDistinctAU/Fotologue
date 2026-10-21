@@ -1620,6 +1620,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-148: Canonical Darkroom Printing Parameter Specification (v1.0) & Resizing Use Cases
+- **Platform**: Core Data, Mobile & Desktop (`darkroom_print_taxonomy.md`, `CalculateResizeExposureUseCase.kt`, `ApplyDryDownFactorUseCase.kt`)
+- **Reported**: October 2026
+- **Symptom**: Darkroom print recipe parameters needed explicit canonical taxonomy, mandatory negative reference foreign key, magnification-based Inverse Square Law resizing math, and dry-down factor multiplier compensation.
+- **Root Cause**: Requirement for expert-grade darkroom print recipe specification authored with Luma and Leo AI.
+- **Resolution**:
+  1. Authored `docs/02_Specifications/darkroom_print_taxonomy.md` (v1.0) defining canonical parameters, mandatory `negativeFrameId` anchor, magnification-based resizing ($E_2 = E_1 \times \left( \frac{M_2 + 1}{M_1 + 1} \right)^2$), dry-down compensation multiplier ($\text{previewTime} = \frac{\text{actualTime}}{1 + \frac{\text{dryDownFactor}}{100}}$), and structured `ExposureStep` ledger.
+  2. Implemented `CalculateResizeExposureUseCase.kt` and `ApplyDryDownFactorUseCase.kt` in `core:data`.
+- **Regression Test Case**: Verify `docs/02_Specifications/darkroom_print_taxonomy.md` exists and `CalculateResizeExposureUseCase` / `ApplyDryDownFactorUseCase` pass unit tests 100%.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
