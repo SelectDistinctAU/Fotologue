@@ -78,7 +78,10 @@ fun HubScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
-                            painter = painterResource(com.fotologue.app.R.drawable.ic_fotologue_logo),
+                            painter = painterResource(
+                                if (isSafelightActive) com.fotologue.app.R.drawable.fotologueredshift
+                                else com.fotologue.app.R.drawable.ic_fotologue_logo
+                            ),
                             contentDescription = "Fotologue Logo",
                             modifier = Modifier.size(36.dp).clip(CircleShape)
                         )
