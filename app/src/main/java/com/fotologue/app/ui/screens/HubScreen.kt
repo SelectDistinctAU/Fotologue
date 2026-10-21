@@ -138,16 +138,6 @@ fun HubScreen(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item(key = "section_header_modules") {
-                Text(
-                    text = "APPLICATION STAGING PORTAL",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = safelightPrimary,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
-                )
-            }
-
             item(key = "module_camera_gear") {
                 HubModuleCard(
                     title = "CAMERA GEAR",
