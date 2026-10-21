@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -50,6 +51,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material3.AlertDialog
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateListOf
+import com.fotologue.core.data.DarkroomLightGuard
 import com.fotologue.core.data.lab.PerformanceLog
 import com.fotologue.core.designsystem.R
 
@@ -142,7 +149,31 @@ fun EnlargerPrintingSessionScreen(
 
     val standardPrintDimensions = listOf("4x5\"", "5x7\"", "8x10\"", "11x14\"", "12x16\"", "16x20\"", "20x24\"", "30x40 cm", "40x50 cm")
     val standardGradeFilters = listOf("Grade 00", "Grade 0", "Grade 0.5", "Grade 1", "Grade 1.5", "Grade 2", "Grade 2.5", "Grade 3", "Grade 3.5", "Grade 4", "Grade 4.5", "Grade 5", "Split-Grade (00 + 5)")
-    val learningOpportunitiesLOV = listOf("Misfire / Accidental Shutter", "Underexposed Shadows", "Overexposed Highlights", "Missed Focus / Focus Shift", "Low Light Hand Shake", "Contrast Too High", "Contrast Too Flat", "Frame Overlap", "Distortion / Perspective Error", "Bellows Light Leak")
+    val darkroomDefectsLOV = remember {
+        listOf(
+            "Dust / Scratch on Negative",
+            "Exhausted Chemistry",
+            "Incorrect Exposure Time",
+            "Wrong Grade Filter",
+            "Paper Fogged / Light Leak",
+            "Dodge & Burn Error",
+            "Uneven Development / Agitation",
+            "Enlarger Focus Drift"
+        )
+    }
+
+    val availableLearningTags = remember {
+        mutableStateListOf(
+            "Fine Art Exhibition Candidate",
+            "Grade 3 Contrast Test",
+            "Burn Sky +1 Stop",
+            "Dodge Shadows 2s",
+            "Test Strip Calibration",
+            "Paper Tonal Comparison",
+            "Split-Grade Filter Test"
+        )
+    }
+    val selectedLearningTags = remember { mutableStateListOf("Fine Art Exhibition Candidate") }
 
     var selectedMasterId by remember { mutableStateOf(paperMasters.firstOrNull()?.id) }
     var selectedEnlargerBody by remember(enlargerOptions) { mutableStateOf(enlargerOptions.first()) }
@@ -154,10 +185,11 @@ fun EnlargerPrintingSessionScreen(
 
     // Reflection & Outcome State
     var outcomeStatus by remember { mutableStateOf("KEEPER") } // KEEPER vs REJECT
-    var rejectCategory by remember { mutableStateOf("PHOTOGRAPHER_LEARNING") } // SYSTEM_ERROR vs PHOTOGRAPHER_LEARNING
-    var systemErrorReason by remember { mutableStateOf("Expired Chemistry") }
-    var learningTag by remember { mutableStateOf("Misfire / Accidental Shutter") }
+    var darkroomDefectReason by remember { mutableStateOf(darkroomDefectsLOV.first()) }
+    var defectExpanded by remember { mutableStateOf(false) }
     var outcomeNotes by remember { mutableStateOf("Fine-art exhibition print candidate") }
+    var showAddCustomTagDialog by remember { mutableStateOf(false) }
+    var newCustomTagInput by remember { mutableStateOf("") }
 
     var masterExpanded by remember { mutableStateOf(false) }
     var enlargerBodyExpanded by remember { mutableStateOf(false) }
@@ -235,27 +267,15 @@ fun EnlargerPrintingSessionScreen(
                     }
                 },
                 actions = {
-                    // UNAMBIGUOUS SAFELIGHT TOGGLE SWITCH
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(end = 4.dp)
+                    IconButton(
+                        onClick = { viewModel.toggleSafelight() },
+                        modifier = Modifier.size(48.dp)
                     ) {
-                        Text(
-                            text = "Safelight",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = safelightPrimary,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Switch(
-                            checked = isSafelightActive,
-                            onCheckedChange = { viewModel.setSafelightActive(it) },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color(0xFFFF0000),
-                                checkedTrackColor = Color(0xFF660000),
-                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                            )
+                        Icon(
+                            painter = painterResource(com.fotologue.core.designsystem.R.drawable.night_sight_max_24px),
+                            contentDescription = if (isSafelightActive) "Disable Red Shift" else "Enable Red Shift",
+                            tint = safelightPrimary,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
@@ -558,7 +578,7 @@ fun EnlargerPrintingSessionScreen(
                 FilterChip(
                     selected = outcomeStatus == "KEEPER",
                     onClick = { outcomeStatus = "KEEPER" },
-                    label = { Text("🔴 KEEPER (Exhibition/Edition)", color = if (outcomeStatus == "KEEPER" && isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                    label = { Text("✓ KEEPER", fontWeight = FontWeight.Bold, color = if (outcomeStatus == "KEEPER" && isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                     colors = chipColors,
                     modifier = Modifier.weight(1f)
                 )
@@ -566,73 +586,118 @@ fun EnlargerPrintingSessionScreen(
                 FilterChip(
                     selected = outcomeStatus == "REJECT",
                     onClick = { outcomeStatus = "REJECT" },
-                    label = { Text("🔴 REJECT (Test/Error)", color = if (outcomeStatus == "REJECT" && isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                    label = { Text("✕ REJECT", fontWeight = FontWeight.Bold, color = if (outcomeStatus == "REJECT" && isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
                     colors = chipColors,
                     modifier = Modifier.weight(1f)
                 )
             }
 
             if (outcomeStatus == "REJECT") {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                // CONTROLLED DARKROOM DEFECT CAUSE DROPDOWN
+                ExposedDropdownMenuBox(
+                    expanded = defectExpanded,
+                    onExpandedChange = { defectExpanded = !defectExpanded }
                 ) {
-                    FilterChip(
-                        selected = rejectCategory == "SYSTEM_ERROR",
-                        onClick = { rejectCategory = "SYSTEM_ERROR" },
-                        label = { Text("System Error", color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
-                        colors = chipColors,
-                        modifier = Modifier.weight(1f)
-                    )
-                    FilterChip(
-                        selected = rejectCategory == "PHOTOGRAPHER_LEARNING",
-                        onClick = { rejectCategory = "PHOTOGRAPHER_LEARNING" },
-                        label = { Text("Photographer Learning", color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
-                        colors = chipColors,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                if (rejectCategory == "SYSTEM_ERROR") {
                     OutlinedTextField(
-                        value = systemErrorReason,
-                        onValueChange = { systemErrorReason = it },
-                        label = { Text("System Error Cause") },
+                        value = darkroomDefectReason,
+                        onValueChange = { darkroomDefectReason = it },
+                        readOnly = true,
+                        label = { Text("Darkroom Defect Cause") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = defectExpanded) },
+                        singleLine = true,
                         colors = textFieldColors,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
                     )
-                } else {
-                    // LEARNING OPPORTUNITIES LOV DROPDOWN
-                    ExposedDropdownMenuBox(
-                        expanded = learningExpanded,
-                        onExpandedChange = { learningExpanded = !learningExpanded }
+                    ExposedDropdownMenu(
+                        expanded = defectExpanded,
+                        onDismissRequest = { defectExpanded = false },
+                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                     ) {
-                        OutlinedTextField(
-                            value = learningTag,
-                            onValueChange = { learningTag = it },
-                            label = { Text("Learning Opportunity / Reflection Tag") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = learningExpanded) },
-                            singleLine = true,
-                            colors = textFieldColors,
-                            modifier = Modifier.menuAnchor().fillMaxWidth()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = learningExpanded,
-                            onDismissRequest = { learningExpanded = false },
-                            containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
-                        ) {
-                            learningOpportunitiesLOV.forEach { opp ->
-                                DropdownMenuItem(
-                                    text = { Text(opp, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
-                                    onClick = {
-                                        learningTag = opp
-                                        learningExpanded = false
-                                    }
-                                )
-                            }
+                        darkroomDefectsLOV.forEach { defect ->
+                            DropdownMenuItem(
+                                text = { Text(defect, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                                onClick = {
+                                    darkroomDefectReason = defect
+                                    defectExpanded = false
+                                }
+                            )
                         }
                     }
                 }
+            }
+
+            // MULTI-SELECT PHOTOGRAPHER LEARNING TAGS
+            Text(
+                text = "Photographer Learning & Reflection Tags (Multi-Select):",
+                style = MaterialTheme.typography.labelMedium,
+                color = safelightPrimary,
+                fontWeight = FontWeight.Bold
+            )
+
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                availableLearningTags.forEach { tagStr ->
+                    val isSel = selectedLearningTags.contains(tagStr)
+                    FilterChip(
+                        selected = isSel,
+                        onClick = {
+                            if (isSel) {
+                                selectedLearningTags.remove(tagStr)
+                            } else {
+                                selectedLearningTags.add(tagStr)
+                            }
+                        },
+                        label = { Text(tagStr) },
+                        colors = chipColors
+                    )
+                }
+
+                FilterChip(
+                    selected = false,
+                    onClick = { showAddCustomTagDialog = true },
+                    label = { Text("➕ Add Custom Tag", fontWeight = FontWeight.Bold) },
+                    colors = chipColors
+                )
+            }
+
+            if (showAddCustomTagDialog) {
+                AlertDialog(
+                    onDismissRequest = { showAddCustomTagDialog = false },
+                    title = { Text("Add Custom Learning Tag") },
+                    text = {
+                        OutlinedTextField(
+                            value = newCustomTagInput,
+                            onValueChange = { newCustomTagInput = it },
+                            label = { Text("Custom Reflection Tag Name") },
+                            singleLine = true,
+                            colors = textFieldColors,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                val clean = newCustomTagInput.trim()
+                                if (clean.isNotBlank() && !availableLearningTags.contains(clean)) {
+                                    availableLearningTags.add(clean)
+                                    selectedLearningTags.add(clean)
+                                }
+                                newCustomTagInput = ""
+                                showAddCustomTagDialog = false
+                            }
+                        ) {
+                            Text("Add & Select Tag")
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = { showAddCustomTagDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
             }
 
             OutlinedTextField(
@@ -652,9 +717,9 @@ fun EnlargerPrintingSessionScreen(
                             logEntryId = selectedFramePair.first,
                             inventoryItemId = selectedMasterId ?: 1L,
                             outcomeStatus = outcomeStatus,
-                            rejectCategory = if (outcomeStatus == "REJECT") rejectCategory else null,
-                            systemErrorReason = if (outcomeStatus == "REJECT" && rejectCategory == "SYSTEM_ERROR") systemErrorReason else null,
-                            learningTag = if (outcomeStatus == "REJECT" && rejectCategory == "PHOTOGRAPHER_LEARNING") learningTag else null,
+                            rejectCategory = if (outcomeStatus == "REJECT") "DARKROOM_DEFECT" else null,
+                            systemErrorReason = if (outcomeStatus == "REJECT") darkroomDefectReason else null,
+                            learningTag = if (selectedLearningTags.isNotEmpty()) selectedLearningTags.joinToString(", ") else null,
                             notes = outcomeNotes.trim()
                         )
                     )
@@ -669,7 +734,7 @@ fun EnlargerPrintingSessionScreen(
             ) {
                 Icon(Icons.Default.Check, contentDescription = null, tint = safelightBtnFg)
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Save Print Record & Reflection", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightBtnFg)
+                Text("Save Print Record & Reflection", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = safelightBtnFg, maxLines = 1)
             }
         }
     }

@@ -156,7 +156,7 @@ fun LabHomeScreen(
     }
 
     val pageTitle = when (currentView) {
-        LabView.MAIN_MENU -> "Fotologue Lab"
+        LabView.MAIN_MENU -> "Lab"
         LabView.SUPPLIERS -> "Contacts Directory"
         LabView.INVENTORY -> "Lab • Consumables"
         LabView.INVENTORY_CATEGORY_ITEMS -> "Lab • ${activeInventoryCategory ?: "Consumables"}"
@@ -227,26 +227,15 @@ fun LabHomeScreen(
                 },
                 actions = {
                     if (currentView != LabView.SUPPLIERS) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(end = 4.dp)
+                        IconButton(
+                            onClick = { viewModel.toggleSafelight() },
+                            modifier = Modifier.size(48.dp)
                         ) {
-                            Text(
-                                text = "Red Shift",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = safelightPrimary,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Switch(
-                                checked = isSafelightActive,
-                                onCheckedChange = { viewModel.setSafelightActive(it) },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = Color(0xFFFF0000),
-                                    checkedTrackColor = Color(0xFF660000),
-                                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                                )
+                            Icon(
+                                painter = painterResource(com.fotologue.core.designsystem.R.drawable.night_sight_max_24px),
+                                contentDescription = if (isSafelightActive) "Disable Red Shift" else "Enable Red Shift",
+                                tint = safelightPrimary,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                         IconButton(onClick = onNavigateToMaintenance) {
@@ -977,15 +966,15 @@ fun SupplierCard(
                     onCheckedChange = { onToggleIsUsed() }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(text = supplier.name, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
                     val sub = buildString {
                         append(supplier.region)
                         val rating = supplier.reliabilityRating
                         if (rating != null && rating > 0f) append(" • $rating★ Reliability")
-                        if (supplier.website.isNotBlank()) append(" • ${supplier.website}")
+                        if (supplier.website.isNotBlank()) append("\n${supplier.website}")
                     }
-                    Text(text = sub, style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
+                    Text(text = sub, style = MaterialTheme.typography.bodySmall, color = safelightSubFg, maxLines = 3)
                 }
             }
 
