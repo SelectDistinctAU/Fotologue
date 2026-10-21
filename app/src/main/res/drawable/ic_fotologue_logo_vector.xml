@@ -6,12 +6,12 @@
   <!-- Clip Group: Ensures Red Grid Lines stay strictly INSIDE the Circle -->
   <group>
     <clip-path
-        android:pathData="M50,5 A45,45 0 1,0 50,95 A45,45 0 1,0 50,5"/>
+        android:pathData="M 50,5 A 45,45 0 1,0 50,95 A 45,45 0 1,0 50,5 Z"/>
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FF0000"
-        android:strokeWidth="3"
-        android:pathData="M24,0 V100 M76,0 V100 M0,26 H100 M0,74 H100"/>
+        android:strokeWidth="3.5"
+        android:pathData="M25,0 V100 M75,0 V100 M0,26 H100 M0,74 H100"/>
   </group>
 
   <!-- Outer Circle Frame -->
@@ -19,10 +19,15 @@
       android:fillColor="#00000000"
       android:strokeColor="#1C1B1F"
       android:strokeWidth="6"
-      android:pathData="M50,5 A45,45 0 1,0 50,95 A45,45 0 1,0 50,5"/>
+      android:pathData="M 50,5 A 45,45 0 1,0 50,95 A 45,45 0 1,0 50,5 Z"/>
 
-  <!-- Precise Italic 'f' 'l' Ligature (Matching original logo) -->
+  <!-- Solid Italic 'f' Path -->
   <path
       android:fillColor="#1C1B1F"
-      android:pathData="M 52,22 C 48,22 43,24 40,29 L 36,40 H 45 V 45 H 34 L 27,69 C 25,76 21,81 15,81 C 12,81 9,79 9,75 C 9,72 11,70 13,70 C 15,70 17,72 17,74 C 17,76 16,77 14,77 C 16,79 19,79 21,77 C 24,75 26,70 28,64 L 34,45 H 28 V 40 H 35 L 39,28 C 42,23 46,20 52,20 Z M 64,30 C 62,30 59,34 57,40 L 49,68 C 47,75 49,79 54,79 C 58,79 61,76 63,72 L 61,70 C 59,72 58,73 56,73 C 54,73 54,71 55,66 L 62,38 C 63,34 64,32 66,31 L 64,30 Z"/>
+      android:pathData="M 48,22 C 43,22 38,25 36,30 L 32,40 H 22 V 46 H 30 L 22,66 C 19,73 21,78 26,78 C 29,78 32,76 34,72 L 31,70 C 29,72 28,73 27,73 C 25,73 24,71 25,66 L 31,46 H 42 V 40 H 34 L 38,30 C 40,25 43,23 48,23 C 49,23 50,24 50,25 L 53,24 C 52,21 50,22 48,22 Z"/>
+
+  <!-- Solid Italic 'l' Path -->
+  <path
+      android:fillColor="#1C1B1F"
+      android:pathData="M 64,28 C 61,28 58,32 56,38 L 47,66 C 45,72 47,76 52,76 C 56,76 59,73 61,69 L 59,67 C 57,69 56,70 54,70 C 52,70 52,68 53,64 L 61,36 C 62,32 63,30 65,29 Z"/>
 </vector>
