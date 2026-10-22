@@ -251,6 +251,53 @@ fun EnlargerPrintingSessionScreen(
         }
     }
 
+    // SMART AUTO-CALCULATOR 4: Magnification Ratio (M = d2 / d1) & Lens-to-Paper Distance (v = f * (M + 1))
+    LaunchedEffect(selectedRollText, printSizeText, enlargerLensText) {
+        // 1. Negative Format Diagonal (d1)
+        val rLower = selectedRollText.lowercase()
+        val d1Mm = when {
+            rLower.contains("4x5") || rLower.contains("large format") -> 162.89 // 4x5 sheet
+            rLower.contains("120") || rLower.contains("medium format") || rLower.contains("6x6") || rLower.contains("6x7") -> 79.20 // 120 medium format
+            else -> 43.27 // 35mm (24x36mm)
+        }
+
+        // 2. Print Size Diagonal (d2)
+        val pLower = printSizeText.lowercase()
+        val d2Mm = when {
+            pLower.contains("4x5") -> 162.89
+            pLower.contains("5x7") -> 218.49
+            pLower.contains("8x10") -> 325.27
+            pLower.contains("11x14") -> 452.23
+            pLower.contains("12x16") -> 508.00
+            pLower.contains("16x20") -> 650.56
+            pLower.contains("20x24") -> 793.62
+            pLower.contains("30x40") -> 500.00
+            pLower.contains("40x50") -> 640.31
+            else -> 325.27 // 8x10" default
+        }
+
+        // 3. Linear Magnification Ratio M = d2 / d1
+        val calculatedM = (d2Mm / d1Mm)
+        magnificationRatioText = String.format("%.1fx", calculatedM)
+
+        // 4. Lens Focal Length (f in cm)
+        val lLower = enlargerLensText.lowercase()
+        val focalMm = when {
+            lLower.contains("150mm") -> 150.0
+            lLower.contains("135mm") -> 135.0
+            lLower.contains("105mm") -> 105.0
+            lLower.contains("80mm") -> 80.0
+            lLower.contains("75mm") -> 75.0
+            lLower.contains("50mm") -> 50.0
+            else -> 80.0 // Default 80mm
+        }
+        val focalCm = focalMm / 10.0
+
+        // 5. Lens-to-Paper Distance v = f * (M + 1) in cm
+        val calculatedVCm = focalCm * (calculatedM + 1.0)
+        enlargerHeightCmText = String.format("%.1f", calculatedVCm)
+    }
+
     // Reflection & Outcome State
     var outcomeStatus by remember { mutableStateOf("KEEPER") } // KEEPER vs REJECT
     var darkroomDefectReason by remember { mutableStateOf(darkroomDefectsLOV.first()) }
