@@ -1696,6 +1696,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-154: Real-Time Optical Geometry Calculator for Magnification Ratio & Enlarger Distance
+- **Platform**: Fotologue Mobile (`feature:lab` / `EnlargerPrintingSessionScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Photographers had to manually measure and type magnification ratio ($M_L$) and lens-to-paper distance ($v$).
+- **Root Cause**: Un-automated optical geometry calculation in form state.
+- **Resolution**:
+  1. Implemented real-time optical geometry calculator:
+     - Linear Magnification: $M_L = \frac{\text{Print Diagonal } (d_2)}{\text{Negative Diagonal } (d_1)}$
+     - Lens-to-Paper Distance: $v = f \times (M_L + 1) \text{ (in cm)}$
+  2. Automatically updates `Magnification (M)` and `Enlarger Height (cm)` in real time when film roll, lens focal length, or print size changes.
+- **Regression Test Case**: Open Mobile App $\to$ `LAB` $\to$ **Log Enlarger Session** $\to$ select Medium Format 120 roll and 8x10" print size $\to$ verify Magnification auto-calculates to `4.1x` and Enlarger Height auto-calculates to `40.9 cm`.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
