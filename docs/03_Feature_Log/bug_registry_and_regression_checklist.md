@@ -1737,6 +1737,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-157: Add Custom Tag Leading Icon Alignment Fix
+- **Platform**: Fotologue Mobile (`feature:lab` / `EnlargerPrintingSessionScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Add Custom Tag` chip used raw emoji plus string (`"➕ Add Custom Tag"`) instead of Material 3 `Icon(Icons.Default.Add)` leading icon.
+- **Root Cause**: Hardcoded emoji text string.
+- **Resolution**: Replaced raw emoji text string with standard `leadingIcon = { Icon(Icons.Default.Add, contentDescription = null, tint = safelightPrimary, modifier = Modifier.size(18.dp)) }`, achieving 100% icon design consistency across all action buttons.
+- **Regression Test Case**: Open `LAB` $\to$ **Log Enlarger Session** $\to$ inspect `Add Custom Tag` chip $\to$ verify leading icon is standard M3 Material Plus icon.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
