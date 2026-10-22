@@ -183,6 +183,28 @@ fun EnlargerPrintingSessionScreen(
     var gradeFilterText by remember { mutableStateOf("Grade 2.5") }
     var dodgeBurnNotes by remember { mutableStateOf("Dodge sky -1 EV (3s), Burn shadows +1 EV (5s)") }
 
+    // v1.3 Expanded Darkroom Parameters
+    var lightHeadTypeText by remember { mutableStateOf("Condenser") }
+    var lightHeadExpanded by remember { mutableStateOf(false) }
+    val lightHeadOptions = listOf("Condenser", "Cold Light (Grid)", "Color / Dichroic Diffusion", "LED Modulated")
+
+    var takingApertureText by remember { mutableStateOf("f/11") }
+    var apertureExpanded by remember { mutableStateOf(false) }
+    val apertureOptions = listOf("f/4", "f/5.6", "f/8", "f/11", "f/16", "f/22")
+
+    var magnificationRatioText by remember { mutableStateOf("3.2x") }
+
+    var developerNameText by remember { mutableStateOf("Ilford Multigrade Developer") }
+    var developerExpanded by remember { mutableStateOf(false) }
+    val developerOptions = listOf("Ilford Multigrade Developer", "Kodak Dektol", "Ansco 130", "Selectol-Soft", "Kodak XTOL")
+
+    var dilutionText by remember { mutableStateOf("1+9") }
+
+    var fixerAgeCapacityText by remember { mutableStateOf("Batch #1 (12 prints processed)") }
+    var washTimeMinutesText by remember { mutableStateOf("20") }
+    var dryDownNoteText by remember { mutableStateOf("Baryta/FB paper darkens by ~10% upon drying") }
+    var testStripRangeText by remember { mutableStateOf("2s, 4s, 8s, 16s, 32s") }
+
     // Reflection & Outcome State
     var outcomeStatus by remember { mutableStateOf("KEEPER") } // KEEPER vs REJECT
     var darkroomDefectReason by remember { mutableStateOf(darkroomDefectsLOV.first()) }
@@ -559,6 +581,154 @@ fun EnlargerPrintingSessionScreen(
                 value = dodgeBurnNotes,
                 onValueChange = { dodgeBurnNotes = it },
                 label = { Text("Dodge & Burn Map Notes") },
+                colors = textFieldColors,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Light Head Type & Taking Aperture
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ExposedDropdownMenuBox(
+                    expanded = lightHeadExpanded,
+                    onExpandedChange = { lightHeadExpanded = !lightHeadExpanded },
+                    modifier = Modifier.weight(1.2f)
+                ) {
+                    OutlinedTextField(
+                        value = lightHeadTypeText,
+                        onValueChange = { lightHeadTypeText = it },
+                        label = { Text("Light Head Type") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = lightHeadExpanded) },
+                        singleLine = true,
+                        colors = textFieldColors,
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = lightHeadExpanded,
+                        onDismissRequest = { lightHeadExpanded = false },
+                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
+                    ) {
+                        lightHeadOptions.forEach { headOpt ->
+                            DropdownMenuItem(
+                                text = { Text(headOpt, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                                onClick = {
+                                    lightHeadTypeText = headOpt
+                                    lightHeadExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                ExposedDropdownMenuBox(
+                    expanded = apertureExpanded,
+                    onExpandedChange = { apertureExpanded = !apertureExpanded },
+                    modifier = Modifier.weight(0.8f)
+                ) {
+                    OutlinedTextField(
+                        value = takingApertureText,
+                        onValueChange = { takingApertureText = it },
+                        label = { Text("Aperture") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = apertureExpanded) },
+                        singleLine = true,
+                        colors = textFieldColors,
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = apertureExpanded,
+                        onDismissRequest = { apertureExpanded = false },
+                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
+                    ) {
+                        apertureOptions.forEach { apOpt ->
+                            DropdownMenuItem(
+                                text = { Text(apOpt, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                                onClick = {
+                                    takingApertureText = apOpt
+                                    apertureExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Developer Chemistry & Dilution
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ExposedDropdownMenuBox(
+                    expanded = developerExpanded,
+                    onExpandedChange = { developerExpanded = !developerExpanded },
+                    modifier = Modifier.weight(1.3f)
+                ) {
+                    OutlinedTextField(
+                        value = developerNameText,
+                        onValueChange = { developerNameText = it },
+                        label = { Text("Paper Developer") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = developerExpanded) },
+                        singleLine = true,
+                        colors = textFieldColors,
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = developerExpanded,
+                        onDismissRequest = { developerExpanded = false },
+                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
+                    ) {
+                        developerOptions.forEach { devOpt ->
+                            DropdownMenuItem(
+                                text = { Text(devOpt, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                                onClick = {
+                                    developerNameText = devOpt
+                                    developerExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = dilutionText,
+                    onValueChange = { dilutionText = it },
+                    label = { Text("Dilution") },
+                    singleLine = true,
+                    colors = textFieldColors,
+                    modifier = Modifier.weight(0.7f)
+                )
+            }
+
+            // Archival Evidence & Test Strip Range
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = fixerAgeCapacityText,
+                    onValueChange = { fixerAgeCapacityText = it },
+                    label = { Text("Fixer Capacity / Age") },
+                    singleLine = true,
+                    colors = textFieldColors,
+                    modifier = Modifier.weight(1f)
+                )
+
+                OutlinedTextField(
+                    value = washTimeMinutesText,
+                    onValueChange = { washTimeMinutesText = it },
+                    label = { Text("Wash (Mins)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    colors = textFieldColors,
+                    modifier = Modifier.weight(0.7f)
+                )
+            }
+
+            OutlinedTextField(
+                value = dryDownNoteText,
+                onValueChange = { dryDownNoteText = it },
+                label = { Text("Dry-Down Advisory Note") },
+                singleLine = true,
                 colors = textFieldColors,
                 modifier = Modifier.fillMaxWidth()
             )
