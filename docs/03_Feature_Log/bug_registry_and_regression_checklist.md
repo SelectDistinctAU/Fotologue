@@ -1710,6 +1710,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-155: Enlarger Session Exposure Step Ledger, Diagnostic Test Strips & Optical Relabeling
+- **Platform**: Fotologue Mobile (`feature:lab` / `EnlargerPrintingSessionScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Enlarger session screen lacked interactive Exposure Step Ledger for split-grade printing; dodge/burn was unqueryable text; test strip ranges were absent; distance label read "Enlarger Height".
+- **Root Cause**: Un-updated UI layer reflecting v1.3 Final Darkroom Specification.
+- **Resolution**:
+  1. Replaced scalar Base Sec / Grade row and free-text Dodge/Burn box with interactive `ExposureStepLedger` component supporting $\ge 2$ `BASE` steps for split-grade and inline `grade != null` validation.
+  2. Added always-visible `Test Strip — Base Range`, `Soft Range`, and `Hard Range` fields.
+  3. Relabeled `"Enlarger Height (cm)"` $\to$ `"Lens-to-Paper Distance (cm)"`.
+  4. Added read-only "Previous notes (unstructured)" collapsible card to preserve legacy free-text session notes (Option B).
+- **Regression Test Case**: Open Mobile App $\to$ `LAB` $\to$ **Log Enlarger Session** $\to$ tap `[ Split-Grade ]` $\to$ verify ledger expands to Soft BASE + Hard BASE and validates required grade.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
