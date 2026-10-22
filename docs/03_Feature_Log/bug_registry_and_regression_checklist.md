@@ -1683,6 +1683,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-153: Enlarger Printing Session Smart Pre-Filling & Geometry Inputs
+- **Platform**: Fotologue Mobile (`feature:lab` / `EnlargerPrintingSessionScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Enlarger Printing Session` form lacked explicit Enlarger Height (cm) and Magnification Ratio (M) inputs; developer dilution was an unconstrained text field; Light Head, Dilution, and Paper Dry-Down notes lacked smart pre-filling.
+- **Root Cause**: Incomplete form inputs for darkroom geometry and lack of LaunchedEffect reactive pre-fill state.
+- **Resolution**:
+  1. Added `Enlarger Height (cm)` and `Magnification (M)` input row.
+  2. Upgraded `Dilution` to a controlled `ExposedDropdownMenuBox` pre-filled with standard ratios (`1+9`, `1+4`, `1+2`, `1+1`, `Stock`, `1+19`).
+  3. Implemented `LaunchedEffect` smart pre-fills: auto-selects Light Head Type from Enlarger Body, auto-selects Dilution from Paper Developer, and auto-selects Dry-Down Note from Paper Stock Profile (FB vs RC).
+- **Regression Test Case**: Open Mobile App $\to$ `LAB` $\to$ **Log Enlarger Session** $\to$ select *Kodak Dektol* $\to$ verify dilution auto-prefills to `1+2`; select *Ilford FB Glossy* $\to$ verify dry-down note auto-prefills to `Baryta/FB paper darkens by ~8%–10% upon drying`.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
