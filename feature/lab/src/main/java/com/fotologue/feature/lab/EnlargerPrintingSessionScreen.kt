@@ -192,18 +192,64 @@ fun EnlargerPrintingSessionScreen(
     var apertureExpanded by remember { mutableStateOf(false) }
     val apertureOptions = listOf("f/4", "f/5.6", "f/8", "f/11", "f/16", "f/22")
 
-    var magnificationRatioText by remember { mutableStateOf("3.2x") }
+    var enlargerHeightCmText by remember { mutableStateOf("34.5") }
+    var magnificationRatioText by remember { mutableStateOf("3.2") }
 
     var developerNameText by remember { mutableStateOf("Ilford Multigrade Developer") }
     var developerExpanded by remember { mutableStateOf(false) }
     val developerOptions = listOf("Ilford Multigrade Developer", "Kodak Dektol", "Ansco 130", "Selectol-Soft", "Kodak XTOL")
 
     var dilutionText by remember { mutableStateOf("1+9") }
+    var dilutionExpanded by remember { mutableStateOf(false) }
+    val dilutionOptions = listOf(
+        "1+9 (Ilford / Kodak Standard)",
+        "1+4 (Concentrated / Fast Dev)",
+        "1+2 (Dektol Base)",
+        "1+1 (Ansco 130 Base)",
+        "Stock (Undiluted)",
+        "1+19 (High-Economy / Soft)"
+    )
 
     var fixerAgeCapacityText by remember { mutableStateOf("Batch #1 (12 prints processed)") }
     var washTimeMinutesText by remember { mutableStateOf("20") }
-    var dryDownNoteText by remember { mutableStateOf("Baryta/FB paper darkens by ~10% upon drying") }
+    var dryDownNoteText by remember { mutableStateOf("Baryta/FB paper darkens by ~8%–10% upon drying") }
     var testStripRangeText by remember { mutableStateOf("2s, 4s, 8s, 16s, 32s") }
+
+    // SMART AUTO-PREFILL 1: Enlarger Head Type from Enlarger Body Selection
+    LaunchedEffect(selectedEnlargerBody) {
+        val bodyLower = selectedEnlargerBody.lowercase()
+        lightHeadTypeText = when {
+            bodyLower.contains("intrepid") || bodyLower.contains("led") -> "LED Modulated"
+            bodyLower.contains("color") || bodyLower.contains("dichro") || bodyLower.contains("lpl") -> "Color / Dichroic Diffusion"
+            bodyLower.contains("cold") || bodyLower.contains("grid") -> "Cold Light (Grid)"
+            else -> "Condenser"
+        }
+    }
+
+    // SMART AUTO-PREFILL 2: Base Dilution from Developer Selection
+    LaunchedEffect(developerNameText) {
+        val devLower = developerNameText.lowercase()
+        dilutionText = when {
+            devLower.contains("ansco") -> "1+1"
+            devLower.contains("dektol") -> "1+2"
+            devLower.contains("selectol") -> "1+1"
+            devLower.contains("xtol") -> "1+1"
+            else -> "1+9" // Standard Ilford Multigrade / Kodak Liquid Paper Dev
+        }
+    }
+
+    // SMART AUTO-PREFILL 3: Dry-Down Advisory Note from Paper Stock Profile
+    val selectedPaperMaster = paperMasters.find { it.id == selectedMasterId }
+    LaunchedEffect(selectedPaperMaster) {
+        if (selectedPaperMaster != null) {
+            val pName = selectedPaperMaster.name.lowercase()
+            dryDownNoteText = if (pName.contains("fb") || pName.contains("baryta") || pName.contains("fiber") || pName.contains("foma")) {
+                "Baryta/FB paper darkens by ~8%–10% upon drying"
+            } else {
+                "RC paper has minimal dry-down (~2%–3%)"
+            }
+        }
+    }
 
     // Reflection & Outcome State
     var outcomeStatus by remember { mutableStateOf("KEEPER") } // KEEPER vs REJECT
@@ -221,7 +267,6 @@ fun EnlargerPrintingSessionScreen(
     var learningExpanded by remember { mutableStateOf(false) }
 
     // Check paper stock on hand
-    val selectedPaperMaster = paperMasters.find { it.id == selectedMasterId }
     val paperLots = lotList.filter { it.masterId == selectedMasterId }
     val paperOnHandQty = paperLots.filter { it.status == "ON_HAND" || it.status == "IN_USE" }.sumOf { it.quantity }
     val isPaperOnHand = selectedPaperMaster == null || paperOnHandQty > 0 || paperLots.isEmpty()
@@ -528,6 +573,32 @@ fun EnlargerPrintingSessionScreen(
                 }
             }
 
+            // Enlarger Geometry: Height (cm) & Magnification Ratio (M)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = enlargerHeightCmText,
+                    onValueChange = { enlargerHeightCmText = it },
+                    label = { Text("Enlarger Height (cm)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    colors = textFieldColors,
+                    modifier = Modifier.weight(1f)
+                )
+
+                OutlinedTextField(
+                    value = magnificationRatioText,
+                    onValueChange = { magnificationRatioText = it },
+                    label = { Text("Magnification (M)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    colors = textFieldColors,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
             // Exposure Time & Multigrade Filter
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -689,14 +760,38 @@ fun EnlargerPrintingSessionScreen(
                     }
                 }
 
-                OutlinedTextField(
-                    value = dilutionText,
-                    onValueChange = { dilutionText = it },
-                    label = { Text("Dilution") },
-                    singleLine = true,
-                    colors = textFieldColors,
-                    modifier = Modifier.weight(0.7f)
-                )
+                // Dilution Controlled Dropdown + Input
+                ExposedDropdownMenuBox(
+                    expanded = dilutionExpanded,
+                    onExpandedChange = { dilutionExpanded = !dilutionExpanded },
+                    modifier = Modifier.weight(0.9f)
+                ) {
+                    OutlinedTextField(
+                        value = dilutionText,
+                        onValueChange = { dilutionText = it },
+                        label = { Text("Dilution") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dilutionExpanded) },
+                        singleLine = true,
+                        colors = textFieldColors,
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = dilutionExpanded,
+                        onDismissRequest = { dilutionExpanded = false },
+                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
+                    ) {
+                        dilutionOptions.forEach { dilOpt ->
+                            val cleanVal = dilOpt.substringBefore(" ")
+                            DropdownMenuItem(
+                                text = { Text(dilOpt, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                                onClick = {
+                                    dilutionText = cleanVal
+                                    dilutionExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
 
             // Archival Evidence & Test Strip Range
