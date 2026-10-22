@@ -1724,6 +1724,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-156: Plus Icon Cleanup, Test Strip Rows Re-Layout & On-Hand Chemistry Prioritisation
+- **Platform**: Fotologue Mobile (`feature:lab` / `EnlargerPrintingSessionScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: `[ + Add Dodge ]` and `[ + Add Burn ]` buttons displayed duplicate plus symbols (`+ + Add Dodge`); `Test Strip Diagnostic Ranges` inputs were crowded into 3 narrow columns (`4s, 8s, 12s, ...`); Paper Developer dropdown lacked on-hand inventory prioritisation.
+- **Root Cause**: Redundant `➕` emoji in button label string; rigid 3-column row; un-sorted chemistry dropdown list.
+- **Resolution**:
+  1. Removed `➕` emoji from `Text("Add Dodge")` and `Text("Add Burn")`, restoring single Material plus icons.
+  2. Re-arranged `Test Strip Base Range` as a full-width row above `Soft Range` and `Hard Range` rows.
+  3. Prioritised local on-hand chemistry at the top of the `Paper Developer` dropdown (`"📦 On-Hand: ..."`), with master presets and guest/borrowed darkroom chemistry below.
+- **Regression Test Case**: Open Mobile App $\to$ `LAB` $\to$ **Log Enlarger Session** $\to$ verify `[ + Add Dodge ]` renders a single plus icon and test strip inputs render as full-width rows with zero text truncation.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
