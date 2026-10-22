@@ -652,7 +652,16 @@ fun ContactSheetScreenContent(
                         colors = CardDefaults.cardColors(containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("🧪 Studio & Darkroom Reflections", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(com.fotologue.core.designsystem.R.drawable.table_lamp_24px),
+                                    contentDescription = null,
+                                    tint = safelightPrimary,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Studio & Darkroom Reflections", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                            }
                             Spacer(modifier = Modifier.height(4.dp))
                             Text("Review completed development events, enlarger print recipes, keeper ratings, and photographer learning reflections directly alongside your digital contact sheets.", style = MaterialTheme.typography.bodySmall, color = safelightFg)
                         }
