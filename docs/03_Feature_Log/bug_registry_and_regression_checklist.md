@@ -1670,6 +1670,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-152: Dynamic Sub-Category Top-Bar Icon Mapping, Sub-Header De-Cluttering & Darkroom Reflection Icon Fix
+- **Platform**: Fotologue Mobile (`GearLibraryScreen.kt`, `ContactSheetScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Camera Gear top bar displayed parent camera gear icon (`settings_photo_camera_24px`) across all sub-categories instead of their specific category icons; redundant `CAMERA GEAR` text label rendered above `Cameras`; test tube emoji `🧪` displayed on Darkroom Reflections card.
+- **Root Cause**: Static top-bar icon resource in `GearLibraryScreen.kt`; redundant sub-header text block; misplaced test tube emoji.
+- **Resolution**:
+  1. Mapped top-bar icon dynamically to `categories[uiState.selectedCategoryIndex].iconRes` (`📷 Cameras`, `🔍 Lenses`, `🎞️ Films`, etc.).
+  2. Removed redundant `CAMERA GEAR` sub-header text above `Cameras`.
+  3. Replaced test tube `🧪` on `Studio & Darkroom Reflections` info card with `table_lamp_24px` darkroom enlarger lamp vector icon.
+- **Regression Test Case**: Open `CAMERA GEAR` $\to$ tap `Cameras` $\to$ verify top bar displays `← 📷 Cameras` and sub-header `CAMERA GEAR` is gone; open `STATION` $\to$ tap `Darkroom Reflections` $\to$ verify card renders darkroom lamp vector icon.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.

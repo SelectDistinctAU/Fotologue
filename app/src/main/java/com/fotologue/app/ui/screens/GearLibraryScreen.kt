@@ -119,15 +119,6 @@ fun GearLibraryScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         itemsIndexed(categories) { index, category ->
-                            if (index == 0) {
-                                Text(
-                                    text = "CAMERA GEAR",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(start = 12.dp, top = 8.dp, bottom = 4.dp)
-                                )
-                            }
                             NavigationDrawerItem(
                                 label = { Text(category.name) },
                                 selected = uiState.selectedCategoryIndex == index,
@@ -278,7 +269,7 @@ fun GearLibraryScreen(
                                 } else {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(
-                                            painter = painterResource(R.drawable.settings_photo_camera_24px),
+                                            painter = painterResource(categories[uiState.selectedCategoryIndex].iconRes),
                                             contentDescription = null,
                                             tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.padding(end = 8.dp)
