@@ -14,7 +14,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,8 +31,12 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import com.fotologue.core.data.lab.ExposureMode
+import com.fotologue.core.data.lab.ExposureStep
+import com.fotologue.core.data.lab.StepType
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -197,7 +203,25 @@ fun EnlargerPrintingSessionScreen(
 
     var developerNameText by remember { mutableStateOf("Ilford Multigrade Developer") }
     var developerExpanded by remember { mutableStateOf(false) }
-    val developerOptions = listOf("Ilford Multigrade Developer", "Kodak Dektol", "Ansco 130", "Selectol-Soft", "Kodak XTOL")
+    val onHandDevelopers = remember(masterList) {
+        masterList.filter { it.category.contains("Chemistry", ignoreCase = true) || it.name.contains("Developer", ignoreCase = true) }
+            .map { "📦 ${it.name} (${it.manufacturer})" }
+    }
+    val masterDeveloperOptions = listOf(
+        "Ilford Multigrade Developer",
+        "Kodak Dektol",
+        "Ansco 130 Paper Developer",
+        "Selectol-Soft Paper Developer",
+        "Kodak XTOL",
+        "🏠 Guest / Community Darkroom Developer..."
+    )
+    val developerDropdownGroups = remember(onHandDevelopers) {
+        if (onHandDevelopers.isNotEmpty()) {
+            (onHandDevelopers + "───────────────" + masterDeveloperOptions).distinct()
+        } else {
+            masterDeveloperOptions
+        }
+    }
 
     var dilutionText by remember { mutableStateOf("1+9") }
     var dilutionExpanded by remember { mutableStateOf(false) }
@@ -214,6 +238,32 @@ fun EnlargerPrintingSessionScreen(
     var washTimeMinutesText by remember { mutableStateOf("20") }
     var dryDownNoteText by remember { mutableStateOf("Baryta/FB paper darkens by ~8%–10% upon drying") }
     var testStripRangeText by remember { mutableStateOf("2s, 4s, 8s, 16s, 32s") }
+
+    // EXPOSURE STEP LEDGER STATE (v1.3 Final Spec)
+    var exposureModeState by remember { mutableStateOf(ExposureMode.SINGLE_GRADE) }
+    val exposureStepsList = remember {
+        mutableStateListOf(
+            ExposureStep(
+                id = "step_base_1",
+                sessionId = "temp",
+                stepType = StepType.BASE,
+                grade = 2.5f,
+                timeSeconds = 12.5f,
+                region = "Full Frame",
+                tool = null,
+                sortOrder = 0
+            )
+        )
+    }
+
+    // Always-visible Test Strip Diagnostic Ranges
+    var testStripBaseRangeText by remember { mutableStateOf("2s, 4s, 8s, 16s, 32s") }
+    var testStripSoftRangeText by remember { mutableStateOf("4s, 8s, 12s, 16s") }
+    var testStripHardRangeText by remember { mutableStateOf("2s, 3s, 4s, 5s") }
+
+    // Option B: Legacy Unstructured Notes Card State
+    var legacyNotesText by remember { mutableStateOf("Dodge sky -1 EV (3s), Burn shadows +1 EV (5s)") }
+    var showLegacyNotesCard by remember { mutableStateOf(true) }
 
     // SMART AUTO-PREFILL 1: Enlarger Head Type from Enlarger Body Selection
     LaunchedEffect(selectedEnlargerBody) {
@@ -628,7 +678,7 @@ fun EnlargerPrintingSessionScreen(
                 OutlinedTextField(
                     value = enlargerHeightCmText,
                     onValueChange = { enlargerHeightCmText = it },
-                    label = { Text("Enlarger Height (cm)") },
+                    label = { Text("Lens-to-Paper Distance (cm)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     colors = textFieldColors,
@@ -646,62 +696,227 @@ fun EnlargerPrintingSessionScreen(
                 )
             }
 
-            // Exposure Time & Multigrade Filter
+            // EXPOSURE STEP LEDGER
+            Text(
+                text = "EXPOSURE STEP LEDGER",
+                style = MaterialTheme.typography.labelSmall,
+                color = safelightPrimary,
+                fontWeight = FontWeight.Bold
+            )
+
+            // Mode Selector: Single-Grade vs Split-Grade
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                OutlinedTextField(
-                    value = baseExposureSecText,
-                    onValueChange = { baseExposureSecText = it },
-                    label = { Text("Base Sec") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true,
-                    colors = textFieldColors,
-                    modifier = Modifier.weight(0.8f)
+                FilterChip(
+                    selected = exposureModeState == ExposureMode.SINGLE_GRADE,
+                    onClick = {
+                        exposureModeState = ExposureMode.SINGLE_GRADE
+                        if (exposureStepsList.count { it.stepType == StepType.BASE } > 1) {
+                            val firstBase = exposureStepsList.firstOrNull { it.stepType == StepType.BASE }
+                            exposureStepsList.removeAll { it.stepType == StepType.BASE }
+                            if (firstBase != null) exposureStepsList.add(0, firstBase)
+                        }
+                    },
+                    label = { Text("Single-Grade Mode", fontWeight = FontWeight.Bold) },
+                    colors = chipColors,
+                    modifier = Modifier.weight(1f)
                 )
 
-                // Grade Filter Dropdown
-                ExposedDropdownMenuBox(
-                    expanded = gradeExpanded,
-                    onExpandedChange = { gradeExpanded = !gradeExpanded },
-                    modifier = Modifier.weight(1.2f)
-                ) {
-                    OutlinedTextField(
-                        value = gradeFilterText,
-                        onValueChange = { gradeFilterText = it },
-                        label = { Text("Grade Filter") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = gradeExpanded) },
-                        singleLine = true,
-                        colors = textFieldColors,
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = gradeExpanded,
-                        onDismissRequest = { gradeExpanded = false },
-                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
-                    ) {
-                        standardGradeFilters.forEach { gr ->
-                            DropdownMenuItem(
-                                text = { Text(gr, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
-                                onClick = {
-                                    gradeFilterText = gr
-                                    gradeExpanded = false
-                                }
+                FilterChip(
+                    selected = exposureModeState == ExposureMode.SPLIT_GRADE,
+                    onClick = {
+                        exposureModeState = ExposureMode.SPLIT_GRADE
+                        if (exposureStepsList.count { it.stepType == StepType.BASE } < 2) {
+                            exposureStepsList.removeAll { it.stepType == StepType.BASE }
+                            exposureStepsList.add(
+                                0,
+                                ExposureStep(
+                                    id = "step_base_soft_${System.currentTimeMillis()}",
+                                    sessionId = "temp",
+                                    stepType = StepType.BASE,
+                                    grade = 0.0f,
+                                    timeSeconds = 8.0f,
+                                    region = "Soft Base (Grade 00)",
+                                    tool = "Multigrade Soft Filter",
+                                    sortOrder = 0
+                                )
                             )
+                            exposureStepsList.add(
+                                1,
+                                ExposureStep(
+                                    id = "step_base_hard_${System.currentTimeMillis() + 1}",
+                                    sessionId = "temp",
+                                    stepType = StepType.BASE,
+                                    grade = 5.0f,
+                                    timeSeconds = 4.5f,
+                                    region = "Hard Base (Grade 5.0)",
+                                    tool = "Multigrade Hard Filter",
+                                    sortOrder = 1
+                                )
+                            )
+                        }
+                    },
+                    label = { Text("Split-Grade Mode", fontWeight = FontWeight.Bold) },
+                    colors = chipColors,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            // Render Exposure Steps Ledger Card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    exposureStepsList.forEachIndexed { index, step ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "${index + 1}.",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = safelightPrimary
+                            )
+
+                            // Step Type Badge
+                            FilterChip(
+                                selected = true,
+                                onClick = {},
+                                label = { Text(step.stepType.name) },
+                                colors = chipColors
+                            )
+
+                            // Grade Input (Mandatory when SPLIT_GRADE)
+                            OutlinedTextField(
+                                value = step.grade?.toString() ?: "",
+                                onValueChange = { valStr ->
+                                    val newGrade = valStr.toFloatOrNull()
+                                    exposureStepsList[index] = step.copy(grade = newGrade)
+                                },
+                                label = { Text(if (exposureModeState == ExposureMode.SPLIT_GRADE) "Grade *" else "Grade") },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                singleLine = true,
+                                isError = exposureModeState == ExposureMode.SPLIT_GRADE && step.grade == null,
+                                colors = textFieldColors,
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            // Time Seconds
+                            OutlinedTextField(
+                                value = if (step.timeSeconds > 0) step.timeSeconds.toString() else "",
+                                onValueChange = { valStr ->
+                                    val newTime = valStr.toFloatOrNull() ?: 0.0f
+                                    exposureStepsList[index] = step.copy(timeSeconds = newTime)
+                                },
+                                label = { Text("Sec") },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                singleLine = true,
+                                colors = textFieldColors,
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            // Delete Button (Protected for minimum BASE steps)
+                            val canDelete = when (step.stepType) {
+                                StepType.BASE -> (exposureModeState == ExposureMode.SINGLE_GRADE && exposureStepsList.count { it.stepType == StepType.BASE } > 1) ||
+                                                 (exposureModeState == ExposureMode.SPLIT_GRADE && exposureStepsList.count { it.stepType == StepType.BASE } > 2)
+                                else -> true
+                            }
+
+                            if (canDelete) {
+                                IconButton(
+                                    onClick = { exposureStepsList.removeAt(index) },
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Icon(Icons.Default.Clear, contentDescription = "Delete Step", tint = safelightPrimary)
+                                }
+                            }
+                        }
+
+                        // Region & Tool Input Row for Dodge/Burn
+                        if (step.stepType != StepType.BASE) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(start = 24.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                OutlinedTextField(
+                                    value = step.region ?: "",
+                                    onValueChange = { reg -> exposureStepsList[index] = step.copy(region = reg) },
+                                    label = { Text("Region (e.g. Sky)") },
+                                    singleLine = true,
+                                    colors = textFieldColors,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                OutlinedTextField(
+                                    value = step.tool ?: "",
+                                    onValueChange = { tool -> exposureStepsList[index] = step.copy(tool = tool) },
+                                    label = { Text("Tool (e.g. Wand)") },
+                                    singleLine = true,
+                                    colors = textFieldColors,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                    }
+
+                    // Add Dodge / Burn Step Buttons
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                exposureStepsList.add(
+                                    ExposureStep(
+                                        id = "step_dodge_${System.currentTimeMillis()}",
+                                        sessionId = "temp",
+                                        stepType = StepType.DODGE,
+                                        grade = if (exposureModeState == ExposureMode.SPLIT_GRADE) 0.0f else null,
+                                        timeSeconds = 2.0f,
+                                        region = "Shadows",
+                                        tool = "Wand",
+                                        sortOrder = exposureStepsList.size
+                                    )
+                                )
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = null)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Add Dodge", style = MaterialTheme.typography.labelSmall)
+                        }
+
+                        OutlinedButton(
+                            onClick = {
+                                exposureStepsList.add(
+                                    ExposureStep(
+                                        id = "step_burn_${System.currentTimeMillis()}",
+                                        sessionId = "temp",
+                                        stepType = StepType.BURN,
+                                        grade = if (exposureModeState == ExposureMode.SPLIT_GRADE) 5.0f else null,
+                                        timeSeconds = 4.0f,
+                                        region = "Sky",
+                                        tool = "Hole Card",
+                                        sortOrder = exposureStepsList.size
+                                    )
+                                )
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = null)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Add Burn", style = MaterialTheme.typography.labelSmall)
                         }
                     }
                 }
             }
-
-            OutlinedTextField(
-                value = dodgeBurnNotes,
-                onValueChange = { dodgeBurnNotes = it },
-                label = { Text("Dodge & Burn Map Notes") },
-                colors = textFieldColors,
-                modifier = Modifier.fillMaxWidth()
-            )
 
             // Light Head Type & Taking Aperture
             Row(
@@ -795,12 +1010,17 @@ fun EnlargerPrintingSessionScreen(
                         onDismissRequest = { developerExpanded = false },
                         containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
                     ) {
-                        developerOptions.forEach { devOpt ->
+                        developerDropdownGroups.forEach { devOpt ->
+                            val cleanVal = devOpt.removePrefix("📦 ").substringBefore(" (").removePrefix("🏠 ")
+                            val isSeparator = devOpt.startsWith("──────")
                             DropdownMenuItem(
-                                text = { Text(devOpt, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                                enabled = !isSeparator,
+                                text = { Text(devOpt, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified, fontWeight = if (devOpt.startsWith("📦")) FontWeight.Bold else FontWeight.Normal) },
                                 onClick = {
-                                    developerNameText = devOpt
-                                    developerExpanded = false
+                                    if (!isSeparator) {
+                                        developerNameText = cleanVal
+                                        developerExpanded = false
+                                    }
                                 }
                             )
                         }
@@ -874,6 +1094,46 @@ fun EnlargerPrintingSessionScreen(
                 colors = textFieldColors,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            // Always-Visible Test Strip Diagnostic Ranges (Stacked Full-Width Rows)
+            Text(
+                text = "TEST STRIP DIAGNOSTIC RANGES",
+                style = MaterialTheme.typography.labelSmall,
+                color = safelightPrimary,
+                fontWeight = FontWeight.Bold
+            )
+
+            OutlinedTextField(
+                value = testStripBaseRangeText,
+                onValueChange = { testStripBaseRangeText = it },
+                label = { Text("Base Test Strip Sequence (e.g. 2s, 4s, 8s, 16s, 32s)") },
+                singleLine = true,
+                colors = textFieldColors,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = testStripSoftRangeText,
+                    onValueChange = { testStripSoftRangeText = it },
+                    label = { Text("Soft Strip (Grade 00)") },
+                    singleLine = true,
+                    colors = textFieldColors,
+                    modifier = Modifier.weight(1f)
+                )
+
+                OutlinedTextField(
+                    value = testStripHardRangeText,
+                    onValueChange = { testStripHardRangeText = it },
+                    label = { Text("Hard Strip (Grade 5.0)") },
+                    singleLine = true,
+                    colors = textFieldColors,
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             // OUTCOME & REFLECTION (KEEPER vs REJECT)
             Text(
