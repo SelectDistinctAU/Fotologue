@@ -1230,7 +1230,15 @@ fun EnlargerPrintingSessionScreen(
                 FilterChip(
                     selected = false,
                     onClick = { showAddCustomTagDialog = true },
-                    label = { Text("➕ Add Custom Tag", fontWeight = FontWeight.Bold) },
+                    label = { Text("Add Custom Tag", fontWeight = FontWeight.Bold, color = safelightPrimary) },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = null,
+                            tint = safelightPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
                     colors = chipColors
                 )
             }
