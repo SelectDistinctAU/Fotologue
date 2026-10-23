@@ -204,7 +204,7 @@ fun LabHomeScreen(
                             LabView.EQUIPMENT -> R.drawable.camera_indoor_24px
                             LabView.INVENTORY -> R.drawable.inventory_24px
                             LabView.INVENTORY_CATEGORY_ITEMS -> when (activeInventoryCategory) {
-                                "Chemistry" -> R.drawable.experiment_24px
+                                "Chemistry" -> R.drawable.lab_panel_24px
                                 "Paper" -> R.drawable.stacks_24px
                                 "Film Stock" -> R.drawable.camera_roll_24px
                                 "Safety Gear" -> R.drawable.health_and_safety_24px
