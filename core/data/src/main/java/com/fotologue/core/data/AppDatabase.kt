@@ -40,6 +40,15 @@ import com.fotologue.core.data.lab.StockLotDao
 import com.fotologue.core.data.lab.SupplierIssueLog
 import com.fotologue.core.data.lab.SupplierIssueLogDao
 
+import com.fotologue.core.data.lab.PrintSession
+import com.fotologue.core.data.lab.PrintSessionDao
+import com.fotologue.core.data.lab.ExposureStep
+import com.fotologue.core.data.lab.ExposureStepDao
+import com.fotologue.core.data.lab.LovEntry
+import com.fotologue.core.data.lab.LovEntryDao
+import com.fotologue.core.data.lab.LabOrder
+import com.fotologue.core.data.lab.LabOrderDao
+
 @Database(
     entities = [
         Camera::class, Film::class, LogEntry::class, Lens::class, Teleconverter::class, Filter::class, CameraKit::class,
@@ -47,9 +56,9 @@ import com.fotologue.core.data.lab.SupplierIssueLogDao
         CameraViewfinderCrossRef::class, CameraTeleconverterCrossRef::class, CameraFilterCrossRef::class, CameraFlashCrossRef::class,
         LabEquipment::class, LabEquipmentSubCategory::class, LabChemical::class, LabSupplier::class, SupplierIssueLog::class, InventoryItem::class, InventoryMaster::class, StockLot::class,
         LabCategory::class, LabUnit::class, LabItemName::class, OrderHistory::class, PerformanceLog::class, LabProcessEvent::class, PrintRecipe::class,
-        LabStorageLocation::class, PrintOutcome::class
+        LabStorageLocation::class, PrintOutcome::class, PrintSession::class, ExposureStep::class, LovEntry::class, LabOrder::class
     ],
-    version = 48,
+    version = 52,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -83,6 +92,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun printRecipeDao(): PrintRecipeDao
     abstract fun labStorageLocationDao(): LabStorageLocationDao
     abstract fun printOutcomeDao(): PrintOutcomeDao
+    abstract fun printSessionDao(): PrintSessionDao
+    abstract fun exposureStepDao(): ExposureStepDao
+    abstract fun lovEntryDao(): LovEntryDao
+    abstract fun labOrderDao(): LabOrderDao
 
     companion object {
         val MIGRATION_29_30 = object : Migration(29, 30) {
@@ -218,6 +231,100 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("CREATE TABLE IF NOT EXISTS `lab_supplier_issue_logs` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `supplierId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `issueSummary` TEXT NOT NULL, `status` TEXT NOT NULL DEFAULT 'OPEN', `contactPerson` TEXT NOT NULL DEFAULT '', `resolutionReason` TEXT NOT NULL DEFAULT '', `notes` TEXT NOT NULL DEFAULT '', FOREIGN KEY(`supplierId`) REFERENCES `lab_suppliers`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_lab_supplier_issue_logs_supplierId` ON `lab_supplier_issue_logs` (`supplierId`)")
+            }
+        }
+        val MIGRATION_48_49 = object : Migration(48, 49) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE cameras ADD COLUMN serialNumber TEXT NOT NULL DEFAULT ''")
+            }
+        }
+        val MIGRATION_49_50 = object : Migration(49, 50) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("UPDATE cameras SET format = '120 (Medium Format)', type = 'TLR' WHERE (name LIKE '%Mat-124%' OR name LIKE '%Rolleiflex%' OR name LIKE '%Mamiya C%' OR name LIKE '%Yashica Mat%') AND (format = '35mm' OR type = 'FILM_SLR')")
+                db.execSQL("UPDATE cameras SET format = '120 (Medium Format)', type = 'MEDIUM_FORMAT' WHERE (name LIKE '%503CX%' OR name LIKE '%500C%' OR name LIKE '%RZ67%' OR name LIKE '%Pentax 67%' OR name LIKE '%SQ-A%') AND (format = '35mm' OR type = 'FILM_SLR')")
+            }
+        }
+        val MIGRATION_50_51 = object : Migration(50, 51) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `print_sessions` (
+                        `id` TEXT NOT NULL PRIMARY KEY,
+                        `frame_id` TEXT NOT NULL,
+                        `enlargerId` TEXT NOT NULL DEFAULT '',
+                        `lightHeadTypeId` TEXT NOT NULL DEFAULT '',
+                        `lensId` TEXT NOT NULL DEFAULT '',
+                        `apertureIndex` INTEGER NOT NULL DEFAULT 0,
+                        `magnification` REAL NOT NULL DEFAULT 1.0,
+                        `paperId` TEXT NOT NULL DEFAULT '',
+                        `paperSize` TEXT NOT NULL DEFAULT '8x10"',
+                        `batchNumber` TEXT,
+                        `filterSystemId` TEXT NOT NULL DEFAULT '',
+                        `exposureMode` TEXT NOT NULL DEFAULT 'SINGLE_GRADE',
+                        `developerId` TEXT NOT NULL DEFAULT '',
+                        `dilution` TEXT NOT NULL DEFAULT '1+9',
+                        `tempCelsius` REAL NOT NULL DEFAULT 20.0,
+                        `immersionSeconds` INTEGER NOT NULL DEFAULT 120,
+                        `agitationIntervalSeconds` INTEGER NOT NULL DEFAULT 10,
+                        `tonerId` TEXT,
+                        `tonerDurationSeconds` INTEGER,
+                        `dryDownNote` TEXT,
+                        `testStripBaseRange` TEXT,
+                        `testStripSoftRange` TEXT,
+                        `testStripHardRange` TEXT,
+                        `fixerAgeOrCapacity` TEXT,
+                        `washTimeMinutes` INTEGER,
+                        `createdAt` INTEGER NOT NULL DEFAULT 0,
+                        `updatedAt` INTEGER NOT NULL DEFAULT 0,
+                        FOREIGN KEY(`frame_id`) REFERENCES `log_entries`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                    )
+                """.trimIndent())
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_print_sessions_frame_id` ON `print_sessions` (`frame_id`)")
+
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `exposure_steps` (
+                        `id` TEXT NOT NULL PRIMARY KEY,
+                        `session_id` TEXT NOT NULL,
+                        `stepType` TEXT NOT NULL,
+                        `grade` REAL,
+                        `timeSeconds` REAL NOT NULL DEFAULT 0.0,
+                        `region` TEXT,
+                        `tool` TEXT,
+                        `sortOrder` INTEGER NOT NULL DEFAULT 0,
+                        FOREIGN KEY(`session_id`) REFERENCES `print_sessions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                    )
+                """.trimIndent())
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_exposure_steps_session_id` ON `exposure_steps` (`session_id`)")
+
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `lab_lovs` (
+                        `id` TEXT NOT NULL PRIMARY KEY,
+                        `category` TEXT NOT NULL,
+                        `name` TEXT NOT NULL,
+                        `metadata` TEXT NOT NULL DEFAULT '{}',
+                        `createdAt` INTEGER NOT NULL DEFAULT 0
+                    )
+                """.trimIndent())
+            }
+        }
+        val MIGRATION_51_52 = object : Migration(51, 52) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `lab_orders` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `supplier_id` INTEGER NOT NULL,
+                        `filmRollId` TEXT NOT NULL DEFAULT '',
+                        `serviceType` TEXT NOT NULL DEFAULT 'DEV_AND_SCAN',
+                        `pushPullInstruction` TEXT NOT NULL DEFAULT 'BOX_SPEED',
+                        `orderStatus` TEXT NOT NULL DEFAULT 'SUBMITTED',
+                        `trackingNumber` TEXT NOT NULL DEFAULT '',
+                        `costAmount` TEXT NOT NULL DEFAULT '',
+                        `labNotes` TEXT NOT NULL DEFAULT '',
+                        `submittedDate` INTEGER NOT NULL DEFAULT 0,
+                        `completedDate` INTEGER,
+                        FOREIGN KEY(`supplier_id`) REFERENCES `lab_suppliers`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                    )
+                """.trimIndent())
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_lab_orders_supplier_id` ON `lab_orders` (`supplier_id`)")
             }
         }
     }

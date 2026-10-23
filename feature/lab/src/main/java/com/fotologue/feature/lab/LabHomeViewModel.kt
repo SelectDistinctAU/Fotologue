@@ -21,6 +21,8 @@ import com.fotologue.core.data.lab.LabEquipmentSubCategoryDao
 import com.fotologue.core.data.lab.LabItemName
 import com.fotologue.core.data.lab.LabItemNameDao
 import com.fotologue.core.data.lab.LabPresets
+import com.fotologue.core.data.lab.LabOrder
+import com.fotologue.core.data.lab.LabOrderDao
 import com.fotologue.core.data.lab.LabProcessEvent
 import com.fotologue.core.data.lab.LabProcessEventDao
 import com.fotologue.core.data.lab.LabStorageLocation
@@ -66,8 +68,18 @@ class LabHomeViewModel @Inject constructor(
     private val orderHistoryDao: OrderHistoryDao,
     private val performanceLogDao: PerformanceLogDao,
     private val labProcessEventDao: LabProcessEventDao,
+    private val labOrderDao: LabOrderDao,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
+
+    val labOrders: StateFlow<List<LabOrder>> = labOrderDao.getAllLabOrders()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun addLabOrder(order: LabOrder) {
+        viewModelScope.launch {
+            labOrderDao.insertLabOrder(order)
+        }
+    }
 
     val performanceLogs: StateFlow<List<PerformanceLog>> = performanceLogDao.getAllPerformanceLogs()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

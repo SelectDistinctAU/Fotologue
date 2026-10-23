@@ -1,6 +1,7 @@
 package com.fotologue.feature.lab
 
 import com.fotologue.core.data.FotologueRepository
+import com.fotologue.core.data.SettingsRepository
 import com.fotologue.core.data.lab.InventoryItem
 import com.fotologue.core.data.lab.InventoryItemDao
 import com.fotologue.core.data.lab.InventoryMaster
@@ -26,6 +27,7 @@ import com.fotologue.core.data.lab.OrderHistory
 import com.fotologue.core.data.lab.OrderHistoryDao
 import com.fotologue.core.data.lab.PerformanceLogDao
 import com.fotologue.core.data.lab.StockLot
+import com.fotologue.core.data.lab.LabOrderDao
 import com.fotologue.core.data.lab.StockLotDao
 import com.fotologue.core.data.lab.SupplierIssueLogDao
 import io.mockk.coEvery
@@ -47,6 +49,7 @@ import org.junit.Test
 class LabHomeViewModelTest {
 
     private val repository = mockk<FotologueRepository>(relaxed = true)
+    private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
     private val equipmentDao = mockk<LabEquipmentDao>(relaxed = true)
     private val equipmentSubCategoryDao = mockk<LabEquipmentSubCategoryDao>(relaxed = true)
     private val chemicalDao = mockk<LabChemicalDao>(relaxed = true)
@@ -62,6 +65,7 @@ class LabHomeViewModelTest {
     private val orderHistoryDao = mockk<OrderHistoryDao>(relaxed = true)
     private val performanceLogDao = mockk<PerformanceLogDao>(relaxed = true)
     private val labProcessEventDao = mockk<LabProcessEventDao>(relaxed = true)
+    private val labOrderDao = mockk<LabOrderDao>(relaxed = true)
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -101,7 +105,7 @@ class LabHomeViewModelTest {
     @Test
     fun `seedPresets inserts supplier contacts directory into supplierDao`() = runTest(testDispatcher) {
         val viewModel = LabHomeViewModel(
-            repository, equipmentDao, equipmentSubCategoryDao, chemicalDao, supplierDao, supplierIssueLogDao, categoryDao, unitDao, itemNameDao, masterDao, stockLotDao, locationDao, inventoryItemDao, orderHistoryDao, performanceLogDao, labProcessEventDao
+            repository, equipmentDao, equipmentSubCategoryDao, chemicalDao, supplierDao, supplierIssueLogDao, categoryDao, unitDao, itemNameDao, masterDao, stockLotDao, locationDao, inventoryItemDao, orderHistoryDao, performanceLogDao, labProcessEventDao, labOrderDao, settingsRepository
         )
 
         viewModel.seedPresets()
@@ -113,7 +117,7 @@ class LabHomeViewModelTest {
     @Test
     fun `addCustomEquipment delegates to equipmentDao`() = runTest(testDispatcher) {
         val viewModel = LabHomeViewModel(
-            repository, equipmentDao, equipmentSubCategoryDao, chemicalDao, supplierDao, supplierIssueLogDao, categoryDao, unitDao, itemNameDao, masterDao, stockLotDao, locationDao, inventoryItemDao, orderHistoryDao, performanceLogDao, labProcessEventDao
+            repository, equipmentDao, equipmentSubCategoryDao, chemicalDao, supplierDao, supplierIssueLogDao, categoryDao, unitDao, itemNameDao, masterDao, stockLotDao, locationDao, inventoryItemDao, orderHistoryDao, performanceLogDao, labProcessEventDao, labOrderDao, settingsRepository
         )
 
         viewModel.addCustomEquipment("Intrepid Enlarger", "Enlarger", "LED head")
@@ -125,7 +129,7 @@ class LabHomeViewModelTest {
     @Test
     fun `addCustomChemical delegates to chemicalDao`() = runTest(testDispatcher) {
         val viewModel = LabHomeViewModel(
-            repository, equipmentDao, equipmentSubCategoryDao, chemicalDao, supplierDao, supplierIssueLogDao, categoryDao, unitDao, itemNameDao, masterDao, stockLotDao, locationDao, inventoryItemDao, orderHistoryDao, performanceLogDao, labProcessEventDao
+            repository, equipmentDao, equipmentSubCategoryDao, chemicalDao, supplierDao, supplierIssueLogDao, categoryDao, unitDao, itemNameDao, masterDao, stockLotDao, locationDao, inventoryItemDao, orderHistoryDao, performanceLogDao, labProcessEventDao, labOrderDao, settingsRepository
         )
 
         viewModel.addCustomChemical("Ilford ID-11", "Film Developer", "1+1", 10)
