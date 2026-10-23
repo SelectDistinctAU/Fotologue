@@ -340,7 +340,7 @@ fun ArchiveScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "DESKTOP DAM EXPORTER (digiKam / Lightroom / Capture One)",
+                        text = "DESKTOP PHOTO LIBRARY EXPORTER (digiKam / Lightroom / Capture One)",
                         style = MaterialTheme.typography.labelSmall,
                         color = safelightPrimary,
                         fontWeight = FontWeight.Bold

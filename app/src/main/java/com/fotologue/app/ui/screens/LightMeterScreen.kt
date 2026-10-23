@@ -21,7 +21,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -29,7 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -634,6 +638,7 @@ private fun InputSettingsColumn(
     bottomPadding: Dp = 0.dp
 ) {
     val listState = rememberLazyListState()
+    var showZoneInfoDialog by remember { mutableStateOf(false) }
     val isZoomLens = remember(uiState.lens) {
         uiState.lens != null && uiState.lens.minFocalLength != null && uiState.lens.maxFocalLength != null && uiState.lens.minFocalLength != uiState.lens.maxFocalLength
     }
@@ -670,7 +675,8 @@ private fun InputSettingsColumn(
                     Spacer(modifier = Modifier.width(8.dp))
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.clickable { showZoneInfoDialog = true }
                     ) {
                         Text(
                             text = "🎯 ${zone.currentZone.romanNumeral}",
@@ -807,6 +813,53 @@ private fun InputSettingsColumn(
                 }
             }
         }
+    }
+
+    if (showZoneInfoDialog) {
+        AlertDialog(
+            onDismissRequest = { showZoneInfoDialog = false },
+            title = {
+                Text("🎯 Ansel Adams Zone System Guide", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "The Zone System is a visualization tool to help photographers understand light and contrast across a scene.",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "1. How Light Meters Work:\nCamera light meters assume whatever you point at is 18% Middle Gray (Zone V). If you meter pure white snow, the meter underexposes it to gray. If you meter a black jacket, it overexposes it to gray.",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "2. The 11 Ansel Adams Zones:\n" +
+                                "• Zone 0: Pure Pitch Black (no detail)\n" +
+                                "• Zone I–III: Deep Shadows (Zone III = textured shadow detail in dark clothes/hair)\n" +
+                                "• Zone IV–VI: Midtones (Zone V = 18% Middle Gray baseline, green grass, clear sky)\n" +
+                                "• Zone VII–VIII: Highlights (Zone VII = textured white paper/clouds)\n" +
+                                "• Zone IX–X: Pure Blown White (specular glare/sun reflections)",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "3. Spot Metering in Practice:\nPoint the spot meter at shadows to ensure they fall in Zone III, and at bright clouds to ensure they stay in Zone VII/VIII without blowing out!",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showZoneInfoDialog = false }) {
+                    Text("Got It")
+                }
+            }
+        )
     }
 }
 
