@@ -1794,6 +1794,31 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-162: Full-Screen Form Conversion for Custody & Storage Locations & Safelight Switch Standardization
+- **Platform**: Fotologue Mobile (`CustodyLedgerScreen.kt`, `StorageLocationsScreen.kt`, `AddEditInventoryMasterScreen.kt`, `AddStockLotScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Log Custody Interaction` and `Add Storage Location` modal dialogs crowded narrow phone screens; remaining screens retained legacy "Safelight" text switches.
+- **Root Cause**: Modal dialog form architecture on narrow phone screens; un-updated top-bar Red Shift actions.
+- **Resolution**:
+  1. Converted `Log Custody Interaction` and `Add Storage Location` modal dialogs into clean full-screen forms with top bars and responsive layouts.
+  2. Standardized top-bar Red Shift controls in `AddEditInventoryMasterScreen.kt` and `AddStockLotScreen.kt` to 48dp `IconButton` using `night_sight_max_24px`.
+- **Regression Test Case**: Open `Custody & Loans` $\to$ tap `[ + Log Custody Interaction ]` $\to$ verify full-screen form opens with zero cramped dialog scrolling.
+
+---
+
+### BUG-163: Pre-Arrival Asset Order Master Preset Selection & Auto-Receive Inventory Integration
+- **Platform**: Fotologue Mobile (`feature:lab` / `PreArrivalOrdersScreen.kt`, `AddEditFilmScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Pre-Arrival Asset Orders required freeform plain text typing for incoming asset names, causing data fragmentation; delivered orders did not auto-create stock lots in Lab Inventory; fallback buttons had duplicate plus symbols.
+- **Root Cause**: Unconnected pre-arrival order form state; missing auto-receive inventory hook; hardcoded `➕` emoji string.
+- **Resolution**:
+  1. Added `[ ⚙️ Select Asset from Presets ]` button in Step 2 of Pre-Arrival Orders allowing 1-tap selection from `MasterPresetEngine` presets.
+  2. Implemented 1-click Auto-Receive inventory creation: when a pre-arrival order status is changed to `DELIVERED` (or `[ 📦 Activate Asset ]` is tapped), Fotologue automatically creates/links `InventoryMaster` and `StockLot` in Lab Inventory with status `ON_HAND`.
+  3. Removed duplicate `➕` emoji from `AddEditFilmScreen.kt` fallback button text.
+- **Regression Test Case**: Open `LAB` $\to$ `Pre-Arrival Orders` $\to$ tap `[ Log Pre-Arrival Asset Order ]` $\to$ tap `[ ⚙️ Select Asset from Presets ]` $\to$ select *Kodak Portra 400* $\to$ verify details populate cleanly; activate asset $\to$ verify item is created in Lab Inventory with 1 stock lot ON HAND in target storage location.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
