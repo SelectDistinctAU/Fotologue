@@ -48,7 +48,7 @@ private fun parseOrderStatusToEnum(display: String): String {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun PreArrivalOrdersScreen(
     viewModel: LabHomeViewModel,
@@ -449,9 +449,10 @@ fun PreArrivalOrdersScreen(
         }
 
         // Status Filter Chips
-        Row(
+        FlowRow(
             modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             listOf("All", "In Transit", "Waitlisted / Packaging", "Delivered").forEach { filter ->
                 val isSelected = selectedStatusFilter == filter

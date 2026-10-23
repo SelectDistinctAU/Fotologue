@@ -41,7 +41,8 @@ object DatabaseModule {
                 AppDatabase.MIGRATION_47_48,
                 AppDatabase.MIGRATION_48_49,
                 AppDatabase.MIGRATION_49_50,
-                AppDatabase.MIGRATION_50_51
+                AppDatabase.MIGRATION_50_51,
+                AppDatabase.MIGRATION_51_52
             )
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
@@ -130,4 +131,7 @@ object DatabaseModule {
 
     @Provides
     fun providePrintOutcomeDao(db: AppDatabase): PrintOutcomeDao = db.printOutcomeDao()
+
+    @Provides
+    fun provideLabOrderDao(db: AppDatabase): LabOrderDao = db.labOrderDao()
 }

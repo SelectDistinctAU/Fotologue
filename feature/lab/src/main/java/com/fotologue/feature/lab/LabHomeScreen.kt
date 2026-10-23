@@ -349,7 +349,7 @@ fun LabHomeScreen(
                                 onClick = { currentView = LabView.STORAGE_LOCATIONS },
                                 icon = {
                                     Icon(
-                                        painter = painterResource(R.drawable.warehouse_24px),
+                                        painter = painterResource(R.drawable.shelves_24px),
                                         contentDescription = null,
                                         tint = safelightPrimary,
                                         modifier = Modifier.size(24.dp)
@@ -380,7 +380,7 @@ fun LabHomeScreen(
                                 onClick = { currentView = LabView.PRE_ARRIVAL_ORDERS },
                                 icon = {
                                     Icon(
-                                        painter = painterResource(R.drawable.warehouse_24px),
+                                        painter = painterResource(R.drawable.delivery_truck_speed_24px),
                                         contentDescription = null,
                                         tint = safelightPrimary,
                                         modifier = Modifier.size(24.dp)
