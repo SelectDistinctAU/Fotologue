@@ -1747,6 +1747,21 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-158: Commercial Lab Submissions, CameraX + ML Kit Barcode Scanner & Title Streamlining
+- **Platform**: Core Data & Mobile (`LabOrder.kt`, `CommercialLabOrderScreen.kt`, `BarcodeScannerDialog.kt`, `LabHomeScreen.kt`, `PreArrivalOrdersScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Lab section titles included redundant `"Lab • "` prefixes; section icons were un-differentiated; photographers dropping film off at commercial labs lacked direct order submission; pre-arrival filter chips squashed text; inventory/asset tagging lacked barcode scanning.
+- **Root Cause**: Un-streamlined section titles; missing commercial lab order workflow and CameraX ML Kit barcode scanner integration.
+- **Resolution**:
+  1. Created `LabOrder.kt` entity and `LabOrderDao.kt` in `core:data` with Room migration `MIGRATION_51_52`.
+  2. Created `CommercialLabOrderScreen.kt` for commercial lab order submissions, service selection (Dev Only, Dev + Scan, Print), push/pull instructions, and tracking.
+  3. Created `BarcodeScannerDialog.kt` using CameraX + Google ML Kit Barcode Scanning API for 1D/2D barcodes and QR asset tags.
+  4. Streamlined Lab section titles and mapped unique vector icons (`delivery_truck_speed_24px` for Pre-Arrivals, `shelves_24px` for Storage, `ic_call_log` for Custody).
+  5. Wrapped status filter chips in `PreArrivalOrdersScreen.kt` with `FlowRow`.
+- **Regression Test Case**: Open `LAB` $\to$ tap `[ 🚚 Commercial Lab Submission ]` $\to$ submit order to *Rewind Photo Lab* $\to$ verify order logs cleanly; tap `[ 📷 Scan Barcode / Asset Tag ]` $\to$ verify CameraX ML Kit barcode scanner launches cleanly.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
