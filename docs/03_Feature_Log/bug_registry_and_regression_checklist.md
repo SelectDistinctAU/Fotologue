@@ -1762,6 +1762,18 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-159: Desktop Photo Library Exporter Card Label Streamlining & 1-Tap Ansel Adams Zone System Guide
+- **Platform**: Fotologue Mobile (`ArchiveScreen.kt`, `LightMeterScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Archive card label used technical jargon "DESKTOP DAM EXPORTER"; photographers lacked a 1-tap in-app guide explaining the Ansel Adams Zone System and spot metering visualization.
+- **Root Cause**: Un-streamlined card copy; missing Zone System guide dialog.
+- **Resolution**:
+  1. Streamlined card title in `ArchiveScreen.kt` to `DESKTOP PHOTO LIBRARY EXPORTER (digiKam / Lightroom / Capture One)`.
+  2. Added 1-tap `Ansel Adams Zone System Guide` dialog (`showZoneInfoDialog`) in `LightMeterScreen.kt` accessible by tapping the `🎯 Zone V` spot metering badge.
+- **Regression Test Case**: Open `ARCHIVE` $\to$ verify card title reads `DESKTOP PHOTO LIBRARY EXPORTER`; open `FIELD` $\to$ `Light Meter` $\to$ tap `🎯 Zone V` badge $\to$ verify Ansel Adams Zone System Guide dialog opens.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
