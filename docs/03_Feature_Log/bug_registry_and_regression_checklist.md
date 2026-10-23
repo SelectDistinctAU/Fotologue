@@ -1774,6 +1774,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-160: Dynamic Consumables Sub-Category Top-Bar Icon Mapping
+- **Platform**: Fotologue Mobile (`feature:lab` / `LabHomeScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Sub-pages under Consumables (`Chemistry`, `Paper`, `Film Stock`, `Safety Gear`, `Supplies`) displayed parent clipboard icon (`inventory_24px`) in top bar instead of their specific category vector icons.
+- **Root Cause**: Hardcoded top-bar icon resource for `LabView.INVENTORY_CATEGORY_ITEMS`.
+- **Resolution**: Dynamically mapped top-bar icon resource to `activeInventoryCategory` (`experiment_24px` for Chemistry, `stacks_24px` for Paper, `camera_roll_24px` for Film Stock, `health_and_safety_24px` for Safety Gear, `shopping_cart_24px` for Supplies).
+- **Regression Test Case**: Open `LAB` $\to$ `Consumables` $\to$ tap `Chemistry` $\to$ verify top bar displays test tube vector icon (`experiment_24px`); tap `Paper` $\to$ verify top bar displays stacked paper vector icon (`stacks_24px`).
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
