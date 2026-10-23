@@ -158,12 +158,12 @@ fun LabHomeScreen(
     val pageTitle = when (currentView) {
         LabView.MAIN_MENU -> "Lab"
         LabView.SUPPLIERS -> "Contacts Directory"
-        LabView.INVENTORY -> "Lab • Consumables"
-        LabView.INVENTORY_CATEGORY_ITEMS -> "Lab • ${activeInventoryCategory ?: "Consumables"}"
-        LabView.EQUIPMENT -> "Lab • Lab Equipment"
-        LabView.STORAGE_LOCATIONS -> "Lab • Storage Locations"
-        LabView.CUSTODY_LOANS -> "Lab • Custody & Loans"
-        LabView.PRE_ARRIVAL_ORDERS -> "Lab • Pre-Arrival Orders"
+        LabView.INVENTORY -> "Consumables"
+        LabView.INVENTORY_CATEGORY_ITEMS -> activeInventoryCategory ?: "Consumables"
+        LabView.EQUIPMENT -> "Lab Equipment"
+        LabView.STORAGE_LOCATIONS -> "Storage Locations"
+        LabView.CUSTODY_LOANS -> "Custody & Loans"
+        LabView.PRE_ARRIVAL_ORDERS -> "Pre-Arrival Orders"
     }
 
     // PURE DARKROOM SAFELIGHT RED COLORS (ZERO WHITE LIGHT!)
@@ -196,11 +196,21 @@ fun LabHomeScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         val headerIconRes = when (currentView) {
+                            LabView.MAIN_MENU -> R.drawable.lab_panel_24px
                             LabView.SUPPLIERS -> R.drawable.patient_list_24px
-                            LabView.STORAGE_LOCATIONS -> R.drawable.warehouse_24px
+                            LabView.STORAGE_LOCATIONS -> R.drawable.shelves_24px
+                            LabView.PRE_ARRIVAL_ORDERS -> R.drawable.delivery_truck_speed_24px
+                            LabView.CUSTODY_LOANS -> R.drawable.ic_call_log
                             LabView.EQUIPMENT -> R.drawable.camera_indoor_24px
-                            LabView.INVENTORY, LabView.INVENTORY_CATEGORY_ITEMS -> R.drawable.inventory_24px
-                            else -> R.drawable.experiment_24px
+                            LabView.INVENTORY -> R.drawable.inventory_24px
+                            LabView.INVENTORY_CATEGORY_ITEMS -> when (activeInventoryCategory) {
+                                "Chemistry" -> R.drawable.experiment_24px
+                                "Paper" -> R.drawable.stacks_24px
+                                "Film Stock" -> R.drawable.camera_roll_24px
+                                "Safety Gear" -> R.drawable.health_and_safety_24px
+                                "Supplies" -> R.drawable.shopping_cart_24px
+                                else -> R.drawable.inventory_24px
+                            }
                         }
                         Icon(
                             painter = painterResource(headerIconRes),
