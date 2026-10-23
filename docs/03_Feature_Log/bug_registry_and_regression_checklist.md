@@ -1784,6 +1784,16 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-161: Consumables Sub-Category Top-Bar Icon Alignment
+- **Platform**: Fotologue Mobile (`feature:lab` / `LabHomeScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Chemistry` detail sub-page top bar displayed Erlenmeyer Flask beaker icon (`experiment_24px`) while its menu card used Test Tube Rack icon (`lab_panel_24px`).
+- **Root Cause**: Icon resource mismatch in `LabView.INVENTORY_CATEGORY_ITEMS` `when` block.
+- **Resolution**: Updated `headerIconRes` for `"Chemistry"` to `R.drawable.lab_panel_24px`, achieving 100% icon alignment between menu cards and detail top bars.
+- **Regression Test Case**: Open `LAB` $\to$ `Consumables` $\to$ tap `Chemistry` $\to$ verify top bar displays Test Tube Rack vector icon (`lab_panel_24px`).
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
