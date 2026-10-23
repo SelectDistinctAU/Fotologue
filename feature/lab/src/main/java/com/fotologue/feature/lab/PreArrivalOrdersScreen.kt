@@ -58,6 +58,7 @@ fun PreArrivalOrdersScreen(
     val orderList by viewModel.orderList.collectAsState()
     val supplierList by viewModel.supplierList.collectAsState()
     val locationList by viewModel.locationList.collectAsState()
+    val masterList by viewModel.masterList.collectAsState()
 
     var selectedStatusFilter by remember { mutableStateOf("All") }
 
@@ -84,6 +85,7 @@ fun PreArrivalOrdersScreen(
     // Mark Delivered Dialog State
     var deliveryDialogOrder by remember { mutableStateOf<OrderHistory?>(null) }
     var selectedDeliveryLocation by remember { mutableStateOf("") }
+    var showPresetSelectorModal by remember { mutableStateOf(false) }
 
     val categoryOptions = listOf(
         "Camera", "Lens", "Film Stock", "Camera Kit",
@@ -165,6 +167,15 @@ fun PreArrivalOrdersScreen(
                         2 -> { // STEP 2: ASSET SPECIFICATIONS
                             Text("Specify details for the arriving $assetCategory:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             
+                            OutlinedButton(
+                                onClick = { showPresetSelectorModal = true },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Select $assetCategory from Master Presets", fontWeight = FontWeight.Bold)
+                            }
+
                             OutlinedTextField(
                                 value = assetName,
                                 onValueChange = { assetName = it },
@@ -393,14 +404,14 @@ fun PreArrivalOrdersScreen(
                         // Auto-Register Item to Inventory if Consumable or Lab Equipment
                         val assetNameExtracted = targetOrder.notes.substringBefore(" • ")
                         val vendorName = supplierList.find { it.id == targetOrder.supplierId }?.name ?: ""
-                        if (targetOrder.assetCategory == "Consumable" && assetNameExtracted.isNotBlank()) {
+                        if ((targetOrder.assetCategory in listOf("Consumable", "Film Stock", "Paper")) && assetNameExtracted.isNotBlank()) {
                             viewModel.addCustomChemical(
                                 name = assetNameExtracted,
-                                type = "Chemistry",
+                                type = targetOrder.assetCategory,
                                 dilution = "Stock",
                                 capacityRollsTotal = 10,
                                 volumeAmount = 1.0f,
-                                volumeUnit = "L",
+                                volumeUnit = "Unit",
                                 supplier = vendorName
                             )
                         } else if (targetOrder.assetCategory == "Lab Equipment" && assetNameExtracted.isNotBlank()) {
@@ -419,6 +430,62 @@ fun PreArrivalOrdersScreen(
             },
             dismissButton = {
                 TextButton(onClick = { deliveryDialogOrder = null }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    // Preset Catalog Selector Modal for Pre-Arrival Asset Specifications
+    if (showPresetSelectorModal) {
+        val masterPresets = masterList.filter { 
+            assetCategory == "Other / General" || it.category.contains(assetCategory, ignoreCase = true) || assetCategory.contains(it.category, ignoreCase = true)
+        }
+        AlertDialog(
+            onDismissRequest = { showPresetSelectorModal = false },
+            title = { Text("⚙️ Select $assetCategory Preset", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth().height(300.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Select from master inventory & catalog presets:", style = MaterialTheme.typography.bodySmall)
+                    if (masterPresets.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("No presets found for $assetCategory", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    } else {
+                        LazyColumn(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            items(masterPresets) { m ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            assetName = m.name
+                                            assetSpecs = "${m.manufacturer} • ${m.displaySize}"
+                                            showPresetSelectorModal = false
+                                        },
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(m.name, fontWeight = FontWeight.Bold)
+                                            Text("${m.manufacturer} • ${m.displaySize}", style = MaterialTheme.typography.bodySmall)
+                                        }
+                                        Text("Select", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                OutlinedButton(onClick = { showPresetSelectorModal = false }) {
                     Text("Cancel")
                 }
             }

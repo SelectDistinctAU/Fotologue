@@ -383,7 +383,7 @@ private fun ColumnScope.FilmPresetsBrowser(
     ) {
         Icon(painterResource(R.drawable.ic_add), contentDescription = null)
         Spacer(modifier = Modifier.width(6.dp))
-        Text(if (selectedBrandFilter != "All") "➕ Can't find stock? Add Custom $selectedBrandFilter Film" else "➕ Add Custom / Unlisted Film Stock", fontWeight = FontWeight.Bold)
+        Text(if (selectedBrandFilter != "All") "Can't find stock? Add Custom $selectedBrandFilter Film" else "Add Custom / Unlisted Film Stock", fontWeight = FontWeight.Bold)
     }
 
     HorizontalDivider()
