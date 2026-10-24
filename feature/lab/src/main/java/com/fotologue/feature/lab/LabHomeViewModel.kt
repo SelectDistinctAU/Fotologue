@@ -2,8 +2,12 @@ package com.fotologue.feature.lab
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fotologue.core.data.Camera
+import com.fotologue.core.data.CameraType
 import com.fotologue.core.data.ExposureSettings
+import com.fotologue.core.data.Film
 import com.fotologue.core.data.FotologueRepository
+import com.fotologue.core.data.Lens
 import com.fotologue.core.data.LogEntry
 import com.fotologue.core.data.SettingsRepository
 import com.fotologue.core.data.lab.InventoryItem
@@ -618,6 +622,76 @@ class LabHomeViewModel @Inject constructor(
     fun deleteChemical(chemical: LabChemical) {
         viewModelScope.launch {
             chemicalDao.deleteChemical(chemical)
+        }
+    }
+
+    fun activatePreArrivalAsset(
+        assetCategory: String,
+        assetName: String,
+        assetSpecs: String,
+        storageLocation: String,
+        supplierName: String
+    ) {
+        viewModelScope.launch {
+            val make = assetSpecs.substringBefore(" • ").ifBlank { "Custom" }
+            val model = assetName.ifBlank { "Pre-Arrival Asset" }
+            when (assetCategory.lowercase()) {
+                "camera" -> {
+                    val camera = Camera(
+                        name = model,
+                        type = CameraType.FILM_SLR,
+                        mount = "Pentax K",
+                        format = "35mm",
+                        shutterSpeeds = listOf("1s", "1/1000s", "B")
+                    )
+                    repository.insertCamera(camera)
+                }
+                "lens" -> {
+                    val lens = Lens(
+                        make = make,
+                        model = model,
+                        type = "Prime",
+                        mount = "Pentax K",
+                        filterSize = 52,
+                        isStabilized = false,
+                        minFocusDistance = 0.45,
+                        maxMagnification = 0.15,
+                        minAperture = 22.0,
+                        maxAperture = 1.8,
+                        minFocalLength = 50,
+                        maxFocalLength = 50
+                    )
+                    repository.insertLens(lens)
+                }
+                "film stock", "film" -> {
+                    val film = Film(
+                        name = model,
+                        iso = 400,
+                        type = Film.TYPE_COLOR_NEGATIVE,
+                        format = "35mm",
+                        expectedExposures = 36
+                    )
+                    repository.insertFilm(film)
+                }
+                "consumable", "paper", "chemistry" -> {
+                    addCustomChemical(
+                        name = model,
+                        type = assetCategory,
+                        dilution = "Stock",
+                        capacityRollsTotal = 10,
+                        volumeAmount = 1.0f,
+                        volumeUnit = "Unit",
+                        supplier = supplierName
+                    )
+                }
+                else -> {
+                    addCustomEquipment(
+                        name = model,
+                        category = assetCategory,
+                        notes = "Activated from Pre-Arrival Order • Stored at: $storageLocation"
+                    )
+                }
+            }
         }
     }
 }
