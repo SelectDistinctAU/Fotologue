@@ -1846,6 +1846,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-166: Darkroom Rhythmic Agitation Metronome & Acoustic/Haptic Inversion Guidance
+- **Platform**: Fotologue Mobile (`feature:lab` / `FilmProcessingSessionScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Darkroom film processing session timers required looking at the screen in total darkness to monitor agitation windows, causing night adaptation loss or uneven tank inversion tempos.
+- **Root Cause**: Missing acoustic metronome and pre-warning pips during active chemical agitation.
+- **Resolution**:
+  1. Integrated Android native `ToneGenerator` for zero-latency acoustic ticks (*TONE_PROP_BEEP*) and `Vibrator` tactile pulses.
+  2. Implemented 3-second Pre-Warning pips (*Pip-Pip-Pip* via `TONE_CDMA_PIP`) sounding 3 seconds before an agitation window begins so the photographer can grab the tank in the dark.
+  3. Implemented a steady 60 BPM (1 tick/sec) metronome rhythm during active 5s/10s inversion windows to guide a 2-second up-and-down tank inversion tempo.
+  4. Added `[ 🎵 Metronome Beats ]` and `[ 📳 Haptic Pulse ]` toggle chips to `FilmProcessingSessionScreen.kt`.
+- **Regression Test Case**: Open `LAB` $\to$ `Develop Roll` $\to$ toggle `[ 🎵 Metronome Beats: ON ]` $\to$ start timer $\to$ verify 3 pre-warning pips sound 3 seconds before agitation and 60 BPM ticks guide active inversion windows.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
