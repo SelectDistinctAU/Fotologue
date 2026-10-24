@@ -1819,6 +1819,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-164: Pre-Arrival Orders Full-Screen Form Conversion & Direct MasterPresetEngine Unification
+- **Platform**: Fotologue Mobile (`feature:lab` / `PreArrivalOrdersScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: `Log Pre-Arrival Asset Order` opened in a modal popup `AlertDialog` causing dialog crowding on narrow phone screens; selecting presets returned `"No presets found for Camera"` because it queried local `InventoryMaster` records instead of `MasterPresetEngine`; preset modal title used raw emoji string (`"⚙️ Select Camera Preset"`).
+- **Root Cause**: Modal dialog form architecture; wrong database query target; raw emoji text string.
+- **Resolution**:
+  1. Converted `Log Pre-Arrival Asset Order` form from a modal `AlertDialog` into a clean, spacious **full-screen view** (`Scaffold` with `TopAppBar`).
+  2. Connected preset selector directly to `MasterPresetEngine.getPresetsByCategory(presetCategoryKey)`, restoring instant access to all **82 master camera bodies**, **26 master lenses**, film stocks, filters, flashes, viewfinders, consumables, and equipment!
+  3. Replaced raw text emoji `"⚙️"` with standard Material 3 `Icon(painterResource(R.drawable.settings_photo_camera_24px))`.
+- **Regression Test Case**: Open `LAB` $\to$ `Pre-Arrival Orders` $\to$ tap `[ Log Pre-Arrival Asset Order ]` $\to$ verify full-screen form opens (non-modal) $\to$ tap `[ Select Camera from Master Catalog Presets ]` $\to$ verify preset browser opens listing Pentax LX, Nikon F3, Leica M6, Hasselblad 503CX, etc.!
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
