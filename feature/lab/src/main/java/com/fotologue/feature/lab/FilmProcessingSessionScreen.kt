@@ -2,6 +2,8 @@ package com.fotologue.feature.lab
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -48,6 +50,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -95,6 +98,23 @@ fun FilmProcessingSessionScreen(
     // Process Type Selection (B&W vs C-41 vs E-6)
     var processType by remember { mutableStateOf("BW") } // BW, C41, E6
     var enableHapticVibration by remember { mutableStateOf(true) }
+    var isAgitationMetronomeEnabled by remember { mutableStateOf(true) }
+
+    val toneGenerator = remember(context) {
+        try {
+            ToneGenerator(AudioManager.STREAM_MUSIC, 80)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            try {
+                toneGenerator?.release()
+            } catch (_: Exception) {}
+        }
+    }
 
     val vibrator = remember(context) {
         try {
@@ -262,26 +282,51 @@ fun FilmProcessingSessionScreen(
 
     LaunchedEffect(isTimerRunning, timeRemainingSeconds) {
         if (isTimerRunning && timeRemainingSeconds > 0) {
-            // Haptic Agitation Boundary Vibration (Vibrates 2s before boundary start/end!)
-            if (enableHapticVibration && (currentStage == 0 || currentStage == 2)) {
-                if (agitationCountdownSeconds == 2 || agitationCountdownSeconds == 1) {
-                    try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            vibrator?.vibrate(VibrationEffect.createOneShot(200L, VibrationEffect.DEFAULT_AMPLITUDE))
-                        } else {
-                            @Suppress("DEPRECATION")
-                            vibrator?.vibrate(200L)
+            // DARKROOM RHYTHMIC AGITATION METRONOME (Audio Beats & Haptic Pulses)
+            if (currentStage == 0 || currentStage == 2) { // Developer or Fixer stage
+                if (isAgitationMetronomeEnabled) {
+                    if (isAgitatingNow) {
+                        // ACTIVE INVERSION WINDOW: Tick at 60 BPM (1 tick / sec)
+                        try {
+                            toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP, 80)
+                        } catch (_: Exception) {}
+                        if (enableHapticVibration) {
+                            try {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    vibrator?.vibrate(VibrationEffect.createOneShot(50L, VibrationEffect.DEFAULT_AMPLITUDE))
+                                } else {
+                                    @Suppress("DEPRECATION")
+                                    vibrator?.vibrate(50L)
+                                }
+                            } catch (_: Exception) {}
                         }
-                    } catch (_: Exception) {
-                        // Handled
+                    } else if (agitationCountdownSeconds in 1..3) {
+                        // PRE-WARNING WINDOW (3s before cycle): Play warning pips (Pip-Pip-Pip)
+                        try {
+                            toneGenerator?.startTone(ToneGenerator.TONE_CDMA_PIP, 60)
+                        } catch (_: Exception) {}
                     }
                 }
             }
 
             delay(1000L)
             timeRemainingSeconds -= 1
-        } else if (timeRemainingSeconds == 0) {
+        } else if (timeRemainingSeconds == 0 && isTimerRunning) {
             isTimerRunning = false
+            // Stage Complete Completion Sound & Long Vibration
+            try {
+                toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP2, 500)
+            } catch (_: Exception) {}
+            if (enableHapticVibration) {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator?.vibrate(VibrationEffect.createOneShot(800L, VibrationEffect.DEFAULT_AMPLITUDE))
+                    } else {
+                        @Suppress("DEPRECATION")
+                        vibrator?.vibrate(800L)
+                    }
+                } catch (_: Exception) {}
+            }
         }
     }
 
@@ -639,20 +684,24 @@ fun FilmProcessingSessionScreen(
                         )
                     }
 
-                    // Haptic Vibration Cue Toggle Switch
+                    // Rhythmic Metronome & Haptic Vibration Toggles
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Checkbox(
-                            checked = enableHapticVibration,
-                            onCheckedChange = { enableHapticVibration = it }
+                        FilterChip(
+                            selected = isAgitationMetronomeEnabled,
+                            onClick = { isAgitationMetronomeEnabled = !isAgitationMetronomeEnabled },
+                            label = { Text("🎵 Metronome Beats", style = MaterialTheme.typography.labelSmall) },
+                            colors = chipColors
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Haptic Vibration Cues (2s before agitation boundary)",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = safelightFg
+
+                        FilterChip(
+                            selected = enableHapticVibration,
+                            onClick = { enableHapticVibration = !enableHapticVibration },
+                            label = { Text("📳 Haptic Pulse", style = MaterialTheme.typography.labelSmall) },
+                            colors = chipColors
                         )
                     }
 
