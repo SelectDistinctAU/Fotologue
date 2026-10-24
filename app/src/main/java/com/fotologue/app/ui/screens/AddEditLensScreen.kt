@@ -237,12 +237,7 @@ fun AddEditLensScreen(
                                 )
 
                                 Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            viewModel.onSelectSpec(spec)
-                                            showLensPresetsDialog = false
-                                        },
+                                    modifier = Modifier.fillMaxWidth(),
                                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                                 ) {
                                     Row(

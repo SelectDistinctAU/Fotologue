@@ -40,7 +40,7 @@ fun AddEditCameraScreen(
             "Alpa", "Arca-Swiss", "Arax", "Bronica", "Canon", "Chamonix", "Chroma", "Contax",
             "Fujifilm", "Hasselblad", "Intrepid", "Kodak", "Konica", "Leica", "Linhof",
             "Lomography", "Mamiya", "Minolta", "Nikon", "Olympus", "Pentax", "Phase One",
-            "Plaubel", "Ricoh", "Rollei", "Shen Hao", "Sinar", "Toyo", "Voigtländer", "Yashica", "➕ Add new Brand..."
+            "Plaubel", "Ricoh", "Rollei", "Shen Hao", "Sinar", "Toyo", "Voigtländer", "Yashica", "Add new Brand..."
         )
     }
 
@@ -274,12 +274,7 @@ fun AddEditCameraScreen(
                             )
 
                             Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        viewModel.applySpec(spec)
-                                        viewModel.saveCamera(onBack)
-                                    },
+                                modifier = Modifier.fillMaxWidth(),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                             ) {
                                 Row(

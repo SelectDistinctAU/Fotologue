@@ -504,6 +504,13 @@ fun PreArrivalOrdersScreen(
                             expanded = locationDropdownExpanded,
                             onDismissRequest = { locationDropdownExpanded = false }
                         ) {
+                            DropdownMenuItem(
+                                text = { Text("📦 Unassigned / Pending Storage") },
+                                onClick = {
+                                    selectedDeliveryLocation = "Unassigned / Pending Storage"
+                                    locationDropdownExpanded = false
+                                }
+                            )
                             locationList.forEach { loc ->
                                 DropdownMenuItem(
                                     text = { Text("📦 ${loc.name} (${loc.locationType})") },
@@ -520,29 +527,21 @@ fun PreArrivalOrdersScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        val updatedNotes = "${targetOrder.notes} • Stored at: $selectedDeliveryLocation".trim(' ', '•')
+                        val updatedNotes = "${targetOrder.notes}${if (selectedDeliveryLocation.isNotBlank()) " • Stored at: $selectedDeliveryLocation" else ""}".trim(' ', '•')
                         viewModel.updateOrder(targetOrder.copy(status = "Delivered", notes = updatedNotes))
                         
-                        // Auto-Register Item to Inventory if Consumable or Lab Equipment
+                        // Auto-Register Item to Active Catalog (Camera Gear or Lab Inventory)
                         val assetNameExtracted = targetOrder.notes.substringBefore(" • ")
+                        val assetSpecsExtracted = targetOrder.notes.substringAfter(" • ", "")
                         val vendorName = supplierList.find { it.id == targetOrder.supplierId }?.name ?: ""
-                        if ((targetOrder.assetCategory in listOf("Consumable", "Film Stock", "Paper")) && assetNameExtracted.isNotBlank()) {
-                            viewModel.addCustomChemical(
-                                name = assetNameExtracted,
-                                type = targetOrder.assetCategory,
-                                dilution = "Stock",
-                                capacityRollsTotal = 10,
-                                volumeAmount = 1.0f,
-                                volumeUnit = "Unit",
-                                supplier = vendorName
-                            )
-                        } else if (targetOrder.assetCategory == "Lab Equipment" && assetNameExtracted.isNotBlank()) {
-                            viewModel.addCustomEquipment(
-                                name = assetNameExtracted,
-                                category = "Processing Gear",
-                                notes = "Activated from Pre-Arrival Order • Stored at: $selectedDeliveryLocation"
-                            )
-                        }
+                        
+                        viewModel.activatePreArrivalAsset(
+                            assetCategory = targetOrder.assetCategory,
+                            assetName = assetNameExtracted,
+                            assetSpecs = assetSpecsExtracted,
+                            storageLocation = selectedDeliveryLocation.ifBlank { "Unassigned Storage" },
+                            supplierName = vendorName
+                        )
 
                         deliveryDialogOrder = null
                     }
