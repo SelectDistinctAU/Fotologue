@@ -114,32 +114,146 @@ fun PreArrivalOrdersScreen(
     }
 
     if (showAddEditDialog) {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Column {
-                            Text(
-                                text = if (editingOrder == null) "Log Pre-Arrival Asset Order" else "Edit Pre-Arrival Order",
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = "Step $stepperPage of 3: ${when(stepperPage) { 1 -> "Asset Classification"; 2 -> "Asset Specifications"; else -> "Order & Shipping Details" }}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+        if (showPresetSelectorModal) {
+            val presetCategoryKey = when (assetCategory) {
+                "Camera" -> "CAMERA"
+                "Lens" -> "LENS"
+                "Film Stock" -> "FILM"
+                "Filter" -> "FILTER"
+                "Flash" -> "FLASH"
+                "Viewfinder" -> "VIEWFINDER"
+                "Teleconverter" -> "TELECONVERTER"
+                "Consumable" -> "CONSUMABLE"
+                "Lab Equipment" -> "EQUIPMENT"
+                else -> "CAMERA"
+            }
+
+            val masterPresets = remember(assetCategory) {
+                val enginePresets = MasterPresetEngine.getPresetsByCategory(presetCategoryKey)
+                if (enginePresets.isNotEmpty()) {
+                    enginePresets.map { p ->
+                        Pair(p.name, "${p.brand} • ${p.attributes.entries.joinToString { "${it.key}: ${it.value}" }}".trim(' ', '•'))
+                    }
+                } else {
+                    masterList.map { m ->
+                        Pair(m.name, "${m.manufacturer} • ${m.displaySize}")
+                    }
+                }
+            }
+
+            var presetSearchQuery by remember { mutableStateOf("") }
+            val filteredPresets = masterPresets.filter {
+                presetSearchQuery.isBlank() || it.first.contains(presetSearchQuery, ignoreCase = true) || it.second.contains(presetSearchQuery, ignoreCase = true)
+            }
+
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(painterResource(R.drawable.settings_photo_camera_24px), contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Select $assetCategory Preset", fontWeight = FontWeight.Bold)
+                            }
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { showPresetSelectorModal = false }) {
+                                Icon(Icons.Default.ArrowBack, contentDescription = "Return to Order Form")
+                            }
                         }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { showAddEditDialog = false }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Close Form")
+                    )
+                }
+            ) { modalPadding ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(modalPadding)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedTextField(
+                        value = presetSearchQuery,
+                        onValueChange = { presetSearchQuery = it },
+                        label = { Text("Search $assetCategory Master Catalog") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    if (filteredPresets.isEmpty()) {
+                        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            Text("No presets found for $assetCategory", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.weight(1f).fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(filteredPresets) { (pName, pSpecs) ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            assetName = pName
+                                            assetSpecs = pSpecs
+                                            showPresetSelectorModal = false
+                                        },
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(pName, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                                            Spacer(modifier = Modifier.height(2.dp))
+                                            Text(pSpecs, style = MaterialTheme.typography.bodySmall)
+                                        }
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Button(
+                                            onClick = {
+                                                assetName = pName
+                                                assetSpecs = pSpecs
+                                                showPresetSelectorModal = false
+                                            }
+                                        ) {
+                                            Text("Select")
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                )
+                }
             }
-        ) { formPadding ->
+        } else {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Column {
+                                Text(
+                                    text = if (editingOrder == null) "Log Pre-Arrival Asset Order" else "Edit Pre-Arrival Order",
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = "Step $stepperPage of 3: ${when(stepperPage) { 1 -> "Asset Classification"; 2 -> "Asset Specifications"; else -> "Order & Shipping Details" }}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { showAddEditDialog = false }) {
+                                Icon(Icons.Default.ArrowBack, contentDescription = "Close Form")
+                            }
+                        }
+                    )
+                }
+            ) { formPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -460,122 +574,6 @@ fun PreArrivalOrdersScreen(
         )
     }
 
-    // Preset Catalog Selector Modal for Pre-Arrival Asset Specifications (Direct MasterPresetEngine Integration)
-    if (showPresetSelectorModal) {
-        val presetCategoryKey = when (assetCategory) {
-            "Camera" -> "CAMERA"
-            "Lens" -> "LENS"
-            "Film Stock" -> "FILM"
-            "Filter" -> "FILTER"
-            "Flash" -> "FLASH"
-            "Viewfinder" -> "VIEWFINDER"
-            "Teleconverter" -> "TELECONVERTER"
-            "Consumable" -> "CONSUMABLE"
-            "Lab Equipment" -> "EQUIPMENT"
-            else -> "CAMERA"
-        }
-
-        val masterPresets = remember(assetCategory) {
-            val enginePresets = MasterPresetEngine.getPresetsByCategory(presetCategoryKey)
-            if (enginePresets.isNotEmpty()) {
-                enginePresets.map { p ->
-                    Pair(p.name, "${p.brand} • ${p.attributes.entries.joinToString { "${it.key}: ${it.value}" }}".trim(' ', '•'))
-                }
-            } else {
-                masterList.map { m ->
-                    Pair(m.name, "${m.manufacturer} • ${m.displaySize}")
-                }
-            }
-        }
-
-        var presetSearchQuery by remember { mutableStateOf("") }
-        val filteredPresets = masterPresets.filter {
-            presetSearchQuery.isBlank() || it.first.contains(presetSearchQuery, ignoreCase = true) || it.second.contains(presetSearchQuery, ignoreCase = true)
-        }
-
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(painterResource(R.drawable.settings_photo_camera_24px), contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Select $assetCategory Preset", fontWeight = FontWeight.Bold)
-                        }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { showPresetSelectorModal = false }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Return to Order Form")
-                        }
-                    }
-                )
-            }
-        ) { modalPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(modalPadding)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                OutlinedTextField(
-                    value = presetSearchQuery,
-                    onValueChange = { presetSearchQuery = it },
-                    label = { Text("Search $assetCategory Master Catalog") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                if (filteredPresets.isEmpty()) {
-                    Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        Text("No presets found for $assetCategory", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(filteredPresets) { (pName, pSpecs) ->
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        assetName = pName
-                                        assetSpecs = pSpecs
-                                        showPresetSelectorModal = false
-                                    },
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(pName, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-                                        Spacer(modifier = Modifier.height(2.dp))
-                                        Text(pSpecs, style = MaterialTheme.typography.bodySmall)
-                                    }
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Button(
-                                        onClick = {
-                                            assetName = pName
-                                            assetSpecs = pSpecs
-                                            showPresetSelectorModal = false
-                                        }
-                                    ) {
-                                        Text("Select")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     val filteredOrders = orderList.filter {
         when (selectedStatusFilter) {
             "In Transit" -> it.status == "IN_TRANSIT" || it.status == "In Transit"
@@ -705,4 +703,5 @@ fun PreArrivalOrdersScreen(
             }
         }
     }
+}
 }
