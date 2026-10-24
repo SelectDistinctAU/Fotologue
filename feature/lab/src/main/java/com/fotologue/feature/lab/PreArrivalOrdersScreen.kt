@@ -142,15 +142,24 @@ fun PreArrivalOrdersScreen(
             }
 
             var presetSearchQuery by remember { mutableStateOf("") }
-            val filteredPresets = masterPresets.filter {
-                presetSearchQuery.isBlank() || it.first.contains(presetSearchQuery, ignoreCase = true) || it.second.contains(presetSearchQuery, ignoreCase = true)
+            var presetBrandFilter by remember { mutableStateOf("All") }
+            var presetBrandDropdownExpanded by remember { mutableStateOf(false) }
+
+            val allBrands = remember(masterPresets) {
+                (listOf("All") + masterPresets.map { it.second.substringBefore(" • ") }.filter { it.isNotBlank() }).distinct().sorted()
+            }
+
+            val filteredPresets = masterPresets.filter { (pName, pSpecs) ->
+                val matchesSearch = presetSearchQuery.isBlank() || pName.contains(presetSearchQuery, ignoreCase = true) || pSpecs.contains(presetSearchQuery, ignoreCase = true)
+                val matchesBrand = presetBrandFilter == "All" || pSpecs.startsWith(presetBrandFilter, ignoreCase = true)
+                matchesSearch && matchesBrand
             }
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -161,61 +170,102 @@ fun PreArrivalOrdersScreen(
                     }
                     Icon(painterResource(com.fotologue.core.designsystem.R.drawable.settings_photo_camera_24px), contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Select $assetCategory Preset", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text("Select $assetCategory from Presets", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 }
-                    OutlinedTextField(
-                        value = presetSearchQuery,
-                        onValueChange = { presetSearchQuery = it },
-                        label = { Text("Search $assetCategory Master Catalog") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
 
-                    if (filteredPresets.isEmpty()) {
-                        Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
-                            Text("No presets found for $assetCategory", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    text = "Select a brand and model to search $assetCategory presets:",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                // 1. FILTER BY BRAND DROPDOWN
+                ExposedDropdownMenuBox(
+                    expanded = presetBrandDropdownExpanded,
+                    onExpandedChange = { presetBrandDropdownExpanded = !presetBrandDropdownExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = presetBrandFilter,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Filter by $assetCategory Brand") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = presetBrandDropdownExpanded) },
+                        singleLine = true,
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = presetBrandDropdownExpanded,
+                        onDismissRequest = { presetBrandDropdownExpanded = false }
+                    ) {
+                        allBrands.forEach { b ->
+                            DropdownMenuItem(
+                                text = { Text(b, fontWeight = if (b == presetBrandFilter) FontWeight.Bold else FontWeight.Normal) },
+                                onClick = {
+                                    presetBrandFilter = b
+                                    presetBrandDropdownExpanded = false
+                                }
+                            )
                         }
-                    } else {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            filteredPresets.forEach { (pName, pSpecs) ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
+                    }
+                }
+
+                // 2. SEARCH BAR
+                OutlinedTextField(
+                    value = presetSearchQuery,
+                    onValueChange = { presetSearchQuery = it },
+                    label = { Text("Search $assetCategory Models") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                HorizontalDivider()
+
+                if (filteredPresets.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+                        Text("No presets found for $assetCategory", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(filteredPresets) { (pName, pSpecs) ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        assetName = pName
+                                        assetSpecs = pSpecs
+                                        showPresetSelectorModal = false
+                                    },
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(pName, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(pSpecs, style = MaterialTheme.typography.bodySmall)
+                                    }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Button(
+                                        onClick = {
                                             assetName = pName
                                             assetSpecs = pSpecs
                                             showPresetSelectorModal = false
-                                        },
-                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                ) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
+                                        }
                                     ) {
-                                        Column(modifier = Modifier.weight(1f)) {
-                                            Text(pName, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-                                            Spacer(modifier = Modifier.height(2.dp))
-                                            Text(pSpecs, style = MaterialTheme.typography.bodySmall)
-                                        }
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Button(
-                                            onClick = {
-                                                assetName = pName
-                                                assetSpecs = pSpecs
-                                                showPresetSelectorModal = false
-                                            }
-                                        ) {
-                                            Text("Select")
-                                        }
+                                        Text("Select")
                                     }
                                 }
                             }
                         }
                     }
+                }
             }
         } else {
             Column(
