@@ -92,7 +92,7 @@ fun PreArrivalOrdersScreen(
     var showPresetSelectorModal by remember { mutableStateOf(false) }
 
     val categoryOptions = listOf(
-        "Camera", "Lens", "Film Stock", "Camera Kit",
+        "Camera", "Lens", "Film Stock",
         "Teleconverter", "Filter", "Flash", "Viewfinder",
         "Consumable", "Lab Equipment", "Other / General"
     )
@@ -282,27 +282,30 @@ fun PreArrivalOrdersScreen(
                     2 -> { // STEP 2: ASSET SPECIFICATIONS
                         Text("Specify details for the arriving $assetCategory:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         
-                        OutlinedButton(
-                            onClick = { showPresetSelectorModal = true },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Icon(painterResource(com.fotologue.core.designsystem.R.drawable.settings_photo_camera_24px), contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Select $assetCategory from Master Catalog Presets", fontWeight = FontWeight.Bold)
+                        if (assetCategory != "Other / General") {
+                            OutlinedButton(
+                                onClick = { showPresetSelectorModal = true },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(painterResource(com.fotologue.core.designsystem.R.drawable.settings_photo_camera_24px), contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Select $assetCategory from Master Catalog Presets", fontWeight = FontWeight.Bold)
+                            }
                         }
 
                         OutlinedTextField(
                             value = assetName,
                             onValueChange = { assetName = it },
-                            label = { Text("$assetCategory Name / Model") },
+                            label = { Text("$assetCategory Name / Model *") },
                             placeholder = { Text("e.g. Voigtländer 35mm f/1.4, Ilford ID-11") },
+                            isError = assetName.isBlank(),
                             modifier = Modifier.fillMaxWidth()
                         )
 
                         OutlinedTextField(
                             value = assetSpecs,
                             onValueChange = { assetSpecs = it },
-                            label = { Text("Specifications / Notes") },
+                            label = { Text("Technical Specifications") },
                             placeholder = { Text("e.g. VM Mount, 43mm Filter Thread, 1L Powder") },
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -439,6 +442,7 @@ fun PreArrivalOrdersScreen(
                     if (stepperPage < 3) {
                         Button(
                             onClick = { stepperPage++ },
+                            enabled = if (stepperPage == 2) assetName.isNotBlank() else true,
                             modifier = Modifier.weight(1f)
                         ) {
                             Text("Next")

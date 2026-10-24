@@ -47,157 +47,162 @@ fun StorageLocationsScreen(
     }
 
     if (showAddEditDialog) {
-        AlertDialog(
-            onDismissRequest = { showAddEditDialog = false },
-            title = {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { showAddEditDialog = false }) {
+                    Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "Close Form")
+                }
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = if (editingLocation == null) "Add Storage Location" else "Edit Storage Location",
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium
                 )
-            },
-            text = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    OutlinedTextField(
-                        value = locationName,
-                        onValueChange = { locationName = it },
-                        label = { Text("Location Name") },
-                        placeholder = { Text("e.g. Dry Cabinet A, Studio Shelf 2") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    ExposedDropdownMenuBox(
-                        expanded = typeDropdownExpanded,
-                        onExpandedChange = { typeDropdownExpanded = !typeDropdownExpanded },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        OutlinedTextField(
-                            value = locationType,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Storage Type") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeDropdownExpanded) },
-                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = typeDropdownExpanded,
-                            onDismissRequest = { typeDropdownExpanded = false }
-                        ) {
-                            storageTypes.forEach { st ->
-                                DropdownMenuItem(
-                                    text = { Text(st) },
-                                    onClick = {
-                                        locationType = st
-                                        typeDropdownExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    OutlinedTextField(
-                        value = locationNotes,
-                        onValueChange = { locationNotes = it },
-                        label = { Text("Sleeve / Unit # or Details") },
-                        placeholder = { Text("e.g. Sleeve #1, Humidity 40%") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        if (locationName.isNotBlank()) {
-                            val loc = LabStorageLocation(
-                                id = editingLocation?.id ?: 0,
-                                name = locationName.trim(),
-                                locationType = locationType,
-                                sleeveNumber = locationNotes.ifBlank { "Sleeve #1" }
-                            )
-                            if (editingLocation == null) {
-                                viewModel.addStorageLocation(loc)
-                            } else {
-                                viewModel.updateStorageLocation(loc)
-                            }
-                            showAddEditDialog = false
-                        }
-                    }
-                ) {
-                    Text("Save Location")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showAddEditDialog = false }) {
-                    Text("Cancel")
-                }
             }
-        )
-    }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Button(
-            onClick = { openDialog() },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
-        ) {
-            Icon(Icons.Default.Add, contentDescription = null)
-            Spacer(modifier = Modifier.width(6.dp))
-            Text("Add Storage Location", fontWeight = FontWeight.Bold)
-        }
+            OutlinedTextField(
+                value = locationName,
+                onValueChange = { locationName = it },
+                label = { Text("Location Name *") },
+                placeholder = { Text("e.g. Dry Cabinet A, Studio Shelf 2") },
+                isError = locationName.isBlank(),
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Text(
-            "Canonical physical storage spaces across your studio, darkroom, and field bags:",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
-
-        if (locationList.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No storage locations logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ExposedDropdownMenuBox(
+                expanded = typeDropdownExpanded,
+                onExpandedChange = { typeDropdownExpanded = !typeDropdownExpanded },
+                modifier = Modifier.fillMaxWidth()
             ) {
-                items(locationList) { loc ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                OutlinedTextField(
+                    value = locationType,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Storage Type") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeDropdownExpanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = typeDropdownExpanded,
+                    onDismissRequest = { typeDropdownExpanded = false }
+                ) {
+                    storageTypes.forEach { st ->
+                        DropdownMenuItem(
+                            text = { Text(st) },
+                            onClick = {
+                                locationType = st
+                                typeDropdownExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            OutlinedTextField(
+                value = locationNotes,
+                onValueChange = { locationNotes = it },
+                label = { Text("Sleeve / Unit # or Details") },
+                placeholder = { Text("e.g. Sleeve #1, Humidity 40%") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = {
+                    if (locationName.isNotBlank()) {
+                        val loc = LabStorageLocation(
+                            id = editingLocation?.id ?: 0,
+                            name = locationName.trim(),
+                            locationType = locationType,
+                            sleeveNumber = locationNotes.ifBlank { "Sleeve #1" }
+                        )
+                        if (editingLocation == null) {
+                            viewModel.addStorageLocation(loc)
+                        } else {
+                            viewModel.updateStorageLocation(loc)
+                        }
+                        showAddEditDialog = false
+                    }
+                },
+                enabled = locationName.isNotBlank(),
+                modifier = Modifier.fillMaxWidth().height(48.dp)
+            ) {
+                Text("Save Storage Location", fontWeight = FontWeight.Bold)
+            }
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Button(
+                onClick = { openDialog() },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Add Storage Location", fontWeight = FontWeight.Bold)
+            }
+
+            Text(
+                "Canonical physical storage spaces across your studio, darkroom, and field bags:",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
+            if (locationList.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No storage locations logged yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(locationList) { loc ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                         ) {
                             Row(
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(
-                                    Icons.Default.Place,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Column {
-                                    Text(loc.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                                    Text("${loc.locationType} • ${loc.sleeveNumber}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        Icons.Default.Place,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(loc.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                                        Text("${loc.locationType} • ${loc.sleeveNumber}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
                                 }
-                            }
-                            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                IconButton(onClick = { openDialog(loc) }, modifier = Modifier.size(48.dp)) {
-                                    Icon(Icons.Default.Edit, contentDescription = "Edit storage location", modifier = Modifier.size(20.dp))
-                                }
-                                IconButton(onClick = { viewModel.deleteStorageLocation(loc) }, modifier = Modifier.size(48.dp)) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Delete storage location", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = { openDialog(loc) }, modifier = Modifier.size(48.dp)) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit storage location", modifier = Modifier.size(20.dp))
+                                    }
+                                    IconButton(onClick = { viewModel.deleteStorageLocation(loc) }, modifier = Modifier.size(48.dp)) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete storage location", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                                    }
                                 }
                             }
                         }
