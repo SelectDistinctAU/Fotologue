@@ -1832,6 +1832,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-165: Pre-Arrival Orders Brand/Type Preset Filters, LazyColumn Smooth Scrolling & Camera Gear Library Auto-Activation
+- **Platform**: Fotologue Mobile (`PreArrivalOrdersScreen.kt`, `LabHomeViewModel.kt`, `AddEditCameraScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Pre-Arrival Preset Catalog Browser lacked Brand/Type filter dropdowns present in Camera Gear Library; preset list scrolling got stuck or truncated; Target Storage Location was mandatory; activated camera orders did not auto-create records in `Camera Gear → Cameras`.
+- **Root Cause**: Un-aligned preset browser UI; `Column(verticalScroll)` list container overflow; hardcoded required location state; incomplete auto-activation handler in ViewModel.
+- **Resolution**:
+  1. Added **Filter by Brand** and **Filter by Type/Mount** cascading dropdowns to Pre-Arrival Preset Browser matching `AddEditCameraScreen` / `AddEditLensScreen` 100%.
+  2. Converted preset list rendering to `LazyColumn` for smooth vertical scrolling across all 82 master camera bodies and 26 lenses.
+  3. Made Target Storage Location optional with a `"Unassigned / Pending Storage"` default.
+  4. Implemented `activatePreArrivalAsset` in `LabHomeViewModel.kt`: when a Pre-Arrival Order is activated on delivery, it automatically registers/creates the item in `Camera Gear → Cameras`, `Lenses`, `Films` OR `Lab Inventory` stock lots!
+- **Regression Test Case**: Open `Pre-Arrival Orders` $\to$ `[ Log Pre-Arrival Asset Order ]` $\to$ `[ Select Camera from Master Presets ]` $\to$ select *Pentax LX* $\to$ activate asset on delivery $\to$ open `Camera Gear` $\to$ `Cameras` $\to$ verify *Pentax LX* appears automatically in Camera Gear Library!
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
