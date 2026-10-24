@@ -146,32 +146,23 @@ fun PreArrivalOrdersScreen(
                 presetSearchQuery.isBlank() || it.first.contains(presetSearchQuery, ignoreCase = true) || it.second.contains(presetSearchQuery, ignoreCase = true)
             }
 
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(painterResource(R.drawable.settings_photo_camera_24px), contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Select $assetCategory Preset", fontWeight = FontWeight.Bold)
-                            }
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = { showPresetSelectorModal = false }) {
-                                Icon(Icons.Default.ArrowBack, contentDescription = "Return to Order Form")
-                            }
-                        }
-                    )
-                }
-            ) { modalPadding ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(modalPadding)
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    IconButton(onClick = { showPresetSelectorModal = false }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Return to Order Form")
+                    }
+                    Icon(painterResource(com.fotologue.core.designsystem.R.drawable.settings_photo_camera_24px), contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Select $assetCategory Preset", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                }
                     OutlinedTextField(
                         value = presetSearchQuery,
                         onValueChange = { presetSearchQuery = it },
@@ -181,15 +172,15 @@ fun PreArrivalOrdersScreen(
                     )
 
                     if (filteredPresets.isEmpty()) {
-                        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
                             Text("No presets found for $assetCategory", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     } else {
-                        LazyColumn(
-                            modifier = Modifier.weight(1f).fillMaxWidth(),
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            items(filteredPresets) { (pName, pSpecs) ->
+                            filteredPresets.forEach { (pName, pSpecs) ->
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -225,43 +216,36 @@ fun PreArrivalOrdersScreen(
                             }
                         }
                     }
-                }
             }
         } else {
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Column {
-                                Text(
-                                    text = if (editingOrder == null) "Log Pre-Arrival Asset Order" else "Edit Pre-Arrival Order",
-                                    fontWeight = FontWeight.Bold,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    text = "Step $stepperPage of 3: ${when(stepperPage) { 1 -> "Asset Classification"; 2 -> "Asset Specifications"; else -> "Order & Shipping Details" }}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = { showAddEditDialog = false }) {
-                                Icon(Icons.Default.ArrowBack, contentDescription = "Close Form")
-                            }
-                        }
-                    )
-                }
-            ) { formPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(formPadding)
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { showAddEditDialog = false }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Close Form")
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Column {
+                        Text(
+                            text = if (editingOrder == null) "Log Pre-Arrival Asset Order" else "Edit Pre-Arrival Order",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = "Step $stepperPage of 3: ${when(stepperPage) { 1 -> "Asset Classification"; 2 -> "Asset Specifications"; else -> "Order & Shipping Details" }}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
                 when (stepperPage) {
                     1 -> { // STEP 1: ASSET CLASSIFICATION
                         Text("Define the incoming asset classification category:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -703,5 +687,4 @@ fun PreArrivalOrdersScreen(
             }
         }
     }
-}
 }
