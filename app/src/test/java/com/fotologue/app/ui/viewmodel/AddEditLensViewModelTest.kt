@@ -89,7 +89,7 @@ class AddEditLensViewModelTest {
 
     @Test
     fun `saveLens calls repository with correct data`() = runTest {
-        coEvery { repository.insertLens(any(), any()) } just Runs
+        coEvery { repository.insertLens(any(), any()) } returns 1L
         
         viewModel.onMakeChange("Nikon")
         viewModel.onModelChange("50mm f/1.8")

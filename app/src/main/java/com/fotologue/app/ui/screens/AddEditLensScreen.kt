@@ -30,7 +30,7 @@ fun AddEditLensScreen(
     viewModel: AddEditLensViewModel,
     onBack: () -> Unit,
     isPreArrivalMode: Boolean = false,
-    onSavePreArrivalOrder: (String, String, String) -> Unit = { _, _, _ -> }
+    onSavePreArrivalOrder: (String, String, String, Long) -> Unit = { _, _, _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
@@ -253,13 +253,15 @@ fun AddEditLensScreen(
                                         }
                                         Button(
                                             onClick = {
+                                                viewModel.onSelectSpec(spec)
                                                 if (isPreArrivalMode) {
-                                                    val specs = "${presetItem.brand} • type: ${spec.type}, mount: ${spec.mount}, filterSize: ${spec.filterSize}mm, focalLength: ${spec.minFocalLength}mm, maxAperture: f/${spec.maxAperture}, minAperture: f/${spec.minAperture}"
-                                                    onSavePreArrivalOrder(presetItem.name, specs, presetItem.brand)
-                                                    showLensPresetsDialog = false
-                                                    onBack()
+                                                    viewModel.savePreArrivalLens { newLensId ->
+                                                        val specs = "${presetItem.brand} • type: ${spec.type}, mount: ${spec.mount}, filterSize: ${spec.filterSize}mm"
+                                                        onSavePreArrivalOrder(presetItem.name, specs, presetItem.brand, newLensId)
+                                                        showLensPresetsDialog = false
+                                                        onBack()
+                                                    }
                                                 } else {
-                                                    viewModel.onSelectSpec(spec)
                                                     showLensPresetsDialog = false
                                                 }
                                             },
@@ -621,10 +623,12 @@ fun AddEditLensScreen(
             Button(
                 onClick = {
                     if (isPreArrivalMode) {
-                        val name = if (uiState.model.startsWith(uiState.make, ignoreCase = true)) uiState.model else "${uiState.make} ${uiState.model}".trim()
-                        val specs = "${uiState.make} • type: ${uiState.type}, mount: ${uiState.mount}, filterSize: ${uiState.filterSize}mm"
-                        onSavePreArrivalOrder(name, specs, uiState.make)
-                        onBack()
+                        viewModel.savePreArrivalLens { newLensId ->
+                            val name = if (uiState.model.startsWith(uiState.make, ignoreCase = true)) uiState.model else "${uiState.make} ${uiState.model}".trim()
+                            val specs = "${uiState.make} • type: ${uiState.type}, mount: ${uiState.mount}, filterSize: ${uiState.filterSize}mm"
+                            onSavePreArrivalOrder(name, specs, uiState.make, newLensId)
+                            onBack()
+                        }
                     } else {
                         viewModel.saveLens(onSuccess = onBack)
                     }

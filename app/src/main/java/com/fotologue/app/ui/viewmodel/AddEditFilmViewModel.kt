@@ -226,13 +226,40 @@ class AddEditFilmViewModel @Inject constructor(
                 format = _uiState.value.format
             )
             if (filmId == null) {
-                repository.insertFilm(film)
+                val newFilmId = repository.insertFilm(film)
                 settingsRepository.setLocalFoundationChangesPending(true)
             } else {
                 repository.updateFilm(film)
                 settingsRepository.setLocalFoundationChangesPending(true)
             }
             onComplete()
+        }
+    }
+
+    fun savePreArrivalFilm(onComplete: (Long) -> Unit) {
+        if (_uiState.value.name.isBlank()) {
+            _uiState.update { it.copy(isNameValid = false) }
+            return
+        }
+
+        viewModelScope.launch {
+            val film = Film(
+                id = 0,
+                name = _uiState.value.name.trim(),
+                abbreviation = _uiState.value.abbreviation.trim().ifBlank { _uiState.value.name.take(3).uppercase() },
+                iso = _uiState.value.iso.toIntOrNull() ?: 400,
+                type = _uiState.value.type.trim().ifBlank { Film.TYPE_COLOR_NEGATIVE },
+                expectedExposures = _uiState.value.expectedExposures.toIntOrNull() ?: 36,
+                format = _uiState.value.format
+            )
+            val newFilmId = repository.insertFilm(film)
+            repository.setAssetAvailability(
+                category = "Film Stock",
+                refId = newFilmId,
+                status = "IN_TRANSIT",
+                reason = "Pre-Arrival Order"
+            )
+            onComplete(newFilmId)
         }
     }
 }

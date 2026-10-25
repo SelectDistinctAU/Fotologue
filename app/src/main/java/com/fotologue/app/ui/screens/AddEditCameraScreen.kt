@@ -30,7 +30,7 @@ fun AddEditCameraScreen(
     viewModel: AddEditCameraViewModel,
     onBack: () -> Unit,
     isPreArrivalMode: Boolean = false,
-    onSavePreArrivalOrder: (String, String, String) -> Unit = { _, _, _ -> }
+    onSavePreArrivalOrder: (String, String, String, Long) -> Unit = { _, _, _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var isCustomFormView by remember { mutableStateOf(viewModel.cameraId != null) }
@@ -293,7 +293,7 @@ fun AddEditCameraScreen(
                                             viewModel.applySpec(spec)
                                             if (isPreArrivalMode) {
                                                 viewModel.savePreArrivalCamera { newCamId ->
-                                                    onSavePreArrivalOrder(spec.name, "${presetItem.brand} • mount: ${spec.mount}", presetItem.brand)
+                                                    onSavePreArrivalOrder(spec.name, "${presetItem.brand} • mount: ${spec.mount}", presetItem.brand, newCamId)
                                                     onBack()
                                                 }
                                             } else {
@@ -510,10 +510,10 @@ fun AddEditCameraScreen(
                     Button(
                         onClick = {
                             if (isPreArrivalMode) {
-                                viewModel.savePreArrivalCamera { _ ->
+                                viewModel.savePreArrivalCamera { newCamId ->
                                     val name = if (uiState.name.startsWith(uiState.make, ignoreCase = true)) uiState.name else "${uiState.make} ${uiState.name}".trim()
                                     val specs = "${uiState.make} • type: ${uiState.type.displayName}, mount: ${uiState.mount}"
-                                    onSavePreArrivalOrder(name, specs, uiState.make)
+                                    onSavePreArrivalOrder(name, specs, uiState.make, newCamId)
                                     onBack()
                                 }
                             } else {

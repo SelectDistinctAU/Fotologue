@@ -390,14 +390,15 @@ class MainActivity : ComponentActivity() {
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
                                         isPreArrivalMode = navRoute.isPreArrival,
-                                        onSavePreArrivalOrder = { name, specs, brand ->
+                                        onSavePreArrivalOrder = { name, specs, brand, createdAssetId ->
                                             val fullNotes = "$name • Category: Lens • $specs"
                                             labViewModel.addOrder(
                                                 OrderHistory(
                                                     supplierId = null,
                                                     notes = fullNotes,
                                                     status = "In Transit",
-                                                    assetCategory = "Lens"
+                                                    assetCategory = "Lens",
+                                                    assetRefId = createdAssetId
                                                 )
                                             )
                                         }
@@ -411,14 +412,15 @@ class MainActivity : ComponentActivity() {
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
                                         isPreArrivalMode = navRoute.isPreArrival,
-                                        onSavePreArrivalOrder = { name, specs, brand ->
+                                        onSavePreArrivalOrder = { name, specs, brand, createdAssetId ->
                                             val fullNotes = "$name • Category: Camera • $specs"
                                             labViewModel.addOrder(
                                                 OrderHistory(
                                                     supplierId = null,
                                                     notes = fullNotes,
                                                     status = "In Transit",
-                                                    assetCategory = "Camera"
+                                                    assetCategory = "Camera",
+                                                    assetRefId = createdAssetId
                                                 )
                                             )
                                         }
@@ -440,14 +442,15 @@ class MainActivity : ComponentActivity() {
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
                                         isPreArrivalMode = navRoute.isPreArrival,
-                                        onSavePreArrivalOrder = { name, specs, brand ->
+                                        onSavePreArrivalOrder = { name, specs, brand, createdAssetId ->
                                             val fullNotes = "$name • Category: Film Stock • $specs"
                                             labViewModel.addOrder(
                                                 OrderHistory(
                                                     supplierId = null,
                                                     notes = fullNotes,
                                                     status = "In Transit",
-                                                    assetCategory = "Film Stock"
+                                                    assetCategory = "Film Stock",
+                                                    assetRefId = createdAssetId
                                                 )
                                             )
                                         }
