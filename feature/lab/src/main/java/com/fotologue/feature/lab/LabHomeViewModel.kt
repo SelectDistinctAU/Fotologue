@@ -625,6 +625,16 @@ class LabHomeViewModel @Inject constructor(
         }
     }
 
+    fun markPreArrivalAssetDelivered(assetCategory: String, assetRefId: Long) {
+        viewModelScope.launch {
+            repository.setAssetAvailability(
+                category = assetCategory,
+                refId = assetRefId,
+                status = "AVAILABLE"
+            )
+        }
+    }
+
     fun activatePreArrivalAsset(
         assetCategory: String,
         assetName: String,
