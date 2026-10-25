@@ -18,6 +18,9 @@ sealed class Route : NavKey {
     data class Lab(val initialTab: Int = 0) : Route()
 
     @Serializable
+    data object AssetsInventory : Route()
+
+    @Serializable
     data object LabMaintenance : Route()
 
     @Serializable

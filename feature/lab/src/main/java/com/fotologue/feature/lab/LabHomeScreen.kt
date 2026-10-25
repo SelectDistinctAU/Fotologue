@@ -282,7 +282,7 @@ fun LabHomeScreen(
                     ) {
                         item(key = "section_header_lab_menu") {
                             Text(
-                                text = "LAB MODULES & SESSIONS",
+                                text = "DARKROOM EXECUTION & EQUIPMENT",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = safelightPrimary,
                                 fontWeight = FontWeight.Bold,
@@ -290,44 +290,13 @@ fun LabHomeScreen(
                             )
                         }
 
-                        // 2. CONSUMABLES
-                        item(key = "nav_inventory") {
-                            NavigationDrawerItem(
-                                colors = drawerItemColors,
-                                label = {
-                                    Column {
-                                        Text("Consumables", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
-                                        Text("Chemistry, Paper, Safety Gear, and Supplies", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
-                                    }
-                                },
-                                selected = false,
-                                onClick = { currentView = LabView.INVENTORY },
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.inventory_24px),
-                                        contentDescription = null,
-                                        tint = safelightPrimary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                },
-                                badge = {
-                                    Badge(
-                                        containerColor = badgeBg,
-                                        contentColor = badgeFg
-                                    ) {
-                                        Text("${masterList.size} items", color = badgeFg)
-                                    }
-                                }
-                            )
-                        }
-
-                        // 3. LAB EQUIPMENT
+                        // 1. LAB EQUIPMENT
                         item(key = "nav_equipment") {
                             NavigationDrawerItem(
                                 colors = drawerItemColors,
                                 label = {
                                     Column {
-                                        Text("Lab Equipment", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
+                                        Text("Darkroom Equipment", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightFg)
                                         Text("Enlargers, Tanks, Trays, Lenses, and Processing Gear", style = MaterialTheme.typography.bodySmall, color = safelightSubFg)
                                     }
                                 },
