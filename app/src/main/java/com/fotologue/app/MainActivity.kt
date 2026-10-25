@@ -188,6 +188,13 @@ class MainActivity : ComponentActivity() {
                                         onViewSupplierIssues = { id -> backStack.add(Route.SupplierIssueTracker(id)) },
                                         onAddEquipment = { backStack.add(Route.AddEquipment) },
                                         onEditEquipment = { id -> backStack.add(Route.EditEquipment(id)) },
+                                        onAddCamera = { backStack.add(Route.AddCamera) },
+                                        onAddLens = { backStack.add(Route.AddEditLens()) },
+                                        onAddFilm = { backStack.add(Route.AddFilm) },
+                                        onAddFilter = { backStack.add(Route.AddEditFilter()) },
+                                        onAddFlash = { backStack.add(Route.AddEditFlash()) },
+                                        onAddViewfinder = { backStack.add(Route.AddEditViewfinder()) },
+                                        onAddTeleconverter = { backStack.add(Route.AddEditTeleconverter()) },
                                         onStartFilmSession = { backStack.add(Route.FilmProcessingSession()) },
                                         onStartPrintingSession = { backStack.add(Route.EnlargerPrintingSession()) },
                                         onViewLogDetail = { logId -> backStack.add(Route.LogDetail(logId)) }
