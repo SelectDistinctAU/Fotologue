@@ -28,7 +28,9 @@ import com.fotologue.app.R
 @Composable
 fun AddEditLensScreen(
     viewModel: AddEditLensViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    isPreArrivalMode: Boolean = false,
+    onSavePreArrivalOrder: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
@@ -251,8 +253,15 @@ fun AddEditLensScreen(
                                         }
                                         Button(
                                             onClick = {
-                                                viewModel.onSelectSpec(spec)
-                                                showLensPresetsDialog = false
+                                                if (isPreArrivalMode) {
+                                                    val specs = "${presetItem.brand} • type: ${spec.type}, mount: ${spec.mount}, filterSize: ${spec.filterSize}mm, focalLength: ${spec.minFocalLength}mm, maxAperture: f/${spec.maxAperture}, minAperture: f/${spec.minAperture}"
+                                                    onSavePreArrivalOrder(presetItem.name, specs, presetItem.brand)
+                                                    showLensPresetsDialog = false
+                                                    onBack()
+                                                } else {
+                                                    viewModel.onSelectSpec(spec)
+                                                    showLensPresetsDialog = false
+                                                }
                                             },
                                             contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                                         ) {
@@ -610,10 +619,19 @@ fun AddEditLensScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { viewModel.saveLens(onBack) },
-                modifier = Modifier.fillMaxWidth()
+                onClick = {
+                    if (isPreArrivalMode) {
+                        val name = if (uiState.model.startsWith(uiState.make, ignoreCase = true)) uiState.model else "${uiState.make} ${uiState.model}".trim()
+                        val specs = "${uiState.make} • type: ${uiState.type}, mount: ${uiState.mount}, filterSize: ${uiState.filterSize}mm"
+                        onSavePreArrivalOrder(name, specs, uiState.make)
+                        onBack()
+                    } else {
+                        viewModel.saveLens(onSuccess = onBack)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
-                Text(stringResource(R.string.save_lens))
+                Text(if (isPreArrivalMode) "📦 Add to Pre-Arrival Inbound Register" else stringResource(R.string.save_lens), fontWeight = FontWeight.Bold)
             }
         }
     }
