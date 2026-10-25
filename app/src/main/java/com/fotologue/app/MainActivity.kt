@@ -33,6 +33,7 @@ import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.lab.OrderHistory
 import com.fotologue.feature.lab.AddEditInventoryMasterScreen
 import com.fotologue.feature.lab.AddEditSupplierScreen
+import com.fotologue.feature.lab.AssetsInventoryHomeScreen
 import com.fotologue.feature.lab.AddEquipmentScreen
 import com.fotologue.feature.lab.AddStockLotScreen
 import com.fotologue.feature.lab.EnlargerPrintingSessionScreen
@@ -106,6 +107,7 @@ class MainActivity : ComponentActivity() {
                                         isSafelightActive = isSafelightActive,
                                         onToggleSafelight = { mainViewModel.toggleSafelight() },
                                         onNavigateToCameraGear = { backStack.add(Route.GearLibrary) },
+                                        onNavigateToAssetsInventory = { backStack.add(Route.AssetsInventory) },
                                         onNavigateToTaxonomy = { backStack.add(Route.Taxonomy) },
                                         onNavigateToField = { backStack.add(Route.Timeline) },
                                         onNavigateToContacts = { backStack.add(Route.Lab(initialTab = 1)) },
@@ -171,6 +173,24 @@ class MainActivity : ComponentActivity() {
                                         onContactSheetClick = { backStack.add(Route.ContactSheet()) },
                                         onLabClick = { backStack.add(Route.Lab()) },
                                         selectedLogId = selectedLogId
+                                    )
+                                }
+                                entry<Route.AssetsInventory> {
+                                    val viewModel: LabHomeViewModel = hiltViewModel()
+                                    AssetsInventoryHomeScreen(
+                                        viewModel = viewModel,
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onAddItemMaster = { defaultCat -> backStack.add(Route.AddEditItemMaster(defaultCategory = defaultCat)) },
+                                        onEditItemMaster = { id -> backStack.add(Route.AddEditItemMaster(id)) },
+                                        onAddStockLot = { targetMasterId -> backStack.add(Route.AddStockLot(masterId = targetMasterId)) },
+                                        onEditStockLot = { id -> backStack.add(Route.EditStockLot(id)) },
+                                        onAddCamera = { backStack.add(Route.AddCamera(isPreArrival = true)) },
+                                        onAddLens = { backStack.add(Route.AddEditLens(isPreArrival = true)) },
+                                        onAddFilm = { backStack.add(Route.AddFilm(isPreArrival = true)) },
+                                        onAddFilter = { backStack.add(Route.AddEditFilter()) },
+                                        onAddFlash = { backStack.add(Route.AddEditFlash()) },
+                                        onAddViewfinder = { backStack.add(Route.AddEditViewfinder()) },
+                                        onAddTeleconverter = { backStack.add(Route.AddEditTeleconverter()) }
                                     )
                                 }
                                 entry<Route.Lab> { navRoute ->

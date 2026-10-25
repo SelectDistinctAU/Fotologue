@@ -50,6 +50,7 @@ fun HubScreen(
     isSafelightActive: Boolean = false,
     onToggleSafelight: (() -> Unit)? = null,
     onNavigateToCameraGear: () -> Unit = {},
+    onNavigateToAssetsInventory: () -> Unit = {},
     onNavigateToTaxonomy: () -> Unit = {},
     onNavigateToField: () -> Unit,
     onNavigateToContacts: () -> Unit = {},
@@ -152,6 +153,34 @@ fun HubScreen(
                 )
             }
 
+            item(key = "module_assets_inventory") {
+                HubModuleCard(
+                    title = "ASSETS & INVENTORY",
+                    subtitle = "Consumables, Storage, Inbound Orders & Loans",
+                    description = "Consumables • Storage Locations • Pre-Arrival Orders • Custody & Loans",
+                    iconRes = com.fotologue.app.R.drawable.inventory_2_24px,
+                    cardBg = safelightCardBg,
+                    titleColor = safelightFg,
+                    subColor = safelightPrimary,
+                    descColor = safelightSubFg,
+                    onClick = onNavigateToAssetsInventory
+                )
+            }
+
+            item(key = "module_field") {
+                HubModuleCard(
+                    title = "FOTOLOGUE FIELD",
+                    subtitle = "In-situ Exposure Logging & Spot Light Meter",
+                    description = "Exposure Logging • Spot Light Metering • In-situ Observations",
+                    iconRes = R.drawable.hiking_24px,
+                    cardBg = safelightCardBg,
+                    titleColor = safelightFg,
+                    subColor = safelightPrimary,
+                    descColor = safelightSubFg,
+                    onClick = onNavigateToField
+                )
+            }
+
             item(key = "module_taxonomy") {
                 HubModuleCard(
                     title = "TAXONOMY & TAGS",
@@ -163,20 +192,6 @@ fun HubScreen(
                     subColor = safelightPrimary,
                     descColor = safelightSubFg,
                     onClick = onNavigateToTaxonomy
-                )
-            }
-
-            item(key = "module_field") {
-                HubModuleCard(
-                    title = "FIELD",
-                    subtitle = "In-situ Exposure & Observation",
-                    description = "Exposure Logging • Light Meter",
-                    iconRes = R.drawable.hiking_24px,
-                    cardBg = safelightCardBg,
-                    titleColor = safelightFg,
-                    subColor = safelightPrimary,
-                    descColor = safelightSubFg,
-                    onClick = onNavigateToField
                 )
             }
 
@@ -197,8 +212,8 @@ fun HubScreen(
             item(key = "module_lab") {
                 HubModuleCard(
                     title = "LAB",
-                    subtitle = "Wet Darkroom Processing & Inventory",
-                    description = "Item Specifications • Stock Lots & In-Flow • Suppliers • Maintenance",
+                    subtitle = "Wet Darkroom Chemical Processing & Printing",
+                    description = "Film Processing Session • Enlarger Session • Darkroom Equipment & Tanks",
                     iconRes = R.drawable.experiment_24px,
                     cardBg = safelightCardBg,
                     titleColor = safelightFg,
