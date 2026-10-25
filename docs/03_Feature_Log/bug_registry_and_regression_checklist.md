@@ -1898,6 +1898,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-170: Staging Portal Information Architecture Elevation & FOTOLOGUE FIELD CTA Promotion
+- **Platform**: Fotologue Mobile (`app` / `HubScreen.kt`, `AssetsInventoryHomeScreen.kt`, `LabHomeScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Studio-wide asset items (*Consumables*, *Storage Locations*, *Pre-Arrival Orders*, *Custody & Loans*) were buried inside the `LAB` module, creating confusion for non-darkroom users; `FIELD` card title on Staging Portal lacked high-impact CTA visibility.
+- **Root Cause**: Blended information architecture in `LAB` module; plain `FIELD` card title on main menu.
+- **Resolution**:
+  1. Elevated physical inventory and order tracking out of `LAB` into a dedicated **`ASSETS & INVENTORY`** Staging Portal Module (Module #2) with `inventory_2_24px` M3 vector icon.
+  2. Promoted Staging Portal card title from `FIELD` to **`FOTOLOGUE FIELD`** as the central primary Call-To-Action for live street demonstrations and exposure logging.
+  3. Streamlined **`LAB`** module to focus 100% on wet darkroom processing (`Develop Roll`), enlarger printing (`Enlarger Session`), and darkroom equipment.
+- **Regression Test Case**: Open Staging Portal $\to$ verify **`ASSETS & INVENTORY`** card appears as Module #2 with `inventory_2_24px` icon and **`FOTOLOGUE FIELD`** card title renders as Module #3 CTA.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
