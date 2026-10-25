@@ -280,6 +280,12 @@ class AddEditCameraViewModel @Inject constructor(
                 cameraId!!
             }
 
+            // Default availability to AVAILABLE if not set
+            val existingAvailability = repository.getAssetAvailability("Camera", newCamId)
+            if (existingAvailability == null) {
+                repository.setAssetAvailability("Camera", newCamId, status = "AVAILABLE")
+            }
+
             // Auto-populate fixed lens entry if camera has a fixedLens spec or is a non-interchangeable type
             val fixedSpec = currentState.fixedLens
             if (fixedSpec != null) {
@@ -329,6 +335,43 @@ class AddEditCameraViewModel @Inject constructor(
             }
 
             onSuccess()
+        }
+    }
+
+    fun savePreArrivalCamera(onSuccess: (Long) -> Unit) {
+        val currentState = _uiState.value
+        if (currentState.name.isBlank()) {
+            _uiState.update { it.copy(isNameValid = false) }
+            return
+        }
+
+        viewModelScope.launch {
+            val shutterSpeedList = currentState.shutterSpeeds
+                .split(",")
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+
+            val camera = Camera(
+                id = 0,
+                name = currentState.name.trim(),
+                modelNumber = currentState.modelNumber.trim(),
+                serialNumber = currentState.serialNumber.trim(),
+                type = currentState.type,
+                mount = currentState.mount.trim(),
+                shutterSpeeds = shutterSpeedList,
+                isHalfFrame = currentState.isHalfFrame,
+                format = currentState.format,
+                triggerDeviceId = currentState.triggerDeviceId.ifBlank { null }
+            )
+
+            val newCamId = repository.insertCamera(camera)
+            repository.setAssetAvailability(
+                category = "Camera",
+                refId = newCamId,
+                status = "IN_TRANSIT",
+                reason = "Pre-Arrival Order"
+            )
+            onSuccess(newCamId)
         }
     }
 }

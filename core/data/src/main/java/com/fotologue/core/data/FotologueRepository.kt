@@ -2,6 +2,8 @@ package com.fotologue.core.data
 
 import android.location.Location
 import androidx.room.withTransaction
+import com.fotologue.core.data.lab.AssetAvailability
+import com.fotologue.core.data.lab.AssetAvailabilityDao
 import com.fotologue.core.data.lab.LabProcessEvent
 import com.fotologue.core.data.lab.LabProcessEventDao
 import com.fotologue.core.data.lab.PerformanceLog
@@ -30,6 +32,7 @@ class FotologueRepository @Inject constructor(
     private val tagDao: TagDao,
     private val filmRollSessionDao: FilmRollSessionDao,
     private val viewfinderDao: ViewfinderDao,
+    private val assetAvailabilityDao: AssetAvailabilityDao,
     private val performanceLogDao: PerformanceLogDao,
     private val labProcessEventDao: LabProcessEventDao,
     private val locationProvider: LocationProvider,
@@ -42,6 +45,33 @@ class FotologueRepository @Inject constructor(
     val newlyAddedFilmId: SharedFlow<Long> = _newlyAddedFilmId.asSharedFlow()
 
     private val tagMutex = Mutex()
+
+    val allAvailability: Flow<List<AssetAvailability>> = assetAvailabilityDao.getAllAvailability()
+
+    suspend fun setAssetAvailability(
+        category: String,
+        refId: Long,
+        status: String = "AVAILABLE",
+        reason: String? = null,
+        activeRefId: Long? = null,
+        expectedResolutionAt: Long? = null
+    ) {
+        assetAvailabilityDao.setAvailability(
+            AssetAvailability(
+                assetCategory = category,
+                assetRefId = refId,
+                status = status,
+                statusReason = reason,
+                activeRefId = activeRefId,
+                statusChangedAt = System.currentTimeMillis(),
+                expectedResolutionAt = expectedResolutionAt
+            )
+        )
+    }
+
+    suspend fun getAssetAvailability(category: String, refId: Long): AssetAvailability? {
+        return assetAvailabilityDao.getAvailability(category, refId)
+    }
 
     val allCameras: Flow<List<Camera>> = cameraDao.getAllCameras()
     val allFilms: Flow<List<Film>> = filmDao.getAllFilms()

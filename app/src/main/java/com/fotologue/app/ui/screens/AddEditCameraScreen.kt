@@ -290,12 +290,13 @@ fun AddEditCameraScreen(
                                     }
                                     Button(
                                         onClick = {
+                                            viewModel.applySpec(spec)
                                             if (isPreArrivalMode) {
-                                                val specs = "${presetItem.brand} • type: ${spec.type.displayName}, mount: ${spec.mount}, shutterSpeeds: ${spec.shutterSpeeds.joinToString()}"
-                                                onSavePreArrivalOrder(spec.name, specs, presetItem.brand)
-                                                onBack()
+                                                viewModel.savePreArrivalCamera { newCamId ->
+                                                    onSavePreArrivalOrder(spec.name, "${presetItem.brand} • mount: ${spec.mount}", presetItem.brand)
+                                                    onBack()
+                                                }
                                             } else {
-                                                viewModel.applySpec(spec)
                                                 viewModel.saveCamera(onBack)
                                             }
                                         },
@@ -492,10 +493,12 @@ fun AddEditCameraScreen(
                     Button(
                         onClick = {
                             if (isPreArrivalMode) {
-                                val name = if (uiState.name.startsWith(uiState.make, ignoreCase = true)) uiState.name else "${uiState.make} ${uiState.name}".trim()
-                                val specs = "${uiState.make} • type: ${uiState.type.displayName}, format: ${uiState.format}"
-                                onSavePreArrivalOrder(name, specs, uiState.make)
-                                onBack()
+                                viewModel.savePreArrivalCamera { _ ->
+                                    val name = if (uiState.name.startsWith(uiState.make, ignoreCase = true)) uiState.name else "${uiState.make} ${uiState.name}".trim()
+                                    val specs = "${uiState.make} • type: ${uiState.type.displayName}, mount: ${uiState.mount}"
+                                    onSavePreArrivalOrder(name, specs, uiState.make)
+                                    onBack()
+                                }
                             } else {
                                 viewModel.saveCamera(onBack)
                             }
