@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fotologue.core.data.*
+import com.fotologue.core.data.lab.AssetAvailability
 import com.fotologue.app.ui.viewmodel.GearLibraryViewModel
 import com.fotologue.app.R
 
@@ -59,6 +60,7 @@ fun GearLibraryScreen(
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     
+    val allAvailability by viewModel.allAvailability.collectAsStateWithLifecycle(emptyList())
     val cameras by viewModel.allCameras.collectAsStateWithLifecycle()
     val lensesWithCameras by viewModel.allLensesWithCameras.collectAsStateWithLifecycle()
     val teleconverters by viewModel.allTeleconvertersWithCameras.collectAsStateWithLifecycle()
@@ -161,6 +163,7 @@ fun GearLibraryScreen(
                     when (uiState.selectedCategoryIndex) {
                         0 -> CameraList(
                             cameras = cameras,
+                            availabilityList = allAvailability,
                             selectedIds = uiState.selectedCameraIds,
                             isReorderMode = uiState.isReorderMode,
                             onCameraClick = { id -> 
@@ -1222,6 +1225,7 @@ private fun LensList(
 @Composable
 private fun CameraList(
     cameras: List<Camera>,
+    availabilityList: List<AssetAvailability> = emptyList(),
     selectedIds: Set<Long>,
     isReorderMode: Boolean,
     onCameraClick: (Long) -> Unit,
@@ -1239,6 +1243,9 @@ private fun CameraList(
             contentPadding = PaddingValues(bottom = bottomPadding + 80.dp)
         ) {
             itemsIndexed(cameras) { index, camera ->
+                val availability = availabilityList.find { it.assetCategory.equals("Camera", ignoreCase = true) && it.assetRefId == camera.id }
+                val isAvailable = availability == null || availability.status == "AVAILABLE"
+
                 ListItem(
                     headlineContent = { 
                         Text(
@@ -1279,9 +1286,27 @@ private fun CameraList(
                             )
                         }
                     },
-                    trailingContent = if (isReorderMode) {
-                        { ReorderButtons(index, cameras.size, onMove) }
-                    } else null,
+                    trailingContent = {
+                        if (isReorderMode) {
+                            ReorderButtons(index, cameras.size, onMove)
+                        } else if (!isAvailable && availability != null) {
+                            val badgeLabel = when (availability.status) {
+                                "IN_TRANSIT" -> "🚚 In Transit (N/A)"
+                                "LOANED_OUT" -> "📞 On Loan (N/A)"
+                                "IN_REPAIR" -> "🛠️ In Repair (N/A)"
+                                "SOLD" -> "🏷️ Sold"
+                                else -> "N/A"
+                            }
+                            AssistChip(
+                                onClick = {},
+                                label = { Text(badgeLabel, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
+                                colors = AssistChipDefaults.assistChipColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    labelColor = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            )
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(

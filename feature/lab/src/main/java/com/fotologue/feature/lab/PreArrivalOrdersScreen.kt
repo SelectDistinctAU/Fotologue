@@ -92,11 +92,6 @@ fun PreArrivalOrdersScreen(
     var categoryDropdownExpanded by remember { mutableStateOf(false) }
     var supplierDropdownExpanded by remember { mutableStateOf(false) }
     var statusDropdownExpanded by remember { mutableStateOf(false) }
-    var locationDropdownExpanded by remember { mutableStateOf(false) }
-
-    // Mark Delivered Dialog State
-    var deliveryDialogOrder by remember { mutableStateOf<OrderHistory?>(null) }
-    var selectedDeliveryLocation by remember { mutableStateOf("") }
     var showPresetSelectorModal by remember { mutableStateOf(false) }
 
     val categoryOptions = listOf(
@@ -209,86 +204,6 @@ fun PreArrivalOrdersScreen(
         }
     }
 
-    // 1-Tap Delivery Activation Dialog
-    if (deliveryDialogOrder != null) {
-        val targetOrder = deliveryDialogOrder!!
-        AlertDialog(
-            onDismissRequest = { deliveryDialogOrder = null },
-            title = { Text("📦 Activate Asset on Delivery", fontWeight = FontWeight.Bold) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Confirm arrival and activate this asset into your active catalog at the designated storage location:")
-                    
-                    ExposedDropdownMenuBox(
-                        expanded = locationDropdownExpanded,
-                        onExpandedChange = { locationDropdownExpanded = !locationDropdownExpanded },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        OutlinedTextField(
-                            value = selectedDeliveryLocation.ifBlank { "Select Storage Location" },
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Storage Location") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = locationDropdownExpanded) },
-                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = locationDropdownExpanded,
-                            onDismissRequest = { locationDropdownExpanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("📦 Unassigned / Pending Storage") },
-                                onClick = {
-                                    selectedDeliveryLocation = "Unassigned / Pending Storage"
-                                    locationDropdownExpanded = false
-                                }
-                            )
-                            locationList.forEach { loc ->
-                                DropdownMenuItem(
-                                    text = { Text("📦 ${loc.name} (${loc.locationType})") },
-                                    onClick = {
-                                        selectedDeliveryLocation = loc.name
-                                        locationDropdownExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        val updatedNotes = "${targetOrder.notes}${if (selectedDeliveryLocation.isNotBlank()) " • Stored at: $selectedDeliveryLocation" else ""}".trim(' ', '•')
-                        viewModel.updateOrder(targetOrder.copy(status = "Delivered", notes = updatedNotes))
-                        
-                        // Auto-Register Item to Active Catalog (Camera Gear or Lab Inventory)
-                        val assetNameExtracted = targetOrder.notes.substringBefore(" • ")
-                        val assetSpecsExtracted = targetOrder.notes.substringAfter(" • ", "")
-                        val vendorName = supplierList.find { it.id == targetOrder.supplierId }?.name ?: ""
-                        
-                        viewModel.activatePreArrivalAsset(
-                            assetCategory = targetOrder.assetCategory,
-                            assetName = assetNameExtracted,
-                            assetSpecs = assetSpecsExtracted,
-                            storageLocation = selectedDeliveryLocation.ifBlank { "Unassigned Storage" },
-                            supplierName = vendorName
-                        )
-
-                        deliveryDialogOrder = null
-                    }
-                ) {
-                    Text("Activate Asset")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { deliveryDialogOrder = null }) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
-
     val filteredOrders = orderList.filter {
         when (selectedStatusFilter) {
             "In Transit" -> it.status == "IN_TRANSIT" || it.status == "In Transit"
@@ -340,6 +255,9 @@ fun PreArrivalOrdersScreen(
                 items(filteredOrders) { order ->
                     val supplierName = supplierList.find { it.id == order.supplierId }?.name ?: "Vendor Contact"
                     val isDelivered = order.status in listOf("DELIVERED", "Delivered", "RECEIVED", "Received")
+                    val orderTitle = order.notes.substringBefore(" • ").removePrefix("Category: Lens ").removePrefix("Category: Camera ").ifBlank { "Inbound Asset Order" }
+                    val orderSpecs = order.notes.substringAfter(" • ", "").ifBlank { "Category: ${order.assetCategory}" }
+
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
@@ -350,28 +268,35 @@ fun PreArrivalOrdersScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
                                     Icon(
-                                        painter = painterResource(R.drawable.warehouse_24px),
+                                        painter = painterResource(com.fotologue.core.designsystem.R.drawable.delivery_truck_speed_24px),
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = order.notes.ifBlank { "Inbound Asset Order" },
+                                        text = orderTitle,
                                         fontWeight = FontWeight.Bold,
                                         style = MaterialTheme.typography.titleMedium
                                     )
                                 }
-                                Badge(containerColor = if (isDelivered) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer) {
-                                    Text(formatOrderStatus(order.status), style = MaterialTheme.typography.labelSmall)
-                                }
+                                AssistChip(
+                                    onClick = {},
+                                    label = { Text(formatOrderStatus(order.status), style = MaterialTheme.typography.labelSmall) },
+                                    colors = AssistChipDefaults.assistChipColors(
+                                        containerColor = if (isDelivered) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
+                                    )
+                                )
                             }
 
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "Category: ${order.assetCategory} • Vendor: $supplierName${if (order.totalCost.isNotBlank()) " • Cost: $" + order.totalCost else ""}",
+                                text = "$orderSpecs • Vendor: $supplierName${if (order.totalCost.isNotBlank()) " • $" + order.totalCost else ""}",
                                 style = MaterialTheme.typography.bodySmall
                             )
                             if (order.trackingNumber.isNotBlank()) {
@@ -390,8 +315,16 @@ fun PreArrivalOrdersScreen(
                                 if (!isDelivered) {
                                     Button(
                                         onClick = {
-                                            selectedDeliveryLocation = locationList.firstOrNull()?.name ?: ""
-                                            deliveryDialogOrder = order
+                                            viewModel.updateOrder(order.copy(status = "Delivered"))
+                                            val assetNameExtracted = order.notes.substringBefore(" • ").removePrefix("Category: Lens ").removePrefix("Category: Camera ")
+                                            val assetSpecsExtracted = order.notes.substringAfter(" • ", "")
+                                            viewModel.activatePreArrivalAsset(
+                                                assetCategory = order.assetCategory,
+                                                assetName = assetNameExtracted,
+                                                assetSpecs = assetSpecsExtracted,
+                                                storageLocation = "Unassigned Storage",
+                                                supplierName = supplierName
+                                            )
                                         },
                                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                                     ) {

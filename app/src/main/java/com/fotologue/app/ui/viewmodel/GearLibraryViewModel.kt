@@ -3,6 +3,7 @@ package com.fotologue.app.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fotologue.core.data.*
+import com.fotologue.core.data.lab.AssetAvailability
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -31,6 +32,8 @@ data class GearLibraryUiState(
 
 @HiltViewModel
 class GearLibraryViewModel @Inject constructor(private val repository: FotologueRepository) : ViewModel() {
+    val allAvailability: StateFlow<List<AssetAvailability>> = repository.allAvailability
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val allCameras: StateFlow<List<Camera>> = repository.allCameras
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val allFilms: StateFlow<List<Film>> = repository.allFilms
