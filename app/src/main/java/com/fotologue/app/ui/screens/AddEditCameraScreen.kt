@@ -29,6 +29,8 @@ import com.fotologue.core.data.preset.MasterPresetEngine
 fun AddEditCameraScreen(
     viewModel: AddEditCameraViewModel,
     onBack: () -> Unit,
+    isPreArrivalMode: Boolean = false,
+    onSavePreArrivalOrder: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var isCustomFormView by remember { mutableStateOf(viewModel.cameraId != null) }
@@ -288,8 +290,14 @@ fun AddEditCameraScreen(
                                     }
                                     Button(
                                         onClick = {
-                                            viewModel.applySpec(spec)
-                                            viewModel.saveCamera(onBack)
+                                            if (isPreArrivalMode) {
+                                                val specs = "${presetItem.brand} • type: ${spec.type.displayName}, mount: ${spec.mount}, shutterSpeeds: ${spec.shutterSpeeds.joinToString()}"
+                                                onSavePreArrivalOrder(spec.name, specs, presetItem.brand)
+                                                onBack()
+                                            } else {
+                                                viewModel.applySpec(spec)
+                                                viewModel.saveCamera(onBack)
+                                            }
                                         },
                                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
                                     ) {
@@ -482,10 +490,19 @@ fun AddEditCameraScreen(
                     )
 
                     Button(
-                        onClick = { viewModel.saveCamera(onBack) },
+                        onClick = {
+                            if (isPreArrivalMode) {
+                                val name = if (uiState.name.startsWith(uiState.make, ignoreCase = true)) uiState.name else "${uiState.make} ${uiState.name}".trim()
+                                val specs = "${uiState.make} • type: ${uiState.type.displayName}, format: ${uiState.format}"
+                                onSavePreArrivalOrder(name, specs, uiState.make)
+                                onBack()
+                            } else {
+                                viewModel.saveCamera(onBack)
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(if (viewModel.cameraId == null) "Save Camera" else "Update Camera")
+                        Text(if (isPreArrivalMode) "📦 Add to Pre-Arrival Inbound Register" else if (viewModel.cameraId == null) "Save Camera" else "Update Camera")
                     }
                 }
             }

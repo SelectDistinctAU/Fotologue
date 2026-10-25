@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.fotologue.core.data.FotologueRepository
+import com.fotologue.core.data.lab.OrderHistory
 import com.fotologue.feature.lab.AddEditInventoryMasterScreen
 import com.fotologue.feature.lab.AddEditSupplierScreen
 import com.fotologue.feature.lab.AddEquipmentScreen
@@ -134,9 +135,9 @@ class MainActivity : ComponentActivity() {
                                     val viewModel: OnboardingViewModel = hiltViewModel()
                                     WelcomeScreen(
                                         viewModel = viewModel,
-                                        onAddCamera = { backStack.add(Route.AddCamera) },
+                                        onAddCamera = { backStack.add(Route.AddCamera()) },
                                         onAddLens = { backStack.add(Route.AddEditLens()) },
-                                        onAddFilm = { backStack.add(Route.AddFilm) },
+                                        onAddFilm = { backStack.add(Route.AddFilm()) },
                                         onCalibrateMeter = { backStack.add(Route.LightMeter(targetIso = 400, autoStartCalibration = true)) },
                                         onShowHelp = { backStack.add(Route.Help) },
                                         onSettingsClick = { backStack.add(Route.Settings) }
@@ -188,9 +189,9 @@ class MainActivity : ComponentActivity() {
                                         onViewSupplierIssues = { id -> backStack.add(Route.SupplierIssueTracker(id)) },
                                         onAddEquipment = { backStack.add(Route.AddEquipment) },
                                         onEditEquipment = { id -> backStack.add(Route.EditEquipment(id)) },
-                                        onAddCamera = { backStack.add(Route.AddCamera) },
-                                        onAddLens = { backStack.add(Route.AddEditLens()) },
-                                        onAddFilm = { backStack.add(Route.AddFilm) },
+                                        onAddCamera = { backStack.add(Route.AddCamera(isPreArrival = true)) },
+                                        onAddLens = { backStack.add(Route.AddEditLens(isPreArrival = true)) },
+                                        onAddFilm = { backStack.add(Route.AddFilm(isPreArrival = true)) },
                                         onAddFilter = { backStack.add(Route.AddEditFilter()) },
                                         onAddFlash = { backStack.add(Route.AddEditFlash()) },
                                         onAddViewfinder = { backStack.add(Route.AddEditViewfinder()) },
@@ -297,9 +298,9 @@ class MainActivity : ComponentActivity() {
                                     GearLibraryScreen(
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
-                                        onAddCamera = { backStack.add(Route.AddCamera) },
+                                        onAddCamera = { backStack.add(Route.AddCamera()) },
                                         onEditCamera = { id -> backStack.add(Route.EditCamera(id)) },
-                                        onAddFilm = { backStack.add(Route.AddFilm) },
+                                        onAddFilm = { backStack.add(Route.AddFilm()) },
                                         onEditFilm = { id -> backStack.add(Route.EditFilm(id)) },
                                         onAddLens = { backStack.add(Route.AddEditLens()) },
                                         onEditLens = { id -> backStack.add(Route.AddEditLens(id)) },
@@ -362,19 +363,45 @@ class MainActivity : ComponentActivity() {
                                 }
                                 entry<Route.AddEditLens> { navRoute ->
                                     val viewModel: AddEditLensViewModel = hiltViewModel(key = "AddEditLens_${navRoute.lensId}_${navRoute.cameraId}")
+                                    val labViewModel: LabHomeViewModel = hiltViewModel()
                                     viewModel.setLensId(navRoute.lensId)
                                     navRoute.cameraId?.let { viewModel.preSelectCameraId(it) }
                                     AddEditLensScreen(
                                         viewModel = viewModel,
-                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        isPreArrivalMode = navRoute.isPreArrival,
+                                        onSavePreArrivalOrder = { name, specs, brand ->
+                                            val fullNotes = "$name • Category: Lens • $specs"
+                                            labViewModel.addOrder(
+                                                OrderHistory(
+                                                    supplierId = null,
+                                                    notes = fullNotes,
+                                                    status = "In Transit",
+                                                    assetCategory = "Lens"
+                                                )
+                                            )
+                                        }
                                     )
                                 }
-                                entry<Route.AddCamera> {
+                                entry<Route.AddCamera> { navRoute ->
                                     val viewModel: AddEditCameraViewModel = hiltViewModel()
+                                    val labViewModel: LabHomeViewModel = hiltViewModel()
                                     viewModel.setCameraId(null)
                                     AddEditCameraScreen(
                                         viewModel = viewModel,
-                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        isPreArrivalMode = navRoute.isPreArrival,
+                                        onSavePreArrivalOrder = { name, specs, brand ->
+                                            val fullNotes = "$name • Category: Camera • $specs"
+                                            labViewModel.addOrder(
+                                                OrderHistory(
+                                                    supplierId = null,
+                                                    notes = fullNotes,
+                                                    status = "In Transit",
+                                                    assetCategory = "Camera"
+                                                )
+                                            )
+                                        }
                                     )
                                 }
                                 entry<Route.EditCamera> { editRoute ->
@@ -385,12 +412,25 @@ class MainActivity : ComponentActivity() {
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
                                     )
                                 }
-                                entry<Route.AddFilm> {
+                                entry<Route.AddFilm> { navRoute ->
                                     val viewModel: AddEditFilmViewModel = hiltViewModel()
+                                    val labViewModel: LabHomeViewModel = hiltViewModel()
                                     viewModel.setFilmId(null)
                                     AddEditFilmScreen(
                                         viewModel = viewModel,
-                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        isPreArrivalMode = navRoute.isPreArrival,
+                                        onSavePreArrivalOrder = { name, specs, brand ->
+                                            val fullNotes = "$name • Category: Film Stock • $specs"
+                                            labViewModel.addOrder(
+                                                OrderHistory(
+                                                    supplierId = null,
+                                                    notes = fullNotes,
+                                                    status = "In Transit",
+                                                    assetCategory = "Film Stock"
+                                                )
+                                            )
+                                        }
                                     )
                                 }
                                 entry<Route.EditFilm> { editRoute ->
@@ -429,7 +469,7 @@ class MainActivity : ComponentActivity() {
                                             backStack.add(Route.LightMeter(iso, cameraId, lensId, tcId, filterId, filmId, focalLength))
                                         },
                                         onAddLens = { cameraId -> backStack.add(Route.AddEditLens(cameraId = cameraId)) },
-                                        onAddFilm = { backStack.add(Route.AddFilm) },
+                                        onAddFilm = { backStack.add(Route.AddFilm()) },
                                         onNavigateToRollCounter = { backStack.add(Route.RollCounter) }
                                     )
                                 }
@@ -443,7 +483,7 @@ class MainActivity : ComponentActivity() {
                                             backStack.add(Route.LightMeter(iso, cameraId, lensId, tcId, filterId, filmId, focalLength))
                                         },
                                         onAddLens = { cameraId -> backStack.add(Route.AddEditLens(cameraId = cameraId)) },
-                                        onAddFilm = { backStack.add(Route.AddFilm) },
+                                        onAddFilm = { backStack.add(Route.AddFilm()) },
                                         onNavigateToRollCounter = { backStack.add(Route.RollCounter) }
                                     )
                                 }

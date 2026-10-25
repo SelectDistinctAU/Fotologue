@@ -63,19 +63,19 @@ sealed class Route : NavKey {
     data object Taxonomy : Route()
 
     @Serializable
-    data object AddCamera : Route()
+    data class AddCamera(val isPreArrival: Boolean = false) : Route()
 
     @Serializable
     data class EditCamera(val cameraId: Long) : Route()
 
     @Serializable
-    data object AddFilm : Route()
+    data class AddFilm(val isPreArrival: Boolean = false) : Route()
 
     @Serializable
     data class EditFilm(val filmId: Long) : Route()
 
     @Serializable
-    data class AddEditLens(val lensId: Long? = null, val cameraId: Long? = null) : Route()
+    data class AddEditLens(val lensId: Long? = null, val cameraId: Long? = null, val isPreArrival: Boolean = false) : Route()
 
     @Serializable
     data class AddEditTeleconverter(val teleconverterId: Long? = null) : Route()

@@ -27,7 +27,9 @@ import com.fotologue.app.R
 @Composable
 fun AddEditFilmScreen(
     viewModel: AddEditFilmViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    isPreArrivalMode: Boolean = false,
+    onSavePreArrivalOrder: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
@@ -81,8 +83,14 @@ fun AddEditFilmScreen(
                 FilmPresetsBrowser(
                     initialFormat = uiState.format,
                     onPresetSelected = { preset, chosenFormat ->
-                        viewModel.onPresetSelected(preset, chosenFormat)
-                        isCustomFormView = true
+                        if (isPreArrivalMode) {
+                            val specs = "${preset.manufacturer} • type: ${preset.type}, iso: ${preset.iso}, format: $chosenFormat, abbreviation: ${preset.abbreviation}"
+                            onSavePreArrivalOrder(preset.name, specs, preset.manufacturer)
+                            onBack()
+                        } else {
+                            viewModel.onPresetSelected(preset, chosenFormat)
+                            isCustomFormView = true
+                        }
                     },
                     onAddCustomFilm = {
                         isCustomFormView = true
@@ -234,10 +242,18 @@ fun AddEditFilmScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = { viewModel.saveFilm(onBack) },
-                        modifier = Modifier.fillMaxWidth()
+                        onClick = {
+                            if (isPreArrivalMode) {
+                                val specs = "type: ${uiState.type}, iso: ${uiState.iso}, format: ${uiState.format}"
+                                onSavePreArrivalOrder(uiState.name, specs, "Custom")
+                                onBack()
+                            } else {
+                                viewModel.saveFilm(onComplete = onBack)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth().height(48.dp)
                     ) {
-                        Text(stringResource(R.string.save_film))
+                        Text(if (isPreArrivalMode) "📦 Add to Pre-Arrival Inbound Register" else stringResource(R.string.save_film), fontWeight = FontWeight.Bold)
                     }
                 }
             }
