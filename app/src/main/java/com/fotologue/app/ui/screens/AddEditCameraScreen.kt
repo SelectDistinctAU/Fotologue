@@ -326,6 +326,23 @@ fun AddEditCameraScreen(
                         }
                     }
 
+                    if (isPreArrivalMode) {
+                        AssistChip(
+                            onClick = {},
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(com.fotologue.core.designsystem.R.drawable.delivery_truck_speed_24px),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            },
+                            label = { Text("Status: 🚚 Pre-Arrival Inbound Order (In Transit)", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            )
+                        )
+                    }
+
                     var brandExpanded by remember { mutableStateOf(false) }
 
                     // Field 1: Brand (Controlled Dropdown Selector, No Default Brand)

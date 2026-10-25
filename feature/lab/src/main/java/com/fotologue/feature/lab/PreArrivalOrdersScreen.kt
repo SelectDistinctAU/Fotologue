@@ -97,7 +97,7 @@ fun PreArrivalOrdersScreen(
     val categoryOptions = listOf(
         "Camera", "Lens", "Film Stock",
         "Teleconverter", "Filter", "Flash", "Viewfinder",
-        "Consumable", "Lab Equipment", "Other / General"
+        "Consumables", "Lab Equipment", "Other / General"
     )
     val statusOptions = listOf("Waitlisted", "Packaging", "In Transit", "Delivered")
 
@@ -177,6 +177,46 @@ fun PreArrivalOrdersScreen(
                 }
             }
 
+            var secondaryCategory by remember { mutableStateOf("Chemistry") }
+            var secondaryDropdownExpanded by remember { mutableStateOf(false) }
+
+            val secondaryOptions = when (assetCategory) {
+                "Consumables" -> listOf("Chemistry", "Paper", "Film Stock", "Safety Gear", "Supplies")
+                "Lab Equipment" -> listOf("Enlarger", "Enlarger Lens", "Dev Tank", "Tray", "Light Table", "Squeegee & Drying", "Scanner / Digitiser")
+                else -> emptyList()
+            }
+
+            if (secondaryOptions.isNotEmpty()) {
+                ExposedDropdownMenuBox(
+                    expanded = secondaryDropdownExpanded,
+                    onExpandedChange = { secondaryDropdownExpanded = !secondaryDropdownExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = secondaryCategory,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Secondary Sub-Category") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = secondaryDropdownExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = secondaryDropdownExpanded,
+                        onDismissRequest = { secondaryDropdownExpanded = false }
+                    ) {
+                        secondaryOptions.forEach { subCat ->
+                            DropdownMenuItem(
+                                text = { Text(subCat, fontWeight = if (subCat == secondaryCategory) FontWeight.Bold else FontWeight.Normal) },
+                                onClick = {
+                                    secondaryCategory = subCat
+                                    secondaryDropdownExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
@@ -190,7 +230,7 @@ fun PreArrivalOrdersScreen(
                         "Flash" -> onAddFlash()
                         "Viewfinder" -> onAddViewfinder()
                         "Teleconverter" -> onAddTeleconverter()
-                        "Consumable", "Chemical", "Paper" -> onAddItemMaster("Consumable")
+                        "Consumables", "Consumable", "Chemical", "Paper" -> onAddItemMaster(secondaryCategory)
                         "Lab Equipment" -> onAddItemMaster("Lab Equipment")
                         else -> onAddCamera()
                     }
@@ -351,15 +391,20 @@ fun PreArrivalOrdersScreen(
                                     Button(
                                         onClick = {
                                             viewModel.updateOrder(order.copy(status = "Delivered"))
-                                            val assetNameExtracted = order.notes.substringBefore(" • ").removePrefix("Category: Lens ").removePrefix("Category: Camera ")
-                                            val assetSpecsExtracted = order.notes.substringAfter(" • ", "")
-                                            viewModel.activatePreArrivalAsset(
-                                                assetCategory = order.assetCategory,
-                                                assetName = assetNameExtracted,
-                                                assetSpecs = assetSpecsExtracted,
-                                                storageLocation = "Unassigned Storage",
-                                                supplierName = supplierName
-                                            )
+                                            val refId = order.assetRefId
+                                            if (refId != null) {
+                                                viewModel.markPreArrivalAssetDelivered(order.assetCategory, refId)
+                                            } else {
+                                                val assetNameExtracted = order.notes.substringBefore(" • ").removePrefix("Category: Lens ").removePrefix("Category: Camera ")
+                                                val assetSpecsExtracted = order.notes.substringAfter(" • ", "")
+                                                viewModel.activatePreArrivalAsset(
+                                                    assetCategory = order.assetCategory,
+                                                    assetName = assetNameExtracted,
+                                                    assetSpecs = assetSpecsExtracted,
+                                                    storageLocation = "Unassigned Storage",
+                                                    supplierName = supplierName
+                                                )
+                                            }
                                         },
                                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                                     ) {
