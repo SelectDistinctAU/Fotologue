@@ -57,6 +57,14 @@ private fun parseOrderStatusToEnum(display: String): String {
 fun PreArrivalOrdersScreen(
     viewModel: LabHomeViewModel,
     onBack: () -> Unit,
+    onAddCamera: () -> Unit = {},
+    onAddLens: () -> Unit = {},
+    onAddFilm: () -> Unit = {},
+    onAddFilter: () -> Unit = {},
+    onAddFlash: () -> Unit = {},
+    onAddViewfinder: () -> Unit = {},
+    onAddTeleconverter: () -> Unit = {},
+    onAddItemMaster: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val orderList by viewModel.orderList.collectAsState()
@@ -114,419 +122,89 @@ fun PreArrivalOrdersScreen(
     }
 
     if (showAddEditDialog) {
-        if (showPresetSelectorModal) {
-            val presetCategoryKey = when (assetCategory) {
-                "Camera" -> "CAMERA"
-                "Lens" -> "LENS"
-                "Film Stock" -> "FILM"
-                "Filter" -> "FILTER"
-                "Flash" -> "FLASH"
-                "Viewfinder" -> "VIEWFINDER"
-                "Teleconverter" -> "TELECONVERTER"
-                "Consumable" -> "CONSUMABLE"
-                "Lab Equipment" -> "EQUIPMENT"
-                else -> "CAMERA"
-            }
-
-            val masterPresets = remember(assetCategory) {
-                val enginePresets = MasterPresetEngine.getPresetsByCategory(presetCategoryKey)
-                if (enginePresets.isNotEmpty()) {
-                    enginePresets.map { p ->
-                        Pair(p.name, "${p.brand} • ${p.attributes.entries.joinToString { "${it.key}: ${it.value}" }}".trim(' ', '•'))
-                    }
-                } else {
-                    masterList.map { m ->
-                        Pair(m.name, "${m.manufacturer} • ${m.displaySize}")
-                    }
-                }
-            }
-
-            var presetSearchQuery by remember { mutableStateOf("") }
-            var presetBrandFilter by remember { mutableStateOf("All") }
-            var presetBrandDropdownExpanded by remember { mutableStateOf(false) }
-
-            val allBrands = remember(masterPresets) {
-                (listOf("All") + masterPresets.map { it.second.substringBefore(" • ") }.filter { it.isNotBlank() }).distinct().sorted()
-            }
-
-            val filteredPresets = masterPresets.filter { (pName, pSpecs) ->
-                val matchesSearch = presetSearchQuery.isBlank() || pName.contains(presetSearchQuery, ignoreCase = true) || pSpecs.contains(presetSearchQuery, ignoreCase = true)
-                val matchesBrand = presetBrandFilter == "All" || pSpecs.startsWith(presetBrandFilter, ignoreCase = true)
-                matchesSearch && matchesBrand
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = { showPresetSelectorModal = false }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Return to Order Form")
-                    }
-                    Icon(painterResource(com.fotologue.core.designsystem.R.drawable.settings_photo_camera_24px), contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Select $assetCategory from Presets", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                IconButton(onClick = { showAddEditDialog = false }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Close Form")
                 }
-
-                Text(
-                    text = "Select a brand and model to search $assetCategory presets:",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                // 1. FILTER BY BRAND DROPDOWN
-                ExposedDropdownMenuBox(
-                    expanded = presetBrandDropdownExpanded,
-                    onExpandedChange = { presetBrandDropdownExpanded = !presetBrandDropdownExpanded },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = presetBrandFilter,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Filter by $assetCategory Brand") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = presetBrandDropdownExpanded) },
-                        singleLine = true,
-                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                Spacer(modifier = Modifier.width(4.dp))
+                Column {
+                    Text(
+                        text = "Log Pre-Arrival Asset Order",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium
                     )
-                    ExposedDropdownMenu(
-                        expanded = presetBrandDropdownExpanded,
-                        onDismissRequest = { presetBrandDropdownExpanded = false }
-                    ) {
-                        allBrands.forEach { b ->
-                            DropdownMenuItem(
-                                text = { Text(b, fontWeight = if (b == presetBrandFilter) FontWeight.Bold else FontWeight.Normal) },
-                                onClick = {
-                                    presetBrandFilter = b
-                                    presetBrandDropdownExpanded = false
-                                }
-                            )
-                        }
-                    }
+                    Text(
+                        text = "Step 1 of 1: Asset Classification",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
+            }
 
-                // 2. SEARCH BAR
+            Text("Define the incoming asset classification category to open its canonical preset catalog and form:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            
+            ExposedDropdownMenuBox(
+                expanded = categoryDropdownExpanded,
+                onExpandedChange = { categoryDropdownExpanded = !categoryDropdownExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 OutlinedTextField(
-                    value = presetSearchQuery,
-                    onValueChange = { presetSearchQuery = it },
-                    label = { Text("Search $assetCategory Models") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    value = assetCategory,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Asset Category") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryDropdownExpanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
                 )
-
-                HorizontalDivider()
-
-                if (filteredPresets.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
-                        Text("No presets found for $assetCategory", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(filteredPresets) { (pName, pSpecs) ->
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        assetName = pName
-                                        assetSpecs = pSpecs
-                                        showPresetSelectorModal = false
-                                    },
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(pName, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-                                        Spacer(modifier = Modifier.height(2.dp))
-                                        Text(pSpecs, style = MaterialTheme.typography.bodySmall)
-                                    }
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Button(
-                                        onClick = {
-                                            assetName = pName
-                                            assetSpecs = pSpecs
-                                            showPresetSelectorModal = false
-                                        }
-                                    ) {
-                                        Text("Select")
-                                    }
-                                }
+                ExposedDropdownMenu(
+                    expanded = categoryDropdownExpanded,
+                    onDismissRequest = { categoryDropdownExpanded = false }
+                ) {
+                    categoryOptions.forEach { cat ->
+                        DropdownMenuItem(
+                            text = { Text(cat, fontWeight = if (cat == assetCategory) FontWeight.Bold else FontWeight.Normal) },
+                            onClick = {
+                                assetCategory = cat
+                                categoryDropdownExpanded = false
                             }
-                        }
+                        )
                     }
                 }
             }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = {
+                    showAddEditDialog = false
+                    when (assetCategory) {
+                        "Camera" -> onAddCamera()
+                        "Lens" -> onAddLens()
+                        "Film Stock" -> onAddFilm()
+                        "Filter" -> onAddFilter()
+                        "Flash" -> onAddFlash()
+                        "Viewfinder" -> onAddViewfinder()
+                        "Teleconverter" -> onAddTeleconverter()
+                        "Consumable", "Chemical", "Paper" -> onAddItemMaster("Consumable")
+                        "Lab Equipment" -> onAddItemMaster("Lab Equipment")
+                        else -> onAddCamera()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = { showAddEditDialog = false }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Close Form")
-                    }
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Column {
-                        Text(
-                            text = if (editingOrder == null) "Log Pre-Arrival Asset Order" else "Edit Pre-Arrival Order",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = "Step $stepperPage of 3: ${when(stepperPage) { 1 -> "Asset Classification"; 2 -> "Asset Specifications"; else -> "Order & Shipping Details" }}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-                when (stepperPage) {
-                    1 -> { // STEP 1: ASSET CLASSIFICATION
-                        Text("Define the incoming asset classification category:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        
-                        ExposedDropdownMenuBox(
-                            expanded = categoryDropdownExpanded,
-                            onExpandedChange = { categoryDropdownExpanded = !categoryDropdownExpanded },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            OutlinedTextField(
-                                value = assetCategory,
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text("Asset Category") },
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryDropdownExpanded) },
-                                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                            )
-                            ExposedDropdownMenu(
-                                expanded = categoryDropdownExpanded,
-                                onDismissRequest = { categoryDropdownExpanded = false }
-                            ) {
-                                categoryOptions.forEach { cat ->
-                                    DropdownMenuItem(
-                                        text = { Text(cat, fontWeight = if (cat == assetCategory) FontWeight.Bold else FontWeight.Normal) },
-                                        onClick = {
-                                            assetCategory = cat
-                                            categoryDropdownExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    2 -> { // STEP 2: ASSET SPECIFICATIONS
-                        Text("Specify details for the arriving $assetCategory:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        
-                        if (assetCategory != "Other / General") {
-                            OutlinedButton(
-                                onClick = { showPresetSelectorModal = true },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Icon(painterResource(com.fotologue.core.designsystem.R.drawable.settings_photo_camera_24px), contentDescription = null, modifier = Modifier.size(18.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("Select $assetCategory from Master Catalog Presets", fontWeight = FontWeight.Bold)
-                            }
-                        }
-
-                        OutlinedTextField(
-                            value = assetName,
-                            onValueChange = { assetName = it },
-                            label = { Text("$assetCategory Name / Model *") },
-                            placeholder = { Text("e.g. Voigtländer 35mm f/1.4, Ilford ID-11") },
-                            isError = assetName.isBlank(),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        OutlinedTextField(
-                            value = assetSpecs,
-                            onValueChange = { assetSpecs = it },
-                            label = { Text("Technical Specifications") },
-                            placeholder = { Text("e.g. VM Mount, 43mm Filter Thread, 1L Powder") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    3 -> { // STEP 3: ORDER LIFECYCLE & VENDOR
-                        Text("Vendor, tracking, and storage location details:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-
-                        // Vendor Contact Dropdown
-                        ExposedDropdownMenuBox(
-                            expanded = supplierDropdownExpanded,
-                            onExpandedChange = { supplierDropdownExpanded = !supplierDropdownExpanded },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            val currentSupplierName = supplierList.find { it.id == selectedSupplierId }?.name ?: "Select Vendor Contact"
-                            OutlinedTextField(
-                                value = currentSupplierName,
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text("Vendor / Contact") },
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = supplierDropdownExpanded) },
-                                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                            )
-                            ExposedDropdownMenu(
-                                expanded = supplierDropdownExpanded,
-                                onDismissRequest = { supplierDropdownExpanded = false }
-                            ) {
-                                supplierList.forEach { sup ->
-                                    DropdownMenuItem(
-                                        text = { Text("${sup.name} (${sup.region})") },
-                                        onClick = {
-                                            selectedSupplierId = sup.id
-                                            supplierDropdownExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        // Order Lifecycle Status
-                        ExposedDropdownMenuBox(
-                            expanded = statusDropdownExpanded,
-                            onExpandedChange = { statusDropdownExpanded = !statusDropdownExpanded },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            OutlinedTextField(
-                                value = formatOrderStatus(status),
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text("Order Lifecycle Status") },
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = statusDropdownExpanded) },
-                                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                            )
-                            ExposedDropdownMenu(
-                                expanded = statusDropdownExpanded,
-                                onDismissRequest = { statusDropdownExpanded = false }
-                            ) {
-                                statusOptions.forEach { st ->
-                                    DropdownMenuItem(
-                                        text = { Text(st) },
-                                        onClick = {
-                                            status = parseOrderStatusToEnum(st)
-                                            statusDropdownExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        // Target Storage Location Dropdown
-                        ExposedDropdownMenuBox(
-                            expanded = locationDropdownExpanded,
-                            onExpandedChange = { locationDropdownExpanded = !locationDropdownExpanded },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            OutlinedTextField(
-                                value = targetStorageLocation.ifBlank { "Select Target Storage Location" },
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text("Target Storage Location Upon Arrival") },
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = locationDropdownExpanded) },
-                                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                            )
-                            ExposedDropdownMenu(
-                                expanded = locationDropdownExpanded,
-                                onDismissRequest = { locationDropdownExpanded = false }
-                            ) {
-                                locationList.forEach { loc ->
-                                    DropdownMenuItem(
-                                        text = { Text("📦 ${loc.name} (${loc.locationType})") },
-                                        onClick = {
-                                            targetStorageLocation = loc.name
-                                            locationDropdownExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedTextField(
-                                value = trackingNumber,
-                                onValueChange = { trackingNumber = it },
-                                label = { Text("Tracking Number") },
-                                placeholder = { Text("e.g. AusPost 12345") },
-                                modifier = Modifier.weight(1f)
-                            )
-                            OutlinedTextField(
-                                value = totalCost,
-                                onValueChange = { totalCost = it },
-                                label = { Text("Total Cost ($)") },
-                                placeholder = { Text("e.g. 450.00") },
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    if (stepperPage > 1) {
-                        OutlinedButton(
-                            onClick = { stepperPage-- },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Back")
-                        }
-                    }
-                    if (stepperPage < 3) {
-                        Button(
-                            onClick = { stepperPage++ },
-                            enabled = if (stepperPage == 2) assetName.isNotBlank() else true,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text("Next")
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
-                        }
-                    } else {
-                        Button(
-                            onClick = {
-                                val fullNotes = "$assetName • Category: $assetCategory${if (assetSpecs.isNotBlank()) " • $assetSpecs" else ""}${if (targetStorageLocation.isNotBlank()) " • Target: $targetStorageLocation" else ""}".trim(' ', '•')
-                                val order = OrderHistory(
-                                    id = editingOrder?.id ?: 0,
-                                    supplierId = selectedSupplierId,
-                                    trackingNumber = trackingNumber.trim(),
-                                    totalCost = totalCost.trim(),
-                                    notes = fullNotes,
-                                    status = status,
-                                    assetCategory = assetCategory
-                                )
-                                if (editingOrder == null) {
-                                    viewModel.addOrder(order)
-                                } else {
-                                    viewModel.updateOrder(order)
-                                }
-                                showAddEditDialog = false
-                            },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(Icons.Default.Check, contentDescription = null)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Save Order", fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
+                Text("Next", fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(18.dp))
             }
         }
     }

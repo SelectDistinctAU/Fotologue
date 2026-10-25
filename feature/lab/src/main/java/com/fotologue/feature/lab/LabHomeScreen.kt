@@ -86,6 +86,13 @@ fun LabHomeScreen(
     onViewSupplierIssues: (Long) -> Unit,
     onAddEquipment: () -> Unit,
     onEditEquipment: (Long) -> Unit,
+    onAddCamera: () -> Unit = {},
+    onAddLens: () -> Unit = {},
+    onAddFilm: () -> Unit = {},
+    onAddFilter: () -> Unit = {},
+    onAddFlash: () -> Unit = {},
+    onAddViewfinder: () -> Unit = {},
+    onAddTeleconverter: () -> Unit = {},
     onStartFilmSession: () -> Unit = {},
     onStartPrintingSession: () -> Unit = {},
     onViewLogDetail: ((Long) -> Unit)? = null,
@@ -758,7 +765,15 @@ fun LabHomeScreen(
                 LabView.PRE_ARRIVAL_ORDERS -> {
                     PreArrivalOrdersScreen(
                         viewModel = viewModel,
-                        onBack = { currentView = LabView.MAIN_MENU }
+                        onBack = { currentView = LabView.MAIN_MENU },
+                        onAddCamera = onAddCamera,
+                        onAddLens = onAddLens,
+                        onAddFilm = onAddFilm,
+                        onAddFilter = onAddFilter,
+                        onAddFlash = onAddFlash,
+                        onAddViewfinder = onAddViewfinder,
+                        onAddTeleconverter = onAddTeleconverter,
+                        onAddItemMaster = { cat -> onAddItemMaster(cat) }
                     )
                 }
             }
