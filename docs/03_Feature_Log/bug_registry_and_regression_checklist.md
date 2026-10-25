@@ -1860,6 +1860,19 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-167: Pre-Arrival Orders Direct Routing to Canonical Creation Forms & Lens Mount Pre-Fill Fix
+- **Platform**: Mobile & Core (`PreArrivalOrdersScreen.kt`, `LabHomeScreen.kt`, `MainActivity.kt`, `LabHomeViewModel.kt`)
+- **Reported**: October 2026
+- **Symptom**: Step 1 of Pre-Arrival Orders attempted to use custom step-2/3 forms, resulting in concatenated string bad data (`"Category: Lens Canon FD..."`) and wrong default mounts (`Pentax K` for Canon FD lenses); `[ Next → ]` button allowed proceeding with empty asset fields.
+- **Root Cause**: Custom form recreation instead of routing to canonical asset screens; incomplete ViewModel pre-fill parser.
+- **Resolution**:
+  1. Abandoned custom Step 2/Step 3 pre-arrival forms in `PreArrivalOrdersScreen.kt`. Step 1 (*Asset Classification*) now routes **directly** to canonical creation screens (`AddEditCameraScreen`, `AddEditLensScreen`, `AddEditFilmScreen`, `AddEditInventoryMasterScreen`).
+  2. Disabled `[ Next → ]` button in Step 2 when `assetName` is blank.
+  3. Corrected `activatePreArrivalAsset` in `LabHomeViewModel.kt` to extract and preserve true lens mounts (`Canon FD`) and film profiles (`Film`).
+- **Regression Test Case**: Open `LAB` $\to$ `Pre-Arrival Orders` $\to$ tap `[ Log Pre-Arrival Asset Order ]` $\to$ select `Camera` $\to$ tap `[ Next → ]` $\to$ verify it navigates directly to `Select Camera from Presets` (`AddEditCameraScreen.kt`).
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
