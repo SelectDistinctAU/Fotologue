@@ -285,13 +285,48 @@ fun PreArrivalOrdersScreen(
                                         style = MaterialTheme.typography.titleMedium
                                     )
                                 }
-                                AssistChip(
-                                    onClick = {},
-                                    label = { Text(formatOrderStatus(order.status), style = MaterialTheme.typography.labelSmall) },
-                                    colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = if (isDelivered) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
+                                var statusMenuExpanded by remember { mutableStateOf(false) }
+                                Box {
+                                    AssistChip(
+                                        onClick = { statusMenuExpanded = true },
+                                        leadingIcon = {
+                                            Icon(
+                                                painter = painterResource(com.fotologue.core.designsystem.R.drawable.delivery_truck_speed_24px),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        },
+                                        label = { Text(formatOrderStatus(order.status), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
+                                        colors = AssistChipDefaults.assistChipColors(
+                                            containerColor = if (isDelivered) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
+                                        )
                                     )
-                                )
+                                    DropdownMenu(
+                                        expanded = statusMenuExpanded,
+                                        onDismissRequest = { statusMenuExpanded = false }
+                                    ) {
+                                        listOf("In Transit", "Waitlisted", "Packaging", "Delivered").forEach { st ->
+                                            DropdownMenuItem(
+                                                text = { Text(st, fontWeight = if (st.equals(order.status, ignoreCase = true)) FontWeight.Bold else FontWeight.Normal) },
+                                                onClick = {
+                                                    statusMenuExpanded = false
+                                                    viewModel.updateOrder(order.copy(status = st))
+                                                    if (st == "Delivered") {
+                                                        val assetNameExtracted = order.notes.substringBefore(" • ").removePrefix("Category: Lens ").removePrefix("Category: Camera ")
+                                                        val assetSpecsExtracted = order.notes.substringAfter(" • ", "")
+                                                        viewModel.activatePreArrivalAsset(
+                                                            assetCategory = order.assetCategory,
+                                                            assetName = assetNameExtracted,
+                                                            assetSpecs = assetSpecsExtracted,
+                                                            storageLocation = "Unassigned Storage",
+                                                            supplierName = supplierName
+                                                        )
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
 
                             Spacer(modifier = Modifier.height(4.dp))
