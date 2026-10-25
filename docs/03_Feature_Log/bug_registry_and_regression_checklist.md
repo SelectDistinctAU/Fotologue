@@ -1873,6 +1873,31 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-168: Pre-Arrival Inbound Orders Register Isolation & Canonical Form Direct Routing
+- **Platform**: Mobile & Core (`PreArrivalOrdersScreen.kt`, `AddEditCameraScreen.kt`, `AddEditLensScreen.kt`, `AddEditFilmScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Logging a Pre-Arrival Asset Order accidentally inserted active records directly into `cameras`/`lenses`/`films` tables, polluting the active `Camera Gear` list with items not yet on hand.
+- **Root Cause**: Un-isolated pre-arrival mode in creation viewmodels.
+- **Resolution**:
+  1. Routed Pre-Arrival Asset Orders directly from Step 1 (*Asset Classification*) to canonical creation screens (`AddEditCameraScreen`, `AddEditLensScreen`, `AddEditFilmScreen`) with `isPreArrivalMode = true`.
+  2. Saving in `isPreArrivalMode = true` inserts an `OrderHistory` row directly into the **Pre-Arrival Inbound Orders Register** with `status = "IN_TRANSIT"`, leaving active `Camera Gear` lists 100% clean and un-polluted.
+- **Regression Test Case**: Open `Pre-Arrival Orders` $\to$ tap `[ Log Pre-Arrival Asset Order ]` $\to$ select `Camera` $\to$ select *Pentax LX* $\to$ verify order logs in Pre-Arrival Register as `In Transit` and active Camera Gear list remains clean.
+
+---
+
+### BUG-169: Central Asset Availability Table Architecture & Non-Modal Full-Screen Storage Locations
+- **Platform**: Mobile & Core (`AssetAvailability.kt`, `AppDatabase.kt`, `StorageLocationsScreen.kt`, `GearLibraryScreen.kt`, `AddLogScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Determining gear availability required complex multi-table `LEFT OUTER JOIN` queries; `Add Storage Location` form was rendered in a modal `AlertDialog` popup overlay.
+- **Root Cause**: Un-centralized availability status storage; modal dialog form architecture.
+- **Resolution**:
+  1. Created central `asset_availability` table with Room migration `MIGRATION_52_53`, storing indexed `status` (`AVAILABLE`, `IN_TRANSIT`, `LOANED_OUT`, `IN_REPAIR`, `SOLD`) and `statusReason` per asset.
+  2. Converted `Add Storage Location` in `StorageLocationsScreen.kt` from an `AlertDialog` popup into a clean full-screen view.
+  3. Filtered `FIELD` exposure logging to `AVAILABLE` items and rendered M3 availability badges (`✅ Available`, `🚚 In Transit`, `📞 On Loan`, `🛠️ In Repair`) in Camera Gear Library.
+- **Regression Test Case**: Open `Storage Locations` $\to$ tap `[ + Add Storage Location ]` $\to$ verify full-screen form opens (non-modal) $\to$ save location $\to$ verify `asset_availability` table updates cleanly.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
