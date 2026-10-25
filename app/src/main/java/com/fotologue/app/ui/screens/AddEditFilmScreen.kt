@@ -29,7 +29,7 @@ fun AddEditFilmScreen(
     viewModel: AddEditFilmViewModel,
     onBack: () -> Unit,
     isPreArrivalMode: Boolean = false,
-    onSavePreArrivalOrder: (String, String, String) -> Unit = { _, _, _ -> }
+    onSavePreArrivalOrder: (String, String, String, Long) -> Unit = { _, _, _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
@@ -84,9 +84,11 @@ fun AddEditFilmScreen(
                     initialFormat = uiState.format,
                     onPresetSelected = { preset, chosenFormat ->
                         if (isPreArrivalMode) {
-                            val specs = "${preset.manufacturer} • type: ${preset.type}, iso: ${preset.iso}, format: $chosenFormat, abbreviation: ${preset.abbreviation}"
-                            onSavePreArrivalOrder(preset.name, specs, preset.manufacturer)
-                            onBack()
+                            viewModel.savePreArrivalFilm { newFilmId ->
+                                val specs = "${preset.manufacturer} • type: ${preset.type}, iso: ${preset.iso}, format: $chosenFormat, abbreviation: ${preset.abbreviation}"
+                                onSavePreArrivalOrder(preset.name, specs, preset.manufacturer, newFilmId)
+                                onBack()
+                            }
                         } else {
                             viewModel.onPresetSelected(preset, chosenFormat)
                             isCustomFormView = true
@@ -244,9 +246,11 @@ fun AddEditFilmScreen(
                     Button(
                         onClick = {
                             if (isPreArrivalMode) {
-                                val specs = "type: ${uiState.type}, iso: ${uiState.iso}, format: ${uiState.format}"
-                                onSavePreArrivalOrder(uiState.name, specs, "Custom")
-                                onBack()
+                                viewModel.savePreArrivalFilm { newFilmId ->
+                                    val specs = "type: ${uiState.type}, iso: ${uiState.iso}, format: ${uiState.format}"
+                                    onSavePreArrivalOrder(uiState.name, specs, "Custom", newFilmId)
+                                    onBack()
+                                }
                             } else {
                                 viewModel.saveFilm(onComplete = onBack)
                             }

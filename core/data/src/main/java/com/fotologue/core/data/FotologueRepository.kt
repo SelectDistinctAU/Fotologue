@@ -152,8 +152,8 @@ class FotologueRepository @Inject constructor(
         _newlyAddedFilmId.emit(id)
         return id
     }
-    suspend fun insertLens(lens: Lens, cameraIds: List<Long> = emptyList()) {
-        database.withTransaction {
+    suspend fun insertLens(lens: Lens, cameraIds: List<Long> = emptyList()): Long {
+        return database.withTransaction {
             val lensId = lensDao.insertLens(lens)
             cameraIds.forEach { cameraId ->
                 val camera = cameraDao.getCameraById(cameraId).first()
@@ -164,6 +164,7 @@ class FotologueRepository @Inject constructor(
                 lensDao.insertCameraLensCrossRef(CameraLensCrossRef(cameraId, lensId))
             }
             _newlyAddedLensId.emit(lensId)
+            lensId
         }
     }
     suspend fun insertTeleconverter(teleconverter: Teleconverter, cameraIds: List<Long> = emptyList()) {

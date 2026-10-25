@@ -361,13 +361,50 @@ class AddEditLensViewModel @Inject constructor(
             )
 
             if (lensId == null) {
-                repository.insertLens(lens, state.selectedCameraIds.toList())
+                val newLensId = repository.insertLens(lens, state.selectedCameraIds.toList())
                 settingsRepository.setLocalFoundationChangesPending(true)
             } else {
                 repository.updateLens(lens, state.selectedCameraIds.toList())
                 settingsRepository.setLocalFoundationChangesPending(true)
             }
             onSuccess()
+        }
+    }
+
+    fun savePreArrivalLens(onSuccess: (Long) -> Unit) {
+        val state = _uiState.value
+        viewModelScope.launch {
+            val finalMinFocal = state.minFocalLength.toIntOrNull() ?: 50
+            val finalMaxFocal = if (state.type == "Prime") finalMinFocal else (state.maxFocalLength.toIntOrNull() ?: finalMinFocal)
+
+            val a1 = state.minAperture.toDoubleOrNull() ?: 22.0
+            val a2 = state.maxAperture.toDoubleOrNull() ?: 1.8
+
+            val lens = Lens(
+                id = 0,
+                make = state.make.trim().ifBlank { "Custom" },
+                model = state.model.trim().ifBlank { "Lens" },
+                modelNumber = state.modelNumber.trim(),
+                type = if (state.type in Lens.TYPES) state.type else "Prime",
+                mount = if (state.isInterchangeable) state.mount.trim().ifBlank { "Standard" } else "Fixed",
+                filterSize = state.filterSize.toIntOrNull() ?: 52,
+                isStabilized = state.isStabilized,
+                minFocusDistance = state.minFocusDistance.toDoubleOrNull() ?: 0.45,
+                maxMagnification = state.maxMagnification.toDoubleOrNull() ?: 0.15,
+                minAperture = minOf(a1, a2),
+                maxAperture = maxOf(a1, a2),
+                minFocalLength = minOf(finalMinFocal, finalMaxFocal),
+                maxFocalLength = maxOf(finalMinFocal, finalMaxFocal)
+            )
+
+            val newLensId = repository.insertLens(lens, state.selectedCameraIds.toList())
+            repository.setAssetAvailability(
+                category = "Lens",
+                refId = newLensId,
+                status = "IN_TRANSIT",
+                reason = "Pre-Arrival Order"
+            )
+            onSuccess(newLensId)
         }
     }
 }
