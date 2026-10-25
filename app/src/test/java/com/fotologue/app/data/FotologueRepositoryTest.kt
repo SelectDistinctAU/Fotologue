@@ -2,6 +2,7 @@ package com.fotologue.app.data
 
 import androidx.room.withTransaction
 import com.fotologue.core.data.*
+import com.fotologue.core.data.lab.AssetAvailabilityDao
 import com.fotologue.core.data.lab.LabProcessEventDao
 import com.fotologue.core.data.lab.PerformanceLogDao
 import com.fotologue.core.data.location.LocationProvider
@@ -68,11 +69,12 @@ class FotologueRepositoryTest {
 
         val performanceLogDao = mockk<PerformanceLogDao>(relaxed = true)
         val labProcessEventDao = mockk<LabProcessEventDao>(relaxed = true)
+        val assetAvailabilityDao = mockk<AssetAvailabilityDao>(relaxed = true)
 
         repository = FotologueRepository(
             db, cameraDao, filmDao, lensDao, teleconverterDao,
             filterDao, flashDao, logEntryDao, cameraKitDao,
-            tagDao, filmRollSessionDao, viewfinderDao, performanceLogDao, labProcessEventDao, locationProvider, settingsRepository
+            tagDao, filmRollSessionDao, viewfinderDao, assetAvailabilityDao, performanceLogDao, labProcessEventDao, locationProvider, settingsRepository
         )
     }
 

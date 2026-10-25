@@ -42,6 +42,8 @@ import com.fotologue.core.data.lab.SupplierIssueLogDao
 
 import com.fotologue.core.data.lab.PrintSession
 import com.fotologue.core.data.lab.PrintSessionDao
+import com.fotologue.core.data.lab.AssetAvailability
+import com.fotologue.core.data.lab.AssetAvailabilityDao
 import com.fotologue.core.data.lab.ExposureStep
 import com.fotologue.core.data.lab.ExposureStepDao
 import com.fotologue.core.data.lab.LovEntry
@@ -56,13 +58,14 @@ import com.fotologue.core.data.lab.LabOrderDao
         CameraViewfinderCrossRef::class, CameraTeleconverterCrossRef::class, CameraFilterCrossRef::class, CameraFlashCrossRef::class,
         LabEquipment::class, LabEquipmentSubCategory::class, LabChemical::class, LabSupplier::class, SupplierIssueLog::class, InventoryItem::class, InventoryMaster::class, StockLot::class,
         LabCategory::class, LabUnit::class, LabItemName::class, OrderHistory::class, PerformanceLog::class, LabProcessEvent::class, PrintRecipe::class,
-        LabStorageLocation::class, PrintOutcome::class, PrintSession::class, ExposureStep::class, LovEntry::class, LabOrder::class
+        LabStorageLocation::class, PrintOutcome::class, PrintSession::class, ExposureStep::class, LovEntry::class, LabOrder::class, AssetAvailability::class
     ],
-    version = 52,
+    version = 53,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
+    abstract fun assetAvailabilityDao(): AssetAvailabilityDao
     abstract fun cameraDao(): CameraDao
     abstract fun filmDao(): FilmDao
     abstract fun logEntryDao(): LogEntryDao
@@ -325,6 +328,22 @@ abstract class AppDatabase : RoomDatabase() {
                     )
                 """.trimIndent())
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_lab_orders_supplier_id` ON `lab_orders` (`supplier_id`)")
+            }
+        }
+        val MIGRATION_52_53 = object : Migration(52, 53) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `asset_availability` (
+                        `assetCategory` TEXT NOT NULL,
+                        `assetRefId` INTEGER NOT NULL,
+                        `status` TEXT NOT NULL DEFAULT 'AVAILABLE',
+                        `statusReason` TEXT,
+                        `activeRefId` INTEGER,
+                        `statusChangedAt` INTEGER NOT NULL DEFAULT 0,
+                        `expectedResolutionAt` INTEGER,
+                        PRIMARY KEY(`assetCategory`, `assetRefId`)
+                    )
+                """.trimIndent())
             }
         }
     }

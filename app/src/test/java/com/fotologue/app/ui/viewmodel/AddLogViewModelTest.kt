@@ -19,6 +19,7 @@ class AddLogViewModelTest {
 
     private lateinit var viewModel: AddLogViewModel
     private val repository: FotologueRepository = mockk()
+    private val settingsRepository: SettingsRepository = mockk()
     private val gearConfigurationManager: GearConfigurationManager = mockk()
     private var savedStateHandle = SavedStateHandle()
 
@@ -47,6 +48,7 @@ class AddLogViewModelTest {
         every { repository.allFilters } returns flowOf(emptyList())
         every { repository.allFlashes } returns flowOf(emptyList())
         every { repository.allCameraKits } returns flowOf(emptyList())
+        every { repository.allAvailability } returns flowOf(emptyList())
         every { repository.allCameraKitsWithGear } returns cameraKitsWithGearFlow
         every { repository.latestMeteringResult } returns meteringResultFlow
         every { repository.clearMeteringResult() } just Runs
@@ -68,7 +70,23 @@ class AddLogViewModelTest {
         every { repository.getFilmRollSession(any(), any()) } returns flowOf(null)
         coEvery { repository.updateFilmRollSession(any()) } just Runs
 
-        viewModel = AddLogViewModel(repository, gearConfigurationManager, savedStateHandle)
+        every { settingsRepository.lastCameraId } returns flowOf(null)
+        every { settingsRepository.lastFilmId } returns flowOf(null)
+        every { settingsRepository.lastLensId } returns flowOf(null)
+        every { settingsRepository.lastTcId } returns flowOf(null)
+        every { settingsRepository.lastFilterId } returns flowOf(null)
+        every { settingsRepository.lastFlashId } returns flowOf(null)
+        every { settingsRepository.lastViewfinderId } returns flowOf(null)
+        every { settingsRepository.lastKitId } returns flowOf(null)
+        every { settingsRepository.lastIso } returns flowOf(null)
+        every { settingsRepository.lastFocalLength } returns flowOf(null)
+        every { settingsRepository.lastShutterSpeed } returns flowOf(null)
+        every { settingsRepository.lastAperture } returns flowOf(null)
+        every { settingsRepository.currentRoll } returns flowOf(1)
+        every { settingsRepository.currentFrame } returns flowOf(1)
+        coEvery { settingsRepository.incrementFrame() } just Runs
+
+        viewModel = AddLogViewModel(repository, settingsRepository, gearConfigurationManager, savedStateHandle)
     }
 
     @After
@@ -176,7 +194,7 @@ class AddLogViewModelTest {
     @Test
     fun `initial state restores data from savedStateHandle`() = runTest {
         val restoredHandle = SavedStateHandle(mapOf("notes" to "Saved Note"))
-        val restoredViewModel = AddLogViewModel(repository, gearConfigurationManager, restoredHandle)
+        val restoredViewModel = AddLogViewModel(repository, settingsRepository, gearConfigurationManager, restoredHandle)
         
         assertEquals("Saved Note", restoredViewModel.uiState.value.notes)
     }

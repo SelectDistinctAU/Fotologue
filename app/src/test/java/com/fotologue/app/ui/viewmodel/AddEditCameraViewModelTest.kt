@@ -18,6 +18,7 @@ class AddEditCameraViewModelTest {
 
     private lateinit var viewModel: AddEditCameraViewModel
     private val repository: FotologueRepository = mockk()
+    private val settingsRepository: SettingsRepository = mockk(relaxed = true)
     private val savedStateHandle = SavedStateHandle()
 
     private val testDispatcher = StandardTestDispatcher()
@@ -26,7 +27,10 @@ class AddEditCameraViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         every { repository.allCameras } returns flowOf(emptyList())
-        viewModel = AddEditCameraViewModel(repository, savedStateHandle)
+        every { repository.allAvailability } returns flowOf(emptyList())
+        coEvery { repository.getAssetAvailability(any(), any()) } returns null
+        coEvery { repository.setAssetAvailability(any(), any(), any(), any(), any(), any()) } just Runs
+        viewModel = AddEditCameraViewModel(repository, settingsRepository, savedStateHandle)
     }
 
     @After
@@ -44,7 +48,7 @@ class AddEditCameraViewModelTest {
     @Test
     fun `initial state restores data from savedStateHandle`() = runTest {
         val restoredHandle = SavedStateHandle(mapOf("name" to "Canon", "modelNumber" to "AE-1"))
-        val restoredViewModel = AddEditCameraViewModel(repository, restoredHandle)
+        val restoredViewModel = AddEditCameraViewModel(repository, settingsRepository, restoredHandle)
         
         assertEquals("Canon", restoredViewModel.uiState.value.name)
         assertEquals("AE-1", restoredViewModel.uiState.value.modelNumber)

@@ -65,8 +65,17 @@ class AddLogViewModel @Inject constructor(
     )
     val uiState: StateFlow<AddLogUiState> = _uiState.asStateFlow()
 
-    val allCameras: StateFlow<List<Camera>> = repository.allCameras
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val availableCameras: StateFlow<List<Camera>> = combine(
+        repository.allCameras,
+        repository.allAvailability
+    ) { cameras, availList ->
+        cameras.filter { c ->
+            val status = availList.find { it.assetCategory.equals("Camera", ignoreCase = true) && it.assetRefId == c.id }?.status ?: "AVAILABLE"
+            status == "AVAILABLE"
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allCameras: StateFlow<List<Camera>> = availableCameras
 
     val allFilms: StateFlow<List<Film>> = combine(
         repository.allFilms,
