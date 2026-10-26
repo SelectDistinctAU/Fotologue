@@ -137,6 +137,11 @@ class MainActivity : ComponentActivity() {
                                     val viewModel: OnboardingViewModel = hiltViewModel()
                                     WelcomeScreen(
                                         viewModel = viewModel,
+                                        onComplete = {
+                                            viewModel.completeOnboarding()
+                                            backStack.removeIf { it is Route.Welcome }
+                                            if (backStack.isEmpty()) backStack.add(Route.Hub)
+                                        },
                                         onAddCamera = { backStack.add(Route.AddCamera()) },
                                         onAddLens = { backStack.add(Route.AddEditLens()) },
                                         onAddFilm = { backStack.add(Route.AddFilm()) },
@@ -543,13 +548,6 @@ class MainActivity : ComponentActivity() {
                                         onNavigateToCalibration = { backStack.add(Route.Calibration) },
                                         onNavigateToRollCounter = { backStack.add(Route.RollCounter) },
                                         onShowHelp = { backStack.add(Route.Help) }
-                                    )
-                                }
-                                entry<Route.RemoteControl> {
-                                    val viewModel: RemoteControlViewModel = hiltViewModel()
-                                    RemoteControlScreen(
-                                        viewModel = viewModel,
-                                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
                                     )
                                 }
                                 entry<Route.Calibration> {

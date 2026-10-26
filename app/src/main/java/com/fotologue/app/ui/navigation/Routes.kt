@@ -111,9 +111,6 @@ sealed class Route : NavKey {
     data object Settings : Route()
 
     @Serializable
-    data object RemoteControl : Route()
-
-    @Serializable
     data object Calibration : Route()
 
     @Serializable
