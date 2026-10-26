@@ -280,30 +280,6 @@ fun AddEditInventoryMasterScreen(
                             tint = safelightPrimary
                         )
                     }
-                },
-                actions = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(end = 4.dp)
-                    ) {
-                        Text(
-                            text = "Safelight",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = safelightPrimary,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Switch(
-                            checked = isSafelightActive,
-                            onCheckedChange = { viewModel.setSafelightActive(it) },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color(0xFFFF0000),
-                                checkedTrackColor = Color(0xFF660000),
-                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                            )
-                        )
-                    }
                 }
             )
         }
