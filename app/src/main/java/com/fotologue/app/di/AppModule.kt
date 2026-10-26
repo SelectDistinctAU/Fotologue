@@ -1,8 +1,6 @@
 package com.fotologue.app.di
 
 import android.content.Context
-import com.fotologue.app.connectivity.BleManager
-import com.fotologue.app.connectivity.TriggerManager
 import com.fotologue.core.data.*
 import com.fotologue.core.data.lab.AssetAvailabilityDao
 import com.fotologue.core.data.lab.LabProcessEventDao
@@ -39,12 +37,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideBleManager(@ApplicationContext context: Context, settingsRepository: SettingsRepository): BleManager {
-        return BleManager(context, settingsRepository)
-    }
-
-    @Provides
-    @Singleton
     fun provideLocationProvider(@ApplicationContext context: Context): LocationProvider {
         return LocationProvider(context)
     }
@@ -74,17 +66,5 @@ object AppModule {
             db, cameraDao, filmDao, lensDao, teleconverterDao, filterDao, flashDao,
             logEntryDao, cameraKitDao, tagDao, filmRollSessionDao, viewfinderDao, assetAvailabilityDao, performanceLogDao, labProcessEventDao, locationProvider, settingsRepository
         )
-    }
-
-    @Provides
-    @Singleton
-    fun provideTriggerManager(
-        @ApplicationContext context: Context,
-        bleManager: BleManager,
-        locationProvider: LocationProvider,
-        gearConfigurationManager: GearConfigurationManager,
-        repository: FotologueRepository
-    ): TriggerManager {
-        return TriggerManager(context, bleManager, locationProvider, gearConfigurationManager, repository)
     }
 }
