@@ -175,6 +175,7 @@ fun GearLibraryScreen(
                         )
                         1 -> LensList(
                             lenses = lensesWithCameras,
+                            availabilityList = allAvailability,
                             selectedIds = uiState.selectedLensIds,
                             isReorderMode = uiState.isReorderMode,
                             onLensClick = { id -> 
@@ -1137,6 +1138,7 @@ private fun ViewfinderList(
 @Composable
 private fun LensList(
     lenses: List<LensWithCameras>,
+    availabilityList: List<AssetAvailability> = emptyList(),
     selectedIds: Set<Long>,
     isReorderMode: Boolean,
     onLensClick: (Long) -> Unit,
@@ -1155,10 +1157,15 @@ private fun LensList(
         ) {
             itemsIndexed(lenses) { index, lensWithCameras ->
                 val lens = lensWithCameras.lens
+                val availability = availabilityList.find { it.assetCategory.equals("Lens", ignoreCase = true) && it.assetRefId == lens.id }
+                val isAvailable = availability == null || availability.status == "AVAILABLE"
+                val cleanModel = lens.model.removePrefix("Category: Lens ").removePrefix("Category: Camera ")
+                val displayName = if (cleanModel.startsWith(lens.make, ignoreCase = true)) cleanModel else "${lens.make} $cleanModel".trim()
+
                 ListItem(
                     headlineContent = { 
                         Text(
-                            text = "${lens.make} ${lens.model}",
+                            text = displayName,
                             style = MaterialTheme.typography.titleMedium
                         ) 
                     },
@@ -1204,9 +1211,34 @@ private fun LensList(
                             )
                         }
                     },
-                    trailingContent = if (isReorderMode) {
-                        { ReorderButtons(index, lenses.size, onMove) }
-                    } else null,
+                    trailingContent = {
+                        if (isReorderMode) {
+                            ReorderButtons(index, lenses.size, onMove)
+                        } else if (!isAvailable && availability != null) {
+                            val (labelStr, iconRes) = when (availability.status) {
+                                "IN_TRANSIT" -> Pair("In Transit (N/A)", R.drawable.delivery_truck_speed_24px)
+                                "LOANED_OUT" -> Pair("On Loan (N/A)", R.drawable.patient_list_24px)
+                                "IN_REPAIR" -> Pair("In Repair (N/A)", R.drawable.ic_handyman)
+                                "SOLD" -> Pair("Sold", R.drawable.shopping_cart_24px)
+                                else -> Pair("N/A", R.drawable.ic_close)
+                            }
+                            AssistChip(
+                                onClick = {},
+                                leadingIcon = {
+                                    Icon(
+                                        painter = painterResource(iconRes),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                },
+                                label = { Text(labelStr, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
+                                colors = AssistChipDefaults.assistChipColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    labelColor = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            )
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
@@ -1290,16 +1322,23 @@ private fun CameraList(
                         if (isReorderMode) {
                             ReorderButtons(index, cameras.size, onMove)
                         } else if (!isAvailable && availability != null) {
-                            val badgeLabel = when (availability.status) {
-                                "IN_TRANSIT" -> "🚚 In Transit (N/A)"
-                                "LOANED_OUT" -> "📞 On Loan (N/A)"
-                                "IN_REPAIR" -> "🛠️ In Repair (N/A)"
-                                "SOLD" -> "🏷️ Sold"
-                                else -> "N/A"
+                            val (labelStr, iconRes) = when (availability.status) {
+                                "IN_TRANSIT" -> Pair("In Transit (N/A)", R.drawable.delivery_truck_speed_24px)
+                                "LOANED_OUT" -> Pair("On Loan (N/A)", R.drawable.patient_list_24px)
+                                "IN_REPAIR" -> Pair("In Repair (N/A)", R.drawable.ic_handyman)
+                                "SOLD" -> Pair("Sold", R.drawable.shopping_cart_24px)
+                                else -> Pair("N/A", R.drawable.ic_close)
                             }
                             AssistChip(
                                 onClick = {},
-                                label = { Text(badgeLabel, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
+                                leadingIcon = {
+                                    Icon(
+                                        painter = painterResource(iconRes),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                },
+                                label = { Text(labelStr, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
                                 colors = AssistChipDefaults.assistChipColors(
                                     containerColor = MaterialTheme.colorScheme.errorContainer,
                                     labelColor = MaterialTheme.colorScheme.onErrorContainer

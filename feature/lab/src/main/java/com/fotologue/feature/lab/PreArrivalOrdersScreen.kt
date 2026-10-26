@@ -352,15 +352,10 @@ fun PreArrivalOrdersScreen(
                                                     statusMenuExpanded = false
                                                     viewModel.updateOrder(order.copy(status = st))
                                                     if (st == "Delivered") {
-                                                        val assetNameExtracted = order.notes.substringBefore(" • ").removePrefix("Category: Lens ").removePrefix("Category: Camera ")
-                                                        val assetSpecsExtracted = order.notes.substringAfter(" • ", "")
-                                                        viewModel.activatePreArrivalAsset(
-                                                            assetCategory = order.assetCategory,
-                                                            assetName = assetNameExtracted,
-                                                            assetSpecs = assetSpecsExtracted,
-                                                            storageLocation = "Unassigned Storage",
-                                                            supplierName = supplierName
-                                                        )
+                                                        val refId = order.assetRefId
+                                                        if (refId != null) {
+                                                            viewModel.markPreArrivalAssetDelivered(order.assetCategory, refId)
+                                                        }
                                                     }
                                                 }
                                             )
@@ -394,16 +389,6 @@ fun PreArrivalOrdersScreen(
                                             val refId = order.assetRefId
                                             if (refId != null) {
                                                 viewModel.markPreArrivalAssetDelivered(order.assetCategory, refId)
-                                            } else {
-                                                val assetNameExtracted = order.notes.substringBefore(" • ").removePrefix("Category: Lens ").removePrefix("Category: Camera ")
-                                                val assetSpecsExtracted = order.notes.substringAfter(" • ", "")
-                                                viewModel.activatePreArrivalAsset(
-                                                    assetCategory = order.assetCategory,
-                                                    assetName = assetNameExtracted,
-                                                    assetSpecs = assetSpecsExtracted,
-                                                    storageLocation = "Unassigned Storage",
-                                                    supplierName = supplierName
-                                                )
                                             }
                                         },
                                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
