@@ -253,7 +253,12 @@ fun AssetsInventoryHomeScreen(
                                     )
                                 },
                                 badge = {
-                                    val inTransitCount = orderList.count { it.status == "IN_TRANSIT" || it.status == "WAITLISTED" }
+                                    val inTransitCount = orderList.count { order ->
+                                        val st = order.status.uppercase()
+                                        st != "DELIVERED" && st != "RECEIVED" && (
+                                            st.contains("TRANSIT") || st.contains("WAIT") || st.contains("PACK") || order.assetCategory in listOf("Camera", "Lens", "Film Stock", "Consumables", "Lab Equipment")
+                                        )
+                                    }
                                     Badge(containerColor = badgeBg, contentColor = badgeFg) {
                                         Text("$inTransitCount orders", color = badgeFg)
                                     }
@@ -282,7 +287,12 @@ fun AssetsInventoryHomeScreen(
                                     )
                                 },
                                 badge = {
-                                    val activeCount = orderList.count { it.status in listOf("LOAN_OUT", "RENTAL_IN", "SERVICE_REPAIR") }
+                                    val activeCount = orderList.count { order ->
+                                        val st = order.status.uppercase()
+                                        st != "COMPLETED" && st != "RETURNED" && (
+                                            st.contains("LOAN") || st.contains("RENTAL") || st.contains("REPAIR") || st.contains("SERVICE") || order.notes.contains("Borrower:", ignoreCase = true)
+                                        )
+                                    }
                                     Badge(containerColor = badgeBg, contentColor = badgeFg) {
                                         Text("$activeCount active", color = badgeFg)
                                     }
