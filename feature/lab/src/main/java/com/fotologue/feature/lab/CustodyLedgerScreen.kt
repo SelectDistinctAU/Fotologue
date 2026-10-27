@@ -57,6 +57,8 @@ fun CustodyLedgerScreen(
     val locationList by viewModel.locationList.collectAsState()
     val equipmentList by viewModel.equipmentList.collectAsState()
     val chemicalList by viewModel.chemicalList.collectAsState()
+    val cameraList by viewModel.allCameras.collectAsState(emptyList())
+    val lensList by viewModel.allLenses.collectAsState(emptyList())
     val context = LocalContext.current
 
     var selectedTypeFilter by remember { mutableStateOf("All") }
@@ -154,9 +156,51 @@ fun CustodyLedgerScreen(
                     expanded = assetDropdownExpanded,
                     onDismissRequest = { assetDropdownExpanded = false }
                 ) {
+                    cameraList.forEach { cam ->
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(com.fotologue.core.designsystem.R.drawable.settings_photo_camera_24px),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            text = { Text("${cam.name} (${cam.type.displayName})") },
+                            onClick = {
+                                assetName = cam.name
+                                assetDropdownExpanded = false
+                            }
+                        )
+                    }
+                    lensList.forEach { lens ->
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(com.fotologue.core.designsystem.R.drawable.lensd),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            text = { Text("${lens.make} ${lens.model}".trim()) },
+                            onClick = {
+                                assetName = "${lens.make} ${lens.model}".trim()
+                                assetDropdownExpanded = false
+                            }
+                        )
+                    }
                     equipmentList.forEach { eq ->
                         DropdownMenuItem(
-                            text = { Text("⚙️ ${eq.name} (${eq.category})") },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.camera_indoor_24px),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            text = { Text("${eq.name} (${eq.category})") },
                             onClick = {
                                 assetName = eq.name
                                 assetDropdownExpanded = false
@@ -165,7 +209,15 @@ fun CustodyLedgerScreen(
                     }
                     chemicalList.forEach { chem ->
                         DropdownMenuItem(
-                            text = { Text("🧪 ${chem.name} (${chem.type})") },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.lab_panel_24px),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            text = { Text("${chem.name} (${chem.type})") },
                             onClick = {
                                 assetName = chem.name
                                 assetDropdownExpanded = false
@@ -267,6 +319,14 @@ fun CustodyLedgerScreen(
                     onDismissRequest = { locationDropdownExpanded = false }
                 ) {
                     DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.shelves_24px),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        },
                         text = { Text("Unassigned / Pending Location") },
                         onClick = {
                             storageLocation = "Unassigned / Pending Location"
@@ -275,6 +335,14 @@ fun CustodyLedgerScreen(
                     )
                     locationList.forEach { loc ->
                         DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.shelves_24px),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
                             text = { Text("${loc.name} (${loc.locationType})") },
                             onClick = {
                                 storageLocation = loc.name
