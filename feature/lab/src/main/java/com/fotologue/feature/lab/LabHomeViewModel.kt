@@ -103,6 +103,9 @@ class LabHomeViewModel @Inject constructor(
     val allCameras = repository.allCameras
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val allLenses = repository.allLenses
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     val allFilms = repository.allFilms
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
