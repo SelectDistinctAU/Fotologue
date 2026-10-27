@@ -171,6 +171,7 @@ fun GearLibraryScreen(
                             },
                             onCameraLongClick = { viewModel.toggleCameraSelection(it) },
                             onMove = viewModel::moveCamera,
+                            onUpdateStatus = { cat, refId, newStatus -> viewModel.updateAssetStatus(cat, refId, newStatus) },
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         1 -> LensList(
@@ -183,6 +184,7 @@ fun GearLibraryScreen(
                             },
                             onLensLongClick = { viewModel.toggleLensSelection(it) },
                             onMove = viewModel::moveLens,
+                            onUpdateStatus = { cat, refId, newStatus -> viewModel.updateAssetStatus(cat, refId, newStatus) },
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         2 -> FilmList(
@@ -1144,6 +1146,7 @@ private fun LensList(
     onLensClick: (Long) -> Unit,
     onLensLongClick: (Long) -> Unit,
     onMove: (Int, Int) -> Unit,
+    onUpdateStatus: (String, Long, String) -> Unit = { _, _, _ -> },
     bottomPadding: Dp = 0.dp
 ) {
     if (lenses.isEmpty()) {
@@ -1214,29 +1217,52 @@ private fun LensList(
                     trailingContent = {
                         if (isReorderMode) {
                             ReorderButtons(index, lenses.size, onMove)
-                        } else if (!isAvailable && availability != null) {
-                            val (labelStr, iconRes) = when (availability.status) {
+                        } else {
+                            val (labelStr, iconRes) = when (availability?.status) {
                                 "IN_TRANSIT" -> Pair("In Transit (N/A)", R.drawable.delivery_truck_speed_24px)
                                 "LOANED_OUT" -> Pair("On Loan (N/A)", R.drawable.patient_list_24px)
                                 "IN_REPAIR" -> Pair("In Repair (N/A)", R.drawable.ic_handyman)
                                 "SOLD" -> Pair("Sold", R.drawable.shopping_cart_24px)
-                                else -> Pair("N/A", R.drawable.ic_close)
+                                else -> Pair("In Stock & Available", R.drawable.ic_check_circle)
                             }
-                            AssistChip(
-                                onClick = {},
-                                leadingIcon = {
-                                    Icon(
-                                        painter = painterResource(iconRes),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
+                            var statusDropdownExpanded by remember { mutableStateOf(false) }
+                            Box {
+                                AssistChip(
+                                    onClick = { statusDropdownExpanded = true },
+                                    leadingIcon = {
+                                        Icon(
+                                            painter = painterResource(iconRes),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    },
+                                    label = { Text(if (isAvailable) "Available" else labelStr, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
+                                    colors = AssistChipDefaults.assistChipColors(
+                                        containerColor = if (isAvailable) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
+                                        labelColor = if (isAvailable) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onErrorContainer
                                     )
-                                },
-                                label = { Text(labelStr, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
-                                colors = AssistChipDefaults.assistChipColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    labelColor = MaterialTheme.colorScheme.onErrorContainer
                                 )
-                            )
+                                DropdownMenu(
+                                    expanded = statusDropdownExpanded,
+                                    onDismissRequest = { statusDropdownExpanded = false }
+                                ) {
+                                    listOf(
+                                        Pair("AVAILABLE", "✅ In Stock & Available"),
+                                        Pair("IN_TRANSIT", "🚚 In Transit (Pre-Arrival)"),
+                                        Pair("LOANED_OUT", "📞 On Loan"),
+                                        Pair("IN_REPAIR", "🛠️ In Repair / CLA"),
+                                        Pair("SOLD", "🏷️ Sold / Archived")
+                                    ).forEach { (statusKey, statusLabel) ->
+                                        DropdownMenuItem(
+                                            text = { Text(statusLabel, fontWeight = if (statusKey == (availability?.status ?: "AVAILABLE")) FontWeight.Bold else FontWeight.Normal) },
+                                            onClick = {
+                                                statusDropdownExpanded = false
+                                                onUpdateStatus("Lens", lens.id, statusKey)
+                                            }
+                                        )
+                                    }
+                                }
+                            }
                         }
                     },
                     modifier = Modifier
@@ -1263,6 +1289,7 @@ private fun CameraList(
     onCameraClick: (Long) -> Unit,
     onCameraLongClick: (Long) -> Unit,
     onMove: (Int, Int) -> Unit,
+    onUpdateStatus: (String, Long, String) -> Unit = { _, _, _ -> },
     bottomPadding: Dp = 0.dp
 ) {
     if (cameras.isEmpty()) {
@@ -1321,29 +1348,52 @@ private fun CameraList(
                     trailingContent = {
                         if (isReorderMode) {
                             ReorderButtons(index, cameras.size, onMove)
-                        } else if (!isAvailable && availability != null) {
-                            val (labelStr, iconRes) = when (availability.status) {
+                        } else {
+                            val (labelStr, iconRes) = when (availability?.status) {
                                 "IN_TRANSIT" -> Pair("In Transit (N/A)", R.drawable.delivery_truck_speed_24px)
                                 "LOANED_OUT" -> Pair("On Loan (N/A)", R.drawable.patient_list_24px)
                                 "IN_REPAIR" -> Pair("In Repair (N/A)", R.drawable.ic_handyman)
                                 "SOLD" -> Pair("Sold", R.drawable.shopping_cart_24px)
-                                else -> Pair("N/A", R.drawable.ic_close)
+                                else -> Pair("In Stock & Available", R.drawable.ic_check_circle)
                             }
-                            AssistChip(
-                                onClick = {},
-                                leadingIcon = {
-                                    Icon(
-                                        painter = painterResource(iconRes),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
+                            var statusDropdownExpanded by remember { mutableStateOf(false) }
+                            Box {
+                                AssistChip(
+                                    onClick = { statusDropdownExpanded = true },
+                                    leadingIcon = {
+                                        Icon(
+                                            painter = painterResource(iconRes),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    },
+                                    label = { Text(if (isAvailable) "Available" else labelStr, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
+                                    colors = AssistChipDefaults.assistChipColors(
+                                        containerColor = if (isAvailable) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
+                                        labelColor = if (isAvailable) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onErrorContainer
                                     )
-                                },
-                                label = { Text(labelStr, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
-                                colors = AssistChipDefaults.assistChipColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    labelColor = MaterialTheme.colorScheme.onErrorContainer
                                 )
-                            )
+                                DropdownMenu(
+                                    expanded = statusDropdownExpanded,
+                                    onDismissRequest = { statusDropdownExpanded = false }
+                                ) {
+                                    listOf(
+                                        Pair("AVAILABLE", "✅ In Stock & Available"),
+                                        Pair("IN_TRANSIT", "🚚 In Transit (Pre-Arrival)"),
+                                        Pair("LOANED_OUT", "📞 On Loan"),
+                                        Pair("IN_REPAIR", "🛠️ In Repair / CLA"),
+                                        Pair("SOLD", "🏷️ Sold / Archived")
+                                    ).forEach { (statusKey, statusLabel) ->
+                                        DropdownMenuItem(
+                                            text = { Text(statusLabel, fontWeight = if (statusKey == (availability?.status ?: "AVAILABLE")) FontWeight.Bold else FontWeight.Normal) },
+                                            onClick = {
+                                                statusDropdownExpanded = false
+                                                onUpdateStatus("Camera", camera.id, statusKey)
+                                            }
+                                        )
+                                    }
+                                }
+                            }
                         }
                     },
                     modifier = Modifier

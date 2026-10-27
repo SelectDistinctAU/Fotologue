@@ -326,21 +326,53 @@ fun AddEditCameraScreen(
                         }
                     }
 
-                    if (isPreArrivalMode) {
-                        AssistChip(
-                            onClick = {},
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(com.fotologue.core.designsystem.R.drawable.delivery_truck_speed_24px),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
+                    var statusDropdownExpanded by remember { mutableStateOf(false) }
+                    var currentAvailabilityStatus by remember(uiState.make, uiState.name) {
+                        mutableStateOf(if (isPreArrivalMode) "IN_TRANSIT" else "AVAILABLE")
+                    }
+
+                    ExposedDropdownMenuBox(
+                        expanded = statusDropdownExpanded,
+                        onExpandedChange = { statusDropdownExpanded = !statusDropdownExpanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = when (currentAvailabilityStatus) {
+                                "IN_TRANSIT" -> "🚚 In Transit (Pre-Arrival Order)"
+                                "LOANED_OUT" -> "📞 On Loan"
+                                "IN_REPAIR" -> "🛠️ In Repair / CLA"
+                                "SOLD" -> "🏷️ Sold / Archived"
+                                else -> "✅ In Stock & Available"
                             },
-                            label = { Text("Status: 🚚 Pre-Arrival Inbound Order (In Transit)", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
-                            colors = AssistChipDefaults.assistChipColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer
-                            )
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Availability Status") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = statusDropdownExpanded) },
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
                         )
+                        ExposedDropdownMenu(
+                            expanded = statusDropdownExpanded,
+                            onDismissRequest = { statusDropdownExpanded = false }
+                        ) {
+                            listOf(
+                                Pair("AVAILABLE", "✅ In Stock & Available"),
+                                Pair("IN_TRANSIT", "🚚 In Transit (Pre-Arrival Order)"),
+                                Pair("LOANED_OUT", "📞 On Loan"),
+                                Pair("IN_REPAIR", "🛠️ In Repair / CLA"),
+                                Pair("SOLD", "🏷️ Sold / Archived")
+                            ).forEach { (stKey, stLabel) ->
+                                DropdownMenuItem(
+                                    text = { Text(stLabel, fontWeight = if (stKey == currentAvailabilityStatus) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        currentAvailabilityStatus = stKey
+                                        statusDropdownExpanded = false
+                                        viewModel.cameraId?.let { id ->
+                                            viewModel.updateStatus(id, stKey)
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
 
                     var brandExpanded by remember { mutableStateOf(false) }

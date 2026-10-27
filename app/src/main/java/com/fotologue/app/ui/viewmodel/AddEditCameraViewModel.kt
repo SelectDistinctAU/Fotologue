@@ -219,6 +219,12 @@ class AddEditCameraViewModel @Inject constructor(
         }
     }
 
+    fun updateStatus(cameraId: Long, newStatus: String) {
+        viewModelScope.launch {
+            repository.setAssetAvailability("Camera", cameraId, status = newStatus)
+        }
+    }
+
     fun saveCamera(onSuccess: () -> Unit) {
         val currentState = _uiState.value
         if (currentState.name.isBlank()) {
