@@ -39,7 +39,8 @@ fun WelcomeScreen(
     onAddFilm: () -> Unit,
     onCalibrateMeter: () -> Unit,
     onShowHelp: () -> Unit,
-    onSettingsClick: () -> Unit = {}
+    onSettingsClick: () -> Unit = {},
+    onComplete: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
