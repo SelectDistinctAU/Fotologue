@@ -32,6 +32,17 @@ data class GearLibraryUiState(
 
 @HiltViewModel
 class GearLibraryViewModel @Inject constructor(private val repository: FotologueRepository) : ViewModel() {
+    fun updateAssetStatus(category: String, refId: Long, newStatus: String, reason: String? = null) {
+        viewModelScope.launch {
+            repository.setAssetAvailability(
+                category = category,
+                refId = refId,
+                status = newStatus,
+                reason = reason
+            )
+        }
+    }
+
     val allAvailability: StateFlow<List<AssetAvailability>> = repository.allAvailability
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val allCameras: StateFlow<List<Camera>> = repository.allCameras
