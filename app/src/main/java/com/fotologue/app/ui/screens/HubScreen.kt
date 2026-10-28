@@ -151,7 +151,7 @@ fun HubScreen(
 
             item(key = "module_assets_inventory") {
                 HubModuleCard(
-                    subtitle = "Consumables, Storage, Inbound Orders & Loans",
+                    subtitle = "Assets & Inventory",
                     iconRes = com.fotologue.app.R.drawable.inventory_2_24px,
                     cardBg = safelightCardBg,
                     subColor = safelightPrimary,
@@ -161,7 +161,7 @@ fun HubScreen(
 
             item(key = "module_field") {
                 HubModuleCard(
-                    subtitle = "In-situ Exposure Logging & Spot Light Meter",
+                    subtitle = "Exposure Logging & Classification",
                     iconRes = R.drawable.hiking_24px,
                     cardBg = safelightCardBg,
                     subColor = safelightPrimary,
@@ -191,7 +191,7 @@ fun HubScreen(
 
             item(key = "module_lab") {
                 HubModuleCard(
-                    subtitle = "Wet Darkroom Chemical Processing & Printing",
+                    subtitle = "Darkroom Processing & Printing",
                     iconRes = R.drawable.experiment_24px,
                     cardBg = safelightCardBg,
                     subColor = safelightPrimary,
