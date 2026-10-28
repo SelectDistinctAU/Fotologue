@@ -24,6 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.fotologue.core.data.preset.WebSpecResult
+import com.fotologue.core.data.preset.WebSpecSearchEngine
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -677,6 +680,87 @@ fun MaintainerAppScreen() {
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val scope = rememberCoroutineScope()
+                    var showWebLookupDialog by remember { mutableStateOf(false) }
+                    var webLookupQuery by remember { mutableStateOf("") }
+                    var webLookupResults by remember { mutableStateOf<List<WebSpecResult>>(emptyList()) }
+                    var isSearchingWeb by remember { mutableStateOf(false) }
+
+                    Button(
+                        onClick = { showWebLookupDialog = true },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                    ) {
+                        Icon(Icons.Default.Search, contentDescription = null)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("🔍 Web Spec Fetch & Author")
+                    }
+
+                    if (showWebLookupDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showWebLookupDialog = false },
+                            title = { Text("🔍 Fetch Online Spec to JSON", fontWeight = FontWeight.Bold) },
+                            text = {
+                                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    Text("Enter equipment name to search and fetch specs online:", style = MaterialTheme.typography.bodySmall)
+                                    OutlinedTextField(
+                                        value = webLookupQuery,
+                                        onValueChange = { webLookupQuery = it },
+                                        label = { Text("Equipment Search Query") },
+                                        placeholder = { Text("e.g. HD PENTAX-FA 43mm F1.9 Limited") },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Button(
+                                        onClick = {
+                                            scope.launch {
+                                                isSearchingWeb = true
+                                                webLookupResults = if (selectedCategory == "CAMERA") {
+                                                    com.fotologue.core.data.preset.WebSpecSearchEngine.searchCameraSpecs(webLookupQuery)
+                                                } else {
+                                                    com.fotologue.core.data.preset.WebSpecSearchEngine.searchLensSpecs(webLookupQuery)
+                                                }
+                                                isSearchingWeb = false
+                                            }
+                                        },
+                                        enabled = webLookupQuery.isNotBlank() && !isSearchingWeb,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(if (isSearchingWeb) "Searching Online..." else "Search Specs")
+                                    }
+
+                                    if (webLookupResults.isNotEmpty()) {
+                                        Text("Select Result to Auto-Fill Preset Form:", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                            webLookupResults.forEach { res ->
+                                                Card(
+                                                    onClick = {
+                                                        newBrand = res.brand
+                                                        newName = res.name
+                                                        newModelNumber = res.modelNumber ?: ""
+                                                        newAttr1Value = res.attributes["type"] ?: ""
+                                                        newAttr2Value = res.attributes["mount"] ?: ""
+                                                        showWebLookupDialog = false
+                                                        showAddDialog = true
+                                                    },
+                                                    modifier = Modifier.fillMaxWidth()
+                                                ) {
+                                                    Column(modifier = Modifier.padding(10.dp)) {
+                                                        Text(res.name, fontWeight = FontWeight.Bold)
+                                                        Text("${res.brand} • ${res.attributes["type"] ?: ""} • ${res.attributes["mount"] ?: ""}", style = MaterialTheme.typography.bodySmall)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            confirmButton = {
+                                TextButton(onClick = { showWebLookupDialog = false }) {
+                                    Text("Close")
+                                }
+                            }
+                        )
+                    }
+
                     Button(onClick = { showAddDialog = true }) {
                         Icon(Icons.Default.Add, contentDescription = null)
                         Spacer(modifier = Modifier.width(4.dp))

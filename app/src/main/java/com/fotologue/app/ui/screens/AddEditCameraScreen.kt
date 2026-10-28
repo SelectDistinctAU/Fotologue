@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import com.fotologue.app.R
 import com.fotologue.app.ui.viewmodel.AddEditCameraViewModel
 import com.fotologue.core.data.CameraSpec
@@ -251,9 +252,47 @@ fun AddEditCameraScreen(
                 }
 
                 if (filteredPresets.isEmpty()) {
+                    val scope = rememberCoroutineScope()
+                    var isSearchingOnline by remember { mutableStateOf(false) }
+
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text("No camera presets found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            if (searchQuery.isNotBlank()) {
+                                Button(
+                                    onClick = {
+                                        scope.launch {
+                                            isSearchingOnline = true
+                                            val onlineSpecs = com.fotologue.core.data.preset.WebSpecSearchEngine.searchCameraSpecs(searchQuery)
+                                            val topResult = onlineSpecs.firstOrNull()
+                                            if (topResult != null) {
+                                                val subCatStr = topResult.attributes["type"] ?: "Film SLR"
+                                                val cType = CameraType.fromString(subCatStr)
+                                                val spec = CameraSpec(
+                                                    name = topResult.name,
+                                                    modelNumber = topResult.modelNumber ?: topResult.name,
+                                                    type = cType,
+                                                    mount = topResult.attributes["mount"] ?: "Standard",
+                                                    shutterSpeeds = listOf(topResult.attributes["shutterSpeeds"] ?: "1s - 1/1000s, B")
+                                                )
+                                                if (isPreArrivalMode) {
+                                                    viewModel.savePreArrivalCamera { newCamId ->
+                                                        onSavePreArrivalOrder(spec.name, "${topResult.brand} • mount: ${spec.mount}", topResult.brand, newCamId)
+                                                        onBack()
+                                                    }
+                                                } else {
+                                                    viewModel.applySpec(spec)
+                                                    viewModel.saveCamera(onBack)
+                                                }
+                                            }
+                                            isSearchingOnline = false
+                                        }
+                                    },
+                                    enabled = !isSearchingOnline
+                                ) {
+                                    Text(if (isSearchingOnline) "Searching Web..." else "🌐 Search Web for \"$searchQuery\"")
+                                }
+                            }
                             Button(onClick = { isCustomFormView = true }) {
                                 Icon(Icons.Default.Add, contentDescription = null)
                                 Spacer(modifier = Modifier.width(6.dp))

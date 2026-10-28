@@ -3625,6 +3625,25 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "lens_pentax_hd_fa_43_19_limited",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Pentax",
+    "name": "HD PENTAX-FA 43mm f/1.9 Limited",
+    "modelNumber": "43mm F1.9",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Pentax K",
+      "filterSize": "49mm",
+      "focalLength": "43mm",
+      "maxAperture": "f/1.9",
+      "minAperture": "f/22.0",
+      "minFocusDistance": "0.45m",
+      "maxMagnification": "0.12x"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "lens_pentax_smc_50_14",
     "category": "LENS",
     "subCategory": "Prime",
