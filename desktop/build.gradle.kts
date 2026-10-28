@@ -40,7 +40,9 @@ compose.desktop {
             targetFormats(
                 TargetFormat.Exe,
                 TargetFormat.Msi,
-                TargetFormat.Deb
+                TargetFormat.Deb,
+                TargetFormat.AppImage,
+                TargetFormat.Rpm
             )
             packageName = "FotologueDesktop"
             packageVersion = "1.0.4"
@@ -49,6 +51,13 @@ compose.desktop {
             windows {
                 upgradeUuid = "a2d1847e-8c3b-4b10-a7d1-9a101038dd80"
                 menu = true
+                shortcut = true
+            }
+            linux {
+                packageName = "fotologue-desktop"
+                debPackageVersion = "1.0.4"
+                appCategory = "Graphics;Photography;"
+                menuGroup = "Graphics"
                 shortcut = true
             }
         }
@@ -67,4 +76,10 @@ tasks.register("packageWindows") {
     group = "distribution"
     description = "Packages both Windows MSI and EXE native installers for Fotologue Desktop"
     dependsOn("packageMsi", "packageExe")
+}
+
+tasks.register("packageLinux") {
+    group = "distribution"
+    description = "Packages native Ubuntu .deb and standalone .AppImage installers for Fotologue Desktop"
+    dependsOn("packageDeb", "packageAppImage")
 }
