@@ -141,112 +141,80 @@ fun HubScreen(
         ) {
             item(key = "module_camera_gear") {
                 HubModuleCard(
-                    title = "CAMERA GEAR",
                     subtitle = "Cameras, Lenses, Films & Accessories",
-                    description = "Cameras • Lenses • Films • Teleconverters • Filters • Flashes • Viewfinders • Kit Bags",
                     iconRes = com.fotologue.app.R.drawable.settings_photo_camera_24px,
                     cardBg = safelightCardBg,
-                    titleColor = safelightFg,
                     subColor = safelightPrimary,
-                    descColor = safelightSubFg,
                     onClick = onNavigateToCameraGear
                 )
             }
 
             item(key = "module_assets_inventory") {
                 HubModuleCard(
-                    title = "ASSETS & INVENTORY",
                     subtitle = "Consumables, Storage, Inbound Orders & Loans",
-                    description = "Consumables • Storage Locations • Pre-Arrival Orders • Custody & Loans",
                     iconRes = com.fotologue.app.R.drawable.inventory_2_24px,
                     cardBg = safelightCardBg,
-                    titleColor = safelightFg,
                     subColor = safelightPrimary,
-                    descColor = safelightSubFg,
                     onClick = onNavigateToAssetsInventory
                 )
             }
 
             item(key = "module_field") {
                 HubModuleCard(
-                    title = "FOTOLOGUE FIELD",
                     subtitle = "In-situ Exposure Logging & Spot Light Meter",
-                    description = "Exposure Logging • Spot Light Metering • In-situ Observations",
                     iconRes = R.drawable.hiking_24px,
                     cardBg = safelightCardBg,
-                    titleColor = safelightFg,
                     subColor = safelightPrimary,
-                    descColor = safelightSubFg,
                     onClick = onNavigateToField
                 )
             }
 
             item(key = "module_taxonomy") {
                 HubModuleCard(
-                    title = "TAXONOMY & TAGS",
                     subtitle = "Subject, Content & Intent Indexing",
-                    description = "Subjects • Content • Intent • Hierarchical Tag Index",
                     iconRes = com.fotologue.app.R.drawable.ic_label,
                     cardBg = safelightCardBg,
-                    titleColor = safelightFg,
                     subColor = safelightPrimary,
-                    descColor = safelightSubFg,
                     onClick = onNavigateToTaxonomy
                 )
             }
 
             item(key = "module_contacts") {
                 HubModuleCard(
-                    title = "CONTACTS DIRECTORY",
                     subtitle = "People & Vendor Management",
-                    description = "Suppliers • Labs • Repair Techs • Friends",
                     iconRes = com.fotologue.app.R.drawable.patient_list_24px,
                     cardBg = safelightCardBg,
-                    titleColor = safelightFg,
                     subColor = safelightPrimary,
-                    descColor = safelightSubFg,
                     onClick = onNavigateToContacts
                 )
             }
 
             item(key = "module_lab") {
                 HubModuleCard(
-                    title = "LAB",
                     subtitle = "Wet Darkroom Chemical Processing & Printing",
-                    description = "Film Processing Session • Enlarger Session • Darkroom Equipment & Tanks",
                     iconRes = R.drawable.experiment_24px,
                     cardBg = safelightCardBg,
-                    titleColor = safelightFg,
                     subColor = safelightPrimary,
-                    descColor = safelightSubFg,
                     onClick = onNavigateToLab
                 )
             }
 
             item(key = "module_station") {
                 HubModuleCard(
-                    title = "STATION",
                     subtitle = "Studio Analysis & Reflection",
-                    description = "Digital Contact Sheets • Frame Gap Alignment • Darkroom Reflections",
                     iconRes = R.drawable.hub_24px,
                     cardBg = safelightCardBg,
-                    titleColor = safelightFg,
                     subColor = safelightPrimary,
-                    descColor = safelightSubFg,
                     onClick = onNavigateToStation
                 )
             }
 
             item(key = "module_archive") {
                 HubModuleCard(
-                    title = "ARCHIVE",
                     subtitle = "Master Registry & Preservation Vault",
-                    description = "Canonical JSON Backup Vault • Merge Import • XMP Desktop Sidecar Exports",
                     iconRes = R.drawable.shelves_24px,
                     cardBg = safelightCardBg,
-                    titleColor = safelightFg,
                     subColor = safelightPrimary,
-                    descColor = safelightSubFg,
                     onClick = onNavigateToArchive
                 )
             }
@@ -256,14 +224,10 @@ fun HubScreen(
 
 @Composable
 fun HubModuleCard(
-    title: String,
     subtitle: String,
-    description: String,
     iconRes: Int,
     cardBg: Color,
-    titleColor: Color,
     subColor: Color,
-    descColor: Color,
     onClick: () -> Unit
 ) {
     Card(
@@ -271,44 +235,29 @@ fun HubModuleCard(
         modifier = Modifier
             .fillMaxWidth()
             .semantics {
-                contentDescription = "$title module. $subtitle. $description"
+                contentDescription = subtitle
             },
         colors = CardDefaults.cardColors(containerColor = cardBg)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
+                .padding(vertical = 16.dp, horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 painter = painterResource(iconRes),
-                contentDescription = "$title icon",
+                contentDescription = null,
                 tint = subColor,
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = titleColor
-                    )
-                }
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = subColor,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = descColor
-                )
-            }
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = subColor,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
