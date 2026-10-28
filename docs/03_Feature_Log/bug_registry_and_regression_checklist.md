@@ -1911,6 +1911,20 @@ This document serves as the permanent **Bug Registry & Regression Checklist** fo
 
 ---
 
+### BUG-171: Automated Web Spec Search Engine & HD PENTAX-FA 43mm Limited Preset Seeding
+- **Platform**: Core, Maintainer Tool & Mobile/Desktop Apps (`WebSpecSearchEngine.kt`, `MaintainerApp.kt`, `lenses.json`, `AddEditLensScreen.kt`, `AddEditCameraScreen.kt`)
+- **Reported**: October 2026
+- **Symptom**: Authoring or adding unlisted lenses/cameras required manual typing of all technical specs (brand, mount, focal length, aperture, filter size); new Pentax DSLR lenses (*HD PENTAX-FA 43mm f/1.9 Limited*) were missing from default preset catalog.
+- **Root Cause**: Absence of automated online spec retrieval engine; unpopulated Pentax Limited lens catalog.
+- **Resolution**:
+  1. Created `WebSpecSearchEngine.kt` in `core:data` to search and synthesize structured lens/camera specs online in 1 click.
+  2. Integrated `[ 🔍 Web Spec Fetch & Author ]` button into Maintainer Tool (`MaintainerApp.kt`) to auto-fill JSON preset forms.
+  3. Added `[ 🌐 Search Web for Lens/Camera ]` fallback buttons in Mobile and Desktop preset dialogs.
+  4. Seeded `HD PENTAX-FA 43mm f/1.9 Limited` directly into master catalog `lenses.json`.
+- **Regression Test Case**: Open Maintainer Tool `./gradlew :desktop:runMaintainer` $\to$ tap `LENS` tab $\to$ verify *HD PENTAX-FA 43mm f/1.9 Limited* is listed $\to$ tap `[ 🔍 Web Spec Fetch & Author ]` $\to$ search *"Pentax FA 77mm F1.8 Limited"* $\to$ verify specs fetch and pre-fill form in 1 click.
+
+---
+
 ### 1. Mobile Regression Test Checklist
 - [ ] **Portal Navigation**: Tap `FIELD`, `CONTACTS DIRECTORY`, `LAB`, `STATION`, `ARCHIVE` cards on `HubScreen.kt` and verify each opens its respective top-level module.
 - [ ] **Contacts Import**: Open `Contacts Directory` $\to$ tap `[ ➕ Add Contact ]` $\to$ tap `[ 👤 Import from Phone Contacts ]` $\to$ verify native Android contact picker launches cleanly.
