@@ -18,7 +18,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import com.fotologue.core.data.Lens
+import kotlinx.coroutines.launch
 import com.fotologue.core.data.LensSpec
 import com.fotologue.core.data.preset.MasterPresetEngine
 import com.fotologue.app.ui.viewmodel.AddEditLensViewModel
@@ -215,8 +217,47 @@ fun AddEditLensScreen(
                     }
 
                     if (filteredPresets.isEmpty()) {
+                        val scope = rememberCoroutineScope()
+                        var isSearchingOnline by remember { mutableStateOf(false) }
+
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("No lens presets found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text("No lens presets found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                if (lensSearchQueryText.isNotBlank()) {
+                                    Button(
+                                        onClick = {
+                                            scope.launch {
+                                                isSearchingOnline = true
+                                                val onlineSpecs = com.fotologue.core.data.preset.WebSpecSearchEngine.searchLensSpecs(lensSearchQueryText)
+                                                val topResult = onlineSpecs.firstOrNull()
+                                                if (topResult != null) {
+                                                    val spec = LensSpec(
+                                                        make = topResult.brand,
+                                                        model = topResult.name,
+                                                        modelNumber = topResult.modelNumber ?: "",
+                                                        type = topResult.attributes["type"] ?: "Prime",
+                                                        mount = topResult.attributes["mount"] ?: "Standard",
+                                                        filterSize = topResult.attributes["filterSize"]?.replace("mm", "")?.toIntOrNull() ?: 52,
+                                                        isStabilized = false,
+                                                        minFocusDistance = 0.45,
+                                                        maxMagnification = 0.15,
+                                                        minAperture = topResult.attributes["minAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 22.0,
+                                                        maxAperture = topResult.attributes["maxAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 1.8,
+                                                        minFocalLength = topResult.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50,
+                                                        maxFocalLength = topResult.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50
+                                                    )
+                                                    viewModel.onSelectSpec(spec)
+                                                    showLensPresetsDialog = false
+                                                }
+                                                isSearchingOnline = false
+                                            }
+                                        },
+                                        enabled = !isSearchingOnline
+                                    ) {
+                                        Text(if (isSearchingOnline) "Searching Web..." else "🌐 Search Web for \"$lensSearchQueryText\"")
+                                    }
+                                }
+                            }
                         }
                     } else {
                         LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
