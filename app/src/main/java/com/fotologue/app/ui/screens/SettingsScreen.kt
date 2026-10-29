@@ -2,10 +2,14 @@ package com.fotologue.app.ui.screens
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -94,30 +98,6 @@ fun SettingsScreen(
                 is SettingsEvent.BackupSuccess -> snackbarHostState.showSnackbar(backupSuccessMsg)
                 is SettingsEvent.RestoreSuccess -> snackbarHostState.showSnackbar(restoreSuccessMsg)
                 is SettingsEvent.Error -> snackbarHostState.showSnackbar(errorMessageFormat.format(event.message))
-            }
-        }
-    }
-
-    val createDocumentLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("application/json")
-    ) { uri ->
-        uri?.let {
-            scope.launch {
-                context.contentResolver.openOutputStream(it)?.use { outputStream ->
-                    viewModel.backup(outputStream)
-                }
-            }
-        }
-    }
-
-    val openDocumentLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        uri?.let {
-            scope.launch {
-                context.contentResolver.openInputStream(it)?.use { inputStream ->
-                    viewModel.restore(inputStream)
-                }
             }
         }
     }
@@ -242,38 +222,77 @@ fun SettingsScreen(
             val appTheme by viewModel.appTheme.collectAsStateWithLifecycle()
             val photoCanvasMode by viewModel.photoCanvasMode.collectAsStateWithLifecycle()
 
-            // 1. APP THEME PALETTE SECTION
-            Text(
-                text = "App Theme Palette",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "Select FlatLaf or Photographic color palettes for app controls:",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf(
-                    "SYSTEM_DEFAULT" to "System Default",
-                    "DAYLIGHT_LIGHT" to "Daylight Clean (Light)",
-                    "FLAT_DARCULA" to "Flat Darcula (IntelliJ)",
-                    "FLAT_MAC_DARK" to "Flat Mac Dark (macOS)",
-                    "FLAT_NORD" to "Flat Nord (Arctic Cyan)",
-                    "SILVER_GELATIN" to "Silver Gelatin (B&W)",
-                    "WARM_SEPIA" to "Warm Sepia (Toned)",
-                    "SAFELIGHT_RED" to "Red Shift (Night Vision)"
-                ).forEach { (themeKey, themeName) ->
-                    FilterChip(
-                        selected = appTheme == themeKey,
-                        onClick = { viewModel.setAppTheme(themeKey) },
-                        label = { Text(themeName) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+            // 1. APP THEME PALETTE SECTION (COLLAPSIBLE)
+            var themePaletteExpanded by remember { mutableStateOf(false) }
+            val activeThemeName = when (appTheme) {
+                "DAYLIGHT_LIGHT" -> "Daylight Clean (Light)"
+                "FLAT_DARCULA" -> "Flat Darcula (IntelliJ)"
+                "FLAT_MAC_DARK" -> "Flat Mac Dark (macOS)"
+                "FLAT_NORD" -> "Flat Nord (Arctic Cyan)"
+                "SILVER_GELATIN" -> "Silver Gelatin (B&W)"
+                "WARM_SEPIA" -> "Warm Sepia (Toned)"
+                "SAFELIGHT_RED" -> "Red Shift (Night Vision)"
+                else -> "System Default"
+            }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(14.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { themePaletteExpanded = !themePaletteExpanded },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "App Theme Palette",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            )
+                            Text(
+                                text = "Active: $activeThemeName",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Icon(
+                            imageVector = if (themePaletteExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = if (themePaletteExpanded) "Collapse Theme Palette" else "Expand Theme Palette"
+                        )
+                    }
+
+                    if (themePaletteExpanded) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            listOf(
+                                "SYSTEM_DEFAULT" to "System Default",
+                                "DAYLIGHT_LIGHT" to "Daylight Clean (Light)",
+                                "FLAT_DARCULA" to "Flat Darcula (IntelliJ)",
+                                "FLAT_MAC_DARK" to "Flat Mac Dark (macOS)",
+                                "FLAT_NORD" to "Flat Nord (Arctic Cyan)",
+                                "SILVER_GELATIN" to "Silver Gelatin (B&W)",
+                                "WARM_SEPIA" to "Warm Sepia (Toned)",
+                                "SAFELIGHT_RED" to "Red Shift (Night Vision)"
+                            ).forEach { (themeKey, themeName) ->
+                                FilterChip(
+                                    selected = appTheme == themeKey,
+                                    onClick = { viewModel.setAppTheme(themeKey) },
+                                    label = { Text(themeName) },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -652,9 +671,10 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = stringResource(R.string.header_backup_privacy),
+                text = "PRIVACY & ON-DEVICE SECURITY",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
             Text(
@@ -663,44 +683,6 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            val currentConfiguration = LocalConfiguration.current
-            Surface(
-                onClick = {
-                    val locale = currentConfiguration.locales[0]
-                    val dateFormat = SimpleDateFormat("yyyyMMdd_HHmm", locale)
-                    val backupFileName = "backup_${dateFormat.format(Date())}.json"
-                    createDocumentLauncher.launch(backupFileName)
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                    Text(
-                        text = stringResource(R.string.action_backup_library),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = stringResource(R.string.action_backup_library_desc),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            Surface(
-                onClick = { openDocumentLauncher.launch(arrayOf("application/json")) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                    Text(
-                        text = stringResource(R.string.action_restore_backup),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = stringResource(R.string.action_restore_backup_desc),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(

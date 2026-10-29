@@ -353,6 +353,43 @@ fun ArchiveScreen(
                     }
                 }
             }
+
+            // DEVELOPER & CATALOGUE PRESETS (CLOUD REFRESH)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = safelightCardBg)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "DEVELOPER & CATALOGUE PRESETS",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = safelightPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Fetch live camera body, lens, and film stock preset updates directly from GitHub without needing an app store update.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = safelightSubFg
+                    )
+
+                    Button(
+                        onClick = { viewModel.refreshMasterPresetsFromCloud() },
+                        colors = btnColors,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                    ) {
+                        Icon(painterResource(com.fotologue.app.R.drawable.sync_desktop_24px), contentDescription = null, tint = btnTextTint)
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Refresh Master Presets from Cloud", style = MaterialTheme.typography.labelMedium, color = btnTextTint, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
