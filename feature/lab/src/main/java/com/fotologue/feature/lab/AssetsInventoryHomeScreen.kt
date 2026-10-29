@@ -94,7 +94,7 @@ fun AssetsInventoryHomeScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         val headerIconRes = when (currentView) {
-                            AssetsInventoryView.MAIN_MENU -> R.drawable.inventory_24px
+                            AssetsInventoryView.MAIN_MENU -> R.drawable.inventory_2_24px
                             AssetsInventoryView.STORAGE_LOCATIONS -> R.drawable.shelves_24px
                             AssetsInventoryView.PRE_ARRIVAL_ORDERS -> R.drawable.delivery_truck_speed_24px
                             AssetsInventoryView.CUSTODY_LOANS -> R.drawable.ic_call_log
