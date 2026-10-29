@@ -40,46 +40,59 @@ fun HelpScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
+
             HelpSection(
-                title = "1. Setup Your Gear & Taxonomy",
-                iconRes = R.drawable.ic_inventory_2,
-                content = "Add your equipment in the Gear Library (Cameras, Lenses, Films, Teleconverters, Filters, Flashes, Viewfinders, Subjects, Content, Intent). Live badges on category tabs show your item counts.\n\n• Camera Association: Link lenses and accessories to specific camera bodies. TLR and compact cameras automatically create and link fixed lenses.\n• 3-Axis Tag Taxonomy (Subject • Content • Intent): Categorize exposures by domain (*Subjects*), detail (*Content*), and purpose (*Intent*: *Study*, *Series*, *Documentation*, *Commission*).\n• Camera Kits: Combine camera, lens, film, and accessories for one-tap setup during shoots."
+                title = "1. Camera Gear Library",
+                iconRes = R.drawable.settings_photo_camera_24px,
+                content = "Manage your camera equipment with 100% relational integrity:\n\n• Master Preset Catalog: Search over 80+ classic film camera bodies, lenses, and film emulsions with brand-first and mount-first cascading filters.\n• Automated Web Spec Search Engine: Search for unlisted gear (e.g., HD PENTAX-FA 43mm Limited) to automatically fetch and pre-fill specs online in 1 tap.\n• Interactive Availability Status: Tap any status badge on camera/lens cards to instantly set Availability (In Stock, In Transit, On Loan, In Repair/CLA, Sold/Archived)."
             )
 
             HelpSection(
-                title = "2. Adding a Log Entry",
-                iconRes = R.drawable.list_alt_add_24px,
-                content = "Tap the '+' button on the Timeline. Pick a Camera Kit for instant quick fill or select gear manually. Fotologue dynamically filters lenses, film formats, and accessories based on your chosen camera—providing direct prompts to add matching film if none exists in your library."
+                title = "2. Assets & Inventory",
+                iconRes = R.drawable.inventory_2_24px,
+                content = "Track physical studio supplies and inbound shipments:\n\n• Consumables & Chemistry: Monitor chemical capacity, paper stocks, safety gear, and supplies.\n• Storage Locations: Assign dry cabinets, studio shelves, camera bags, and paper safes.\n• Pre-Arrival Inbound Orders: Track incoming camera and lens packages with live delivery status. Tapping 'Mark Delivered' converts the package into an active available asset without creating duplicates.\n• Custody & Loans Ledger: Track equipment lent to friends, hired gear, and active workshop repair status."
             )
 
             HelpSection(
-                title = "3. Using the Light Meter",
-                iconRes = R.drawable.ic_exposure,
-                content = "Tap 'Measure Exposure' on the Add Log screen. Use the live viewfinder to meter your scene with Spot or Center-weighted modes. Pre-visualize with B&W, C-41, or E-6 film look simulations. Tap an exposure suggestion to apply it to your log and capture an optional thumbnail."
+                title = "3. Exposure Logging & Classification (FOTOLOGUE FIELD)",
+                iconRes = R.drawable.hiking_24px,
+                content = "Log frame-by-frame exposure metadata during street and studio shoots:\n\n• Precision Spot Light Meter: Real-time spot metering with target EV calculation, camera body/lens pairing, and automatic ND/contrast filter stop compensation.\n• Live GPS Geotagging: Captures exact latitude/longitude for every frame without uploading location data.\n• Camera Kit Quick-Fill: Select a pre-configured Camera Kit for 1-tap setup during shoots."
             )
 
             HelpSection(
-                title = "4. Meter Calibration",
-                iconRes = R.drawable.ic_handyman,
-                content = "To ensure professional accuracy, use the Pro Calibration Wizard (Settings > EV Calibration). Stage 1 'The Void' zeros sensor noise floor with a covered lens, while Stage 2 'The Balance' matches an 18% grey card or neutral surface."
+                title = "4. Subject, Content and Intent Tags",
+                iconRes = R.drawable.ic_label,
+                content = "3-Axis Taxonomy Indexing for instant information retrieval:\n\n• Subjects: Domain classification (Architecture, Landscape, Portrait, Street, Wildlife).\n• Content: Specific visual details (Bridge, Building, Waterways, Fungi, Skyline).\n• Intent: Purpose of the series (Study, Series, Documentation, Personal, Commission).\n• Instant Search: Filter exposures instantly by gear or tag across your entire timeline."
             )
 
             HelpSection(
-                title = "5. Digital Contact Sheet & Proof Sheets",
-                iconRes = R.drawable.gallery_thumbnail_24px,
-                content = "Tap the Contact Sheet icon on the Timeline to open the Digital Contact Sheet.\n\n• Visual Fingerprints: Compare digital scans against scene thumbnails to easily match scan files to field logs.\n• In-Grid Gap Adjuster: Tap any skipped/blank card to insert or remove frame gaps (+1 / -1 offset), keeping your digital contact sheet 1-to-1 aligned with physical film rebate numbers.\n• Printable PDF Proof Sheets: Export styled A4 PDF contact proof sheets complete with headers, thumbnails, rebate numbers, and exposure details for printing or digital archival binders."
+                title = "5. People & Vendor Management",
+                iconRes = R.drawable.patient_list_24px,
+                content = "Directory for film labs, equipment suppliers, repair technicians, and friends:\n\n• Native Phone Contact Picker: Pick phone contacts directly to log borrowers in the Custody Ledger.\n• Regional Lab & Vendor Directory: Store website links, phone numbers, and lab processing notes."
             )
 
             HelpSection(
-                title = "6. Managing Logs, Exports & Macro Presets",
-                iconRes = R.drawable.ic_timeline,
-                content = "Your logs appear in the Timeline with visual export badges ([Z], [C], [J], [X]).\n\n• Camera Macro Copy Presets: When exporting XMP sidecars, select or save camera presets (Fujifilm `_DSF`, Canon `IMG_`, Nikon `DSC_`, Sony `_DSC`) to automatically match RAW scan file sequences.\n• Full XMP Hierarchy: Exports `Subject`, `Content`, and `Intent` (`Intent|Study`, `Intent|Series`) hierarchies directly into Adobe Lightroom and Capture One catalogs."
+                title = "6. Darkroom Processing & Printing (LAB)",
+                iconRes = R.drawable.experiment_24px,
+                content = "Execution tools for the wet darkroom:\n\n• Film Development Timer: Live step-by-step chemical development timer with an acoustic 60 BPM agitation metronome and 3-second pre-warning pips for working in total darkness without looking at a screen.\n• Enlarger Printing Session Ledger: Log enlarger machines, lens-to-paper distances, split-grade exposure step ledgers, and dry-down factor compensation."
             )
 
             HelpSection(
-                title = "7. Backup & Privacy",
+                title = "7. Studio Analysis & Reflection (STATION)",
+                iconRes = R.drawable.hub_24px,
+                content = "Reflect upon and analyze your photographic work:\n\n• Digital Contact Sheets: View roll grids with scene thumbnails to match digital RAW scan files against physical film rolls.\n• In-Grid Gap Adjuster: Tap skipped/blank frames to insert or remove frame gaps (+1 / -1 offset) to keep digital contact sheets 1-to-1 aligned with physical film rebate numbers."
+            )
+
+            HelpSection(
+                title = "8. Archive Vault (ARCHIVE)",
+                iconRes = R.drawable.backup_24px,
+                content = "Your central data management and export hub:\n\n• Catalogue Backup & Restore: Export full-fidelity `.json` catalogue backups with non-destructive merge imports.\n• Desktop Photo Library Exporter: Export CSV summary logs and ISO 16684 XMP sidecars with 3-Axis Tag hierarchies for Adobe Lightroom, Capture One, and digiKam.\n• Desktop Sync Manifests: Bidirectional offline sync for Foundation Reference catalogs with Fotologue Desktop.\n• Cloud Master Preset Refresh: 1-tap master catalog refresh directly from GitHub."
+            )
+
+            HelpSection(
+                title = "9. 100% Private & On-Device Security",
                 iconRes = R.drawable.ic_security,
-                content = "Your privacy is our highest priority. All data—including thumbnails, GPS coordinates, gear lists, and notes—remains 100% local on your device.\n\n• On-Device ML: Smart Face-Aware tagging operates entirely on-device; no biometric data or images are ever uploaded or transmitted.\n• SAF Backups: Export and restore complete backups using standard Android Storage Access Framework.\n• Zero Tracking: Fotologue contains no analytics or tracking."
+                content = "Your privacy is our top priority. All data—including thumbnails, GPS coordinates, gear lists, and notes—remains 100% local on your device.\n\n• On-Device ML: Smart Face-Aware tagging operates entirely on-device; no images or biometric data are ever transmitted or uploaded.\n• Zero Tracking: Fotologue contains no third-party analytics or cloud lock-in."
             )
 
             Spacer(modifier = Modifier.height(32.dp))

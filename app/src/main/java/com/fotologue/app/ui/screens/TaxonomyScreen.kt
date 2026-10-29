@@ -71,7 +71,7 @@ fun TaxonomyScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Taxonomy & Tags", fontWeight = FontWeight.Bold)
+                        Text("Subject, Content and Intent Tags", fontWeight = FontWeight.Bold)
                     }
                 },
                 navigationIcon = {

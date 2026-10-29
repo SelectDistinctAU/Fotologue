@@ -171,7 +171,7 @@ fun HubScreen(
 
             item(key = "module_taxonomy") {
                 HubModuleCard(
-                    subtitle = "Subject, Content & Intent Indexing",
+                    subtitle = "Subject, Content and Intent Tags",
                     iconRes = com.fotologue.app.R.drawable.ic_label,
                     cardBg = safelightCardBg,
                     subColor = safelightPrimary,
