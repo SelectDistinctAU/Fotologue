@@ -377,15 +377,30 @@ fun AddEditCameraScreen(
                     ) {
                         OutlinedTextField(
                             value = when (currentAvailabilityStatus) {
-                                "IN_TRANSIT" -> "🚚 In Transit (Pre-Arrival Order)"
-                                "LOANED_OUT" -> "📞 On Loan"
-                                "IN_REPAIR" -> "🛠️ In Repair / CLA"
-                                "SOLD" -> "🏷️ Sold / Archived"
-                                else -> "✅ In Stock & Available"
+                                "IN_TRANSIT" -> "In Transit (Pre-Arrival Order)"
+                                "LOANED_OUT" -> "On Loan"
+                                "IN_REPAIR" -> "In Repair / CLA"
+                                "SOLD" -> "Sold / Archived"
+                                else -> "In Stock & Available"
                             },
                             onValueChange = {},
                             readOnly = true,
                             label = { Text("Availability Status") },
+                            leadingIcon = {
+                                val leadingIconRes = when (currentAvailabilityStatus) {
+                                    "IN_TRANSIT" -> com.fotologue.core.designsystem.R.drawable.delivery_truck_speed_24px
+                                    "LOANED_OUT" -> com.fotologue.core.designsystem.R.drawable.patient_list_24px
+                                    "IN_REPAIR" -> R.drawable.ic_handyman
+                                    "SOLD" -> R.drawable.shopping_cart_24px
+                                    else -> R.drawable.ic_check_circle
+                                }
+                                Icon(
+                                    painter = painterResource(leadingIconRes),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = statusDropdownExpanded) },
                             modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
                         )
@@ -394,13 +409,21 @@ fun AddEditCameraScreen(
                             onDismissRequest = { statusDropdownExpanded = false }
                         ) {
                             listOf(
-                                Pair("AVAILABLE", "✅ In Stock & Available"),
-                                Pair("IN_TRANSIT", "🚚 In Transit (Pre-Arrival Order)"),
-                                Pair("LOANED_OUT", "📞 On Loan"),
-                                Pair("IN_REPAIR", "🛠️ In Repair / CLA"),
-                                Pair("SOLD", "🏷️ Sold / Archived")
-                            ).forEach { (stKey, stLabel) ->
+                                Triple("AVAILABLE", "In Stock & Available", R.drawable.ic_check_circle),
+                                Triple("IN_TRANSIT", "In Transit (Pre-Arrival Order)", com.fotologue.core.designsystem.R.drawable.delivery_truck_speed_24px),
+                                Triple("LOANED_OUT", "On Loan", com.fotologue.core.designsystem.R.drawable.patient_list_24px),
+                                Triple("IN_REPAIR", "In Repair / CLA", R.drawable.ic_handyman),
+                                Triple("SOLD", "Sold / Archived", R.drawable.shopping_cart_24px)
+                            ).forEach { (stKey, stLabel, iconResId) ->
                                 DropdownMenuItem(
+                                    leadingIcon = {
+                                        Icon(
+                                            painter = painterResource(iconResId),
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    },
                                     text = { Text(stLabel, fontWeight = if (stKey == currentAvailabilityStatus) FontWeight.Bold else FontWeight.Normal) },
                                     onClick = {
                                         currentAvailabilityStatus = stKey
