@@ -211,7 +211,7 @@ fun HubScreen(
 
             item(key = "module_archive") {
                 HubModuleCard(
-                    subtitle = "Master Registry & Preservation Vault",
+                    subtitle = "Archive Vault",
                     iconRes = R.drawable.shelves_24px,
                     cardBg = safelightCardBg,
                     subColor = safelightPrimary,

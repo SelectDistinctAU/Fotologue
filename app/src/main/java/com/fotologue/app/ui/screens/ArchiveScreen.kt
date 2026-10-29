@@ -71,28 +71,6 @@ fun ArchiveScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var archiveTargetUri by remember { mutableStateOf<Uri?>(null) }
-
-    // SAF Target Folder Picker
-    val folderPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocumentTree()
-    ) { uri ->
-        uri?.let {
-            archiveTargetUri = it
-            try {
-                context.contentResolver.takePersistableUriPermission(
-                    it,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-            } catch (_: Exception) {
-                // Granted for session
-            }
-            scope.launch {
-                snackbarHostState.showSnackbar("Archive Target Mounted: ${it.lastPathSegment}")
-            }
-        }
-    }
-
     // JSON Backup Export Launcher
     val createJsonLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/json")
@@ -231,49 +209,7 @@ fun ArchiveScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // MOUNTED STORAGE TARGET CARD (NAS / Proton Drive / Google Drive)
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = safelightCardBg)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "STORAGE TARGET & DESTINATION SHARE",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = safelightPrimary,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    val targetDisplay = archiveTargetUri?.lastPathSegment ?: "Not Mounted (Defaulting to Downloads / SAF)"
-                    Text(
-                        text = "Target Share: $targetDisplay",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = safelightFg
-                    )
-                    Text(
-                        text = "Mount your Local NAS (SMB/WebDAV), Proton Drive, or Google Drive folder via Storage Access Framework for 1-tap backups.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = safelightSubFg
-                    )
-
-                    Button(
-                        onClick = { folderPickerLauncher.launch(null) },
-                        colors = btnColors,
-                        modifier = Modifier.padding(top = 4.dp)
-                    ) {
-                        Icon(painterResource(R.drawable.warehouse_24px), contentDescription = null, tint = btnTextTint)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(if (archiveTargetUri != null) "Change Target Directory" else "Mount NAS / Cloud Directory", color = btnTextTint, fontWeight = FontWeight.Bold)
-                    }
-                }
-            }
-
-            // CANONICAL NATIVE JSON BACKUP VAULT
+            // CATALOGUE BACKUP & RESTORE
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = safelightCardBg)
@@ -285,13 +221,13 @@ fun ArchiveScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "CANONICAL NATIVE JSON VAULT",
+                        text = "CATALOGUE BACKUP & RESTORE",
                         style = MaterialTheme.typography.labelSmall,
                         color = safelightPrimary,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Full-fidelity relational database backups. The native JSON backup is the single source of truth for your lifetime catalogue.",
+                        text = "Export a full backup of your catalogue or restore gear, logs, and settings from a previously saved backup file.",
                         style = MaterialTheme.typography.bodySmall,
                         color = safelightSubFg
                     )
@@ -310,7 +246,7 @@ fun ArchiveScreen(
                         ) {
                             Icon(Icons.Default.Share, contentDescription = null, tint = btnTextTint)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Export Vault", style = MaterialTheme.typography.labelSmall, color = btnTextTint, fontWeight = FontWeight.Bold, maxLines = 1)
+                            Text("Export Backup", style = MaterialTheme.typography.labelSmall, color = btnTextTint, fontWeight = FontWeight.Bold, maxLines = 1)
                         }
 
                         OutlinedButton(
@@ -322,7 +258,7 @@ fun ArchiveScreen(
                         ) {
                             Icon(Icons.Default.Refresh, contentDescription = null, tint = safelightPrimary)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Merge Import", style = MaterialTheme.typography.labelSmall, color = safelightPrimary, maxLines = 1)
+                            Text("Restore Backup", style = MaterialTheme.typography.labelSmall, color = safelightPrimary, maxLines = 1)
                         }
                     }
                 }
