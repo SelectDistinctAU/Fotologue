@@ -1247,13 +1247,21 @@ private fun LensList(
                                     onDismissRequest = { statusDropdownExpanded = false }
                                 ) {
                                     listOf(
-                                        Pair("AVAILABLE", "✅ In Stock & Available"),
-                                        Pair("IN_TRANSIT", "🚚 In Transit (Pre-Arrival)"),
-                                        Pair("LOANED_OUT", "📞 On Loan"),
-                                        Pair("IN_REPAIR", "🛠️ In Repair / CLA"),
-                                        Pair("SOLD", "🏷️ Sold / Archived")
-                                    ).forEach { (statusKey, statusLabel) ->
+                                        Triple("AVAILABLE", "In Stock & Available", R.drawable.ic_check_circle),
+                                        Triple("IN_TRANSIT", "In Transit (Pre-Arrival)", R.drawable.delivery_truck_speed_24px),
+                                        Triple("LOANED_OUT", "On Loan", R.drawable.patient_list_24px),
+                                        Triple("IN_REPAIR", "In Repair / CLA", R.drawable.ic_handyman),
+                                        Triple("SOLD", "Sold / Archived", R.drawable.shopping_cart_24px)
+                                    ).forEach { (statusKey, statusLabel, iconResId) ->
                                         DropdownMenuItem(
+                                            leadingIcon = {
+                                                Icon(
+                                                    painter = painterResource(iconResId),
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            },
                                             text = { Text(statusLabel, fontWeight = if (statusKey == (availability?.status ?: "AVAILABLE")) FontWeight.Bold else FontWeight.Normal) },
                                             onClick = {
                                                 statusDropdownExpanded = false
@@ -1378,13 +1386,21 @@ private fun CameraList(
                                     onDismissRequest = { statusDropdownExpanded = false }
                                 ) {
                                     listOf(
-                                        Pair("AVAILABLE", "✅ In Stock & Available"),
-                                        Pair("IN_TRANSIT", "🚚 In Transit (Pre-Arrival)"),
-                                        Pair("LOANED_OUT", "📞 On Loan"),
-                                        Pair("IN_REPAIR", "🛠️ In Repair / CLA"),
-                                        Pair("SOLD", "🏷️ Sold / Archived")
-                                    ).forEach { (statusKey, statusLabel) ->
+                                        Triple("AVAILABLE", "In Stock & Available", R.drawable.ic_check_circle),
+                                        Triple("IN_TRANSIT", "In Transit (Pre-Arrival)", R.drawable.delivery_truck_speed_24px),
+                                        Triple("LOANED_OUT", "On Loan", R.drawable.patient_list_24px),
+                                        Triple("IN_REPAIR", "In Repair / CLA", R.drawable.ic_handyman),
+                                        Triple("SOLD", "Sold / Archived", R.drawable.shopping_cart_24px)
+                                    ).forEach { (statusKey, statusLabel, iconResId) ->
                                         DropdownMenuItem(
+                                            leadingIcon = {
+                                                Icon(
+                                                    painter = painterResource(iconResId),
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            },
                                             text = { Text(statusLabel, fontWeight = if (statusKey == (availability?.status ?: "AVAILABLE")) FontWeight.Bold else FontWeight.Normal) },
                                             onClick = {
                                                 statusDropdownExpanded = false
