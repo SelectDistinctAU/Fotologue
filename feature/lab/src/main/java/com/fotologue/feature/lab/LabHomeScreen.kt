@@ -203,7 +203,7 @@ fun LabHomeScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         val headerIconRes = when (currentView) {
-                            LabView.MAIN_MENU -> R.drawable.lab_panel_24px
+                            LabView.MAIN_MENU -> R.drawable.experiment_24px
                             LabView.SUPPLIERS -> R.drawable.patient_list_24px
                             LabView.STORAGE_LOCATIONS -> R.drawable.shelves_24px
                             LabView.PRE_ARRIVAL_ORDERS -> R.drawable.delivery_truck_speed_24px
