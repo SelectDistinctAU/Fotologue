@@ -82,6 +82,19 @@ class MainActivity : ComponentActivity() {
                     key(isOnboardingComplete) {
                         val backStack = rememberNavBackStack(if (isOnboardingComplete == true) Route.Hub else Route.Welcome)
 
+                        val currentIntentAction = intent?.action
+                        LaunchedEffect(currentIntentAction) {
+                            if (currentIntentAction == "com.fotologue.ACTION_ADD_LOG") {
+                                if (backStack.lastOrNull() != Route.AddLog) {
+                                    backStack.add(Route.AddLog)
+                                }
+                            } else if (currentIntentAction == "com.fotologue.ACTION_LIGHT_METER") {
+                                if (backStack.lastOrNull() !is Route.LightMeter) {
+                                    backStack.add(Route.LightMeter(targetIso = 100))
+                                }
+                            }
+                        }
+
                         val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()
                         val directive = remember(windowAdaptiveInfo) {
                             calculatePaneScaffoldDirective(windowAdaptiveInfo)
