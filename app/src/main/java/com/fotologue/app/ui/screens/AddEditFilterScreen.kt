@@ -2,9 +2,13 @@ package com.fotologue.app.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,6 +30,7 @@ fun AddEditFilterScreen(
     onSuccess: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var isCustomFormView by remember { mutableStateOf(viewModel.filterId != null) }
     var typeExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -40,7 +45,9 @@ fun AddEditFilterScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            if (viewModel.filterId == null) 
+                            if (!isCustomFormView && viewModel.filterId == null)
+                                "Select Filter from Presets"
+                            else if (viewModel.filterId == null) 
                                 stringResource(R.string.add_filter) 
                             else 
                                 stringResource(R.string.edit_filter)
@@ -53,8 +60,10 @@ fun AddEditFilterScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { viewModel.saveFilter(onSuccess) }) {
-                        Icon(painterResource(R.drawable.ic_check), contentDescription = stringResource(R.string.action_save))
+                    if (isCustomFormView || viewModel.filterId != null) {
+                        IconButton(onClick = { viewModel.saveFilter(onSuccess) }) {
+                            Icon(painterResource(R.drawable.ic_check), contentDescription = stringResource(R.string.action_save))
+                        }
                     }
                 }
             )
@@ -62,302 +71,252 @@ fun AddEditFilterScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .consumeWindowInsets(innerPadding)
-                .padding(top = innerPadding.calculateTopPadding())
-                .imePadding()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-                .padding(bottom = innerPadding.calculateBottomPadding() + 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
         ) {
-            Text(
-                "Associated Lenses",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            if (uiState.lenses.isEmpty()) {
-                Text(
-                    "No lenses found in library. Add a lens first.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error
+            if (!isCustomFormView && viewModel.filterId == null) {
+                // PRIMARY FULL-SCREEN PRESET CATALOG BROWSER
+                FilterPresetsBrowser(
+                    onSelectPreset = { brand, model, size, factor ->
+                        val fullName = if (model.startsWith(brand, ignoreCase = true)) model else "$brand $model".trim()
+                        viewModel.onNameChange(fullName)
+                        if (size.isNotBlank()) viewModel.onThreadSizeChange(size)
+                        if (factor.isNotBlank()) viewModel.onCompensationStopsChange(factor)
+                        isCustomFormView = true
+                    },
+                    onAddCustomFilter = { isCustomFormView = true }
                 )
             } else {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                // MANUAL CREATION / EDIT FORM
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    uiState.lenses.forEach { lens ->
-                        val isSelected = uiState.selectedLensIds.contains(lens.id)
-                        val cleanModel = if (lens.model.startsWith(lens.make, ignoreCase = true)) {
-                            lens.model.substring(lens.make.length).trim()
-                        } else {
-                            lens.model
-                        }
-                        val sizeLabel = if (lens.filterSize > 0) "${lens.filterSize}mm" else "Fixed"
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = { viewModel.onLensToggled(lens.id) },
-                            label = { Text("$cleanModel ($sizeLabel)") },
-                            leadingIcon = if (isSelected) {
-                                {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_check),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(FilterChipDefaults.IconSize)
-                                    )
-                                }
-                            } else null
-                        )
-                    }
-                }
-            }
-
-            if (uiState.selectedLensIds.isEmpty() && uiState.lenses.isNotEmpty()) {
-                OutlinedCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f))
-                ) {
-                    Row(
-                        modifier = Modifier.padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(painterResource(R.drawable.ic_add), contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "⚠️ Please select at least one associated lens above",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
-
-            // TOP PRIMARY SAVE BUTTON
-            Button(
-                onClick = { viewModel.saveFilter(onSuccess) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(painterResource(R.drawable.ic_check), contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.save_filter), fontWeight = FontWeight.Bold)
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(4.dp))
-
-            var showFilterPresetDialog by remember { mutableStateOf(false) }
-
-            if (showFilterPresetDialog) {
-                val filterPresets = remember {
-                    com.fotologue.core.data.preset.MasterPresetEngine.getPresetsByCategory("FILTER")
-                }
-                var selectedBrandFilter by remember { mutableStateOf("All") }
-                var selectedTypeFilter by remember { mutableStateOf("All") }
-                var presetSearchQuery by remember { mutableStateOf("") }
-                var brandExpanded by remember { mutableStateOf(false) }
-                var typeExpanded by remember { mutableStateOf(false) }
-
-                val brandOptions = remember(filterPresets) {
-                    listOf("All") + filterPresets.map { it.brand }.distinct().sorted()
-                }
-                val typeOptions = remember(filterPresets, selectedBrandFilter) {
-                    val baseList = if (selectedBrandFilter == "All") filterPresets else filterPresets.filter { it.brand.equals(selectedBrandFilter, true) }
-                    listOf("All") + baseList.mapNotNull { it.attributes["type"] }.distinct().sorted()
-                }
-
-                val filteredPresets = remember(filterPresets, selectedBrandFilter, selectedTypeFilter, presetSearchQuery) {
-                    filterPresets.filter { preset ->
-                        val matchesBrand = selectedBrandFilter == "All" || preset.brand.equals(selectedBrandFilter, true)
-                        val matchesType = selectedTypeFilter == "All" || (preset.attributes["type"] ?: "").equals(selectedTypeFilter, true)
-                        val matchesSearch = presetSearchQuery.isBlank() || preset.name.contains(presetSearchQuery, true) || preset.brand.contains(presetSearchQuery, true)
-                        matchesBrand && matchesType && matchesSearch
-                    }
-                }
-
-                AlertDialog(
-                    onDismissRequest = { showFilterPresetDialog = false },
-                    title = { Text("Select Filter from Presets", fontWeight = FontWeight.Bold) },
-                    text = {
-                        Column(
-                            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                    if (viewModel.filterId == null) {
+                        OutlinedButton(
+                            onClick = { isCustomFormView = false },
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Select a brand to view curated filter presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Back to Preset Catalog", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                        }
+                    }
 
-                            var brandQuery by remember { mutableStateOf("") }
-                            val filteredBrandOptions = remember(brandOptions, brandQuery) {
-                                if (brandQuery.isBlank()) brandOptions else brandOptions.filter { it.contains(brandQuery, ignoreCase = true) }
-                            }
+                    Text(
+                        "Associated Lenses",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
 
-                            ExposedDropdownMenuBox(expanded = brandExpanded, onExpandedChange = { brandExpanded = !brandExpanded }) {
-                                OutlinedTextField(
-                                    value = if (brandExpanded) brandQuery else selectedBrandFilter,
-                                    onValueChange = {
-                                        brandQuery = it
-                                        brandExpanded = true
-                                    },
-                                    label = { Text("Filter by Brand") },
-                                    placeholder = { Text(selectedBrandFilter) },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandExpanded) },
-                                    singleLine = true,
-                                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+                    if (uiState.lenses.isEmpty()) {
+                        Text(
+                            "No lenses found. Please add a lens first.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    } else {
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            uiState.lenses.forEach { lens ->
+                                val isSelected = uiState.selectedLensIds.contains(lens.id)
+                                FilterChip(
+                                    selected = isSelected,
+                                    onClick = { viewModel.onLensToggled(lens.id) },
+                                    label = { Text("${lens.make} ${lens.model}") },
+                                    leadingIcon = if (isSelected) {
+                                        {
+                                            Icon(
+                                                painter = painterResource(R.drawable.ic_check),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                            )
+                                        }
+                                    } else null
                                 )
-                                ExposedDropdownMenu(expanded = brandExpanded && filteredBrandOptions.isNotEmpty(), onDismissRequest = { brandExpanded = false; brandQuery = "" }) {
-                                    filteredBrandOptions.forEach { bOpt ->
-                                        DropdownMenuItem(text = { Text(bOpt) }, onClick = { selectedBrandFilter = bOpt; brandExpanded = false; brandQuery = "" })
-                                    }
-                                }
-                            }
-
-                            OutlinedTextField(
-                                value = presetSearchQuery,
-                                onValueChange = { presetSearchQuery = it },
-                                label = { Text("Search Filter Presets") },
-                                leadingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) },
-                                singleLine = true,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-
-                            HorizontalDivider()
-
-                            filteredPresets.forEach { preset ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            viewModel.onNameChange(preset.name)
-                                            preset.attributes["threadSize"]?.let { viewModel.onThreadSizeChange(it) }
-                                            preset.attributes["type"]?.let { viewModel.onTypeChange(it) }
-                                            preset.attributes["compensationStops"]?.let { viewModel.onCompensationStopsChange(it) }
-                                            showFilterPresetDialog = false
-                                        },
-                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                                ) {
-                                    Column(modifier = Modifier.padding(12.dp)) {
-                                        Text(preset.name, fontWeight = FontWeight.Bold)
-                                        Text("Brand: ${preset.brand} • Size: ${preset.attributes["threadSize"] ?: "52mm"} • Stop Adjustment: +${preset.attributes["compensationStops"] ?: "0.0"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                    }
-                                }
                             }
                         }
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { showFilterPresetDialog = false }) {
-                            Text("Close")
+                    }
+
+                    OutlinedTextField(
+                        value = uiState.name,
+                        onValueChange = viewModel::onNameChange,
+                        label = { Text("Filter Name / Specification") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    ExposedDropdownMenuBox(
+                        expanded = typeExpanded,
+                        onExpandedChange = { typeExpanded = !typeExpanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.type,
+                            onValueChange = viewModel::onTypeChange,
+                            label = { Text("Filter Type") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
+                            singleLine = true,
+                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = typeExpanded,
+                            onDismissRequest = { typeExpanded = false }
+                        ) {
+                            uiState.filterTypes.forEach { typeOption ->
+                                DropdownMenuItem(
+                                    text = { Text(typeOption) },
+                                    onClick = {
+                                        viewModel.onTypeChange(typeOption)
+                                        typeExpanded = false
+                                    }
+                                )
+                            }
                         }
                     }
-                )
-            }
 
-            OutlinedButton(
-                onClick = { showFilterPresetDialog = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(painterResource(R.drawable.ic_settings), contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Select Filter from Presets", fontWeight = FontWeight.Bold)
-            }
+                    OutlinedTextField(
+                        value = uiState.threadSize,
+                        onValueChange = viewModel::onThreadSizeChange,
+                        label = { Text("Thread Size (mm)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
 
-            Text(
-                "Note: Front auxiliary lenses (e.g. Rolleiflex Mutar, Bayonet close-up diopters, anamorphic adapters) and filters are logged here.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+                    OutlinedTextField(
+                        value = uiState.compensationStops,
+                        onValueChange = viewModel::onCompensationStopsChange,
+                        label = { Text("Compensation (Stops, e.g. 3.0)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
 
-            Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = uiState.name,
-                onValueChange = viewModel::onNameChange,
-                label = { Text(stringResource(R.string.label_filter_name_hint)) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            var threadSizeExpanded by remember { mutableStateOf(false) }
-
-            ExposedDropdownMenuBox(
-                expanded = threadSizeExpanded,
-                onExpandedChange = { threadSizeExpanded = it },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = uiState.threadSize,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Thread Size") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = threadSizeExpanded) },
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = threadSizeExpanded,
-                    onDismissRequest = { threadSizeExpanded = false }
-                ) {
-                    uiState.threadSizes.forEach { threadOpt ->
-                        DropdownMenuItem(
-                            text = { Text(threadOpt) },
-                            onClick = {
-                                viewModel.onThreadSizeChange(threadOpt)
-                                threadSizeExpanded = false
-                            }
-                        )
+                    Button(
+                        onClick = { viewModel.saveFilter(onSuccess) },
+                        modifier = Modifier.fillMaxWidth().height(48.dp)
+                    ) {
+                        Icon(painterResource(R.drawable.ic_check), contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(R.string.action_save), fontWeight = FontWeight.Bold)
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
+        }
+    }
+}
 
-            ExposedDropdownMenuBox(
-                expanded = typeExpanded,
-                onExpandedChange = { typeExpanded = it },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = uiState.type,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.label_filter_type)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = typeExpanded,
-                    onDismissRequest = { typeExpanded = false }
-                ) {
-                    uiState.filterTypes.forEach { type ->
-                        DropdownMenuItem(
-                            text = { Text(type) },
-                            onClick = {
-                                viewModel.onTypeChange(type)
-                                typeExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FilterPresetsBrowser(
+    onSelectPreset: (brand: String, model: String, size: String, factor: String) -> Unit,
+    onAddCustomFilter: () -> Unit
+) {
+    val filterPresets = remember {
+        com.fotologue.core.data.preset.MasterPresetEngine.getPresetsByCategory("FILTER")
+    }
+    var selectedBrandFilter by remember { mutableStateOf("All") }
+    var presetSearchQuery by remember { mutableStateOf("") }
+    var brandExpanded by remember { mutableStateOf(false) }
 
+    val brandOptions = remember(filterPresets) {
+        listOf("All") + filterPresets.map { it.brand }.distinct().sorted()
+    }
+
+    val filteredPresets = remember(filterPresets, selectedBrandFilter, presetSearchQuery) {
+        filterPresets.filter { preset ->
+            val matchesBrand = selectedBrandFilter == "All" || preset.brand.equals(selectedBrandFilter, true)
+            val matchesSearch = presetSearchQuery.isBlank() || preset.name.contains(presetSearchQuery, true) || preset.brand.contains(presetSearchQuery, true)
+            matchesBrand && matchesSearch
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Text("Select a brand to view curated filter presets:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+        // Brand Filter
+        var brandQuery by remember { mutableStateOf("") }
+        val filteredBrandOptions = remember(brandOptions, brandQuery) {
+            if (brandQuery.isBlank()) brandOptions else brandOptions.filter { it.contains(brandQuery, ignoreCase = true) }
+        }
+
+        ExposedDropdownMenuBox(expanded = brandExpanded, onExpandedChange = { brandExpanded = !brandExpanded }) {
             OutlinedTextField(
-                value = uiState.compensationStops,
-                onValueChange = { input ->
-                    if (input.isBlank() || input.all { c -> c.isDigit() || c == '.' }) {
-                        viewModel.onCompensationStopsChange(input)
-                    }
+                value = if (brandExpanded) brandQuery else selectedBrandFilter,
+                onValueChange = {
+                    brandQuery = it
+                    brandExpanded = true
                 },
-                label = { Text(stringResource(R.string.label_compensation_stops_hint)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                label = { Text("Filter by Brand") },
+                placeholder = { Text(selectedBrandFilter) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandExpanded) },
+                singleLine = true,
+                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
             )
-            
-            Button(
-                onClick = { viewModel.saveFilter(onSuccess) },
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+            ExposedDropdownMenu(expanded = brandExpanded && filteredBrandOptions.isNotEmpty(), onDismissRequest = { brandExpanded = false; brandQuery = "" }) {
+                filteredBrandOptions.forEach { bOpt ->
+                    DropdownMenuItem(text = { Text(bOpt) }, onClick = { selectedBrandFilter = bOpt; brandExpanded = false; brandQuery = "" })
+                }
+            }
+        }
+
+        // Search Bar
+        OutlinedTextField(
+            value = presetSearchQuery,
+            onValueChange = { presetSearchQuery = it },
+            label = { Text("Search Filter Presets") },
+            leadingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedButton(
+            onClick = onAddCustomFilter,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.width(6.dp))
+            Text("Add Custom / Unlisted Filter", fontWeight = FontWeight.Bold)
+        }
+
+        HorizontalDivider()
+
+        if (filteredPresets.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No matching filter presets found.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(stringResource(R.string.save_filter))
+                items(filteredPresets.size) { idx ->
+                    val p = filteredPresets[idx]
+                    val size = p.attributes["filterSize"] ?: p.attributes["size"] ?: ""
+                    val factor = p.attributes["compensationStops"] ?: ""
+                    Card(
+                        onClick = { onSelectPreset(p.brand, p.name, size, factor) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(p.name, fontWeight = FontWeight.Bold)
+                            Text("Brand: ${p.brand} • Size: ${size} • Stop Adjustment: ${factor}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
             }
         }
     }

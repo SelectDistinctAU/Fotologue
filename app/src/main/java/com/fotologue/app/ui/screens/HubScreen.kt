@@ -212,7 +212,7 @@ fun HubScreen(
             item(key = "module_archive") {
                 HubModuleCard(
                     subtitle = "Archive Vault",
-                    iconRes = R.drawable.shelves_24px,
+                    iconRes = com.fotologue.app.R.drawable.backup_24px,
                     cardBg = safelightCardBg,
                     subColor = safelightPrimary,
                     onClick = onNavigateToArchive

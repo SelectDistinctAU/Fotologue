@@ -160,7 +160,7 @@ fun ArchiveScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            painter = painterResource(R.drawable.shelves_24px),
+                            painter = painterResource(com.fotologue.app.R.drawable.backup_24px),
                             contentDescription = null,
                             tint = safelightPrimary,
                             modifier = Modifier.size(24.dp)
@@ -244,7 +244,7 @@ fun ArchiveScreen(
                                 .weight(1f)
                                 .height(48.dp)
                         ) {
-                            Icon(Icons.Default.Share, contentDescription = null, tint = btnTextTint)
+                            Icon(painterResource(com.fotologue.app.R.drawable.file_json_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Export Backup", style = MaterialTheme.typography.labelSmall, color = btnTextTint, fontWeight = FontWeight.Bold, maxLines = 1)
                         }
@@ -256,7 +256,7 @@ fun ArchiveScreen(
                                 .weight(1f)
                                 .height(48.dp)
                         ) {
-                            Icon(Icons.Default.Refresh, contentDescription = null, tint = safelightPrimary)
+                            Icon(painterResource(com.fotologue.app.R.drawable.upload_file_24px), contentDescription = null, tint = safelightPrimary, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Restore Backup", style = MaterialTheme.typography.labelSmall, color = safelightPrimary, maxLines = 1)
                         }
@@ -294,7 +294,7 @@ fun ArchiveScreen(
                             .fillMaxWidth()
                             .height(48.dp)
                     ) {
-                        Icon(Icons.Default.Share, contentDescription = null, tint = btnTextTint)
+                        Icon(painterResource(com.fotologue.app.R.drawable.csv_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text("Export CSV Summary Log", style = MaterialTheme.typography.labelMedium, color = btnTextTint, fontWeight = FontWeight.Bold)
                     }
@@ -335,7 +335,7 @@ fun ArchiveScreen(
                                 .weight(1f)
                                 .height(48.dp)
                         ) {
-                            Icon(Icons.Default.Share, contentDescription = null, tint = btnTextTint)
+                            Icon(painterResource(com.fotologue.app.R.drawable.download_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Export Manifest", style = MaterialTheme.typography.labelSmall, color = btnTextTint, fontWeight = FontWeight.Bold)
                         }
@@ -346,7 +346,7 @@ fun ArchiveScreen(
                                 .weight(1f)
                                 .height(48.dp)
                         ) {
-                            Icon(Icons.Default.Refresh, contentDescription = null, tint = safelightPrimary)
+                            Icon(painterResource(com.fotologue.app.R.drawable.upload_24px), contentDescription = null, tint = safelightPrimary, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Import Manifest", style = MaterialTheme.typography.labelSmall, color = safelightPrimary)
                         }
@@ -384,7 +384,7 @@ fun ArchiveScreen(
                             .fillMaxWidth()
                             .height(48.dp)
                     ) {
-                        Icon(painterResource(com.fotologue.app.R.drawable.sync_desktop_24px), contentDescription = null, tint = btnTextTint)
+                        Icon(painterResource(com.fotologue.app.R.drawable.cloud_sync_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text("Refresh Master Presets from Cloud", style = MaterialTheme.typography.labelMedium, color = btnTextTint, fontWeight = FontWeight.Bold)
                     }
