@@ -113,9 +113,23 @@ class AddEditCameraKitViewModel @Inject constructor(
                         associatedViewfinderIds.contains(vf.id) || refs.none { it.viewfinderId == vf.id }
                     }
                 }
+                val camera = if (cameraId != null) _uiState.value.allCameras.find { it.id == cameraId } else null
+                val cameraName = camera?.name ?: ""
+                val hasInterchangeableViewfinder = (
+                    cameraName.contains("LX", ignoreCase = true) ||
+                    cameraName.contains("F-1", ignoreCase = true) ||
+                    cameraName.contains("F2", ignoreCase = true) ||
+                    cameraName.contains("F3", ignoreCase = true) ||
+                    cameraName.contains("F4", ignoreCase = true) ||
+                    cameraName.contains("F5", ignoreCase = true) ||
+                    cameraName.contains("500", ignoreCase = true) ||
+                    cameraName.contains("503", ignoreCase = true) ||
+                    cameraName.contains("RZ67", ignoreCase = true)
+                )
+
                 _uiState.update { it.copy(
                     filteredViewfinders = filtered,
-                    isViewfinderVisible = viewfinders.isNotEmpty()
+                    isViewfinderVisible = hasInterchangeableViewfinder && filtered.isNotEmpty()
                 ) }
             }.collect {}
         }
