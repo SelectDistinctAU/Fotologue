@@ -217,6 +217,48 @@ fun AddEditCameraScreen(
                     trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
                 )
 
+                if (searchQuery.isNotBlank()) {
+                    val scope = rememberCoroutineScope()
+                    var isSearchingOnline by remember { mutableStateOf(false) }
+
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                isSearchingOnline = true
+                                val onlineSpecs = com.fotologue.core.data.preset.WebSpecSearchEngine.searchCameraSpecs(searchQuery)
+                                val topResult = onlineSpecs.firstOrNull()
+                                if (topResult != null) {
+                                    val subCatStr = topResult.attributes["type"] ?: "Film SLR"
+                                    val cType = CameraType.fromString(subCatStr)
+                                    val spec = CameraSpec(
+                                        name = topResult.name,
+                                        modelNumber = topResult.modelNumber ?: topResult.name,
+                                        type = cType,
+                                        mount = topResult.attributes["mount"] ?: "Standard",
+                                        shutterSpeeds = listOf(topResult.attributes["shutterSpeeds"] ?: "1s - 1/1000s, B")
+                                    )
+                                    if (isPreArrivalMode) {
+                                        viewModel.savePreArrivalCamera { newCamId ->
+                                            onSavePreArrivalOrder(spec.name, "${topResult.brand} • mount: ${spec.mount}", topResult.brand, newCamId)
+                                            onBack()
+                                        }
+                                    } else {
+                                        viewModel.applySpec(spec)
+                                        isCustomFormView = true
+                                    }
+                                }
+                                isSearchingOnline = false
+                            }
+                        },
+                        enabled = !isSearchingOnline,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(painterResource(com.fotologue.app.R.drawable.cloud_sync_24px), contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(if (isSearchingOnline) "Searching Web Specs..." else "🌐 Lookup Specs for \"$searchQuery\"", fontWeight = FontWeight.Bold)
+                    }
+                }
+
                 // Fallback Action Button: Can't find camera? Add Custom {Brand} Camera
                 val fallbackButtonLabel = if (selectedBrandFilter != "All") "➕ Can't find model? Add Custom $selectedBrandFilter Camera" else "➕ Add Custom / Unlisted Camera"
                 OutlinedButton(
