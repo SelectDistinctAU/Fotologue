@@ -485,6 +485,46 @@ private fun LensPresetsBrowser(
             trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
         )
 
+        if (lensSearchQueryText.isNotBlank()) {
+            val scope = rememberCoroutineScope()
+            var isSearchingOnline by remember { mutableStateOf(false) }
+
+            Button(
+                onClick = {
+                    scope.launch {
+                        isSearchingOnline = true
+                        val onlineSpecs = com.fotologue.core.data.preset.WebSpecSearchEngine.searchLensSpecs(lensSearchQueryText)
+                        val topResult = onlineSpecs.firstOrNull()
+                        if (topResult != null) {
+                            val spec = LensSpec(
+                                make = topResult.brand,
+                                model = topResult.name,
+                                modelNumber = topResult.modelNumber ?: "",
+                                type = topResult.attributes["type"] ?: "Prime",
+                                mount = topResult.attributes["mount"] ?: "Standard",
+                                filterSize = topResult.attributes["filterSize"]?.replace("mm", "")?.toIntOrNull() ?: 52,
+                                isStabilized = false,
+                                minFocusDistance = 0.45,
+                                maxMagnification = 0.15,
+                                minAperture = topResult.attributes["minAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 22.0,
+                                maxAperture = topResult.attributes["maxAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 1.8,
+                                minFocalLength = topResult.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50,
+                                maxFocalLength = topResult.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50
+                            )
+                            onSelectSpec(spec)
+                        }
+                        isSearchingOnline = false
+                    }
+                },
+                enabled = !isSearchingOnline,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(painterResource(com.fotologue.app.R.drawable.cloud_sync_24px), contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(if (isSearchingOnline) "Searching Web Specs..." else "🌐 Lookup Specs for \"$lensSearchQueryText\"", fontWeight = FontWeight.Bold)
+            }
+        }
+
         // Fallback Action Button
         val fallbackButtonLabel = if (selectedBrandFilter != "All") "➕ Add New $selectedBrandFilter Lens" else "➕ Add New Custom Lens"
         OutlinedButton(
