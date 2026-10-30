@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,7 +20,8 @@ import com.fotologue.app.R
 fun AddEditCameraKitScreen(
     viewModel: AddEditCameraKitViewModel,
     onBack: () -> Unit,
-    onSuccess: () -> Unit
+    onSuccess: () -> Unit,
+    onAddNewFilm: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -220,6 +222,13 @@ fun AddEditCameraKitScreen(
                                 }
                             )
                         }
+                        DropdownMenuItem(
+                            text = { Text("➕ Add New Film Stock...", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
+                            onClick = {
+                                filmExpanded = false
+                                onAddNewFilm()
+                            }
+                        )
                     }
                 }
 
@@ -230,22 +239,23 @@ fun AddEditCameraKitScreen(
                             .padding(top = 6.dp),
                         colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f))
                     ) {
-                        Row(
+                        Column(
                             modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_add),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "No film stock matching this camera format in your library.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onErrorContainer
                             )
+                            Button(
+                                onClick = onAddNewFilm,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(painterResource(R.drawable.ic_add), contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Add New Film Stock", fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
                 }

@@ -378,7 +378,8 @@ class MainActivity : ComponentActivity() {
                                     AddEditCameraKitScreen(
                                         viewModel = viewModel,
                                         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
-                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) }
+                                        onSuccess = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+                                        onAddNewFilm = { backStack.add(Route.AddFilm()) }
                                     )
                                 }
                                 entry<Route.AddEditTeleconverter> { navRoute ->
