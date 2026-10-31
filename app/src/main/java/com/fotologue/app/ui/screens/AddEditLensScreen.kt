@@ -373,65 +373,8 @@ private fun LensPresetsBrowser(
     var mountDropdownExpanded by remember { mutableStateOf(false) }
 
     var webSearchResults by remember { mutableStateOf<List<com.fotologue.core.data.preset.WebSpecResult>>(emptyList()) }
-    var showWebResultsDialog by remember { mutableStateOf(false) }
     var isSearchingOnline by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-
-    if (showWebResultsDialog) {
-        AlertDialog(
-            onDismissRequest = { showWebResultsDialog = false },
-            title = { Text("🌐 Lens Web Spec Search Results", fontWeight = FontWeight.Bold) },
-            text = {
-                Column(
-                    modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    if (webSearchResults.isEmpty()) {
-                        Text("No matching online lens specs found for \"$lensSearchQueryText\".", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    } else {
-                        Text("Select a lens model to auto-fill specs:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        webSearchResults.forEach { res ->
-                            val spec = LensSpec(
-                                make = res.brand,
-                                model = res.name,
-                                modelNumber = res.modelNumber ?: "",
-                                type = res.attributes["type"] ?: "Prime",
-                                mount = res.attributes["mount"] ?: "Standard",
-                                filterSize = res.attributes["filterSize"]?.replace("mm", "")?.toIntOrNull() ?: 52,
-                                isStabilized = false,
-                                minFocusDistance = 0.45,
-                                maxMagnification = 0.15,
-                                minAperture = res.attributes["minAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 22.0,
-                                maxAperture = res.attributes["maxAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 1.8,
-                                minFocalLength = res.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50,
-                                maxFocalLength = res.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50
-                            )
-
-                            Card(
-                                onClick = {
-                                    showWebResultsDialog = false
-                                    onSelectSpec(spec)
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                            ) {
-                                Column(modifier = Modifier.padding(12.dp)) {
-                                    Text(res.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                                    Text("Brand: ${res.brand} • Type: ${spec.type} • Mount: ${spec.mount}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                    Text("Specs: ${res.attributes["focalLength"] ?: "50mm"} ${res.attributes["maxAperture"] ?: "f/1.8"} • Filter: ${spec.filterSize}mm", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showWebResultsDialog = false }) {
-                    Text("Close")
-                }
-            }
-        )
-    }
 
     val availableMountsForBrand = remember(selectedBrandFilter) {
         val matchingItems = if (selectedBrandFilter == "All") {
@@ -553,7 +496,6 @@ private fun LensPresetsBrowser(
                         isSearchingOnline = true
                         webSearchResults = com.fotologue.core.data.preset.WebSpecSearchEngine.searchLensSpecs(lensSearchQueryText)
                         isSearchingOnline = false
-                        showWebResultsDialog = true
                     }
                 },
                 enabled = !isSearchingOnline,
@@ -563,6 +505,56 @@ private fun LensPresetsBrowser(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(if (isSearchingOnline) "Searching Online..." else "🌐 Search Online Databases for \"$lensSearchQueryText\"", fontWeight = FontWeight.Bold)
             }
+        }
+
+        if (webSearchResults.isNotEmpty()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("🌐 Web Spec Search Results", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                TextButton(onClick = { webSearchResults = emptyList() }) {
+                    Text("Clear Results")
+                }
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                webSearchResults.forEach { res ->
+                    val spec = LensSpec(
+                        make = res.brand,
+                        model = res.name,
+                        modelNumber = res.modelNumber ?: "",
+                        type = res.attributes["type"] ?: "Prime",
+                        mount = res.attributes["mount"] ?: "Standard",
+                        filterSize = res.attributes["filterSize"]?.replace("mm", "")?.toIntOrNull() ?: 52,
+                        isStabilized = false,
+                        minFocusDistance = 0.45,
+                        maxMagnification = 0.15,
+                        minAperture = res.attributes["minAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 22.0,
+                        maxAperture = res.attributes["maxAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 1.8,
+                        minFocalLength = res.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50,
+                        maxFocalLength = res.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50
+                    )
+
+                    Card(
+                        onClick = {
+                            webSearchResults = emptyList()
+                            onSelectSpec(spec)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(res.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                            Text("Brand: ${res.brand} • Type: ${spec.type} • Mount: ${spec.mount}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("Specs: ${res.attributes["focalLength"] ?: "50mm"} ${res.attributes["maxAperture"] ?: "f/1.8"} • Filter: ${spec.filterSize}mm", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
+            }
+
+            HorizontalDivider()
         }
 
         // Fallback Action Button
@@ -601,7 +593,6 @@ private fun LensPresetsBrowser(
                                     isSearchingOnline = true
                                     webSearchResults = com.fotologue.core.data.preset.WebSpecSearchEngine.searchLensSpecs(lensSearchQueryText)
                                     isSearchingOnline = false
-                                    showWebResultsDialog = true
                                 }
                             },
                             enabled = !isSearchingOnline
