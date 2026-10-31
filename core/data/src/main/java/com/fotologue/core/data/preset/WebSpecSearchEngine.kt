@@ -309,6 +309,7 @@ object WebSpecSearchEngine {
         val lower = query.lowercase()
         return when {
             lower.contains("kodak") || lower.contains("brownie") -> "Kodak"
+            lower.contains("praktica") -> "Praktica"
             lower.contains("pentax") -> "Pentax"
             lower.contains("canon") -> "Canon"
             lower.contains("nikon") || lower.contains("nikkor") -> "Nikon"
@@ -329,6 +330,7 @@ object WebSpecSearchEngine {
         val lower = query.lowercase()
         return when {
             lower.contains("brownie") || lower.contains("box camera") -> "Fixed"
+            lower.contains("praktica") || lower.contains("m42") || lower.contains("takumar") || lower.contains("helios") -> "M42 Thread"
             lower.contains("fa") || lower.contains("smc-a") || lower.contains("pentax-m") || lower.contains("pentax k") || brand == "Pentax" -> "Pentax K"
             lower.contains("fd") || lower.contains("nfd") -> "Canon FD"
             lower.contains("ef") -> "Canon EF"

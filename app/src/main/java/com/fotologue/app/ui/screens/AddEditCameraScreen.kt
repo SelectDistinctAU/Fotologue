@@ -209,6 +209,69 @@ fun AddEditCameraScreen(
                     }
                 }
 
+                var webSearchResults by remember { mutableStateOf<List<com.fotologue.core.data.preset.WebSpecResult>>(emptyList()) }
+                var showWebResultsDialog by remember { mutableStateOf(false) }
+                var isSearchingOnline by remember { mutableStateOf(false) }
+                val scope = rememberCoroutineScope()
+
+                if (showWebResultsDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showWebResultsDialog = false },
+                        title = { Text("🌐 Web Spec Search Results", fontWeight = FontWeight.Bold) },
+                        text = {
+                            Column(
+                                modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                if (webSearchResults.isEmpty()) {
+                                    Text("No matching online specs found for \"$searchQuery\".", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                } else {
+                                    Text("Select a model to auto-fill camera specs:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    webSearchResults.forEach { res ->
+                                        val subCatStr = res.attributes["type"] ?: "Film SLR"
+                                        val cType = CameraType.fromString(subCatStr)
+                                        val spec = CameraSpec(
+                                            name = res.name,
+                                            modelNumber = res.modelNumber ?: res.name,
+                                            type = cType,
+                                            mount = res.attributes["mount"] ?: "Standard",
+                                            shutterSpeeds = listOf(res.attributes["shutterSpeeds"] ?: "1s - 1/1000s, B")
+                                        )
+
+                                        Card(
+                                            onClick = {
+                                                viewModel.applySpec(spec)
+                                                showWebResultsDialog = false
+                                                if (isPreArrivalMode) {
+                                                    viewModel.savePreArrivalCamera { newCamId ->
+                                                        onSavePreArrivalOrder(spec.name, "${res.brand} • mount: ${spec.mount}", res.brand, newCamId)
+                                                        onBack()
+                                                    }
+                                                } else {
+                                                    isCustomFormView = true
+                                                }
+                                            },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                        ) {
+                                            Column(modifier = Modifier.padding(12.dp)) {
+                                                Text(res.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                                                Text("Brand: ${res.brand} • Type: ${cType.displayName} • Mount: ${spec.mount}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                Text("Shutter: ${spec.shutterSpeeds.firstOrNull() ?: ""}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(onClick = { showWebResultsDialog = false }) {
+                                Text("Close")
+                            }
+                        }
+                    )
+                }
+
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
@@ -218,44 +281,21 @@ fun AddEditCameraScreen(
                 )
 
                 if (searchQuery.isNotBlank()) {
-                    val scope = rememberCoroutineScope()
-                    var isSearchingOnline by remember { mutableStateOf(false) }
-
                     Button(
                         onClick = {
                             scope.launch {
                                 isSearchingOnline = true
-                                val onlineSpecs = com.fotologue.core.data.preset.WebSpecSearchEngine.searchCameraSpecs(searchQuery)
-                                val topResult = onlineSpecs.firstOrNull()
-                                if (topResult != null) {
-                                    val subCatStr = topResult.attributes["type"] ?: "Film SLR"
-                                    val cType = CameraType.fromString(subCatStr)
-                                    val spec = CameraSpec(
-                                        name = topResult.name,
-                                        modelNumber = topResult.modelNumber ?: topResult.name,
-                                        type = cType,
-                                        mount = topResult.attributes["mount"] ?: "Standard",
-                                        shutterSpeeds = listOf(topResult.attributes["shutterSpeeds"] ?: "1s - 1/1000s, B")
-                                    )
-                                    if (isPreArrivalMode) {
-                                        viewModel.savePreArrivalCamera { newCamId ->
-                                            onSavePreArrivalOrder(spec.name, "${topResult.brand} • mount: ${spec.mount}", topResult.brand, newCamId)
-                                            onBack()
-                                        }
-                                    } else {
-                                        viewModel.applySpec(spec)
-                                        isCustomFormView = true
-                                    }
-                                }
+                                webSearchResults = com.fotologue.core.data.preset.WebSpecSearchEngine.searchCameraSpecs(searchQuery)
                                 isSearchingOnline = false
+                                showWebResultsDialog = true
                             }
                         },
                         enabled = !isSearchingOnline,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(painterResource(com.fotologue.app.R.drawable.cloud_sync_24px), contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(painterResource(R.drawable.cloud_sync_24px), contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(if (isSearchingOnline) "Searching Web Specs..." else "🌐 Lookup Specs for \"$searchQuery\"", fontWeight = FontWeight.Bold)
+                        Text(if (isSearchingOnline) "Searching Online Databases..." else "🌐 Search Online Databases for \"$searchQuery\"", fontWeight = FontWeight.Bold)
                     }
                 }
 
@@ -294,45 +334,24 @@ fun AddEditCameraScreen(
                 }
 
                 if (filteredPresets.isEmpty()) {
-                    val scope = rememberCoroutineScope()
-                    var isSearchingOnline by remember { mutableStateOf(false) }
-
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("No camera presets found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("No camera presets found in local catalog.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                             if (searchQuery.isNotBlank()) {
                                 Button(
                                     onClick = {
                                         scope.launch {
                                             isSearchingOnline = true
-                                            val onlineSpecs = com.fotologue.core.data.preset.WebSpecSearchEngine.searchCameraSpecs(searchQuery)
-                                            val topResult = onlineSpecs.firstOrNull()
-                                            if (topResult != null) {
-                                                val subCatStr = topResult.attributes["type"] ?: "Film SLR"
-                                                val cType = CameraType.fromString(subCatStr)
-                                                val spec = CameraSpec(
-                                                    name = topResult.name,
-                                                    modelNumber = topResult.modelNumber ?: topResult.name,
-                                                    type = cType,
-                                                    mount = topResult.attributes["mount"] ?: "Standard",
-                                                    shutterSpeeds = listOf(topResult.attributes["shutterSpeeds"] ?: "1s - 1/1000s, B")
-                                                )
-                                                if (isPreArrivalMode) {
-                                                    viewModel.savePreArrivalCamera { newCamId ->
-                                                        onSavePreArrivalOrder(spec.name, "${topResult.brand} • mount: ${spec.mount}", topResult.brand, newCamId)
-                                                        onBack()
-                                                    }
-                                                } else {
-                                                    viewModel.applySpec(spec)
-                                                    viewModel.saveCamera(onBack)
-                                                }
-                                            }
+                                            webSearchResults = com.fotologue.core.data.preset.WebSpecSearchEngine.searchCameraSpecs(searchQuery)
                                             isSearchingOnline = false
+                                            showWebResultsDialog = true
                                         }
                                     },
                                     enabled = !isSearchingOnline
                                 ) {
-                                    Text(if (isSearchingOnline) "Searching Web..." else "🌐 Search Web for \"$searchQuery\"")
+                                    Icon(painterResource(R.drawable.cloud_sync_24px), contentDescription = null, modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(if (isSearchingOnline) "Searching Online..." else "🌐 Search Online Databases for \"$searchQuery\"")
                                 }
                             }
                             Button(onClick = { isCustomFormView = true }) {

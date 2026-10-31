@@ -1,5 +1,20 @@
 [
 {
+    "id": "cam_praktica_ltl3",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Praktica",
+    "name": "Praktica LTL3",
+    "modelNumber": "LTL3",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "M42 Thread",
+      "format": "35mm",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "cam_kodak_box_brownie_no2",
     "category": "CAMERA",
     "subCategory": "Box Camera",

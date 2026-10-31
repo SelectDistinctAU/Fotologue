@@ -591,7 +591,7 @@ fun ContactSheetScreenContent(
                 }
 
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(uiState.gridColumns),
+                    columns = GridCells.Adaptive(minSize = 100.dp),
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
                         top = 16.dp,
@@ -801,9 +801,9 @@ fun SkippedFrameCard(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
             )
             Text(
-                text = "Skipped / Gap",
-                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                text = "Blank Gap",
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp, fontWeight = FontWeight.Medium),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 4.dp)
             )
