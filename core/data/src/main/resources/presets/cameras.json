@@ -1,5 +1,37 @@
 [
   {
+    "id": "cam_kodak_box_brownie_no2",
+    "category": "CAMERA",
+    "subCategory": "Box Camera",
+    "brand": "Kodak",
+    "name": "Kodak Box Brownie No. 2",
+    "modelNumber": "No. 2 Brownie",
+    "attributes": {
+      "type": "Box Camera",
+      "mount": "Fixed",
+      "format": "120 (Medium Format)",
+      "shutterSpeeds": "1/50s, B",
+      "fixedLens": "Kodar 105mm f/11 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_kodak_brownie_target_six20",
+    "category": "CAMERA",
+    "subCategory": "Box Camera",
+    "brand": "Kodak",
+    "name": "Kodak Brownie Target Six-20",
+    "modelNumber": "Target Six-20",
+    "attributes": {
+      "type": "Box Camera",
+      "mount": "Fixed",
+      "format": "620 (Medium Format)",
+      "shutterSpeeds": "1/50s, B",
+      "fixedLens": "Meniscus 100mm f/11 Taking Lens"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "cam_pentax_lx",
     "category": "CAMERA",
     "subCategory": "Film SLR",

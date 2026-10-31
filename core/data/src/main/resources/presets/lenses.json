@@ -1,5 +1,37 @@
 [
   {
+    "id": "lens_kodak_kodar_105_11",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Kodak",
+    "name": "Kodar 105mm f/11 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "None",
+      "focalLength": "105mm",
+      "maxAperture": "f/11",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_kodak_meniscus_100_11",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "Kodak",
+    "name": "Meniscus 100mm f/11 Taking Lens",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed",
+      "filterSize": "None",
+      "focalLength": "100mm",
+      "maxAperture": "f/11",
+      "minAperture": "f/22"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "lens_canon_fd_50_14",
     "category": "LENS",
     "subCategory": "Prime",
