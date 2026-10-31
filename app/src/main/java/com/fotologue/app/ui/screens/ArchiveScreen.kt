@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -239,26 +240,26 @@ fun ArchiveScreen(
                         Button(
                             onClick = { createJsonLauncher.launch("backup_$timestamp.json") },
                             colors = btnColors,
-                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                             modifier = Modifier
                                 .weight(1f)
-                                .height(48.dp)
+                                .defaultMinSize(minHeight = 48.dp)
                         ) {
                             Icon(painterResource(com.fotologue.app.R.drawable.file_json_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Export Backup", style = MaterialTheme.typography.labelSmall, color = btnTextTint, fontWeight = FontWeight.Bold, maxLines = 1)
+                            Text("Export Backup", style = MaterialTheme.typography.labelMedium, color = btnTextTint, fontWeight = FontWeight.Bold)
                         }
 
                         OutlinedButton(
                             onClick = { restoreJsonLauncher.launch(arrayOf("application/json")) },
-                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                             modifier = Modifier
                                 .weight(1f)
-                                .height(48.dp)
+                                .defaultMinSize(minHeight = 48.dp)
                         ) {
                             Icon(painterResource(com.fotologue.app.R.drawable.upload_file_24px), contentDescription = null, tint = safelightPrimary, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Restore Backup", style = MaterialTheme.typography.labelSmall, color = safelightPrimary, maxLines = 1)
+                            Text("Restore Backup", style = MaterialTheme.typography.labelMedium, color = safelightPrimary)
                         }
                     }
                 }
@@ -276,13 +277,13 @@ fun ArchiveScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "DESKTOP PHOTO LIBRARY EXPORTER (digiKam / Lightroom / Capture One)",
+                        text = "DESKTOP PHOTO LIBRARY EXPORTER",
                         style = MaterialTheme.typography.labelSmall,
                         color = safelightPrimary,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Generates ISO 16684 XMP sidecar files with 3-Axis Tag hierarchies (`Subject`, `Content`, `Intent`), creator copyright, and camera RAW scan sequence matching.",
+                        text = "Generates ISO 16684 XMP sidecar files with 3-Axis Tag hierarchies (`Subject`, `Content`, `Intent`), creator copyright, and camera RAW scan sequence matching for digiKam, Lightroom, and Capture One.",
                         style = MaterialTheme.typography.bodySmall,
                         color = safelightSubFg
                     )
@@ -290,9 +291,10 @@ fun ArchiveScreen(
                     Button(
                         onClick = { createCsvLauncher.launch("catalogue_summary_$timestamp.csv") },
                         colors = btnColors,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .defaultMinSize(minHeight = 48.dp)
                     ) {
                         Icon(painterResource(com.fotologue.app.R.drawable.csv_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(6.dp))
@@ -331,24 +333,26 @@ fun ArchiveScreen(
                         Button(
                             onClick = { createReferenceManifestLauncher.launch("fotologue_foundation_manifest.json") },
                             colors = btnColors,
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                             modifier = Modifier
                                 .weight(1f)
-                                .height(48.dp)
+                                .defaultMinSize(minHeight = 48.dp)
                         ) {
                             Icon(painterResource(com.fotologue.app.R.drawable.download_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Export Manifest", style = MaterialTheme.typography.labelSmall, color = btnTextTint, fontWeight = FontWeight.Bold)
+                            Text("Export Manifest", style = MaterialTheme.typography.labelMedium, color = btnTextTint, fontWeight = FontWeight.Bold)
                         }
 
                         OutlinedButton(
                             onClick = { importReferenceManifestLauncher.launch(arrayOf("application/json")) },
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                             modifier = Modifier
                                 .weight(1f)
-                                .height(48.dp)
+                                .defaultMinSize(minHeight = 48.dp)
                         ) {
                             Icon(painterResource(com.fotologue.app.R.drawable.upload_24px), contentDescription = null, tint = safelightPrimary, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Import Manifest", style = MaterialTheme.typography.labelSmall, color = safelightPrimary)
+                            Text("Import Manifest", style = MaterialTheme.typography.labelMedium, color = safelightPrimary)
                         }
                     }
                 }
@@ -380,9 +384,10 @@ fun ArchiveScreen(
                     Button(
                         onClick = { viewModel.refreshMasterPresetsFromCloud() },
                         colors = btnColors,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .defaultMinSize(minHeight = 48.dp)
                     ) {
                         Icon(painterResource(com.fotologue.app.R.drawable.cloud_sync_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(6.dp))
