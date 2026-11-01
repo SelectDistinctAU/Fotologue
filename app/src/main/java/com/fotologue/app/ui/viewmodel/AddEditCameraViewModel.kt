@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 data class AddEditCameraUiState(
@@ -203,9 +204,13 @@ class AddEditCameraViewModel @Inject constructor(
     }
 
     fun applySpec(spec: CameraSpec) {
+        val rawMake = spec.make.ifBlank { spec.name.substringBefore(" ") }
+        val detectedMake = rawMake.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+
         _uiState.update { 
             val format = if (spec.type == CameraType.MEDIUM_FORMAT || spec.type == CameraType.TLR) Film.FORMAT_120 else it.format
             it.copy(
+                make = detectedMake,
                 name = spec.name,
                 type = spec.type,
                 mount = spec.mount,
@@ -217,6 +222,8 @@ class AddEditCameraViewModel @Inject constructor(
                 isNameValid = true
             )
         }
+        savedStateHandle["make"] = detectedMake
+        savedStateHandle["name"] = spec.name
     }
 
     fun updateStatus(cameraId: Long, newStatus: String) {

@@ -38,13 +38,18 @@ fun AddEditCameraScreen(
     var expanded by remember { mutableStateOf(false) }
 
     val masterPresetItems = remember { MasterPresetEngine.getPresetsByCategory("CAMERA") }
-    val masterBrands = remember {
-        listOf(
+    val masterBrands = remember(uiState.make) {
+        val baseList = listOf(
             "Alpa", "Arca-Swiss", "Arax", "Bronica", "Canon", "Chamonix", "Chroma", "Contax",
             "Fujifilm", "Hasselblad", "Intrepid", "Kodak", "Konica", "Leica", "Linhof",
             "Lomography", "Mamiya", "Minolta", "Nikon", "Olympus", "Pentax", "Phase One",
-            "Plaubel", "Ricoh", "Rollei", "Shen Hao", "Sinar", "Toyo", "Voigtländer", "Yashica", "Add new Brand..."
+            "Plaubel", "Praktica", "Ricoh", "Rollei", "Shen Hao", "Sinar", "Toyo", "Voigtländer", "Yashica", "Add new Brand..."
         )
+        if (uiState.make.isNotBlank() && !baseList.contains(uiState.make)) {
+            (baseList + uiState.make).distinct().sorted()
+        } else {
+            baseList
+        }
     }
 
     var selectedBrandFilter by remember { mutableStateOf(if (uiState.make.isNotBlank() && masterBrands.contains(uiState.make)) uiState.make else "All") }
@@ -256,6 +261,7 @@ fun AddEditCameraScreen(
                             val subCatStr = res.attributes["type"] ?: "Film SLR"
                             val cType = CameraType.fromString(subCatStr)
                             val spec = CameraSpec(
+                                make = res.brand,
                                 name = res.name,
                                 modelNumber = res.modelNumber ?: res.name,
                                 type = cType,
@@ -329,22 +335,6 @@ fun AddEditCameraScreen(
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text("No camera presets found in local catalog.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            if (searchQuery.isNotBlank()) {
-                                Button(
-                                    onClick = {
-                                        scope.launch {
-                                            isSearchingOnline = true
-                                            webSearchResults = com.fotologue.core.data.preset.WebSpecSearchEngine.searchCameraSpecs(searchQuery)
-                                            isSearchingOnline = false
-                                        }
-                                    },
-                                    enabled = !isSearchingOnline
-                                ) {
-                                    Icon(painterResource(R.drawable.cloud_sync_24px), contentDescription = null, modifier = Modifier.size(18.dp))
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(if (isSearchingOnline) "Searching Online..." else "🌐 Search Online Databases for \"$searchQuery\"")
-                                }
-                            }
                             Button(onClick = { isCustomFormView = true }) {
                                 Icon(Icons.Default.Add, contentDescription = null)
                                 Spacer(modifier = Modifier.width(6.dp))

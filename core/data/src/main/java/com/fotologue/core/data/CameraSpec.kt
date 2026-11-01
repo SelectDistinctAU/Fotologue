@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CameraSpec(
+    val make: String = "",
     val name: String,
     val modelNumber: String = "",
     val type: CameraType,
