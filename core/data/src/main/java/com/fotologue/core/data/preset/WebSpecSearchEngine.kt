@@ -18,7 +18,7 @@ data class WebSpecResult(
 object WebSpecSearchEngine {
 
     /**
-     * Search and parse lens specs via Master Preset Catalog, AnalogDB API, Wikidata API & Wikipedia API.
+     * Search and parse lens specs via Master Preset Catalog, Camera-wiki.org MediaWiki API & Wikidata API.
      */
     suspend fun searchLensSpecs(query: String): List<WebSpecResult> = withContext(Dispatchers.IO) {
         val cleanQuery = query.trim()
@@ -45,14 +45,14 @@ object WebSpecSearchEngine {
             )
         }
 
-        // 2. Live Online Query (Wikidata + Wikipedia)
+        // 2. Camera-wiki.org MediaWiki API & Wikidata API Query
         try {
-            val wikiDataResults = fetchWikidataLensSpecs(cleanQuery)
-            results.addAll(wikiDataResults)
+            val cameraWikiResults = fetchCameraWikiLensSpecs(cleanQuery)
+            results.addAll(cameraWikiResults)
 
             if (results.isEmpty()) {
-                val wikiResults = fetchWikipediaLensSpecs(cleanQuery)
-                results.addAll(wikiResults)
+                val wikiDataResults = fetchWikidataLensSpecs(cleanQuery)
+                results.addAll(wikiDataResults)
             }
         } catch (_: Exception) {
             // Live query offline
@@ -62,7 +62,7 @@ object WebSpecSearchEngine {
     }
 
     /**
-     * Search and parse camera specs via Master Preset Catalog, AnalogDB API, Wikidata API & Wikipedia API.
+     * Search and parse camera specs via Master Preset Catalog, Camera-wiki.org MediaWiki API & Wikidata API.
      */
     suspend fun searchCameraSpecs(query: String): List<WebSpecResult> = withContext(Dispatchers.IO) {
         val cleanQuery = query.trim()
@@ -89,28 +89,24 @@ object WebSpecSearchEngine {
             )
         }
 
-        // 2. Live Online Query (AnalogDB REST API + Wikidata Entity API + Wikipedia)
+        // 2. Camera-wiki.org MediaWiki API (10,000+ Film Camera Articles & {{Camera}} Infoboxes)
         try {
-            val analogDbResults = fetchAnalogDbCameraSpecs(cleanQuery)
-            results.addAll(analogDbResults)
+            val cameraWikiResults = fetchCameraWikiSpecs(cleanQuery)
+            results.addAll(cameraWikiResults)
 
-            if (results.isEmpty()) {
-                val wikiDataResults = fetchWikidataCameraSpecs(cleanQuery)
-                results.addAll(wikiDataResults)
-            }
-
-            // Try Query Variants if exact query returned no hits (e.g., "Praktica LTL3" -> "Praktica LTL 3")
+            // Try Query Variants if exact query returned no hits (e.g. "Praktica LTL3" -> "Praktica LTL 3")
             if (results.isEmpty()) {
                 val normalizedQuery = cleanQuery.replace(Regex("""([a-zA-Z]+)(\d+)"""), "$1 $2")
                 if (normalizedQuery != cleanQuery) {
-                    val normalizedResults = fetchWikidataCameraSpecs(normalizedQuery)
+                    val normalizedResults = fetchCameraWikiSpecs(normalizedQuery)
                     results.addAll(normalizedResults)
                 }
             }
 
+            // Fallback to Wikidata API
             if (results.isEmpty()) {
-                val wikiResults = fetchWikipediaCameraSpecs(cleanQuery)
-                results.addAll(wikiResults)
+                val wikiDataResults = fetchWikidataCameraSpecs(cleanQuery)
+                results.addAll(wikiDataResults)
             }
         } catch (_: Exception) {
             // Live query offline
@@ -119,9 +115,9 @@ object WebSpecSearchEngine {
         results.distinctBy { it.name.lowercase(Locale.getDefault()) }
     }
 
-    private fun fetchAnalogDbCameraSpecs(query: String): List<WebSpecResult> {
+    private fun fetchCameraWikiSpecs(query: String): List<WebSpecResult> {
         val encoded = URLEncoder.encode(query, "UTF-8")
-        val apiUrl = "https://api.analogdb.com/v1/cameras?search=$encoded"
+        val apiUrl = "https://camerawiki.org/api.php?action=query&list=search&srsearch=$encoded&format=json"
 
         val connection = (URL(apiUrl).openConnection() as HttpURLConnection).apply {
             requestMethod = "GET"
@@ -135,34 +131,135 @@ object WebSpecSearchEngine {
         val responseText = connection.inputStream.bufferedReader().use { it.readText() }
         val results = mutableListOf<WebSpecResult>()
 
-        val nameMatches = Regex(""""name":"([^"]+)"""").findAll(responseText)
+        val titleMatches = Regex(""""title":"([^"]+)"""").findAll(responseText)
 
-        nameMatches.forEach { match ->
-            val name = match.groupValues[1].replace("""\"""", "")
-            if (isValidCameraEntity(name.lowercase(Locale.getDefault()), name)) {
-                val brand = detectBrand(name)
-                val type = detectCameraType(name)
-                val format = detectFilmFormat(name)
-                val shutter = detectShutterSpeed(name, type)
-                val mount = detectMount(name, brand)
+        titleMatches.forEach { match ->
+            val pageTitle = match.groupValues[1].replace("""\"""", "")
+            val lowerTitle = pageTitle.lowercase(Locale.getDefault())
 
-                results.add(
-                    WebSpecResult(
-                        category = "CAMERA",
-                        brand = brand,
-                        name = name,
-                        modelNumber = name.substringAfter(brand, "").trim().ifBlank { name },
-                        attributes = mapOf(
-                            "type" to type,
-                            "mount" to mount,
-                            "format" to format,
-                            "shutterSpeeds" to shutter
-                        )
-                    )
-                )
+            if (!lowerTitle.startsWith("category:") && !lowerTitle.startsWith("list of") && !lowerTitle.contains("comparison")) {
+                val wikitext = fetchCameraWikiPageWikitext(pageTitle)
+                val spec = parseCameraWikiWikitext(pageTitle, wikitext, query)
+                if (spec != null) {
+                    results.add(spec)
+                }
             }
         }
         return results
+    }
+
+    private fun fetchCameraWikiLensSpecs(query: String): List<WebSpecResult> {
+        val encoded = URLEncoder.encode("$query lens", "UTF-8")
+        val apiUrl = "https://camerawiki.org/api.php?action=query&list=search&srsearch=$encoded&format=json"
+
+        val connection = (URL(apiUrl).openConnection() as HttpURLConnection).apply {
+            requestMethod = "GET"
+            connectTimeout = 4000
+            readTimeout = 4000
+            setRequestProperty("User-Agent", "Fotologue/1.0 (Contact: selectdistinct.au)")
+        }
+
+        if (connection.responseCode != 200) return emptyList()
+
+        val responseText = connection.inputStream.bufferedReader().use { it.readText() }
+        val results = mutableListOf<WebSpecResult>()
+
+        val titleMatches = Regex(""""title":"([^"]+)"""").findAll(responseText)
+
+        titleMatches.forEach { match ->
+            val pageTitle = match.groupValues[1].replace("""\"""", "")
+            val lowerTitle = pageTitle.lowercase(Locale.getDefault())
+
+            if (!lowerTitle.startsWith("category:") && !lowerTitle.startsWith("list of")) {
+                val wikitext = fetchCameraWikiPageWikitext(pageTitle)
+                val spec = parseCameraWikiLensWikitext(pageTitle, wikitext, query)
+                if (spec != null) {
+                    results.add(spec)
+                }
+            }
+        }
+        return results
+    }
+
+    private fun fetchCameraWikiPageWikitext(pageTitle: String): String {
+        val encodedPage = URLEncoder.encode(pageTitle, "UTF-8")
+        val apiUrl = "https://camerawiki.org/api.php?action=parse&page=$encodedPage&prop=wikitext&format=json"
+
+        val connection = (URL(apiUrl).openConnection() as HttpURLConnection).apply {
+            requestMethod = "GET"
+            connectTimeout = 4000
+            readTimeout = 4000
+            setRequestProperty("User-Agent", "Fotologue/1.0 (Contact: selectdistinct.au)")
+        }
+
+        if (connection.responseCode != 200) return ""
+
+        return connection.inputStream.bufferedReader().use { it.readText() }
+    }
+
+    private fun parseCameraWikiWikitext(title: String, wikitext: String, query: String): WebSpecResult? {
+        val fullText = "$title $wikitext"
+        if (!isValidCameraEntity(title, wikitext)) return null
+
+        val rawBrand = regexExtract(wikitext, """\|(?:make|manufacturer|brand)\s*=\s*([^|\n}]+)""")?.trim()
+            ?: detectBrand(fullText.ifBlank { query })
+
+        val brand = cleanWikitextValue(rawBrand).ifBlank { detectBrand(query) }
+
+        val rawMount = regexExtract(wikitext, """\|(?:mount|lensMount)\s*=\s*([^|\n}]+)""")?.trim()
+            ?: detectMount(fullText, brand)
+
+        val mount = cleanWikitextValue(rawMount).ifBlank { detectMount(fullText, brand) }
+
+        val type = detectCameraType(fullText)
+        val format = detectFilmFormat(fullText)
+        val shutter = regexExtract(wikitext, """\|(?:shutter|shutterRange|shutterSpeeds)\s*=\s*([^|\n}]+)""")?.trim()
+            ?: detectShutterSpeed(fullText, type)
+
+        return WebSpecResult(
+            category = "CAMERA",
+            brand = brand,
+            name = title,
+            modelNumber = title.substringAfter(brand, "").trim().ifBlank { title },
+            attributes = mapOf(
+                "type" to type,
+                "mount" to mount,
+                "format" to format,
+                "shutterSpeeds" to cleanWikitextValue(shutter)
+            )
+        )
+    }
+
+    private fun parseCameraWikiLensWikitext(title: String, wikitext: String, query: String): WebSpecResult? {
+        val fullText = "$title $wikitext"
+        if (!isValidLensEntity(title, wikitext)) return null
+
+        val brand = detectBrand(fullText.ifBlank { query })
+        val focal = regexExtract(wikitext, """(\d{2,3}(?:-\d{2,3})?\s*mm)""")
+            ?: regexExtract(fullText, """(\d{2,3}(?:-\d{2,3})?\s*mm)""") ?: "50mm"
+
+        val aperture = regexExtract(wikitext, """(f/?\s*\d(?:\.\d)?)""")
+            ?: regexExtract(fullText, """(f/?\s*\d(?:\.\d)?)""") ?: "f/1.8"
+
+        val filter = regexExtract(wikitext, """(\d{2}\s*mm)""")
+            ?: regexExtract(fullText, """(\d{2}\s*mm)""") ?: "52mm"
+
+        val mount = detectMount(fullText, brand)
+
+        return WebSpecResult(
+            category = "LENS",
+            brand = brand,
+            name = title,
+            modelNumber = focal,
+            attributes = mapOf(
+                "type" to if (focal.contains("-")) "Zoom" else "Prime",
+                "mount" to mount,
+                "focalLength" to focal,
+                "maxAperture" to aperture,
+                "minAperture" to "f/22.0",
+                "filterSize" to filter
+            )
+        )
     }
 
     private fun fetchWikidataCameraSpecs(query: String): List<WebSpecResult> {
@@ -269,116 +366,6 @@ object WebSpecSearchEngine {
         return results
     }
 
-    private fun fetchWikipediaCameraSpecs(query: String): List<WebSpecResult> {
-        val encoded = URLEncoder.encode("$query camera", "UTF-8")
-        val apiUrl = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=$encoded&format=json"
-
-        val connection = (URL(apiUrl).openConnection() as HttpURLConnection).apply {
-            requestMethod = "GET"
-            connectTimeout = 4000
-            readTimeout = 4000
-            setRequestProperty("User-Agent", "Fotologue/1.0 (Contact: selectdistinct.au)")
-        }
-
-        if (connection.responseCode != 200) return emptyList()
-
-        val responseText = connection.inputStream.bufferedReader().use { it.readText() }
-        return parseWikipediaCameraJsonResponse(responseText, query)
-    }
-
-    private fun fetchWikipediaLensSpecs(query: String): List<WebSpecResult> {
-        val encoded = URLEncoder.encode("$query lens", "UTF-8")
-        val apiUrl = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=$encoded&format=json"
-
-        val connection = (URL(apiUrl).openConnection() as HttpURLConnection).apply {
-            requestMethod = "GET"
-            connectTimeout = 4000
-            readTimeout = 4000
-            setRequestProperty("User-Agent", "Fotologue/1.0 (Contact: selectdistinct.au)")
-        }
-
-        if (connection.responseCode != 200) return emptyList()
-
-        val responseText = connection.inputStream.bufferedReader().use { it.readText() }
-        return parseWikipediaLensJsonResponse(responseText, query)
-    }
-
-    private fun parseWikipediaCameraJsonResponse(json: String, query: String): List<WebSpecResult> {
-        val list = mutableListOf<WebSpecResult>()
-        val titleMatches = Regex(""""title":"([^"]+)"""").findAll(json)
-        val snippetMatches = Regex(""""snippet":"([^"]+)"""").findAll(json).toList()
-
-        titleMatches.forEachIndexed { idx, match ->
-            val title = match.groupValues[1].replace("""\"""", "")
-            val snippet = if (idx < snippetMatches.size) snippetMatches[idx].groupValues[1].replace("""\"""", "").replace("<span class=\"searchmatch\">", "").replace("</span>", "") else ""
-            val fullText = "$title $snippet"
-
-            val lowerTitle = title.lowercase(Locale.getDefault())
-            if (isValidCameraEntity(lowerTitle, fullText)) {
-                val brand = detectBrand(fullText.ifBlank { query })
-                val type = detectCameraType(fullText)
-                val format = detectFilmFormat(fullText)
-                val shutter = detectShutterSpeed(fullText, type)
-                val mount = detectMount(fullText, brand)
-
-                list.add(
-                    WebSpecResult(
-                        category = "CAMERA",
-                        brand = brand,
-                        name = title,
-                        modelNumber = title.substringAfter(brand, "").trim().ifBlank { title },
-                        attributes = mapOf(
-                            "type" to type,
-                            "mount" to mount,
-                            "format" to format,
-                            "shutterSpeeds" to shutter
-                        )
-                    )
-                )
-            }
-        }
-        return list
-    }
-
-    private fun parseWikipediaLensJsonResponse(json: String, query: String): List<WebSpecResult> {
-        val list = mutableListOf<WebSpecResult>()
-        val titleMatches = Regex(""""title":"([^"]+)"""").findAll(json)
-        val snippetMatches = Regex(""""snippet":"([^"]+)"""").findAll(json).toList()
-
-        titleMatches.forEachIndexed { idx, match ->
-            val title = match.groupValues[1].replace("""\"""", "")
-            val snippet = if (idx < snippetMatches.size) snippetMatches[idx].groupValues[1].replace("""\"""", "").replace("<span class=\"searchmatch\">", "").replace("</span>", "") else ""
-            val fullText = "$title $snippet"
-
-            val lowerTitle = title.lowercase(Locale.getDefault())
-            if (isValidLensEntity(lowerTitle, fullText)) {
-                val brand = detectBrand(fullText.ifBlank { query })
-                val focal = regexExtract(fullText, """(\d{2,3}(?:-\d{2,3})?\s*mm)""") ?: "50mm"
-                val aperture = regexExtract(fullText, """(f/?\s*\d(?:\.\d)?)""") ?: "f/1.8"
-                val filter = regexExtract(fullText, """(\d{2}\s*mm)""") ?: "52mm"
-                val mount = detectMount(fullText, brand)
-
-                list.add(
-                    WebSpecResult(
-                        category = "LENS",
-                        brand = brand,
-                        name = title,
-                        modelNumber = focal,
-                        attributes = mapOf(
-                            "type" to if (focal.contains("-")) "Zoom" else "Prime",
-                            "mount" to mount,
-                            "focalLength" to focal,
-                            "maxAperture" to aperture,
-                            "minAperture" to "f/22.0",
-                            "filterSize" to filter
-                        )
-                    )
-                )
-            }
-        }
-        return list
-    }
-
     private fun isValidCameraEntity(lowerLabel: String, fullText: String): Boolean {
         if (lowerLabel.startsWith("list of") || lowerLabel.startsWith("category:") || lowerLabel.contains("digital camera brands")) {
             return false
@@ -477,6 +464,13 @@ object WebSpecSearchEngine {
             lower.contains("md") || lower.contains("sr") || lower.contains("rokkor") -> "Minolta SR/MD"
             else -> "Standard"
         }
+    }
+
+    private fun cleanWikitextValue(input: String): String {
+        return input.replace(Regex("""\[\[(?:[^|\]]*\|)?([^\]]+)\]\]"""), "$1")
+                    .replace(Regex("""\{\{[^}]*\}\}"""), "")
+                    .replace("'", "")
+                    .trim()
     }
 
     private fun regexExtract(input: String, pattern: String): String? {
