@@ -71,10 +71,12 @@ fun AddEditLensScreen(
             )
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .imePadding()
                 .padding(horizontal = 16.dp)
         ) {
             if (!isCustomFormView && viewModel.lensId == null) {

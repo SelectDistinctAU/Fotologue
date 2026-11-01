@@ -3,6 +3,7 @@ package com.fotologue.app.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -110,184 +111,230 @@ fun AddEditCameraScreen(
             )
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
                 .imePadding()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = 16.dp)
         ) {
             if (!isCustomFormView && viewModel.cameraId == null) {
                 // PRIMARY TARGET: FULL-SCREEN PRESET CATALOG BROWSER
-                Text(
-                    text = "Select a brand and type to search camera body presets:",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                // 1. FILTER BY CAMERA BRAND (Top Dropdown)
-                var brandQuery by remember { mutableStateOf("") }
-                val allBrandOptions = remember(masterBrands) { (listOf("All") + masterBrands.filter { it != "➕ Add new Brand..." }) }
-                val filteredBrandOptions = remember(allBrandOptions, brandQuery) {
-                    if (brandQuery.isBlank()) allBrandOptions else allBrandOptions.filter { it.contains(brandQuery, ignoreCase = true) }
-                }
-
-                ExposedDropdownMenuBox(
-                    expanded = brandDropdownExpanded,
-                    onExpandedChange = { brandDropdownExpanded = !brandDropdownExpanded },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = if (brandDropdownExpanded) brandQuery else selectedBrandFilter,
-                        onValueChange = {
-                            brandQuery = it
-                            brandDropdownExpanded = true
-                        },
-                        label = { Text("Filter by Camera Brand") },
-                        placeholder = { Text(selectedBrandFilter) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandDropdownExpanded) },
-                        singleLine = true,
-                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = brandDropdownExpanded && filteredBrandOptions.isNotEmpty(),
-                        onDismissRequest = {
-                            brandDropdownExpanded = false
-                            brandQuery = ""
-                        }
-                    ) {
-                        filteredBrandOptions.forEach { b ->
-                            DropdownMenuItem(
-                                text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
-                                onClick = {
-                                    selectedBrandFilter = b
-                                    brandDropdownExpanded = false
-                                    brandQuery = ""
-                                }
-                            )
-                        }
-                    }
-                }
-
-                // 2. FILTER BY CAMERA TYPE (Second Dropdown, Dynamic Cascade)
-                var typeQuery by remember { mutableStateOf("") }
-                val filteredTypeOptions = remember(availableTypesForBrand, typeQuery) {
-                    if (typeQuery.isBlank()) availableTypesForBrand else availableTypesForBrand.filter { it.contains(typeQuery, ignoreCase = true) }
-                }
-
-                ExposedDropdownMenuBox(
-                    expanded = typeDropdownExpanded,
-                    onExpandedChange = { typeDropdownExpanded = !typeDropdownExpanded },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = if (typeDropdownExpanded) typeQuery else selectedCategoryFilter,
-                        onValueChange = {
-                            typeQuery = it
-                            typeDropdownExpanded = true
-                        },
-                        label = { Text("Filter by Camera Type") },
-                        placeholder = { Text(selectedCategoryFilter) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeDropdownExpanded) },
-                        singleLine = true,
-                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = typeDropdownExpanded && filteredTypeOptions.isNotEmpty(),
-                        onDismissRequest = {
-                            typeDropdownExpanded = false
-                            typeQuery = ""
-                        }
-                    ) {
-                        filteredTypeOptions.forEach { cat ->
-                            DropdownMenuItem(
-                                text = { Text(cat, fontWeight = if (cat == selectedCategoryFilter) FontWeight.Bold else FontWeight.Normal) },
-                                onClick = {
-                                    selectedCategoryFilter = cat
-                                    typeDropdownExpanded = false
-                                    typeQuery = ""
-                                }
-                            )
-                        }
-                    }
-                }
-
                 var webSearchResults by remember { mutableStateOf<List<com.fotologue.core.data.preset.WebSpecResult>>(emptyList()) }
                 var isSearchingOnline by remember { mutableStateOf(false) }
                 var hasPerformedOnlineSearch by remember { mutableStateOf(false) }
                 val scope = rememberCoroutineScope()
 
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { 
-                        searchQuery = it 
-                        hasPerformedOnlineSearch = false
-                    },
-                    label = { Text("Search Camera Models") },
-                    modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
-                )
+                val filteredPresets = remember(selectedBrandFilter, selectedCategoryFilter, searchQuery) {
+                    masterPresetItems.filter { item ->
+                        val matchesBrand = selectedBrandFilter == "All" || item.brand.equals(selectedBrandFilter, ignoreCase = true)
+                        val subCat = item.subCategory ?: item.attributes["type"] ?: ""
+                        val matchesType = selectedCategoryFilter == "All" || subCat.contains(selectedCategoryFilter, ignoreCase = true)
+                        val matchesQuery = searchQuery.isBlank() || (
+                            item.name.contains(searchQuery, ignoreCase = true) ||
+                            item.brand.contains(searchQuery, ignoreCase = true) ||
+                            (item.modelNumber?.contains(searchQuery, ignoreCase = true) == true)
+                        )
+                        matchesBrand && matchesType && matchesQuery
+                    }
+                }
 
-                if (searchQuery.isNotBlank()) {
-                    Button(
-                        onClick = {
-                            scope.launch {
-                                isSearchingOnline = true
-                                hasPerformedOnlineSearch = false
-                                webSearchResults = com.fotologue.core.data.preset.WebSpecSearchEngine.searchCameraSpecs(searchQuery)
-                                isSearchingOnline = false
-                                hasPerformedOnlineSearch = true
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    contentPadding = PaddingValues(top = 12.dp, bottom = 32.dp)
+                ) {
+                    item(key = "top_search_bar") {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            // 1. PRIMARY SEARCH BAR AT TOP OF SCREEN
+                            OutlinedTextField(
+                                value = searchQuery,
+                                onValueChange = { 
+                                    searchQuery = it 
+                                    hasPerformedOnlineSearch = false
+                                },
+                                label = { Text("Search Camera Models") },
+                                placeholder = { Text("Type camera model (e.g. Nikon Z f, Leica M6)...") },
+                                leadingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+
+                            // ONLINE SEARCH BUTTON
+                            if (searchQuery.isNotBlank()) {
+                                Button(
+                                    onClick = {
+                                        scope.launch {
+                                            isSearchingOnline = true
+                                            hasPerformedOnlineSearch = false
+                                            webSearchResults = com.fotologue.core.data.preset.WebSpecSearchEngine.searchCameraSpecs(searchQuery)
+                                            isSearchingOnline = false
+                                            hasPerformedOnlineSearch = true
+                                        }
+                                    },
+                                    enabled = !isSearchingOnline,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Icon(painterResource(R.drawable.cloud_sync_24px), contentDescription = null, modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(if (isSearchingOnline) "Searching Online Databases..." else "🌐 Search Online Databases for \"$searchQuery\"", fontWeight = FontWeight.Bold)
+                                }
                             }
-                        },
-                        enabled = !isSearchingOnline,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(painterResource(R.drawable.cloud_sync_24px), contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(if (isSearchingOnline) "Searching Online Databases..." else "🌐 Search Online Databases for \"$searchQuery\"", fontWeight = FontWeight.Bold)
-                    }
-                }
 
-                if (hasPerformedOnlineSearch && webSearchResults.isEmpty() && !isSearchingOnline) {
-                    OutlinedCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f))
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Text(
-                                text = "⚠️ No verified online camera specs found for \"$searchQuery\".",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onErrorContainer
-                            )
-                            Text(
-                                text = "Tap 'Add Custom Camera' below to enter specifications manually.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            // OPTIONAL BRAND AND TYPE FILTERS
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                var brandQuery by remember { mutableStateOf("") }
+                                val allBrandOptions = remember(masterBrands) { (listOf("All") + masterBrands.filter { it != "➕ Add new Brand..." }) }
+                                val filteredBrandOptions = remember(allBrandOptions, brandQuery) {
+                                    if (brandQuery.isBlank()) allBrandOptions else allBrandOptions.filter { it.contains(brandQuery, ignoreCase = true) }
+                                }
+
+                                ExposedDropdownMenuBox(
+                                    expanded = brandDropdownExpanded,
+                                    onExpandedChange = { brandDropdownExpanded = !brandDropdownExpanded },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    OutlinedTextField(
+                                        value = if (brandDropdownExpanded) brandQuery else selectedBrandFilter,
+                                        onValueChange = {
+                                            brandQuery = it
+                                            brandDropdownExpanded = true
+                                        },
+                                        label = { Text("Brand") },
+                                        placeholder = { Text(selectedBrandFilter) },
+                                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandDropdownExpanded) },
+                                        singleLine = true,
+                                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+                                    )
+                                    ExposedDropdownMenu(
+                                        expanded = brandDropdownExpanded && filteredBrandOptions.isNotEmpty(),
+                                        onDismissRequest = {
+                                            brandDropdownExpanded = false
+                                            brandQuery = ""
+                                        }
+                                    ) {
+                                        filteredBrandOptions.forEach { b ->
+                                            DropdownMenuItem(
+                                                text = { Text(b, fontWeight = if (b == selectedBrandFilter) FontWeight.Bold else FontWeight.Normal) },
+                                                onClick = {
+                                                    selectedBrandFilter = b
+                                                    brandDropdownExpanded = false
+                                                    brandQuery = ""
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+
+                                var typeQuery by remember { mutableStateOf("") }
+                                val filteredTypeOptions = remember(availableTypesForBrand, typeQuery) {
+                                    if (typeQuery.isBlank()) availableTypesForBrand else availableTypesForBrand.filter { it.contains(typeQuery, ignoreCase = true) }
+                                }
+
+                                ExposedDropdownMenuBox(
+                                    expanded = typeDropdownExpanded,
+                                    onExpandedChange = { typeDropdownExpanded = !typeDropdownExpanded },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    OutlinedTextField(
+                                        value = if (typeDropdownExpanded) typeQuery else selectedCategoryFilter,
+                                        onValueChange = {
+                                            typeQuery = it
+                                            typeDropdownExpanded = true
+                                        },
+                                        label = { Text("Type") },
+                                        placeholder = { Text(selectedCategoryFilter) },
+                                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeDropdownExpanded) },
+                                        singleLine = true,
+                                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true).fillMaxWidth()
+                                    )
+                                    ExposedDropdownMenu(
+                                        expanded = typeDropdownExpanded && filteredTypeOptions.isNotEmpty(),
+                                        onDismissRequest = {
+                                            typeDropdownExpanded = false
+                                            typeQuery = ""
+                                        }
+                                    ) {
+                                        filteredTypeOptions.forEach { cat ->
+                                            DropdownMenuItem(
+                                                text = { Text(cat, fontWeight = if (cat == selectedCategoryFilter) FontWeight.Bold else FontWeight.Normal) },
+                                                onClick = {
+                                                    selectedCategoryFilter = cat
+                                                    typeDropdownExpanded = false
+                                                    typeQuery = ""
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            val fallbackButtonLabel = if (selectedBrandFilter != "All") "➕ Add Custom $selectedBrandFilter Camera" else "➕ Add Custom / Unlisted Camera"
+                            OutlinedButton(
+                                onClick = {
+                                    if (selectedBrandFilter != "All") {
+                                        viewModel.onMakeChange(selectedBrandFilter)
+                                    }
+                                    if (selectedCategoryFilter != "All") {
+                                        val selectedTypeEnum = CameraType.entries.find { it.displayName.equals(selectedCategoryFilter, ignoreCase = true) }
+                                        selectedTypeEnum?.let { viewModel.onTypeChange(it) }
+                                    }
+                                    isCustomFormView = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                            }
+
+                            HorizontalDivider()
                         }
                     }
-                }
 
-                if (webSearchResults.isNotEmpty()) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("🌐 Web Spec Search Results", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-                        TextButton(onClick = { webSearchResults = emptyList() }) {
-                            Text("Clear Results")
+                    if (hasPerformedOnlineSearch && webSearchResults.isEmpty() && !isSearchingOnline) {
+                        item(key = "web_no_results") {
+                            OutlinedCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f))
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Text(
+                                        text = "⚠️ No verified online camera specs found for \"$searchQuery\".",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                    )
+                                    Text(
+                                        text = "Tap 'Add Custom Camera' above to enter specifications manually.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
                         }
                     }
 
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        webSearchResults.forEach { res ->
+                    if (webSearchResults.isNotEmpty()) {
+                        item(key = "web_header") {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("🌐 Web Spec Search Results", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                                TextButton(onClick = { webSearchResults = emptyList() }) {
+                                    Text("Clear Results")
+                                }
+                            }
+                        }
+
+                        items(webSearchResults, key = { "web_cam_${it.name}" }) { res ->
                             val subCatStr = res.attributes["type"] ?: "Film SLR"
                             val cType = CameraType.fromString(subCatStr)
                             val spec = CameraSpec(
@@ -322,63 +369,54 @@ fun AddEditCameraScreen(
                                 }
                             }
                         }
+
+                        item(key = "web_divider") {
+                            HorizontalDivider()
+                        }
                     }
 
-                    HorizontalDivider()
-                }
+                    item(key = "fallback_btn") {
+                        val fallbackButtonLabel = if (selectedBrandFilter != "All") "➕ Can't find model? Add Custom $selectedBrandFilter Camera" else "➕ Add Custom / Unlisted Camera"
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            OutlinedButton(
+                                onClick = {
+                                    if (selectedBrandFilter != "All") {
+                                        viewModel.onMakeChange(selectedBrandFilter)
+                                    }
+                                    if (selectedCategoryFilter != "All") {
+                                        val selectedTypeEnum = CameraType.entries.find { it.displayName.equals(selectedCategoryFilter, ignoreCase = true) }
+                                        selectedTypeEnum?.let { viewModel.onTypeChange(it) }
+                                    }
+                                    isCustomFormView = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                            }
 
-                // Fallback Action Button: Can't find camera? Add Custom {Brand} Camera
-                val fallbackButtonLabel = if (selectedBrandFilter != "All") "➕ Can't find model? Add Custom $selectedBrandFilter Camera" else "➕ Add Custom / Unlisted Camera"
-                OutlinedButton(
-                    onClick = {
-                        if (selectedBrandFilter != "All") {
-                            viewModel.onMakeChange(selectedBrandFilter)
+                            HorizontalDivider()
                         }
-                        if (selectedCategoryFilter != "All") {
-                            val selectedTypeEnum = CameraType.entries.find { it.displayName.equals(selectedCategoryFilter, ignoreCase = true) }
-                            selectedTypeEnum?.let { viewModel.onTypeChange(it) }
-                        }
-                        isCustomFormView = true
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
-                }
-
-                HorizontalDivider()
-
-                val filteredPresets = remember(selectedBrandFilter, selectedCategoryFilter, searchQuery) {
-                    masterPresetItems.filter { item ->
-                        val matchesBrand = selectedBrandFilter == "All" || item.brand.equals(selectedBrandFilter, ignoreCase = true)
-                        val subCat = item.subCategory ?: item.attributes["type"] ?: ""
-                        val matchesType = selectedCategoryFilter == "All" || subCat.contains(selectedCategoryFilter, ignoreCase = true)
-                        val matchesQuery = searchQuery.isBlank() || (
-                            item.name.contains(searchQuery, ignoreCase = true) ||
-                            item.brand.contains(searchQuery, ignoreCase = true) ||
-                            (item.modelNumber?.contains(searchQuery, ignoreCase = true) == true)
-                        )
-                        matchesBrand && matchesType && matchesQuery
                     }
-                }
 
-                if (filteredPresets.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("No camera presets found in local catalog.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Button(onClick = { isCustomFormView = true }) {
-                                Icon(Icons.Default.Add, contentDescription = null)
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("Add Custom Camera")
+                    if (filteredPresets.isEmpty()) {
+                        item(key = "local_empty") {
+                            Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Text("No camera presets found in local catalog.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Button(onClick = { isCustomFormView = true }) {
+                                        Icon(Icons.Default.Add, contentDescription = null)
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text("Add Custom Camera")
+                                    }
+                                }
                             }
                         }
-                    }
-                } else {
-                    LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(filteredPresets.size) { idx ->
-                            val presetItem = filteredPresets[idx]
+                    } else {
+                        items(filteredPresets, key = { "local_cam_${it.id}" }) { presetItem ->
                             val subCatStr = presetItem.subCategory ?: presetItem.attributes["type"] ?: "Film SLR"
                             val cType = CameraType.fromString(subCatStr)
                             val spec = CameraSpec(
+                                make = presetItem.brand,
                                 name = presetItem.name,
                                 modelNumber = presetItem.modelNumber ?: presetItem.name,
                                 type = cType,
@@ -423,7 +461,7 @@ fun AddEditCameraScreen(
             } else {
                 // SECONDARY FALLBACK VIEW: MANUAL / CUSTOM CAMERA FORM
                 Column(
-                    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(vertical = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     if (viewModel.cameraId == null) {
