@@ -362,7 +362,7 @@ fun AddEditCameraScreen(
                 }
 
                 if (filteredPresets.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text("No camera presets found in local catalog.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Button(onClick = { isCustomFormView = true }) {
