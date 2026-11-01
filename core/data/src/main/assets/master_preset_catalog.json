@@ -1,5 +1,50 @@
 [
 {
+    "id": "cam_kmz_zorki_4k",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "KMZ / Zorki",
+    "name": "Zorki 4K",
+    "modelNumber": "4K",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "M39 Thread",
+      "format": "35mm",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_kmz_zorki_4",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "KMZ / Zorki",
+    "name": "Zorki 4",
+    "modelNumber": "4",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "M39 Thread",
+      "format": "35mm",
+      "shutterSpeeds": "1s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_fed_5",
+    "category": "CAMERA",
+    "subCategory": "Rangefinder",
+    "brand": "FED",
+    "name": "FED 5",
+    "modelNumber": "5",
+    "attributes": {
+      "type": "Rangefinder",
+      "mount": "M39 Thread",
+      "format": "35mm",
+      "shutterSpeeds": "1s - 1/500s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "cam_praktica_ltl3",
     "category": "CAMERA",
     "subCategory": "Film SLR",

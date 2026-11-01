@@ -50,13 +50,7 @@ object WebSpecSearchEngine {
             val liveResults = fetchWikipediaLensSpecs(cleanQuery)
             results.addAll(liveResults)
         } catch (_: Exception) {
-            // Fallback to local synthesizer
-        }
-
-        // 3. Local Synthesizer Fallback if empty
-        if (results.isEmpty()) {
-            val synthesized = parseSynthesizedLensSpec(cleanQuery)
-            results.add(synthesized)
+            // Live query offline
         }
 
         results.distinctBy { it.name.lowercase(Locale.getDefault()) }
@@ -95,13 +89,7 @@ object WebSpecSearchEngine {
             val liveResults = fetchWikipediaCameraSpecs(cleanQuery)
             results.addAll(liveResults)
         } catch (_: Exception) {
-            // Fallback to local synthesizer
-        }
-
-        // 3. Local Synthesizer Fallback if empty
-        if (results.isEmpty()) {
-            val synthesized = parseSynthesizedCameraSpec(cleanQuery)
-            results.add(synthesized)
+            // Live query offline
         }
 
         results.distinctBy { it.name.lowercase(Locale.getDefault()) }

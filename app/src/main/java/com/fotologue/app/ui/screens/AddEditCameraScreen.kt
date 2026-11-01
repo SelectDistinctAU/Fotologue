@@ -216,11 +216,15 @@ fun AddEditCameraScreen(
 
                 var webSearchResults by remember { mutableStateOf<List<com.fotologue.core.data.preset.WebSpecResult>>(emptyList()) }
                 var isSearchingOnline by remember { mutableStateOf(false) }
+                var hasPerformedOnlineSearch by remember { mutableStateOf(false) }
                 val scope = rememberCoroutineScope()
 
                 OutlinedTextField(
                     value = searchQuery,
-                    onValueChange = { searchQuery = it },
+                    onValueChange = { 
+                        searchQuery = it 
+                        hasPerformedOnlineSearch = false
+                    },
                     label = { Text("Search Camera Models") },
                     modifier = Modifier.fillMaxWidth(),
                     trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
@@ -231,8 +235,10 @@ fun AddEditCameraScreen(
                         onClick = {
                             scope.launch {
                                 isSearchingOnline = true
+                                hasPerformedOnlineSearch = false
                                 webSearchResults = com.fotologue.core.data.preset.WebSpecSearchEngine.searchCameraSpecs(searchQuery)
                                 isSearchingOnline = false
+                                hasPerformedOnlineSearch = true
                             }
                         },
                         enabled = !isSearchingOnline,
@@ -241,6 +247,30 @@ fun AddEditCameraScreen(
                         Icon(painterResource(R.drawable.cloud_sync_24px), contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(if (isSearchingOnline) "Searching Online Databases..." else "🌐 Search Online Databases for \"$searchQuery\"", fontWeight = FontWeight.Bold)
+                    }
+                }
+
+                if (hasPerformedOnlineSearch && webSearchResults.isEmpty() && !isSearchingOnline) {
+                    OutlinedCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f))
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                text = "⚠️ No verified online camera specs found for \"$searchQuery\".",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                            Text(
+                                text = "Tap 'Add Custom Camera' below to enter specifications manually.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
 

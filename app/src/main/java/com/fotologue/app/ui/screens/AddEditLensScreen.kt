@@ -481,9 +481,14 @@ private fun LensPresetsBrowser(
             }
         }
 
+        var hasPerformedOnlineSearch by remember { mutableStateOf(false) }
+
         OutlinedTextField(
             value = lensSearchQueryText,
-            onValueChange = { lensSearchQueryText = it },
+            onValueChange = { 
+                lensSearchQueryText = it 
+                hasPerformedOnlineSearch = false
+            },
             label = { Text("Search Lenses") },
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) }
@@ -494,8 +499,10 @@ private fun LensPresetsBrowser(
                 onClick = {
                     scope.launch {
                         isSearchingOnline = true
+                        hasPerformedOnlineSearch = false
                         webSearchResults = com.fotologue.core.data.preset.WebSpecSearchEngine.searchLensSpecs(lensSearchQueryText)
                         isSearchingOnline = false
+                        hasPerformedOnlineSearch = true
                     }
                 },
                 enabled = !isSearchingOnline,
@@ -504,6 +511,30 @@ private fun LensPresetsBrowser(
                 Icon(painterResource(R.drawable.cloud_sync_24px), contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(if (isSearchingOnline) "Searching Online..." else "🌐 Search Online Databases for \"$lensSearchQueryText\"", fontWeight = FontWeight.Bold)
+            }
+        }
+
+        if (hasPerformedOnlineSearch && webSearchResults.isEmpty() && !isSearchingOnline) {
+            OutlinedCard(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f))
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "⚠️ No verified online lens specs found for \"$lensSearchQueryText\".",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                    Text(
+                        text = "Tap 'Add Custom Lens' below to enter specifications manually.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
 
