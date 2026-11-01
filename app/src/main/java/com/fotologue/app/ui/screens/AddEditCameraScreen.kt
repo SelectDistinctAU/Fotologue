@@ -375,29 +375,6 @@ fun AddEditCameraScreen(
                         }
                     }
 
-                    item(key = "fallback_btn") {
-                        val fallbackButtonLabel = if (selectedBrandFilter != "All") "➕ Can't find model? Add Custom $selectedBrandFilter Camera" else "➕ Add Custom / Unlisted Camera"
-                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            OutlinedButton(
-                                onClick = {
-                                    if (selectedBrandFilter != "All") {
-                                        viewModel.onMakeChange(selectedBrandFilter)
-                                    }
-                                    if (selectedCategoryFilter != "All") {
-                                        val selectedTypeEnum = CameraType.entries.find { it.displayName.equals(selectedCategoryFilter, ignoreCase = true) }
-                                        selectedTypeEnum?.let { viewModel.onTypeChange(it) }
-                                    }
-                                    isCustomFormView = true
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
-                            }
-
-                            HorizontalDivider()
-                        }
-                    }
-
                     if (filteredPresets.isEmpty()) {
                         item(key = "local_empty") {
                             Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
