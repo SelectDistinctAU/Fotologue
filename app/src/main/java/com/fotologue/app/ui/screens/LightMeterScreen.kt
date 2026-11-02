@@ -341,6 +341,12 @@ fun LightMeterScreen(
         onFocalLengthChanged = viewModel::onFocalLengthChanged,
         onAdjustEvOffset = viewModel::adjustEvOffset,
         onSpotLocationUpdated = viewModel::updateSpotLocation,
+        onAddSpotSample = viewModel::addSpotSample,
+        onRemoveSpotSample = viewModel::removeSpotSample,
+        onClearSpotSamples = viewModel::clearSpotSamples,
+        onSetPriorityMode = viewModel::setPriorityMode,
+        onAvIndexChanged = viewModel::onAvIndexChanged,
+        onTvIndexChanged = viewModel::onTvIndexChanged,
         onTakeThumbnail = { takeThumbnail(it) },
         onToggleFilmSimulation = viewModel::toggleFilmSimulation,
         onStartCalibration = viewModel::startCalibration,
@@ -367,6 +373,12 @@ fun LightMeterScreenContent(
     onFocalLengthChanged: (Int) -> Unit,
     onAdjustEvOffset: (Float) -> Unit,
     onSpotLocationUpdated: (Int, Int, Int, Int) -> Unit,
+    onAddSpotSample: (Float, Float, Double) -> Unit,
+    onRemoveSpotSample: (Long) -> Unit,
+    onClearSpotSamples: () -> Unit,
+    onSetPriorityMode: (com.fotologue.app.ui.viewmodel.PriorityMode) -> Unit,
+    onAvIndexChanged: (Int) -> Unit,
+    onTvIndexChanged: (Int) -> Unit,
     onTakeThumbnail: ((String?) -> Unit) -> Unit,
     onToggleFilmSimulation: () -> Unit,
     onStartCalibration: () -> Unit,
@@ -421,6 +433,9 @@ fun LightMeterScreenContent(
                         onCameraPermissionRequest = onCameraPermissionRequest,
                         previewView = previewView,
                         onSpotLocationUpdated = onSpotLocationUpdated,
+                        onAddSpotSample = onAddSpotSample,
+                        onRemoveSpotSample = onRemoveSpotSample,
+                        onClearSpotSamples = onClearSpotSamples,
                         uiState = uiState
                     )
                 }
@@ -437,6 +452,10 @@ fun LightMeterScreenContent(
                     onToggleFilmSimulation = onToggleFilmSimulation,
                     onFocalLengthChanged = onFocalLengthChanged,
                     onAdjustEvOffset = onAdjustEvOffset,
+                    onSetPriorityMode = onSetPriorityMode,
+                    onAvIndexChanged = onAvIndexChanged,
+                    onTvIndexChanged = onTvIndexChanged,
+                    onClearSpotSamples = onClearSpotSamples,
                     onTakeThumbnail = onTakeThumbnail,
                     onUseSettings = onUseSettings,
                     targetIso = targetIso,
@@ -461,6 +480,9 @@ fun LightMeterScreenContent(
                         onCameraPermissionRequest = onCameraPermissionRequest,
                         previewView = previewView,
                         onSpotLocationUpdated = onSpotLocationUpdated,
+                        onAddSpotSample = onAddSpotSample,
+                        onRemoveSpotSample = onRemoveSpotSample,
+                        onClearSpotSamples = onClearSpotSamples,
                         uiState = uiState
                     )
                 }
@@ -477,6 +499,10 @@ fun LightMeterScreenContent(
                     onToggleFilmSimulation = onToggleFilmSimulation,
                     onFocalLengthChanged = onFocalLengthChanged,
                     onAdjustEvOffset = onAdjustEvOffset,
+                    onSetPriorityMode = onSetPriorityMode,
+                    onAvIndexChanged = onAvIndexChanged,
+                    onTvIndexChanged = onTvIndexChanged,
+                    onClearSpotSamples = onClearSpotSamples,
                     onTakeThumbnail = onTakeThumbnail,
                     onUseSettings = onUseSettings,
                     targetIso = targetIso,
@@ -504,6 +530,9 @@ private fun CameraPreviewContent(
     onCameraPermissionRequest: () -> Unit,
     previewView: PreviewView,
     onSpotLocationUpdated: (Int, Int, Int, Int) -> Unit,
+    onAddSpotSample: (Float, Float, Double) -> Unit,
+    onRemoveSpotSample: (Long) -> Unit,
+    onClearSpotSamples: () -> Unit,
     uiState: LightMeterUiState
 ) {
     if (isCameraPermissionGranted) {
@@ -513,14 +542,21 @@ private fun CameraPreviewContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .pointerInput(Unit) {
-                        detectTapGestures { offset ->
-                            onSpotLocationUpdated(
-                                offset.x.toInt(),
-                                offset.y.toInt(),
-                                size.width,
-                                size.height
-                            )
-                        }
+                        detectTapGestures(
+                            onTap = { offset ->
+                                onSpotLocationUpdated(
+                                    offset.x.toInt(),
+                                    offset.y.toInt(),
+                                    size.width,
+                                    size.height
+                                )
+                                onAddSpotSample(
+                                    offset.x / size.width.toFloat(),
+                                    offset.y / size.height.toFloat(),
+                                    uiState.currentEv
+                                )
+                            }
+                        )
                     }
             )
 
@@ -559,6 +595,72 @@ private fun CameraPreviewContent(
                 mode = uiState.meteringMode,
                 spotRect = uiState.spotRect
             )
+
+            // 5-SPOT OM-4 MULTI-SPOT PINS OVERLAY
+            if (uiState.sampledSpots.isNotEmpty()) {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val w = size.width
+                    val h = size.height
+                    val minEv = uiState.minSpotEv
+                    val maxEv = uiState.maxSpotEv
+
+                    uiState.sampledSpots.forEachIndexed { idx, spot ->
+                        val px = spot.x * w
+                        val py = spot.y * h
+
+                        val pinColor = when {
+                            spot.ev == maxEv && uiState.sampledSpots.size > 1 -> Color(0xFFFFD54F)
+                            spot.ev == minEv && uiState.sampledSpots.size > 1 -> Color(0xFF64B5F6)
+                            else -> Color(0xFFB0BEC5)
+                        }
+
+                        drawCircle(
+                            color = pinColor,
+                            radius = 24f,
+                            center = Offset(px, py)
+                        )
+                        drawCircle(
+                            color = Color.White,
+                            radius = 24f,
+                            center = Offset(px, py),
+                            style = Stroke(width = 3f)
+                        )
+                    }
+                }
+
+                // VIEWFINDER HUD BADGE: SPOT COUNTER & CLEAR BUTTON
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 16.dp, end = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = Color.Black.copy(alpha = 0.75f)
+                    ) {
+                        Text(
+                            text = "🎯 ${uiState.sampledSpots.size} / 5 Spots",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                        )
+                    }
+
+                    FilledTonalIconButton(
+                        onClick = onClearSpotSamples,
+                        modifier = Modifier.size(32.dp),
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = Color.Red.copy(alpha = 0.8f),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("✕", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                    }
+                }
+            }
 
             // ZEBRA CLIPPING OVERLAY CANVAS
             if (uiState.hasHighlightClipping || uiState.hasShadowClipping) {
@@ -632,6 +734,10 @@ private fun InputSettingsColumn(
     onToggleFilmSimulation: () -> Unit,
     onFocalLengthChanged: (Int) -> Unit,
     onAdjustEvOffset: (Float) -> Unit,
+    onSetPriorityMode: (com.fotologue.app.ui.viewmodel.PriorityMode) -> Unit,
+    onAvIndexChanged: (Int) -> Unit,
+    onTvIndexChanged: (Int) -> Unit,
+    onClearSpotSamples: () -> Unit,
     onTakeThumbnail: ((String?) -> Unit) -> Unit,
     onUseSettings: (ExposureSettings) -> Unit,
     targetIso: Int,
@@ -751,6 +857,75 @@ private fun InputSettingsColumn(
         }
 
         Spacer(modifier = Modifier.height(10.dp))
+
+        // MULTI-SPOT OM-4 WEIGHTED AVERAGE HUD CARD
+        if (uiState.sampledSpots.isNotEmpty()) {
+            OutlinedCard(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                colors = CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "🎯 5-Spot OM-4 Average: %.1f EV".format(uiState.averageEv),
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        TextButton(onClick = onClearSpotSamples) {
+                            Text("Clear", style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
+                    Text(
+                        text = "Contrast Range: %.1f Stops  •  Dev: %s".format(uiState.sceneContrastRange, uiState.recommendedDevelopment),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "🌑 Shadows: %.1f EV   ☀️ Highs: %.1f EV".format(uiState.minSpotEv, uiState.maxSpotEv),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(6.dp))
+        }
+
+        // PRIORITY MODE CHIPS (Av Priority / Tv Priority / Program Auto)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            FilterChip(
+                selected = uiState.priorityMode == com.fotologue.app.ui.viewmodel.PriorityMode.AV_PRIORITY,
+                onClick = { onSetPriorityMode(com.fotologue.app.ui.viewmodel.PriorityMode.AV_PRIORITY) },
+                label = { Text("📷 Av (DoF)", style = MaterialTheme.typography.labelSmall) },
+                modifier = Modifier.weight(1f)
+            )
+            FilterChip(
+                selected = uiState.priorityMode == com.fotologue.app.ui.viewmodel.PriorityMode.TV_PRIORITY,
+                onClick = { onSetPriorityMode(com.fotologue.app.ui.viewmodel.PriorityMode.TV_PRIORITY) },
+                label = { Text("⏱️ Tv (Motion)", style = MaterialTheme.typography.labelSmall) },
+                modifier = Modifier.weight(1f)
+            )
+            FilterChip(
+                selected = uiState.priorityMode == com.fotologue.app.ui.viewmodel.PriorityMode.PROGRAM,
+                onClick = { onSetPriorityMode(com.fotologue.app.ui.viewmodel.PriorityMode.PROGRAM) },
+                label = { Text("⚡ Auto", style = MaterialTheme.typography.labelSmall) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(6.dp))
 
         // PRIMARY SHOT CATALOGUING WORKBENCH: UNOBSTRUCTED EXPOSURE SELECTION LIST
         Box(modifier = Modifier.weight(1f)) {

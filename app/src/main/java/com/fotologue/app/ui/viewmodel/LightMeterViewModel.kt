@@ -195,9 +195,9 @@ class LightMeterViewModel @Inject constructor(
     fun getCalibrationValue(): Float = evCalibration.value
 
     private fun updateSuggestions() {
-        val ev = _uiState.value.currentEv
+        val effectiveEv = if (_uiState.value.sampledSpots.isNotEmpty()) _uiState.value.averageEv else _uiState.value.currentEv
         val baseSuggestions = ExposureSuggester.generateExposureSuggestions(
-            ev, 
+            effectiveEv, 
             targetIso, 
             selectedCamera, 
             selectedLens,
@@ -312,6 +312,98 @@ class LightMeterViewModel @Inject constructor(
         }
         updateSuggestions()
     }
+
+    // 5-SPOT OM-4 SAMPLING ENGINE & DUAL BARREL SELECTOR
+    fun addSpotSample(x: Float, y: Float, ev: Double) {
+        _uiState.update { state ->
+            val newSample = SpotSample(
+                id = System.currentTimeMillis() + (0..999).random(),
+                x = x,
+                y = y,
+                ev = ev
+            )
+            val currentList = state.sampledSpots.toMutableList()
+            if (currentList.size >= 5) {
+                currentList.removeAt(0) // Maintain 5-spot FIFO queue
+            }
+            currentList.add(newSample)
+            recalculateMultiSpotState(state, currentList)
+        }
+        updateSuggestions()
+    }
+
+    fun removeSpotSample(id: Long) {
+        _uiState.update { state ->
+            val currentList = state.sampledSpots.filter { it.id != id }
+            recalculateMultiSpotState(state, currentList)
+        }
+        updateSuggestions()
+    }
+
+    fun clearSpotSamples() {
+        _uiState.update { state ->
+            recalculateMultiSpotState(state, emptyList())
+        }
+        updateSuggestions()
+    }
+
+    private fun recalculateMultiSpotState(state: LightMeterUiState, spots: List<SpotSample>): LightMeterUiState {
+        if (spots.isEmpty()) {
+            return state.copy(
+                sampledSpots = emptyList(),
+                averageEv = state.currentEv,
+                minSpotEv = state.currentEv,
+                maxSpotEv = state.currentEv,
+                sceneContrastRange = 0.0,
+                recommendedDevelopment = "N (Normal)"
+            )
+        }
+
+        val avgEv = spots.map { it.ev }.average()
+        val minEv = spots.minOf { it.ev }
+        val maxEv = spots.maxOf { it.ev }
+        val range = (maxEv - minEv).coerceAtLeast(0.0)
+
+        val devRec = when {
+            range > 10.0 -> "N-1 (Pull)"
+            range < 5.0 && range > 0.5 -> "N+1 (Push)"
+            else -> "N (Normal)"
+        }
+
+        return state.copy(
+            sampledSpots = spots,
+            averageEv = avgEv,
+            minSpotEv = minEv,
+            maxSpotEv = maxEv,
+            sceneContrastRange = range,
+            recommendedDevelopment = devRec
+        )
+    }
+
+    fun setPriorityMode(mode: PriorityMode) {
+        _uiState.update { it.copy(priorityMode = mode) }
+    }
+
+    fun onAvIndexChanged(index: Int) {
+        _uiState.update { it.copy(selectedAvIndex = index) }
+    }
+
+    fun onTvIndexChanged(index: Int) {
+        _uiState.update { it.copy(selectedTvIndex = index) }
+    }
+}
+
+data class SpotSample(
+    val id: Long = System.currentTimeMillis(),
+    val x: Float,
+    val y: Float,
+    val ev: Double
+)
+
+enum class PriorityMode {
+    AV_PRIORITY, // Aperture Priority (DoF Centered)
+    TV_PRIORITY, // Shutter Priority (Motion Centered)
+    PROGRAM      // Auto Balanced
 }
 
 data class LightMeterUiState(
@@ -339,7 +431,16 @@ data class LightMeterUiState(
     val capturedBlackPoint: Double = 0.0,
     val isWizardOnly: Boolean = false,
     val calibrationFinished: Boolean = false,
-    val calibrationCancelled: Boolean = false
+    val calibrationCancelled: Boolean = false,
+    val sampledSpots: List<SpotSample> = emptyList(),
+    val averageEv: Double = 0.0,
+    val minSpotEv: Double = 0.0,
+    val maxSpotEv: Double = 0.0,
+    val sceneContrastRange: Double = 0.0,
+    val recommendedDevelopment: String = "N (Normal)",
+    val priorityMode: PriorityMode = PriorityMode.AV_PRIORITY,
+    val selectedAvIndex: Int = 0,
+    val selectedTvIndex: Int = 0
 )
 
 enum class CalibrationStage {
