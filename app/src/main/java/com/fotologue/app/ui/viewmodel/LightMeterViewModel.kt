@@ -394,6 +394,50 @@ class LightMeterViewModel @Inject constructor(
     fun onTvIndexChanged(index: Int) {
         _uiState.update { it.copy(selectedTvIndex = index) }
     }
+
+    // LONG-PRESS DIRECT PARAMETER LOCKING & SHIFT ENGINE
+    fun toggleLockAperture(aperture: String) {
+        _uiState.update { state ->
+            if (state.lockState == ParameterLockState.APERTURE_LOCKED && state.lockedAperture == aperture) {
+                state.copy(lockState = ParameterLockState.NONE, lockedAperture = null, exposureShiftStops = 0.0f)
+            } else {
+                state.copy(
+                    lockState = ParameterLockState.APERTURE_LOCKED,
+                    lockedAperture = aperture,
+                    lockedShutter = null,
+                    exposureShiftStops = 0.0f
+                )
+            }
+        }
+    }
+
+    fun toggleLockShutter(shutter: String) {
+        _uiState.update { state ->
+            if (state.lockState == ParameterLockState.SHUTTER_LOCKED && state.lockedShutter == shutter) {
+                state.copy(lockState = ParameterLockState.NONE, lockedShutter = null, exposureShiftStops = 0.0f)
+            } else {
+                state.copy(
+                    lockState = ParameterLockState.SHUTTER_LOCKED,
+                    lockedShutter = shutter,
+                    lockedAperture = null,
+                    exposureShiftStops = 0.0f
+                )
+            }
+        }
+    }
+
+    fun shiftExposureStops(deltaStops: Float) {
+        _uiState.update { state ->
+            val newShift = (state.exposureShiftStops + deltaStops).coerceIn(-3.0f, 3.0f)
+            state.copy(exposureShiftStops = newShift)
+        }
+    }
+
+    fun unlockParameters() {
+        _uiState.update { state ->
+            state.copy(lockState = ParameterLockState.NONE, lockedAperture = null, lockedShutter = null, exposureShiftStops = 0.0f)
+        }
+    }
 }
 
 data class SpotSample(
@@ -402,6 +446,12 @@ data class SpotSample(
     val y: Float,
     val ev: Double
 )
+
+enum class ParameterLockState {
+    NONE,
+    APERTURE_LOCKED,
+    SHUTTER_LOCKED
+}
 
 enum class PriorityMode {
     AV_PRIORITY, // Aperture Priority (DoF Centered)
@@ -435,6 +485,10 @@ data class LightMeterUiState(
     val isWizardOnly: Boolean = false,
     val calibrationFinished: Boolean = false,
     val calibrationCancelled: Boolean = false,
+    val lockState: ParameterLockState = ParameterLockState.NONE,
+    val lockedAperture: String? = null,
+    val lockedShutter: String? = null,
+    val exposureShiftStops: Float = 0.0f,
     val sampledSpots: List<SpotSample> = emptyList(),
     val averageEv: Double = 0.0,
     val minSpotEv: Double = 0.0,

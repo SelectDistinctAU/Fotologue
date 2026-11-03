@@ -344,9 +344,11 @@ fun LightMeterScreen(
         onAddSpotSample = viewModel::addSpotSample,
         onRemoveSpotSample = viewModel::removeSpotSample,
         onClearSpotSamples = viewModel::clearSpotSamples,
-        onSetPriorityMode = viewModel::setPriorityMode,
         onAvIndexChanged = viewModel::onAvIndexChanged,
         onTvIndexChanged = viewModel::onTvIndexChanged,
+        onToggleLockAperture = viewModel::toggleLockAperture,
+        onToggleLockShutter = viewModel::toggleLockShutter,
+        onShiftExposureStops = viewModel::shiftExposureStops,
         onTakeThumbnail = { takeThumbnail(it) },
         onToggleFilmSimulation = viewModel::toggleFilmSimulation,
         onStartCalibration = viewModel::startCalibration,
@@ -376,9 +378,11 @@ fun LightMeterScreenContent(
     onAddSpotSample: (Float, Float, Double) -> Unit,
     onRemoveSpotSample: (Long) -> Unit,
     onClearSpotSamples: () -> Unit,
-    onSetPriorityMode: (com.fotologue.app.ui.viewmodel.PriorityMode) -> Unit,
     onAvIndexChanged: (Int) -> Unit,
     onTvIndexChanged: (Int) -> Unit,
+    onToggleLockAperture: (String) -> Unit,
+    onToggleLockShutter: (String) -> Unit,
+    onShiftExposureStops: (Float) -> Unit,
     onTakeThumbnail: ((String?) -> Unit) -> Unit,
     onToggleFilmSimulation: () -> Unit,
     onStartCalibration: () -> Unit,
@@ -452,9 +456,11 @@ fun LightMeterScreenContent(
                     onToggleFilmSimulation = onToggleFilmSimulation,
                     onFocalLengthChanged = onFocalLengthChanged,
                     onAdjustEvOffset = onAdjustEvOffset,
-                    onSetPriorityMode = onSetPriorityMode,
                     onAvIndexChanged = onAvIndexChanged,
                     onTvIndexChanged = onTvIndexChanged,
+                    onToggleLockAperture = onToggleLockAperture,
+                    onToggleLockShutter = onToggleLockShutter,
+                    onShiftExposureStops = onShiftExposureStops,
                     onClearSpotSamples = onClearSpotSamples,
                     onTakeThumbnail = onTakeThumbnail,
                     onUseSettings = onUseSettings,
@@ -499,9 +505,11 @@ fun LightMeterScreenContent(
                     onToggleFilmSimulation = onToggleFilmSimulation,
                     onFocalLengthChanged = onFocalLengthChanged,
                     onAdjustEvOffset = onAdjustEvOffset,
-                    onSetPriorityMode = onSetPriorityMode,
                     onAvIndexChanged = onAvIndexChanged,
                     onTvIndexChanged = onTvIndexChanged,
+                    onToggleLockAperture = onToggleLockAperture,
+                    onToggleLockShutter = onToggleLockShutter,
+                    onShiftExposureStops = onShiftExposureStops,
                     onClearSpotSamples = onClearSpotSamples,
                     onTakeThumbnail = onTakeThumbnail,
                     onUseSettings = onUseSettings,
@@ -734,9 +742,11 @@ private fun InputSettingsColumn(
     onToggleFilmSimulation: () -> Unit,
     onFocalLengthChanged: (Int) -> Unit,
     onAdjustEvOffset: (Float) -> Unit,
-    onSetPriorityMode: (com.fotologue.app.ui.viewmodel.PriorityMode) -> Unit,
     onAvIndexChanged: (Int) -> Unit,
     onTvIndexChanged: (Int) -> Unit,
+    onToggleLockAperture: (String) -> Unit,
+    onToggleLockShutter: (String) -> Unit,
+    onShiftExposureStops: (Float) -> Unit,
     onClearSpotSamples: () -> Unit,
     onTakeThumbnail: ((String?) -> Unit) -> Unit,
     onUseSettings: (ExposureSettings) -> Unit,
@@ -770,27 +780,44 @@ private fun InputSettingsColumn(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val evText = stringResource(R.string.ev_display, uiState.currentEv)
+                val displayEv = if (uiState.sampledSpots.isNotEmpty()) uiState.averageEv else uiState.currentEv
+                val evText = "EV %.1f".format(displayEv)
                 Text(
                     text = evText,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                uiState.zoneAnalysis?.let { zone ->
-                    Spacer(modifier = Modifier.width(8.dp))
+                if (uiState.sampledSpots.isNotEmpty()) {
+                    Spacer(modifier = Modifier.width(6.dp))
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.clickable { showZoneInfoDialog = true }
+                        color = MaterialTheme.colorScheme.primaryContainer
                     ) {
                         Text(
-                            text = "🎯 ${zone.currentZone.romanNumeral}",
-                            style = MaterialTheme.typography.labelMedium,
+                            text = "🎯 ${uiState.sampledSpots.size}sp • %.1fst [%s]".format(uiState.sceneContrastRange, uiState.recommendedDevelopment),
+                            style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                         )
+                    }
+                } else {
+                    uiState.zoneAnalysis?.let { zone ->
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            modifier = Modifier.clickable { showZoneInfoDialog = true }
+                        ) {
+                            Text(
+                                text = "🎯 ${zone.currentZone.romanNumeral}",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -858,80 +885,16 @@ private fun InputSettingsColumn(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // MULTI-SPOT OM-4 WEIGHTED AVERAGE HUD CARD
-        if (uiState.sampledSpots.isNotEmpty()) {
-            OutlinedCard(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = CardDefaults.outlinedCardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "🎯 5-Spot OM-4 Average: %.1f EV".format(uiState.averageEv),
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        TextButton(onClick = onClearSpotSamples) {
-                            Text("Clear", style = MaterialTheme.typography.labelSmall)
-                        }
-                    }
-                    Text(
-                        text = "Contrast Range: %.1f Stops  •  Dev: %s".format(uiState.sceneContrastRange, uiState.recommendedDevelopment),
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "🌑 Shadows: %.1f EV   ☀️ Highs: %.1f EV".format(uiState.minSpotEv, uiState.maxSpotEv),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(6.dp))
-        }
-
-        // PRIORITY MODE CHIPS (Av Priority / Tv Priority / Program Auto)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            FilterChip(
-                selected = uiState.priorityMode == com.fotologue.app.ui.viewmodel.PriorityMode.AV_PRIORITY,
-                onClick = { onSetPriorityMode(com.fotologue.app.ui.viewmodel.PriorityMode.AV_PRIORITY) },
-                label = { Text("📷 Av (DoF)", style = MaterialTheme.typography.labelSmall) },
-                modifier = Modifier.weight(1f)
-            )
-            FilterChip(
-                selected = uiState.priorityMode == com.fotologue.app.ui.viewmodel.PriorityMode.TV_PRIORITY,
-                onClick = { onSetPriorityMode(com.fotologue.app.ui.viewmodel.PriorityMode.TV_PRIORITY) },
-                label = { Text("⏱️ Tv (Motion)", style = MaterialTheme.typography.labelSmall) },
-                modifier = Modifier.weight(1f)
-            )
-            FilterChip(
-                selected = uiState.priorityMode == com.fotologue.app.ui.viewmodel.PriorityMode.PROGRAM,
-                onClick = { onSetPriorityMode(com.fotologue.app.ui.viewmodel.PriorityMode.PROGRAM) },
-                label = { Text("⚡ Auto", style = MaterialTheme.typography.labelSmall) },
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        // PRIMARY SHOT CATALOGUING WORKBENCH: UNOBSTRUCTED EXPOSURE SELECTION LIST
+        // SINGLE MASTER INPUT CELL ROW (Aperture & Shutter Picker with Long-Press Lock)
         Box(modifier = Modifier.weight(1f)) {
-            DualRollingBarrelWheelPicker(
+            SingleMasterPickerCell(
                 uiState = uiState,
                 isThumbnailEnabled = isThumbnailEnabled,
+                onAvIndexChanged = onAvIndexChanged,
+                onTvIndexChanged = onTvIndexChanged,
+                onToggleLockAperture = onToggleLockAperture,
+                onToggleLockShutter = onToggleLockShutter,
+                onShiftExposureStops = onShiftExposureStops,
                 onTakeThumbnail = onTakeThumbnail,
                 onUseSettings = onUseSettings
             )
@@ -987,93 +950,161 @@ private fun InputSettingsColumn(
 }
 
 @Composable
-private fun DualRollingBarrelWheelPicker(
+private fun SingleMasterPickerCell(
     uiState: LightMeterUiState,
     isThumbnailEnabled: Boolean,
+    onAvIndexChanged: (Int) -> Unit,
+    onTvIndexChanged: (Int) -> Unit,
+    onToggleLockAperture: (String) -> Unit,
+    onToggleLockShutter: (String) -> Unit,
+    onShiftExposureStops: (Float) -> Unit,
     onTakeThumbnail: ((String?) -> Unit) -> Unit,
     onUseSettings: (ExposureSettings) -> Unit
 ) {
     val suggestions = uiState.suggestions
     if (suggestions.isEmpty()) return
 
-    val listState = rememberLazyListState()
-    val activeIndex = remember(suggestions, listState.firstVisibleItemIndex) {
-        listState.firstVisibleItemIndex.coerceIn(0, suggestions.size - 1)
+    val selectedIndex = remember(suggestions, uiState.selectedAvIndex) {
+        uiState.selectedAvIndex.coerceIn(0, suggestions.size - 1)
     }
-    val currentSetting = suggestions[activeIndex]
+    val currentSetting = suggestions[selectedIndex]
+
+    val isAvLocked = uiState.lockState == com.fotologue.app.ui.viewmodel.ParameterLockState.APERTURE_LOCKED
+    val isTvLocked = uiState.lockState == com.fotologue.app.ui.viewmodel.ParameterLockState.SHUTTER_LOCKED
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // DUAL WHEELS CONTAINER
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(12.dp))
-                .padding(4.dp)
+        // SINGLE MASTER INPUT CELL ROW
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                contentPadding = PaddingValues(vertical = 24.dp, horizontal = 8.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                items(suggestions.size) { idx ->
-                    val item = suggestions[idx]
-                    val isSelected = idx == activeIndex
-
-                    Card(
-                        onClick = {
-                            if (isThumbnailEnabled) {
-                                onTakeThumbnail { uri ->
-                                    onUseSettings(item.copy(thumbnailUri = uri))
+                // LEFT CELL: APERTURE (Av) - LIGHTENED CONTAINER & BOLD FONT WHEN LOCKED
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = if (isAvLocked) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+                    modifier = Modifier
+                        .weight(1f)
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onLongPress = {
+                                    onToggleLockAperture(currentSetting.aperture)
                                 }
-                            } else {
-                                onUseSettings(item)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                        )
+                            )
+                        }
+                ) {
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Aperture (Av)",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (isAvLocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            if (isAvLocked) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("🔒", style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
                         ) {
-                            // AV COLUMN (Aperture)
-                            Text(
-                                text = "f/ ${item.aperture.replace("f/", "")}",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                color = if (uiState.priorityMode == com.fotologue.app.ui.viewmodel.PriorityMode.AV_PRIORITY && isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                            )
-
-                            // TV COLUMN (Shutter Speed)
-                            Text(
-                                text = item.shutterSpeed,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                color = if (uiState.priorityMode == com.fotologue.app.ui.viewmodel.PriorityMode.TV_PRIORITY && isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                            )
-
-                            // USE BUTTON
-                            Button(
+                            IconButton(
                                 onClick = {
-                                    if (isThumbnailEnabled) {
-                                        onTakeThumbnail { uri ->
-                                            onUseSettings(item.copy(thumbnailUri = uri))
-                                        }
-                                    } else {
-                                        onUseSettings(item)
-                                    }
+                                    if (selectedIndex > 0) onAvIndexChanged(selectedIndex - 1)
                                 },
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                                modifier = Modifier.size(28.dp)
                             ) {
-                                Text("Use", style = MaterialTheme.typography.labelSmall)
+                                Text("◀", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                            }
+                            Text(
+                                text = currentSetting.aperture,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = if (isAvLocked) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isAvLocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                            IconButton(
+                                onClick = {
+                                    if (selectedIndex < suggestions.size - 1) onAvIndexChanged(selectedIndex + 1)
+                                },
+                                modifier = Modifier.size(28.dp)
+                            ) {
+                                Text("▶", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                // RIGHT CELL: SHUTTER SPEED (Tv) - LIGHTENED CONTAINER & BOLD FONT WHEN LOCKED
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = if (isTvLocked) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+                    modifier = Modifier
+                        .weight(1f)
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onLongPress = {
+                                    onToggleLockShutter(currentSetting.shutterSpeed)
+                                }
+                            )
+                        }
+                ) {
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Shutter (Tv)",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (isTvLocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            if (isTvLocked) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("🔒", style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    if (isAvLocked) onShiftExposureStops(-1.0f)
+                                },
+                                modifier = Modifier.size(28.dp)
+                            ) {
+                                Text("◀", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                            }
+                            Text(
+                                text = currentSetting.shutterSpeed,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = if (isTvLocked) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isTvLocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                            IconButton(
+                                onClick = {
+                                    if (isAvLocked) onShiftExposureStops(1.0f)
+                                },
+                                modifier = Modifier.size(28.dp)
+                            ) {
+                                Text("▶", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
                             }
                         }
                     }

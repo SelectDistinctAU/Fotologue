@@ -66,13 +66,16 @@ object ExposureSuggester {
             val tSeconds = aperture.pow(2) / 2.0.pow(targetEv)
             val shutterSpeedStr = formatShutterSpeed(tSeconds, camera?.shutterSpeeds ?: emptyList())
             if (shutterSpeedStr != null) {
-                suggestions.add(
-                    ExposureSettings(
-                        shutterSpeed = shutterSpeedStr,
-                        aperture = formatAperture(aperture),
-                        iso = targetIso
+                val formattedAp = formatAperture(aperture)
+                if (suggestions.none { it.shutterSpeed == shutterSpeedStr || it.aperture == formattedAp }) {
+                    suggestions.add(
+                        ExposureSettings(
+                            shutterSpeed = shutterSpeedStr,
+                            aperture = formattedAp,
+                            iso = targetIso
+                        )
                     )
-                )
+                }
             }
         }
         
