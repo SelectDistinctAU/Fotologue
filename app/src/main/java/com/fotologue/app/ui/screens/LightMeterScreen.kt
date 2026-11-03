@@ -929,64 +929,12 @@ private fun InputSettingsColumn(
 
         // PRIMARY SHOT CATALOGUING WORKBENCH: UNOBSTRUCTED EXPOSURE SELECTION LIST
         Box(modifier = Modifier.weight(1f)) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(bottom = bottomPadding + 16.dp, end = 10.dp)
-            ) {
-                items(uiState.suggestions) { suggestion ->
-                    ExposureSuggestionItem(
-                        suggestion = suggestion,
-                        onClick = {
-                            if (isThumbnailEnabled) {
-                                onTakeThumbnail { uri ->
-                                    onUseSettings(suggestion.copy(thumbnailUri = uri))
-                                }
-                            } else {
-                                onUseSettings(suggestion)
-                            }
-                        }
-                    )
-                }
-            }
-
-            // HIGH-VISIBILITY VERTICAL SCROLLBAR INDICATOR
-            if (uiState.suggestions.size > 1) {
-                val primaryColor = MaterialTheme.colorScheme.primary
-                val totalItems = uiState.suggestions.size
-                val firstVisible = listState.firstVisibleItemIndex
-                val thumbRatio = (1f / totalItems.toFloat()).coerceAtLeast(0.18f)
-                val scrollRatio = (firstVisible.toFloat() / (totalItems - 1).coerceAtLeast(1).toFloat()).coerceIn(0f, 1f)
-
-                Canvas(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .fillMaxHeight()
-                        .width(6.dp)
-                        .padding(vertical = 4.dp)
-                ) {
-                    val trackHeight = size.height
-                    val thumbHeight = trackHeight * thumbRatio
-                    val thumbY = (trackHeight - thumbHeight) * scrollRatio
-
-                    // Track Background Line
-                    drawRoundRect(
-                        color = Color.Gray.copy(alpha = 0.25f),
-                        topLeft = Offset(0f, 0f),
-                        size = Size(size.width, trackHeight),
-                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(3f, 3f)
-                    )
-
-                    // Active Thumb Indicator
-                    drawRoundRect(
-                        color = primaryColor.copy(alpha = 0.85f),
-                        topLeft = Offset(0f, thumbY),
-                        size = Size(size.width, thumbHeight),
-                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(3f, 3f)
-                    )
-                }
-            }
+            DualRollingBarrelWheelPicker(
+                uiState = uiState,
+                isThumbnailEnabled = isThumbnailEnabled,
+                onTakeThumbnail = onTakeThumbnail,
+                onUseSettings = onUseSettings
+            )
         }
     }
 
@@ -1035,6 +983,125 @@ private fun InputSettingsColumn(
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun DualRollingBarrelWheelPicker(
+    uiState: LightMeterUiState,
+    isThumbnailEnabled: Boolean,
+    onTakeThumbnail: ((String?) -> Unit) -> Unit,
+    onUseSettings: (ExposureSettings) -> Unit
+) {
+    val suggestions = uiState.suggestions
+    if (suggestions.isEmpty()) return
+
+    val listState = rememberLazyListState()
+    val activeIndex = remember(suggestions, listState.firstVisibleItemIndex) {
+        listState.firstVisibleItemIndex.coerceIn(0, suggestions.size - 1)
+    }
+    val currentSetting = suggestions[activeIndex]
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        // DUAL WHEELS CONTAINER
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(12.dp))
+                .padding(4.dp)
+        ) {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+                contentPadding = PaddingValues(vertical = 24.dp, horizontal = 8.dp)
+            ) {
+                items(suggestions.size) { idx ->
+                    val item = suggestions[idx]
+                    val isSelected = idx == activeIndex
+
+                    Card(
+                        onClick = {
+                            if (isThumbnailEnabled) {
+                                onTakeThumbnail { uri ->
+                                    onUseSettings(item.copy(thumbnailUri = uri))
+                                }
+                            } else {
+                                onUseSettings(item)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // AV COLUMN (Aperture)
+                            Text(
+                                text = "f/ ${item.aperture.replace("f/", "")}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color = if (uiState.priorityMode == com.fotologue.app.ui.viewmodel.PriorityMode.AV_PRIORITY && isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+
+                            // TV COLUMN (Shutter Speed)
+                            Text(
+                                text = item.shutterSpeed,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color = if (uiState.priorityMode == com.fotologue.app.ui.viewmodel.PriorityMode.TV_PRIORITY && isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+
+                            // USE BUTTON
+                            Button(
+                                onClick = {
+                                    if (isThumbnailEnabled) {
+                                        onTakeThumbnail { uri ->
+                                            onUseSettings(item.copy(thumbnailUri = uri))
+                                        }
+                                    } else {
+                                        onUseSettings(item)
+                                    }
+                                },
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                            ) {
+                                Text("Use", style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // PROMINENT 1-TAP USE EXPOSURE BUTTON
+        Button(
+            onClick = {
+                if (isThumbnailEnabled) {
+                    onTakeThumbnail { uri ->
+                        onUseSettings(currentSetting.copy(thumbnailUri = uri))
+                    }
+                } else {
+                    onUseSettings(currentSetting)
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(painterResource(R.drawable.ic_check_circle), contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = "Use Exposure: ${currentSetting.aperture} @ ${currentSetting.shutterSpeed}",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
     }
 }
 

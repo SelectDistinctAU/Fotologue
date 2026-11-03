@@ -316,11 +316,14 @@ class LightMeterViewModel @Inject constructor(
     // 5-SPOT OM-4 SAMPLING ENGINE & DUAL BARREL SELECTOR
     fun addSpotSample(x: Float, y: Float, ev: Double) {
         _uiState.update { state ->
+            val spotEvOffset = (0.5 - y.toDouble()) * 4.0
+            val spotEv = (ev + spotEvOffset).coerceIn(1.0, 22.0)
+
             val newSample = SpotSample(
                 id = System.currentTimeMillis() + (0..999).random(),
                 x = x,
                 y = y,
-                ev = ev
+                ev = spotEv
             )
             val currentList = state.sampledSpots.toMutableList()
             if (currentList.size >= 5) {

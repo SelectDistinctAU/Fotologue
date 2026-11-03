@@ -196,6 +196,48 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "cam_canon_t50",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon T50",
+    "modelNumber": "T50",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "2s - 1/1000s"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_t70",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon T70",
+    "modelNumber": "T70",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "cam_canon_t80",
+    "category": "CAMERA",
+    "subCategory": "Film SLR",
+    "brand": "Canon",
+    "name": "Canon T80",
+    "modelNumber": "T80",
+    "attributes": {
+      "type": "Film SLR",
+      "mount": "Canon FD",
+      "shutterSpeeds": "2s - 1/1000s, B"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "cam_canon_eos1n",
     "category": "CAMERA",
     "subCategory": "Film SLR",
