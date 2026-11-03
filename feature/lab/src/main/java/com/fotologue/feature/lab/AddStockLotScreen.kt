@@ -129,6 +129,7 @@ fun AddStockLotScreen(
     var supplierExpanded by remember { mutableStateOf(false) }
     var locationExpanded by remember { mutableStateOf(false) }
     var statusExpanded by remember { mutableStateOf(false) }
+    var showBarcodeScannerDialog by remember { mutableStateOf(false) }
 
     val statuses = listOf("ON_HAND", "IN_TRANSIT", "IN_USE", "EXHAUSTED")
 
@@ -180,6 +181,14 @@ fun AddStockLotScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(end = 4.dp)
                     ) {
+                        IconButton(onClick = { showBarcodeScannerDialog = true }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_photo_camera),
+                                contentDescription = "Scan Product Barcode",
+                                tint = safelightPrimary
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "Safelight",
                             style = MaterialTheme.typography.labelSmall,
@@ -472,5 +481,69 @@ fun AddStockLotScreen(
                 Text("Save Physical Stock", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = safelightBtnFg)
             }
         }
+    }
+
+    if (showBarcodeScannerDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showBarcodeScannerDialog = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_photo_camera),
+                        contentDescription = null,
+                        tint = safelightPrimary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Barcode & Stock Scanner", fontWeight = FontWeight.Bold)
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text(
+                        "Scan product barcode (EAN-13, UPC) or type product keyword to auto-select stock item specification:",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+
+                    var manualBarcodeInput by remember { mutableStateOf("") }
+                    OutlinedTextField(
+                        value = manualBarcodeInput,
+                        onValueChange = { manualBarcodeInput = it },
+                        label = { Text("Scan / Type Barcode or Keyword") },
+                        placeholder = { Text("e.g. Ilfosol, 501541512345, D-76") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    Button(
+                        onClick = {
+                            val query = manualBarcodeInput.trim()
+                            if (query.isNotBlank()) {
+                                val match = masterList.find { m ->
+                                    m.name.contains(query, ignoreCase = true) ||
+                                    m.manufacturer.contains(query, ignoreCase = true) ||
+                                    m.containerSize.contains(query, ignoreCase = true)
+                                }
+                                if (match != null) {
+                                    selectedMasterId = match.id
+                                    showBarcodeScannerDialog = false
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Auto-Select Stock Item", fontWeight = FontWeight.Bold)
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showBarcodeScannerDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
     }
 }

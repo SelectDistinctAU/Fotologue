@@ -56,6 +56,20 @@
     "isDeveloperPreset": true
   },
   {
+    "id": "con_ilford_ilfosol3_500ml",
+    "category": "CONSUMABLE",
+    "subCategory": "Developer (Film)",
+    "brand": "Ilford",
+    "name": "Ilford Ilfosol 3 Developer (500ml Concentrate)",
+    "modelNumber": "Ilfosol 3",
+    "attributes": {
+      "type": "Developer (Film)",
+      "mixRatio": "1+9 or 1+14",
+      "capacity": "10 rolls"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "con_ilford_id11",
     "category": "CONSUMABLE",
     "subCategory": "Developer (Film)",
