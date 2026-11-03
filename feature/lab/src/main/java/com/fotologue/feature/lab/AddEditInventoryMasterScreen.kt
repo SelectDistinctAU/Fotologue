@@ -680,7 +680,22 @@ fun AddEditInventoryMasterScreen(
                         onClick = {
                             val query = manualBarcodeInput.trim()
                             if (query.isNotBlank()) {
-                                if (query.contains("ilfosol", ignoreCase = true)) {
+                                val barcodeMap = mapOf(
+                                    "019498905162" to "ilfosol",
+                                    "19498905162" to "ilfosol",
+                                    "019498188183" to "d-76",
+                                    "19498188183" to "d-76",
+                                    "019498188091" to "fixer",
+                                    "19498188091" to "fixer",
+                                    "088562018223" to "portra",
+                                    "88562018223" to "portra",
+                                    "019498138133" to "hp5",
+                                    "19498138133" to "hp5"
+                                )
+                                val cleanDigits = query.replace(Regex("""\D"""), "")
+                                val targetKey = barcodeMap[cleanDigits] ?: query
+
+                                if (targetKey.contains("ilfosol", ignoreCase = true)) {
                                     category = "Chemistry"
                                     manufacturer = "Ilford"
                                     name = "Ilford Ilfosol 3 Developer"
@@ -688,7 +703,7 @@ fun AddEditInventoryMasterScreen(
                                     majorUnit = "L"
                                     minorYieldStr = "500"
                                     minorUnit = "mL"
-                                } else if (query.contains("d-76", ignoreCase = true) || query.contains("d76", ignoreCase = true)) {
+                                } else if (targetKey.contains("d-76", ignoreCase = true) || targetKey.contains("d76", ignoreCase = true)) {
                                     category = "Chemistry"
                                     manufacturer = "Kodak"
                                     name = "Kodak D-76 Developer"
@@ -696,7 +711,7 @@ fun AddEditInventoryMasterScreen(
                                     majorUnit = "L"
                                     minorYieldStr = "1000"
                                     minorUnit = "mL"
-                                } else if (query.contains("fixer", ignoreCase = true)) {
+                                } else if (targetKey.contains("fixer", ignoreCase = true)) {
                                     category = "Chemistry"
                                     manufacturer = "Ilford"
                                     name = "Ilford Rapid Fixer"
@@ -704,13 +719,13 @@ fun AddEditInventoryMasterScreen(
                                     majorUnit = "L"
                                     minorYieldStr = "1000"
                                     minorUnit = "mL"
-                                } else if (query.contains("portra", ignoreCase = true)) {
+                                } else if (targetKey.contains("portra", ignoreCase = true)) {
                                     category = "Film Stock"
                                     manufacturer = "Kodak"
                                     name = "Kodak Portra 400"
                                     majorAmountStr = "5.0"
                                     majorUnit = "rolls"
-                                } else if (query.contains("hp5", ignoreCase = true)) {
+                                } else if (targetKey.contains("hp5", ignoreCase = true)) {
                                     category = "Film Stock"
                                     manufacturer = "Ilford"
                                     name = "Ilford HP5 Plus 400"
