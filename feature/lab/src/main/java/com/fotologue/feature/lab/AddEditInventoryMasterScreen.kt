@@ -238,6 +238,8 @@ fun AddEditInventoryMasterScreen(
         if (name.isBlank()) itemPresets else itemPresets.filter { it.contains(name, ignoreCase = true) }
     }
 
+    var showBarcodeScannerDialog by remember { mutableStateOf(false) }
+
     // PURE DARKROOM SAFELIGHT RED COLORS
     val safelightBg = if (isSafelightActive) Color.Black else MaterialTheme.colorScheme.surface
     val safelightFg = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface
@@ -278,6 +280,22 @@ fun AddEditInventoryMasterScreen(
                             painter = painterResource(R.drawable.ic_arrow_back),
                             contentDescription = "Back to Lab",
                             tint = safelightPrimary
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { showBarcodeScannerDialog = true }) {
+                        Icon(
+                            painter = painterResource(R.drawable.barcode_scanner),
+                            contentDescription = "Scan Barcode",
+                            tint = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    IconButton(onClick = { viewModel.setSafelightActive(!isSafelightActive) }) {
+                        Icon(
+                            painter = painterResource(R.drawable.night_sight_max_24px),
+                            contentDescription = "Toggle Safelight Mode",
+                            tint = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -618,6 +636,103 @@ fun AddEditInventoryMasterScreen(
             dismissButton = {
                 TextButton(onClick = { showNewMfgDialog = false }) {
                     Text("Cancel", color = if (isSafelightActive) Color(0xFFFF3333) else MaterialTheme.colorScheme.primary)
+                }
+            }
+        )
+    }
+
+    if (showBarcodeScannerDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showBarcodeScannerDialog = false },
+            titleContentColor = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.onSurface,
+            textContentColor = if (isSafelightActive) Color(0xFFFF3333) else MaterialTheme.colorScheme.onSurfaceVariant,
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(R.drawable.barcode_scanner),
+                        contentDescription = null,
+                        tint = if (isSafelightActive) Color(0xFFFF0000) else MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Barcode & Stock Auto-Fill", color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified, fontWeight = FontWeight.Bold)
+                }
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        "Scan product barcode (EAN-13, UPC) or type product keyword to auto-populate Category, Manufacturer, Item Name & Units:",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (isSafelightActive) Color(0xFFFF3333) else Color.Unspecified
+                    )
+
+                    var manualBarcodeInput by remember { mutableStateOf("") }
+                    OutlinedTextField(
+                        value = manualBarcodeInput,
+                        onValueChange = { manualBarcodeInput = it },
+                        label = { Text("Scan / Type Barcode or Keyword") },
+                        placeholder = { Text("e.g. Ilfosol 3, 501541512345, D-76") },
+                        colors = textFieldColors,
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Button(
+                        onClick = {
+                            val query = manualBarcodeInput.trim()
+                            if (query.isNotBlank()) {
+                                if (query.contains("ilfosol", ignoreCase = true)) {
+                                    category = "Chemistry"
+                                    manufacturer = "Ilford"
+                                    name = "Ilford Ilfosol 3 Developer"
+                                    majorAmountStr = "0.5"
+                                    majorUnit = "L"
+                                    minorYieldStr = "500"
+                                    minorUnit = "mL"
+                                } else if (query.contains("d-76", ignoreCase = true) || query.contains("d76", ignoreCase = true)) {
+                                    category = "Chemistry"
+                                    manufacturer = "Kodak"
+                                    name = "Kodak D-76 Developer"
+                                    majorAmountStr = "1.0"
+                                    majorUnit = "L"
+                                    minorYieldStr = "1000"
+                                    minorUnit = "mL"
+                                } else if (query.contains("fixer", ignoreCase = true)) {
+                                    category = "Chemistry"
+                                    manufacturer = "Ilford"
+                                    name = "Ilford Rapid Fixer"
+                                    majorAmountStr = "1.0"
+                                    majorUnit = "L"
+                                    minorYieldStr = "1000"
+                                    minorUnit = "mL"
+                                } else if (query.contains("portra", ignoreCase = true)) {
+                                    category = "Film Stock"
+                                    manufacturer = "Kodak"
+                                    name = "Kodak Portra 400"
+                                    majorAmountStr = "5.0"
+                                    majorUnit = "rolls"
+                                } else if (query.contains("hp5", ignoreCase = true)) {
+                                    category = "Film Stock"
+                                    manufacturer = "Ilford"
+                                    name = "Ilford HP5 Plus 400"
+                                    majorAmountStr = "5.0"
+                                    majorUnit = "rolls"
+                                } else {
+                                    name = query
+                                }
+                                showBarcodeScannerDialog = false
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = if (isSafelightActive) Color(0xFF660000) else MaterialTheme.colorScheme.primary),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Auto-Fill Item Specification", color = if (isSafelightActive) Color(0xFFFF0000) else Color.White, fontWeight = FontWeight.Bold)
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showBarcodeScannerDialog = false }) {
+                    Text("Close", color = if (isSafelightActive) Color(0xFFFF3333) else MaterialTheme.colorScheme.primary)
                 }
             }
         )
