@@ -18,6 +18,8 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -949,6 +951,7 @@ private fun InputSettingsColumn(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SingleMasterPickerCell(
     uiState: LightMeterUiState,
@@ -992,21 +995,19 @@ private fun SingleMasterPickerCell(
                 Surface(
                     shape = RoundedCornerShape(10.dp),
                     color = if (isAvLocked) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
-                    modifier = Modifier
-                        .weight(1f)
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onLongPress = {
-                                    onToggleLockAperture(currentSetting.aperture)
-                                }
-                            )
-                        }
+                    modifier = Modifier.weight(1f)
                 ) {
                     Column(
                         modifier = Modifier.padding(10.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.combinedClickable(
+                                onClick = { onToggleLockAperture(currentSetting.aperture) },
+                                onLongClick = { onToggleLockAperture(currentSetting.aperture) }
+                            )
+                        ) {
                             Text(
                                 text = "Aperture (Av)",
                                 style = MaterialTheme.typography.labelSmall,
@@ -1024,7 +1025,11 @@ private fun SingleMasterPickerCell(
                         ) {
                             IconButton(
                                 onClick = {
-                                    if (selectedIndex > 0) onAvIndexChanged(selectedIndex - 1)
+                                    if (isTvLocked) {
+                                        onShiftExposureStops(1.0f)
+                                    } else if (selectedIndex > 0) {
+                                        onAvIndexChanged(selectedIndex - 1)
+                                    }
                                 },
                                 modifier = Modifier.size(28.dp)
                             ) {
@@ -1034,11 +1039,21 @@ private fun SingleMasterPickerCell(
                                 text = currentSetting.aperture,
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = if (isAvLocked) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isAvLocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                color = if (isAvLocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .padding(horizontal = 4.dp)
+                                    .combinedClickable(
+                                        onClick = { onToggleLockAperture(currentSetting.aperture) },
+                                        onLongClick = { onToggleLockAperture(currentSetting.aperture) }
+                                    )
                             )
                             IconButton(
                                 onClick = {
-                                    if (selectedIndex < suggestions.size - 1) onAvIndexChanged(selectedIndex + 1)
+                                    if (isTvLocked) {
+                                        onShiftExposureStops(-1.0f)
+                                    } else if (selectedIndex < suggestions.size - 1) {
+                                        onAvIndexChanged(selectedIndex + 1)
+                                    }
                                 },
                                 modifier = Modifier.size(28.dp)
                             ) {
@@ -1054,21 +1069,19 @@ private fun SingleMasterPickerCell(
                 Surface(
                     shape = RoundedCornerShape(10.dp),
                     color = if (isTvLocked) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
-                    modifier = Modifier
-                        .weight(1f)
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onLongPress = {
-                                    onToggleLockShutter(currentSetting.shutterSpeed)
-                                }
-                            )
-                        }
+                    modifier = Modifier.weight(1f)
                 ) {
                     Column(
                         modifier = Modifier.padding(10.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.combinedClickable(
+                                onClick = { onToggleLockShutter(currentSetting.shutterSpeed) },
+                                onLongClick = { onToggleLockShutter(currentSetting.shutterSpeed) }
+                            )
+                        ) {
                             Text(
                                 text = "Shutter (Tv)",
                                 style = MaterialTheme.typography.labelSmall,
@@ -1086,7 +1099,11 @@ private fun SingleMasterPickerCell(
                         ) {
                             IconButton(
                                 onClick = {
-                                    if (isAvLocked) onShiftExposureStops(-1.0f)
+                                    if (isAvLocked) {
+                                        onShiftExposureStops(-1.0f)
+                                    } else if (selectedIndex > 0) {
+                                        onAvIndexChanged(selectedIndex - 1)
+                                    }
                                 },
                                 modifier = Modifier.size(28.dp)
                             ) {
@@ -1096,11 +1113,21 @@ private fun SingleMasterPickerCell(
                                 text = currentSetting.shutterSpeed,
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = if (isTvLocked) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isTvLocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                color = if (isTvLocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .padding(horizontal = 4.dp)
+                                    .combinedClickable(
+                                        onClick = { onToggleLockShutter(currentSetting.shutterSpeed) },
+                                        onLongClick = { onToggleLockShutter(currentSetting.shutterSpeed) }
+                                    )
                             )
                             IconButton(
                                 onClick = {
-                                    if (isAvLocked) onShiftExposureStops(1.0f)
+                                    if (isAvLocked) {
+                                        onShiftExposureStops(1.0f)
+                                    } else if (selectedIndex < suggestions.size - 1) {
+                                        onAvIndexChanged(selectedIndex + 1)
+                                    }
                                 },
                                 modifier = Modifier.size(28.dp)
                             ) {
