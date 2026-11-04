@@ -195,7 +195,10 @@ class LightMeterViewModel @Inject constructor(
     fun getCalibrationValue(): Float = evCalibration.value
 
     private fun updateSuggestions() {
-        val effectiveEv = if (_uiState.value.sampledSpots.isNotEmpty()) _uiState.value.averageEv else _uiState.value.currentEv
+        val baseEv = if (_uiState.value.sampledSpots.isNotEmpty()) _uiState.value.averageEv else _uiState.value.currentEv
+        val shift = _uiState.value.exposureShiftStops
+        val effectiveEv = baseEv + shift
+
         val baseSuggestions = ExposureSuggester.generateExposureSuggestions(
             effectiveEv, 
             targetIso, 
@@ -249,8 +252,10 @@ class LightMeterViewModel @Inject constructor(
             } else {
                 MeteringMode.SPOT
             }
-            it.copy(meteringMode = newMode)
+            val spots = if (newMode == MeteringMode.CENTER_WEIGHTED) emptyList() else it.sampledSpots
+            recalculateMultiSpotState(it.copy(meteringMode = newMode), spots)
         }
+        updateSuggestions()
     }
 
     fun updateSpotLocation(x: Int, y: Int, viewWidth: Int, viewHeight: Int) {
@@ -409,6 +414,7 @@ class LightMeterViewModel @Inject constructor(
                 )
             }
         }
+        updateSuggestions()
     }
 
     fun toggleLockShutter(shutter: String) {
@@ -424,6 +430,7 @@ class LightMeterViewModel @Inject constructor(
                 )
             }
         }
+        updateSuggestions()
     }
 
     fun shiftExposureStops(deltaStops: Float) {
@@ -431,12 +438,14 @@ class LightMeterViewModel @Inject constructor(
             val newShift = (state.exposureShiftStops + deltaStops).coerceIn(-3.0f, 3.0f)
             state.copy(exposureShiftStops = newShift)
         }
+        updateSuggestions()
     }
 
     fun unlockParameters() {
         _uiState.update { state ->
             state.copy(lockState = ParameterLockState.NONE, lockedAperture = null, lockedShutter = null, exposureShiftStops = 0.0f)
         }
+        updateSuggestions()
     }
 }
 

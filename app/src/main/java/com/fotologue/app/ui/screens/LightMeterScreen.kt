@@ -228,6 +228,7 @@ fun LightMeterScreen(
                         getEvCalibration = { viewModel.getCalibrationValue() },
                         getBlackLevelOffset = { viewModel.blackLevelOffset.value },
                         getLuminanceGain = { viewModel.luminanceGain.value },
+                        getExposureShiftStops = { viewModel.uiState.value.exposureShiftStops },
                         isFaceDetectionEnabled = { viewModel.isFaceDetectionEnabled.value },
                         onEvCalculated = { viewModel.onEvCalculated(it) },
                         onRawLuminanceCalculated = { viewModel.onRawLuminanceCalculated(it) },
@@ -560,11 +561,13 @@ private fun CameraPreviewContent(
                                     size.width,
                                     size.height
                                 )
-                                onAddSpotSample(
-                                    offset.x / size.width.toFloat(),
-                                    offset.y / size.height.toFloat(),
-                                    uiState.currentEv
-                                )
+                                if (uiState.meteringMode == MeteringMode.SPOT) {
+                                    onAddSpotSample(
+                                        offset.x / size.width.toFloat(),
+                                        offset.y / size.height.toFloat(),
+                                        uiState.currentEv
+                                    )
+                                }
                             }
                         )
                     }
@@ -783,11 +786,16 @@ private fun InputSettingsColumn(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val displayEv = if (uiState.sampledSpots.isNotEmpty()) uiState.averageEv else uiState.currentEv
-                val evText = "EV %.1f".format(displayEv)
+                val shiftStr = when {
+                    uiState.exposureShiftStops > 0f -> " (+%.1fst)".format(uiState.exposureShiftStops)
+                    uiState.exposureShiftStops < 0f -> " (%.1fst)".format(uiState.exposureShiftStops)
+                    else -> ""
+                }
+                val evText = "EV %.1f%s".format(displayEv + uiState.exposureShiftStops, shiftStr)
                 Text(
                     text = evText,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (uiState.exposureShiftStops != 0f) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 if (uiState.sampledSpots.isNotEmpty()) {

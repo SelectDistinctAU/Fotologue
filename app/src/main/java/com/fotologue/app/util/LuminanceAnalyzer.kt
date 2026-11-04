@@ -19,6 +19,7 @@ class LuminanceAnalyzer(
     private val getEvCalibration: () -> Float = { 0.0f },
     private val getBlackLevelOffset: () -> Float = { 0.0f },
     private val getLuminanceGain: () -> Float = { 1.0f },
+    private val getExposureShiftStops: () -> Float = { 0.0f },
     private val isFaceDetectionEnabled: () -> Boolean = { false },
     private val onEvCalculated: (Double) -> Unit,
     private val onRawLuminanceCalculated: (Double) -> Unit = {},
@@ -74,19 +75,23 @@ class LuminanceAnalyzer(
                 var shadowClippedCount = 0
                 val zoneHistogram = IntArray(11)
 
+                val shiftMultiplier = 2.0.pow(getExposureShiftStops().toDouble())
+
                 val limit = buffer.limit()
                 for (y in top..bottom step step) {
                     for (x in left..right step step) {
                         val index = y * rowStride + x * pixelStride
                         if (index in 0 until limit) {
-                            val lum = buffer.get(index).toInt() and 0xFF
-                            sum += lum
+                            val rawLum = buffer.get(index).toInt() and 0xFF
+                            sum += rawLum
                             count++
 
-                            if (lum >= 250) highlightClippedCount++
-                            if (lum <= 5) shadowClippedCount++
+                            val shiftedLum = (rawLum * shiftMultiplier).coerceIn(0.0, 255.0).toInt()
 
-                            val zoneIdx = (lum * 11 / 256).coerceIn(0, 10)
+                            if (shiftedLum >= 245) highlightClippedCount++
+                            if (shiftedLum <= 10) shadowClippedCount++
+
+                            val zoneIdx = (shiftedLum * 11 / 256).coerceIn(0, 10)
                             zoneHistogram[zoneIdx]++
                         }
                     }
