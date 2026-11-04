@@ -23,7 +23,7 @@ class LuminanceAnalyzer(
     private val isFaceDetectionEnabled: () -> Boolean = { false },
     private val onEvCalculated: (Double) -> Unit,
     private val onRawLuminanceCalculated: (Double) -> Unit = {},
-    private val onHistogramCalculated: (IntArray, Boolean, Boolean) -> Unit = { _, _, _ -> },
+    private val onHistogramCalculated: (IntArray, Boolean, Boolean, Array<BooleanArray>, Array<BooleanArray>) -> Unit = { _, _, _, _, _ -> },
     private val onFaceDetected: (Boolean) -> Unit = {}
 ) : ImageAnalysis.Analyzer {
 
@@ -69,30 +69,42 @@ class LuminanceAnalyzer(
                 val right = analysisRect.right.coerceIn(0, width - 1)
                 val bottom = analysisRect.bottom.coerceIn(0, height - 1)
 
-                val step = if ((right - left) * (bottom - top) > 10000) 4 else 1
-
                 var highlightClippedCount = 0
                 var shadowClippedCount = 0
                 val zoneHistogram = IntArray(11)
 
+                val gridRows = 16
+                val gridCols = 24
+                val highlightGrid = Array(gridRows) { BooleanArray(gridCols) }
+                val shadowGrid = Array(gridRows) { BooleanArray(gridCols) }
+
                 val shiftMultiplier = 2.0.pow(getExposureShiftStops().toDouble())
 
                 val limit = buffer.limit()
-                for (y in top..bottom step step) {
-                    for (x in left..right step step) {
+                for (y in 0 until height step 8) {
+                    val gy = (y * gridRows / height).coerceIn(0, gridRows - 1)
+                    for (x in 0 until width step 8) {
+                        val gx = (x * gridCols / width).coerceIn(0, gridCols - 1)
                         val index = y * rowStride + x * pixelStride
                         if (index in 0 until limit) {
                             val rawLum = buffer.get(index).toInt() and 0xFF
-                            sum += rawLum
-                            count++
-
                             val shiftedLum = (rawLum * shiftMultiplier).coerceIn(0.0, 255.0).toInt()
 
-                            if (shiftedLum >= 245) highlightClippedCount++
-                            if (shiftedLum <= 10) shadowClippedCount++
+                            if (shiftedLum >= 245) {
+                                highlightClippedCount++
+                                highlightGrid[gy][gx] = true
+                            }
+                            if (shiftedLum <= 10) {
+                                shadowClippedCount++
+                                shadowGrid[gy][gx] = true
+                            }
 
-                            val zoneIdx = (shiftedLum * 11 / 256).coerceIn(0, 10)
-                            zoneHistogram[zoneIdx]++
+                            if (x in left..right && y in top..bottom) {
+                                sum += rawLum
+                                count++
+                                val zoneIdx = (shiftedLum * 11 / 256).coerceIn(0, 10)
+                                zoneHistogram[zoneIdx]++
+                            }
                         }
                     }
                 }
@@ -100,9 +112,9 @@ class LuminanceAnalyzer(
                 val avgLuminance = if (count > 0) sum.toDouble() / count else 0.0
                 onRawLuminanceCalculated(avgLuminance)
 
-                val hasHighlightClipping = count > 0 && highlightClippedCount > (count * 0.01)
-                val hasShadowClipping = count > 0 && shadowClippedCount > (count * 0.01)
-                onHistogramCalculated(zoneHistogram, hasHighlightClipping, hasShadowClipping)
+                val hasHighlightClipping = count > 0 && highlightClippedCount > (count * 0.005)
+                val hasShadowClipping = count > 0 && shadowClippedCount > (count * 0.005)
+                onHistogramCalculated(zoneHistogram, hasHighlightClipping, hasShadowClipping, highlightGrid, shadowGrid)
 
                 val metadata = getLatestCaptureResult()
                 

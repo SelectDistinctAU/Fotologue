@@ -675,30 +675,40 @@ private fun CameraPreviewContent(
                 }
             }
 
-            // ZEBRA CLIPPING OVERLAY CANVAS
-            if (uiState.hasHighlightClipping || uiState.hasShadowClipping) {
+            // SPATIAL ZEBRA CLIPPING OVERLAY CANVAS (Drawn ONLY over specific clipped regions!)
+            if (uiState.highlightGrid.isNotEmpty() || uiState.shadowGrid.isNotEmpty()) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val w = size.width
                     val h = size.height
-                    val stripeWidth = 16f
-                    if (uiState.hasHighlightClipping) {
-                        for (i in -h.toInt()..w.toInt() step 36) {
-                            drawLine(
-                                color = Color.Red.copy(alpha = 0.35f),
-                                start = Offset(i.toFloat(), 0f),
-                                end = Offset(i.toFloat() + h, h),
-                                strokeWidth = stripeWidth
-                            )
-                        }
-                    }
-                    if (uiState.hasShadowClipping) {
-                        for (i in -h.toInt()..w.toInt() step 36) {
-                            drawLine(
-                                color = Color.Blue.copy(alpha = 0.35f),
-                                start = Offset(i.toFloat() + h, 0f),
-                                end = Offset(i.toFloat(), h),
-                                strokeWidth = stripeWidth
-                            )
+                    val gridRows = uiState.highlightGrid.size
+                    if (gridRows > 0) {
+                        val gridCols = uiState.highlightGrid[0].size
+                        val cellW = w / gridCols.toFloat()
+                        val cellH = h / gridRows.toFloat()
+
+                        for (gy in 0 until gridRows) {
+                            for (gx in 0 until gridCols) {
+                                val isHighClip = gx < uiState.highlightGrid[gy].size && uiState.highlightGrid[gy][gx]
+                                val isShadClip = gy < uiState.shadowGrid.size && gx < uiState.shadowGrid[gy].size && uiState.shadowGrid[gy][gx]
+
+                                if (isHighClip || isShadClip) {
+                                    val left = gx * cellW
+                                    val top = gy * cellH
+                                    val color = if (isHighClip) Color.Red.copy(alpha = 0.45f) else Color.Blue.copy(alpha = 0.45f)
+
+                                    drawRect(
+                                        color = color,
+                                        topLeft = Offset(left, top),
+                                        size = Size(cellW, cellH)
+                                    )
+                                    drawLine(
+                                        color = Color.White.copy(alpha = 0.7f),
+                                        start = Offset(left, top + cellH),
+                                        end = Offset(left + cellW, top),
+                                        strokeWidth = 3f
+                                    )
+                                }
+                            }
                         }
                     }
                 }

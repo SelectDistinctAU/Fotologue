@@ -177,12 +177,20 @@ class LightMeterViewModel @Inject constructor(
         _uiState.update { it.copy(rawLuminance = luminance) }
     }
 
-    fun onHistogramCalculated(bins: IntArray, highlightClipped: Boolean, shadowClipped: Boolean) {
+    fun onHistogramCalculated(
+        bins: IntArray,
+        highlightClipped: Boolean,
+        shadowClipped: Boolean,
+        highlightGrid: Array<BooleanArray> = emptyArray(),
+        shadowGrid: Array<BooleanArray> = emptyArray()
+    ) {
         _uiState.update {
             it.copy(
                 histogramBins = bins,
                 hasHighlightClipping = highlightClipped,
-                hasShadowClipping = shadowClipped
+                hasShadowClipping = shadowClipped,
+                highlightGrid = highlightGrid,
+                shadowGrid = shadowGrid
             )
         }
     }
@@ -506,7 +514,9 @@ data class LightMeterUiState(
     val recommendedDevelopment: String = "N (Normal)",
     val priorityMode: PriorityMode = PriorityMode.AV_PRIORITY,
     val selectedAvIndex: Int = 0,
-    val selectedTvIndex: Int = 0
+    val selectedTvIndex: Int = 0,
+    val highlightGrid: Array<BooleanArray> = emptyArray(),
+    val shadowGrid: Array<BooleanArray> = emptyArray()
 )
 
 enum class CalibrationStage {
