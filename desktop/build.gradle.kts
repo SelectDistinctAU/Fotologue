@@ -45,7 +45,7 @@ compose.desktop {
                 TargetFormat.Rpm
             )
             packageName = "FotologueDesktop"
-            packageVersion = "1.0.4"
+            packageVersion = "1.0.5"
             description = "Fotologue Analogue & Hybrid Photography Desktop Command Center"
             copyright = "© 2026 Fotologue. All rights reserved."
             windows {
@@ -55,7 +55,7 @@ compose.desktop {
             }
             linux {
                 packageName = "fotologue-desktop"
-                debPackageVersion = "1.0.4"
+                debPackageVersion = "1.0.5"
                 appCategory = "Graphics;Photography;"
                 menuGroup = "Graphics"
                 shortcut = true
