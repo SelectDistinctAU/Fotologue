@@ -19,7 +19,7 @@ class TimelineViewModelTest {
 
     private lateinit var viewModel: TimelineViewModel
     private val repository: FotologueRepository = mockk()
-    private val settingsRepository: SettingsRepository = mockk()
+    private val settingsRepository: SettingsRepository = mockk(relaxed = true)
     private val logExporter: LogExporter = mockk()
 
     private val testDispatcher = StandardTestDispatcher()

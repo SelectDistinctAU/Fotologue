@@ -17,6 +17,7 @@ class AddEditFlashViewModelTest {
 
     private lateinit var viewModel: AddEditFlashViewModel
     private val repository: FotologueRepository = mockk()
+    private val settingsRepository: SettingsRepository = mockk(relaxed = true)
     private val savedStateHandle = SavedStateHandle()
 
     private val testDispatcher = StandardTestDispatcher()
@@ -26,7 +27,7 @@ class AddEditFlashViewModelTest {
         Dispatchers.setMain(testDispatcher)
         every { repository.allCameras } returns flowOf(emptyList())
         every { repository.allCameraFlashCrossRefs } returns flowOf(emptyList())
-        viewModel = AddEditFlashViewModel(repository, savedStateHandle)
+        viewModel = AddEditFlashViewModel(repository, settingsRepository, savedStateHandle)
     }
 
     @After

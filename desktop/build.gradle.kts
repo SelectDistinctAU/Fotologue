@@ -12,6 +12,12 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(path = ":core:model")) {
+        attributes {
+            attribute(com.android.build.api.attributes.BuildTypeAttr.ATTRIBUTE, objects.named(com.android.build.api.attributes.BuildTypeAttr::class.java, "release"))
+            attribute(Attribute.of("artifactType", String::class.java), "android-classes-jar")
+        }
+    }
     implementation(project(path = ":core:data")) {
         attributes {
             attribute(com.android.build.api.attributes.BuildTypeAttr.ATTRIBUTE, objects.named(com.android.build.api.attributes.BuildTypeAttr::class.java, "release"))

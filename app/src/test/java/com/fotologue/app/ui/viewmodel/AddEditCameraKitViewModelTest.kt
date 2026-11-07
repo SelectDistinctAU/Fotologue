@@ -17,6 +17,7 @@ class AddEditCameraKitViewModelTest {
 
     private lateinit var viewModel: AddEditCameraKitViewModel
     private val repository: FotologueRepository = mockk()
+    private val settingsRepository: SettingsRepository = mockk(relaxed = true)
     private val savedStateHandle = SavedStateHandle()
 
     private val testDispatcher = StandardTestDispatcher()
@@ -38,7 +39,7 @@ class AddEditCameraKitViewModelTest {
         every { repository.allCameraFilterCrossRefs } returns flowOf(emptyList())
         every { repository.allCameraFlashCrossRefs } returns flowOf(emptyList())
         
-        viewModel = AddEditCameraKitViewModel(repository, savedStateHandle)
+        viewModel = AddEditCameraKitViewModel(repository, settingsRepository, savedStateHandle)
     }
 
     @After

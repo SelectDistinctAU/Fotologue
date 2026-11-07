@@ -17,6 +17,7 @@ class AddEditTeleconverterViewModelTest {
 
     private lateinit var viewModel: AddEditTeleconverterViewModel
     private val repository: FotologueRepository = mockk()
+    private val settingsRepository: SettingsRepository = mockk(relaxed = true)
     private val savedStateHandle = SavedStateHandle()
 
     private val testDispatcher = StandardTestDispatcher()
@@ -26,7 +27,7 @@ class AddEditTeleconverterViewModelTest {
         Dispatchers.setMain(testDispatcher)
         every { repository.allCameras } returns flowOf(emptyList())
         every { repository.allCameraTeleconverterCrossRefs } returns flowOf(emptyList())
-        viewModel = AddEditTeleconverterViewModel(repository, savedStateHandle)
+        viewModel = AddEditTeleconverterViewModel(repository, settingsRepository, savedStateHandle)
     }
 
     @After

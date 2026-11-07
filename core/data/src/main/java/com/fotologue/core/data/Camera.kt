@@ -13,6 +13,7 @@ data class Camera(
     val type: CameraType,
     val mount: String = "",
     @ColumnInfo(name = "modelNumber") val modelNumber: String = "",
+    @ColumnInfo(name = "serialNumber") val serialNumber: String = "",
     val shutterSpeeds: List<String> = emptyList(),
     val isHalfFrame: Boolean = false,
     val format: String = "35mm",
