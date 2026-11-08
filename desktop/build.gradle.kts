@@ -11,16 +11,22 @@ kotlin {
     jvmToolchain(21)
 }
 
+configurations.matching { it.isCanBeResolved }.configureEach {
+    attributes {
+        attribute(com.android.build.api.attributes.BuildTypeAttr.ATTRIBUTE, objects.named(com.android.build.api.attributes.BuildTypeAttr::class.java, "release"))
+    }
+}
+
 dependencies {
     implementation(project(path = ":core:model")) {
+        isTransitive = false
         attributes {
-            attribute(com.android.build.api.attributes.BuildTypeAttr.ATTRIBUTE, objects.named(com.android.build.api.attributes.BuildTypeAttr::class.java, "release"))
             attribute(Attribute.of("artifactType", String::class.java), "android-classes-jar")
         }
     }
     implementation(project(path = ":core:data")) {
+        isTransitive = false
         attributes {
-            attribute(com.android.build.api.attributes.BuildTypeAttr.ATTRIBUTE, objects.named(com.android.build.api.attributes.BuildTypeAttr::class.java, "release"))
             attribute(Attribute.of("artifactType", String::class.java), "android-classes-jar")
         }
     }
