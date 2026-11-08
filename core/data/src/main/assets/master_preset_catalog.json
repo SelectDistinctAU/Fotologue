@@ -1,5 +1,21 @@
 [
 {
+    "id": "cam_kmz_ft2_panoramic",
+    "category": "CAMERA",
+    "subCategory": "Panoramic",
+    "brand": "KMZ (USSR)",
+    "name": "KMZ FT-2 Panoramic Camera (Fotoapparat Tokareva)",
+    "modelNumber": "FT-2",
+    "attributes": {
+      "type": "Panoramic",
+      "mount": "Fixed (FT-2 Drum)",
+      "shutterSpeeds": "1/100s, 1/200s, 1/400s",
+      "format": "35mm Panoramic (24x110mm)",
+      "fixedLens": "Industar-50 28mm f/3.5"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "cam_pentax_lx",
     "category": "CAMERA",
     "subCategory": "Film SLR",
@@ -3169,6 +3185,38 @@
     "isDeveloperPreset": true
   },
 {
+    "id": "lens_industar_50_ft2",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "KMZ (USSR)",
+    "name": "Industar-50 28mm f/3.5 (FT-2 Panoramic)",
+    "attributes": {
+      "type": "Prime",
+      "mount": "Fixed (FT-2 Drum)",
+      "filterSize": "Custom FT-2",
+      "focalLength": "28mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
+    "id": "lens_industar_50_m39",
+    "category": "LENS",
+    "subCategory": "Prime",
+    "brand": "KMZ (USSR)",
+    "name": "Industar-50 50mm f/3.5 (M39 / M42)",
+    "attributes": {
+      "type": "Prime",
+      "mount": "M39 Thread",
+      "filterSize": "35.5mm",
+      "focalLength": "50mm",
+      "maxAperture": "f/3.5",
+      "minAperture": "f/16"
+    },
+    "isDeveloperPreset": true
+  },
+  {
     "id": "lens_canon_fd_50_14",
     "category": "LENS",
     "subCategory": "Prime",
