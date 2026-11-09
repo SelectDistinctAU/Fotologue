@@ -17,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import com.fotologue.app.R
@@ -34,6 +35,7 @@ fun AddEditCameraScreen(
     isPreArrivalMode: Boolean = false,
     onSavePreArrivalOrder: (String, String, String, Long) -> Unit = { _, _, _, _ -> }
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var isCustomFormView by remember { mutableStateOf(viewModel.cameraId != null) }
     var expanded by remember { mutableStateOf(false) }
@@ -288,6 +290,36 @@ fun AddEditCameraScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                            }
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            OutlinedCard(
+                                onClick = {
+                                    val targetQuery = searchQuery.ifBlank { if (selectedBrandFilter != "All") selectedBrandFilter else "Unlisted Camera" }
+                                    val url = "https://github.com/SelectDistinctAU/Fotologue/issues/new?template=preset_request.md&title=%5BPRESET+REQUEST%5D%3A+" + java.net.URLEncoder.encode(targetQuery, "UTF-8")
+                                    val browserIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                                    try {
+                                        context.startActivity(browserIntent)
+                                    } catch (_: Exception) {
+                                        val emailIntent = android.content.Intent(android.content.Intent.ACTION_SENDTO, android.net.Uri.parse("mailto:fotologue@pm.me?subject=[Preset Request] " + targetQuery))
+                                        try { context.startActivity(emailIntent) } catch (_: Exception) {}
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f))
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(painterResource(R.drawable.ic_label), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text("📩 Request Addition to Global Catalog", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                                        Text("Submit specs for \"${searchQuery.ifBlank { "Unlisted Camera" }}\" to GitHub Hive-Mind Queue", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
                             }
 
                             HorizontalDivider()

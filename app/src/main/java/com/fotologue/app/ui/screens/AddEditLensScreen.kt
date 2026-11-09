@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import com.fotologue.core.data.Lens
@@ -35,6 +36,7 @@ fun AddEditLensScreen(
     isPreArrivalMode: Boolean = false,
     onSavePreArrivalOrder: (String, String, String, Long) -> Unit = { _, _, _, _ -> }
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
     var isCustomFormView by remember { mutableStateOf(viewModel.lensId != null) }
@@ -364,6 +366,7 @@ private fun LensPresetsBrowser(
     onSelectSpec: (LensSpec) -> Unit,
     onAddCustomLens: () -> Unit
 ) {
+    val context = LocalContext.current
     val masterLensItems = remember { MasterPresetEngine.getPresetsByCategory("LENS") }
     val allBrands = remember { listOf("All") + masterLensItems.map { it.brand }.distinct().sorted() }
 
@@ -597,6 +600,36 @@ private fun LensPresetsBrowser(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(fallbackButtonLabel, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        OutlinedCard(
+            onClick = {
+                val targetQuery = lensSearchQueryText.ifBlank { if (selectedBrandFilter != "All") selectedBrandFilter else "Unlisted Lens" }
+                val url = "https://github.com/SelectDistinctAU/Fotologue/issues/new?template=preset_request.md&title=%5BPRESET+REQUEST%5D%3A+" + java.net.URLEncoder.encode(targetQuery, "UTF-8")
+                val browserIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                try {
+                    context.startActivity(browserIntent)
+                } catch (_: Exception) {
+                    val emailIntent = android.content.Intent(android.content.Intent.ACTION_SENDTO, android.net.Uri.parse("mailto:fotologue@pm.me?subject=[Preset Request] " + targetQuery))
+                    try { context.startActivity(emailIntent) } catch (_: Exception) {}
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f))
+        ) {
+            Row(
+                modifier = Modifier.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(painterResource(R.drawable.ic_label), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Text("📩 Request Addition to Global Catalog", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                    Text("Submit specs for \"${lensSearchQueryText.ifBlank { "Unlisted Lens" }}\" to GitHub Hive-Mind Queue", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
         }
 
         HorizontalDivider()
