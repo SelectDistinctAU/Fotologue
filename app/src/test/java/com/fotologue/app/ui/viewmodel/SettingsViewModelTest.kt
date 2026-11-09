@@ -1,6 +1,7 @@
 package com.fotologue.app.ui.viewmodel
 
 import com.fotologue.core.data.ConfigurationManager
+import com.fotologue.core.data.FotologueRepository
 import com.fotologue.core.data.MacroCopyNamingOptions
 import com.fotologue.core.data.MacroCopyPreset
 import com.fotologue.core.data.PictureExportSize
@@ -19,6 +20,7 @@ class SettingsViewModelTest {
 
     private lateinit var viewModel: SettingsViewModel
     private val repository: SettingsRepository = mockk()
+    private val fotologueRepository: FotologueRepository = mockk(relaxed = true)
     private val configurationManager: ConfigurationManager = mockk()
     private val testDispatcher = StandardTestDispatcher()
 
@@ -44,8 +46,9 @@ class SettingsViewModelTest {
         every { repository.appTheme } returns flowOf("SYSTEM_DEFAULT")
         every { repository.photoCanvasMode } returns flowOf("ISO_MID_GRAY")
         every { repository.safelightMode } returns flowOf("OFF")
+        every { fotologueRepository.allLogEntriesWithGear } returns flowOf(emptyList())
         
-        viewModel = SettingsViewModel(repository, configurationManager)
+        viewModel = SettingsViewModel(repository, fotologueRepository, configurationManager)
     }
 
     @After

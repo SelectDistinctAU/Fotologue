@@ -136,7 +136,10 @@ fun ArchiveScreen(
     ) { uri ->
         uri?.let {
             scope.launch {
-                snackbarHostState.showSnackbar("CSV Summary Export Complete!")
+                context.contentResolver.openOutputStream(it)?.use { outputStream ->
+                    viewModel.exportCsvSummaryLog(outputStream)
+                }
+                snackbarHostState.showSnackbar("✅ CSV Summary Log Exported (All Field Exposure Logs Saved)!")
             }
         }
     }
@@ -440,17 +443,35 @@ fun ArchiveScreen(
                         color = safelightSubFg
                     )
 
-                    Button(
-                        onClick = { createJsonLauncher.launch("fotologue_autobackup_$timestamp.json") },
-                        colors = btnColors,
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .defaultMinSize(minHeight = 48.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(painterResource(com.fotologue.app.R.drawable.file_json_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Export Consolidated Zip / Backup to Storage Drive", style = MaterialTheme.typography.labelMedium, color = btnTextTint, fontWeight = FontWeight.Bold)
+                        Button(
+                            onClick = { createCsvLauncher.launch("fotologue_field_logs_$timestamp.csv") },
+                            colors = btnColors,
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .defaultMinSize(minHeight = 48.dp)
+                        ) {
+                            Icon(painterResource(com.fotologue.app.R.drawable.csv_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Export CSV Logs", style = MaterialTheme.typography.labelMedium, color = btnTextTint, fontWeight = FontWeight.Bold)
+                        }
+
+                        Button(
+                            onClick = { createJsonLauncher.launch("fotologue_autobackup_$timestamp.json") },
+                            colors = btnColors,
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .defaultMinSize(minHeight = 48.dp)
+                        ) {
+                            Icon(painterResource(com.fotologue.app.R.drawable.file_json_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Export Backup Zip", style = MaterialTheme.typography.labelMedium, color = btnTextTint, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }

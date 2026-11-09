@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.fotologue.core.data.FotologueRepository
+import kotlinx.coroutines.flow.first
 import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject
@@ -23,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val repository: SettingsRepository,
+    private val fotologueRepository: FotologueRepository,
     private val configurationManager: ConfigurationManager
 ) : ViewModel() {
     private val _events = MutableSharedFlow<SettingsEvent>()
@@ -228,6 +231,17 @@ class SettingsViewModel @Inject constructor(
     fun deleteMacroCopyPreset(id: String) {
         viewModelScope.launch {
             repository.deleteMacroCopyPreset(id)
+        }
+    }
+
+    suspend fun exportCsvSummaryLog(outputStream: OutputStream) {
+        try {
+            val logs = fotologueRepository.allLogEntriesWithGear.first()
+            val csv = com.fotologue.app.util.LogEntryExporter.toCsv(logs)
+            outputStream.use { it.write(csv.toByteArray()) }
+            _events.emit(SettingsEvent.BackupSuccess)
+        } catch (e: Exception) {
+            _events.emit(SettingsEvent.Error(e.message ?: "CSV export failed"))
         }
     }
 
