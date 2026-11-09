@@ -93,4 +93,9 @@ object MasterPresetEngine {
     fun getBrandsForCategory(category: String): List<String> {
         return listOf("All") + getPresetsByCategory(category).map { it.brand }.distinct().sorted()
     }
+
+    fun getTotalPresetCount(): Int {
+        initializeIfNeeded()
+        return cachedPresets.size
+    }
 }

@@ -26,6 +26,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -392,6 +396,61 @@ fun ArchiveScreen(
                         Icon(painterResource(com.fotologue.app.R.drawable.cloud_sync_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text("Refresh Master Presets from Cloud", style = MaterialTheme.typography.labelMedium, color = btnTextTint, fontWeight = FontWeight.Bold)
+                    }
+
+                    val refreshStatus by viewModel.presetRefreshStatus.collectAsStateWithLifecycle()
+                    refreshStatus?.let { statusText ->
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = statusText,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // AUTOMATIC OFF-DEVICE BACKUP & SYNC
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = safelightCardBg)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "AUTOMATIC OFF-DEVICE BACKUP & SYNC",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = safelightPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Automatically exports timestamped backup archives or sync manifests to Google Drive, SD Card, or custom cloud storage folders for off-device safety and desktop consolidation.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = safelightSubFg
+                    )
+
+                    Button(
+                        onClick = { createJsonLauncher.launch("fotologue_autobackup_$timestamp.json") },
+                        colors = btnColors,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .defaultMinSize(minHeight = 48.dp)
+                    ) {
+                        Icon(painterResource(com.fotologue.app.R.drawable.file_json_24px), contentDescription = null, tint = btnTextTint, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Export Consolidated Zip / Backup to Storage Drive", style = MaterialTheme.typography.labelMedium, color = btnTextTint, fontWeight = FontWeight.Bold)
                     }
                 }
             }

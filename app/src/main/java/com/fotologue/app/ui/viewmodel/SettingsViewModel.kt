@@ -111,12 +111,19 @@ class SettingsViewModel @Inject constructor(
 
     fun refreshMasterPresetsFromCloud() {
         viewModelScope.launch {
-            _presetRefreshStatus.value = "Refreshing master presets from cloud..."
+            _presetRefreshStatus.value = "🔄 Connecting to GitHub Cloud Catalog..."
+            val countBefore = com.fotologue.core.data.preset.MasterPresetEngine.getTotalPresetCount()
             val success = com.fotologue.core.data.preset.MasterPresetEngine.refreshFromCloud()
+            val countAfter = com.fotologue.core.data.preset.MasterPresetEngine.getTotalPresetCount()
             if (success) {
-                _presetRefreshStatus.value = "✅ Master presets updated successfully from cloud!"
+                val newItems = (countAfter - countBefore).coerceAtLeast(0)
+                _presetRefreshStatus.value = if (newItems > 0) {
+                    "✅ Synced $newItems new community presets! Total: $countAfter presets."
+                } else {
+                    "✅ Catalog Up-to-Date! ($countAfter presets loaded)"
+                }
             } else {
-                _presetRefreshStatus.value = "⚠️ Cloud refresh unavailable. Operating on local catalog."
+                _presetRefreshStatus.value = "⚠️ Cloud refresh offline. Operating on local catalog ($countBefore presets)."
             }
         }
     }
