@@ -46,9 +46,14 @@ class SettingsViewModelTest {
         every { repository.appTheme } returns flowOf("SYSTEM_DEFAULT")
         every { repository.photoCanvasMode } returns flowOf("ISO_MID_GRAY")
         every { repository.safelightMode } returns flowOf("OFF")
+        every { repository.autoBackupFolderUri } returns flowOf(null)
+        every { repository.autoBackupCycle } returns flowOf("ON_EVERY_LOG")
+        every { repository.autoBackupScope } returns flowOf("FULL_VAULT")
+        every { repository.lastAutoBackupTime } returns flowOf(0L)
+        every { repository.lastAutoBackupStatus } returns flowOf(null)
         every { fotologueRepository.allLogEntriesWithGear } returns flowOf(emptyList())
         
-        viewModel = SettingsViewModel(repository, fotologueRepository, configurationManager)
+        viewModel = SettingsViewModel(mockk(relaxed = true), repository, fotologueRepository, configurationManager)
     }
 
     @After

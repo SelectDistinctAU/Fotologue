@@ -16,7 +16,10 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import android.content.Context
+import com.fotologue.app.util.LogEntryZipExporter
 import com.fotologue.core.data.FotologueRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import java.io.InputStream
 import java.io.OutputStream
@@ -24,6 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val repository: SettingsRepository,
     private val fotologueRepository: FotologueRepository,
     private val configurationManager: ConfigurationManager
@@ -231,6 +235,42 @@ class SettingsViewModel @Inject constructor(
     fun deleteMacroCopyPreset(id: String) {
         viewModelScope.launch {
             repository.deleteMacroCopyPreset(id)
+        }
+    }
+
+    val autoBackupFolderUri: StateFlow<String?> = repository.autoBackupFolderUri
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    val autoBackupCycle: StateFlow<String> = repository.autoBackupCycle
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "ON_EVERY_LOG")
+
+    val autoBackupScope: StateFlow<String> = repository.autoBackupScope
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "FULL_VAULT")
+
+    val lastAutoBackupStatus: StateFlow<String?> = repository.lastAutoBackupStatus
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    fun setAutoBackupConfig(folderUri: String?, cycle: String, scope: String) {
+        viewModelScope.launch {
+            repository.setAutoBackupConfig(folderUri, cycle, scope)
+        }
+    }
+
+    suspend fun backupZip(outputStream: OutputStream) {
+        try {
+            val logs = fotologueRepository.allLogEntriesWithGear.first()
+            val allTags = fotologueRepository.allTags.first()
+            LogEntryZipExporter.toZip(
+                context = context,
+                logs = logs,
+                outputStream = outputStream,
+                allTags = allTags,
+                includeFoundationData = true,
+                repository = fotologueRepository
+            )
+            _events.emit(SettingsEvent.BackupSuccess)
+        } catch (e: Exception) {
+            _events.emit(SettingsEvent.Error(e.message ?: "Zip backup failed"))
         }
     }
 

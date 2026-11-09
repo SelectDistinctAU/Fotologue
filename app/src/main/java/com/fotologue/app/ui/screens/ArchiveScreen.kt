@@ -76,6 +76,40 @@ fun ArchiveScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // Real ZIP Vault Backup Launcher
+    val createZipLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/zip")
+    ) { uri ->
+        uri?.let {
+            scope.launch {
+                context.contentResolver.openOutputStream(it)?.use { outputStream ->
+                    viewModel.backupZip(outputStream)
+                }
+                snackbarHostState.showSnackbar("✅ Native ZIP Vault Archive Exported (Logs, Gear & Thumbnails)!")
+            }
+        }
+    }
+
+    // Default Storage Folder SAF Picker
+    val folderPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocumentTree()
+    ) { uri ->
+        uri?.let {
+            try {
+                context.contentResolver.takePersistableUriPermission(
+                    it,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
+            } catch (_: Exception) {}
+            val currentCycle = viewModel.autoBackupCycle.value
+            val currentScope = viewModel.autoBackupScope.value
+            viewModel.setAutoBackupConfig(it.toString(), currentCycle, currentScope)
+            scope.launch {
+                snackbarHostState.showSnackbar("✅ Default Backup Storage Folder Set!")
+            }
+        }
+    }
+
     // JSON Backup Export Launcher
     val createJsonLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/json")
@@ -85,7 +119,7 @@ fun ArchiveScreen(
                 context.contentResolver.openOutputStream(it)?.use { outputStream ->
                     viewModel.backup(outputStream)
                 }
-                snackbarHostState.showSnackbar("Native JSON Vault Export Complete!")
+                snackbarHostState.showSnackbar("✅ Native JSON Catalogue Vault Export Complete!")
             }
         }
     }
@@ -443,6 +477,42 @@ fun ArchiveScreen(
                         color = safelightSubFg
                     )
 
+                    val folderUri by viewModel.autoBackupFolderUri.collectAsStateWithLifecycle()
+                    val backupCycle by viewModel.autoBackupCycle.collectAsStateWithLifecycle()
+                    val backupScope by viewModel.autoBackupScope.collectAsStateWithLifecycle()
+                    val lastBackupStatus by viewModel.lastAutoBackupStatus.collectAsStateWithLifecycle()
+
+                    // STORAGE FOLDER SELECTION BUTTON & READOUT
+                    OutlinedButton(
+                        onClick = { folderPickerLauncher.launch(null) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(painterResource(com.fotologue.app.R.drawable.backup_24px), contentDescription = null, tint = safelightPrimary, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (folderUri.isNullOrBlank()) "📁 Select Storage / Drive Folder" else "📁 Folder: ${folderUri?.substringAfterLast("%3A") ?: "Selected"}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = safelightPrimary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    lastBackupStatus?.let { status ->
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = status,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -461,7 +531,7 @@ fun ArchiveScreen(
                         }
 
                         Button(
-                            onClick = { createJsonLauncher.launch("fotologue_autobackup_$timestamp.json") },
+                            onClick = { createZipLauncher.launch("fotologue_vault_$timestamp.zip") },
                             colors = btnColors,
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                             modifier = Modifier

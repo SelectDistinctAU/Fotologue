@@ -476,4 +476,32 @@ class SettingsRepository(private val context: Context) {
     suspend fun setLocalFoundationChangesPending(pending: Boolean) {
         context.dataStore.edit { it[LOCAL_FOUNDATION_CHANGES_PENDING] = pending }
     }
+
+    // AUTO-BACKUP ENGINE PREFERENCES
+    private val AUTO_BACKUP_FOLDER_URI = stringPreferencesKey("auto_backup_folder_uri")
+    private val AUTO_BACKUP_CYCLE = stringPreferencesKey("auto_backup_cycle")
+    private val AUTO_BACKUP_SCOPE = stringPreferencesKey("auto_backup_scope")
+    private val LAST_AUTO_BACKUP_TIME = longPreferencesKey("last_auto_backup_time")
+    private val LAST_AUTO_BACKUP_STATUS = stringPreferencesKey("last_auto_backup_status")
+
+    val autoBackupFolderUri: Flow<String?> = context.dataStore.data.map { try { it[AUTO_BACKUP_FOLDER_URI] } catch (_: Throwable) { null } }
+    val autoBackupCycle: Flow<String> = context.dataStore.data.map { try { it[AUTO_BACKUP_CYCLE] ?: "ON_EVERY_LOG" } catch (_: Throwable) { "ON_EVERY_LOG" } }
+    val autoBackupScope: Flow<String> = context.dataStore.data.map { try { it[AUTO_BACKUP_SCOPE] ?: "FULL_VAULT" } catch (_: Throwable) { "FULL_VAULT" } }
+    val lastAutoBackupTime: Flow<Long> = context.dataStore.data.map { try { it[LAST_AUTO_BACKUP_TIME] ?: 0L } catch (_: Throwable) { 0L } }
+    val lastAutoBackupStatus: Flow<String?> = context.dataStore.data.map { try { it[LAST_AUTO_BACKUP_STATUS] } catch (_: Throwable) { null } }
+
+    suspend fun setAutoBackupConfig(folderUri: String?, cycle: String, scope: String) {
+        context.dataStore.edit { preferences ->
+            if (folderUri != null) preferences[AUTO_BACKUP_FOLDER_URI] = folderUri else preferences.remove(AUTO_BACKUP_FOLDER_URI)
+            preferences[AUTO_BACKUP_CYCLE] = cycle
+            preferences[AUTO_BACKUP_SCOPE] = scope
+        }
+    }
+
+    suspend fun setLastAutoBackupStatus(status: String, timestamp: Long = System.currentTimeMillis()) {
+        context.dataStore.edit { preferences ->
+            preferences[LAST_AUTO_BACKUP_STATUS] = status
+            preferences[LAST_AUTO_BACKUP_TIME] = timestamp
+        }
+    }
 }
