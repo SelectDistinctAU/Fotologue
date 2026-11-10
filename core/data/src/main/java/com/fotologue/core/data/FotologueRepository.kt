@@ -135,7 +135,8 @@ class FotologueRepository @Inject constructor(
         
         return filmRollSessionDao.getSession(cameraId, filmId).map { session ->
             if (session != null) {
-                String.format(Locale.US, "%d.%02d", session.rollNumber, session.nextFrameNumber)
+                val rollInt = session.rollNumber.replace(Regex("""\D"""), "").toIntOrNull() ?: 1
+                String.format(Locale.US, "%d.%02d", rollInt, session.nextFrameNumber)
             } else {
                 "1.01"
             }
@@ -465,6 +466,87 @@ class FotologueRepository @Inject constructor(
         }
     }
 
+    fun getActiveRollForCamera(cameraId: Long): Flow<FilmRollSession?> {
+        return filmRollSessionDao.getActiveSessionForCamera(cameraId)
+    }
+
+    suspend fun loadNewRoll(
+        cameraId: Long,
+        filmId: Long,
+        rollNumber: String = "Roll #1",
+        targetIso: Int = 400,
+        pushPullStops: Float = 0.0f,
+        notes: String = ""
+    ): Long {
+        return database.withTransaction {
+            val currentActive = filmRollSessionDao.getActiveSessionForCameraOnce(cameraId)
+            if (currentActive != null) {
+                filmRollSessionDao.updateSession(
+                    currentActive.copy(
+                        completedAt = System.currentTimeMillis(),
+                        status = "EXPOSED"
+                    )
+                )
+            }
+            val newSession = FilmRollSession(
+                cameraId = cameraId,
+                filmId = filmId,
+                rollNumber = rollNumber,
+                startedAt = System.currentTimeMillis(),
+                targetIso = targetIso,
+                pushPullStops = pushPullStops,
+                status = "ACTIVE",
+                notes = notes
+            )
+            filmRollSessionDao.insertSession(newSession)
+        }
+    }
+
+    suspend fun consolidateRollsFromJson(jsonString: String): Int {
+        return database.withTransaction {
+            val jsonEngine = Json { ignoreUnknownKeys = true; isLenient = true }
+            val parsedConfig = try {
+                jsonEngine.decodeFromString<FotologueConfig>(jsonString)
+            } catch (_: Exception) {
+                null
+            }
+
+            val logsToProcess = parsedConfig?.logs ?: database.logEntryDao().getAllLogEntriesOnce()
+            if (logsToProcess.isEmpty()) return@withTransaction 0
+
+            val groupedByRoll = logsToProcess.filter { it.cameraId != null && it.filmId != null }
+                .groupBy { "${it.cameraId}_${it.filmRoll?.substringBefore(".") ?: "1"}" }
+
+            var sessionCount = 0
+            groupedByRoll.forEach { (_, rollLogs) ->
+                val firstLog = rollLogs.minByOrNull { it.timestamp } ?: return@forEach
+                val lastLog = rollLogs.maxByOrNull { it.timestamp } ?: return@forEach
+
+                val camId = firstLog.cameraId ?: return@forEach
+                val fId = firstLog.filmId ?: return@forEach
+                val rollNumStr = firstLog.filmRoll?.substringBefore(".") ?: "1"
+
+                val existing = filmRollSessionDao.getSessionOnce(camId, fId)
+                if (existing == null) {
+                    filmRollSessionDao.insertSession(
+                        FilmRollSession(
+                            cameraId = camId,
+                            filmId = fId,
+                            rollNumber = "Roll #$rollNumStr",
+                            startedAt = firstLog.timestamp,
+                            completedAt = lastLog.timestamp,
+                            targetIso = firstLog.exposureSettings.iso,
+                            status = "EXPOSED",
+                            notes = "Consolidated on-device from ${rollLogs.size} exposure logs"
+                        )
+                    )
+                    sessionCount++
+                }
+            }
+            sessionCount
+        }
+    }
+
     suspend fun logExposure(
         notes: String,
         environmentalConditions: String,
@@ -518,7 +600,14 @@ class FotologueRepository @Inject constructor(
                 val parts = filmRoll.split(".")
                 val roll = parts[0].toIntOrNull() ?: 1
                 val frame = parts[1].toIntOrNull() ?: 1
-                filmRollSessionDao.insertSession(FilmRollSession(cameraId, filmId, roll, frame + 1))
+                filmRollSessionDao.insertSession(
+                    FilmRollSession(
+                        cameraId = cameraId,
+                        filmId = filmId,
+                        rollNumber = "Roll #$roll",
+                        nextFrameNumber = frame + 1
+                    )
+                )
             }
         }
     }

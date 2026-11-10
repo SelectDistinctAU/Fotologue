@@ -68,7 +68,7 @@ class AddLogViewModelTest {
         every { gearConfigurationManager.updateConfiguration(any()) } just Runs
         
         every { repository.getFilmRollSession(any(), any()) } returns flowOf(null)
-        coEvery { repository.updateFilmRollSession(any()) } just Runs
+        coEvery { repository.updateFilmRollSession(any()) } returns 1L
 
         every { settingsRepository.lastCameraId } returns flowOf(null)
         every { settingsRepository.lastFilmId } returns flowOf(null)

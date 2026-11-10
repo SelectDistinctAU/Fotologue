@@ -612,7 +612,12 @@ class AddLogViewModel @Inject constructor(
                 if (roll != null && frame != null) {
                     viewModelScope.launch {
                         repository.updateFilmRollSession(
-                            FilmRollSession(state.selectedCameraId, state.selectedFilmId, roll, frame)
+                            FilmRollSession(
+                                cameraId = state.selectedCameraId,
+                                filmId = state.selectedFilmId,
+                                rollNumber = "Roll #$roll",
+                                nextFrameNumber = frame
+                            )
                         )
                     }
                 }

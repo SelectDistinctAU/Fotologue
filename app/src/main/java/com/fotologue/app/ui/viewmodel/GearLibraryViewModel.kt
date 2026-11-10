@@ -32,6 +32,12 @@ data class GearLibraryUiState(
 
 @HiltViewModel
 class GearLibraryViewModel @Inject constructor(private val repository: FotologueRepository) : ViewModel() {
+    fun loadNewRoll(cameraId: Long, filmId: Long, rollNumber: String, targetIso: Int, pushPullStops: Float) {
+        viewModelScope.launch {
+            repository.loadNewRoll(cameraId, filmId, rollNumber, targetIso, pushPullStops)
+        }
+    }
+
     fun updateAssetStatus(category: String, refId: Long, newStatus: String, reason: String? = null) {
         viewModelScope.launch {
             repository.setAssetAvailability(

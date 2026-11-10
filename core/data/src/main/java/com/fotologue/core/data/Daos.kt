@@ -501,11 +501,20 @@ interface TagDao {
 
 @Dao
 interface FilmRollSessionDao {
-    @Query("SELECT * FROM film_roll_sessions")
+    @Query("SELECT * FROM film_roll_sessions ORDER BY startedAt DESC")
     fun getAllSessions(): Flow<List<FilmRollSession>>
 
-    @Query("SELECT * FROM film_roll_sessions")
+    @Query("SELECT * FROM film_roll_sessions ORDER BY startedAt DESC")
     suspend fun getAllSessionsOnce(): List<FilmRollSession>
+
+    @Query("SELECT * FROM film_roll_sessions WHERE id = :id")
+    fun getSessionById(id: Long): Flow<FilmRollSession?>
+
+    @Query("SELECT * FROM film_roll_sessions WHERE cameraId = :cameraId AND status = 'ACTIVE' ORDER BY startedAt DESC LIMIT 1")
+    fun getActiveSessionForCamera(cameraId: Long): Flow<FilmRollSession?>
+
+    @Query("SELECT * FROM film_roll_sessions WHERE cameraId = :cameraId AND status = 'ACTIVE' ORDER BY startedAt DESC LIMIT 1")
+    suspend fun getActiveSessionForCameraOnce(cameraId: Long): FilmRollSession?
 
     @Query("SELECT * FROM film_roll_sessions WHERE cameraId = :cameraId AND filmId = :filmId")
     fun getSession(cameraId: Long, filmId: Long): Flow<FilmRollSession?>
@@ -514,10 +523,13 @@ interface FilmRollSessionDao {
     suspend fun getSessionOnce(cameraId: Long, filmId: Long): FilmRollSession?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSession(session: FilmRollSession)
+    suspend fun insertSession(session: FilmRollSession): Long
 
     @Update
     suspend fun updateSession(session: FilmRollSession)
+
+    @Query("DELETE FROM film_roll_sessions WHERE id = :id")
+    suspend fun deleteSessionById(id: Long)
 
     @Query("DELETE FROM film_roll_sessions WHERE cameraId = :cameraId AND filmId = :filmId")
     suspend fun deleteSession(cameraId: Long, filmId: Long)

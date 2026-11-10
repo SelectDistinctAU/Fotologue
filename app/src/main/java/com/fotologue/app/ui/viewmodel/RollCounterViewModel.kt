@@ -39,12 +39,13 @@ class RollCounterViewModel @Inject constructor(
                     
                     if (camera != null && film != null) {
                         repository.getFilmRollSession(cameraId, filmId).collect { session ->
-                            val currentSession = session ?: FilmRollSession(cameraId, filmId)
+                            val currentSession = session ?: FilmRollSession(cameraId = cameraId, filmId = filmId)
                             val expected = film.expectedExposures
                             val isHalf = camera.isHalfFrame
+                            val rollInt = currentSession.rollNumber.replace(Regex("""\D"""), "").toIntOrNull() ?: 1
                             
                             _uiState.update { it.copy(
-                                currentRoll = currentSession.rollNumber,
+                                currentRoll = rollInt,
                                 currentFrame = currentSession.nextFrameNumber,
                                 expectedExposures = if (isHalf) expected * 2 else expected,
                                 isHalfFrame = isHalf,
@@ -71,7 +72,7 @@ class RollCounterViewModel @Inject constructor(
                 FilmRollSession(
                     cameraId = state.activeCamera!!.id,
                     filmId = state.activeFilm!!.id,
-                    rollNumber = roll,
+                    rollNumber = "Roll #$roll",
                     nextFrameNumber = state.currentFrame
                 )
             )
@@ -86,7 +87,7 @@ class RollCounterViewModel @Inject constructor(
                 FilmRollSession(
                     cameraId = state.activeCamera!!.id,
                     filmId = state.activeFilm!!.id,
-                    rollNumber = state.currentRoll,
+                    rollNumber = "Roll #${state.currentRoll}",
                     nextFrameNumber = frame
                 )
             )
@@ -101,7 +102,7 @@ class RollCounterViewModel @Inject constructor(
                 FilmRollSession(
                     cameraId = state.activeCamera!!.id,
                     filmId = state.activeFilm!!.id,
-                    rollNumber = state.currentRoll + 1,
+                    rollNumber = "Roll #${state.currentRoll + 1}",
                     nextFrameNumber = 1
                 )
             )
@@ -116,7 +117,7 @@ class RollCounterViewModel @Inject constructor(
                 FilmRollSession(
                     cameraId = state.activeCamera!!.id,
                     filmId = state.activeFilm!!.id,
-                    rollNumber = 1,
+                    rollNumber = "Roll #1",
                     nextFrameNumber = 1
                 )
             )
