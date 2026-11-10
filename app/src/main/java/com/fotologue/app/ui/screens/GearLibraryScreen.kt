@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
@@ -159,6 +160,8 @@ fun GearLibraryScreen(
         },
         detailPane = {
             AnimatedPane {
+                var selectedCameraForRoll by remember { mutableStateOf<Camera?>(null) }
+
                 val content = @Composable { paddingValues: PaddingValues ->
                     when (uiState.selectedCategoryIndex) {
                         0 -> CameraList(
@@ -172,6 +175,7 @@ fun GearLibraryScreen(
                             onCameraLongClick = { viewModel.toggleCameraSelection(it) },
                             onMove = viewModel::moveCamera,
                             onUpdateStatus = { cat, refId, newStatus -> viewModel.updateAssetStatus(cat, refId, newStatus) },
+                            onLoadNewRoll = { camera -> selectedCameraForRoll = camera },
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         1 -> LensList(
@@ -362,6 +366,18 @@ fun GearLibraryScreen(
                             .consumeWindowInsets(innerPadding)
                     ) {
                         content(innerPadding)
+                    }
+
+                    selectedCameraForRoll?.let { camera ->
+                        LoadNewRollDialog(
+                            camera = camera,
+                            films = films,
+                            onDismiss = { selectedCameraForRoll = null },
+                            onConfirm = { filmId, rollNumber, targetIso, pushPullStops ->
+                                viewModel.loadNewRoll(camera.id, filmId, rollNumber, targetIso, pushPullStops)
+                                selectedCameraForRoll = null
+                            }
+                        )
                     }
                 }
             }
@@ -1298,6 +1314,7 @@ private fun CameraList(
     onCameraLongClick: (Long) -> Unit,
     onMove: (Int, Int) -> Unit,
     onUpdateStatus: (String, Long, String) -> Unit = { _, _, _ -> },
+    onLoadNewRoll: (Camera) -> Unit = {},
     bottomPadding: Dp = 0.dp
 ) {
     if (cameras.isEmpty()) {
@@ -1334,6 +1351,16 @@ private fun CameraList(
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            OutlinedButton(
+                                onClick = { onLoadNewRoll(camera) },
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                                modifier = Modifier.height(32.dp)
+                            ) {
+                                Icon(painterResource(R.drawable.camera_roll_24px), contentDescription = null, modifier = Modifier.size(14.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Load New Roll", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
                             }
                         }
                     },
@@ -1548,4 +1575,137 @@ private fun ReorderButtons(
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoadNewRollDialog(
+    camera: Camera,
+    films: List<Film>,
+    onDismiss: () -> Unit,
+    onConfirm: (filmId: Long, rollNumber: String, targetIso: Int, pushPullStops: Float) -> Unit
+) {
+    var selectedFilmId by remember { mutableStateOf(films.firstOrNull()?.id ?: 1L) }
+    var rollNumberInput by remember { mutableStateOf("Roll #1") }
+    var targetIsoInput by remember { mutableStateOf("400") }
+    var pushPullSelection by remember { mutableStateOf("Box Speed (0.0)") }
+
+    var filmExpanded by remember { mutableStateOf(false) }
+    var pushPullExpanded by remember { mutableStateOf(false) }
+
+    val pushPullOptions = listOf("Box Speed (0.0)", "+1.0 Stop Push", "+2.0 Stops Push", "-1.0 Stop Pull", "-2.0 Stops Pull")
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(painterResource(R.drawable.camera_roll_24px), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Load New Roll: ${camera.name}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ExposedDropdownMenuBox(
+                    expanded = filmExpanded,
+                    onExpandedChange = { filmExpanded = !filmExpanded }
+                ) {
+                    val selectedFilm = films.find { it.id == selectedFilmId }
+                    OutlinedTextField(
+                        value = selectedFilm?.name ?: "Select Film Stock",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Film Stock") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = filmExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = filmExpanded,
+                        onDismissRequest = { filmExpanded = false }
+                    ) {
+                        films.forEach { f ->
+                            DropdownMenuItem(
+                                text = { Text("${f.name} (ISO ${f.iso})") },
+                                onClick = {
+                                    selectedFilmId = f.id
+                                    targetIsoInput = f.iso.toString()
+                                    filmExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = rollNumberInput,
+                        onValueChange = { rollNumberInput = it },
+                        label = { Text("Roll Number") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = targetIsoInput,
+                        onValueChange = { targetIsoInput = it },
+                        label = { Text("Target ISO") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                ExposedDropdownMenuBox(
+                    expanded = pushPullExpanded,
+                    onExpandedChange = { pushPullExpanded = !pushPullExpanded }
+                ) {
+                    OutlinedTextField(
+                        value = pushPullSelection,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Push / Pull Compensation") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = pushPullExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = pushPullExpanded,
+                        onDismissRequest = { pushPullExpanded = false }
+                    ) {
+                        pushPullOptions.forEach { opt ->
+                            DropdownMenuItem(
+                                text = { Text(opt) },
+                                onClick = {
+                                    pushPullSelection = opt
+                                    pushPullExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val iso = targetIsoInput.toIntOrNull() ?: 400
+                    val pushPull = when (pushPullSelection) {
+                        "+1.0 Stop Push" -> 1.0f
+                        "+2.0 Stops Push" -> 2.0f
+                        "-1.0 Stop Pull" -> -1.0f
+                        "-2.0 Stops Pull" -> -2.0f
+                        else -> 0.0f
+                    }
+                    onConfirm(selectedFilmId, rollNumberInput.trim(), iso, pushPull)
+                }
+            ) {
+                Text("Load Roll Threshold", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
