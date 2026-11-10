@@ -256,6 +256,23 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    private val _consolidationStatus = MutableStateFlow<String?>(null)
+    val consolidationStatus: StateFlow<String?> = _consolidationStatus.asStateFlow()
+
+    fun consolidateRollsFromUris(uris: List<android.net.Uri>) {
+        viewModelScope.launch {
+            if (uris.isEmpty()) return@launch
+            _consolidationStatus.value = "⏳ Consolidating ${uris.size} backup files into Darkroom LAB..."
+            var totalCount = 0
+            uris.forEach { uri ->
+                val count = fotologueRepository.consolidateRollsFromUri(context, uri)
+                totalCount += count
+            }
+            _consolidationStatus.value = "✅ Consolidated $totalCount Film Rolls into Darkroom LAB!"
+            _events.emit(SettingsEvent.RestoreSuccess)
+        }
+    }
+
     suspend fun backupZip(outputStream: OutputStream) {
         try {
             val logs = fotologueRepository.allLogEntriesWithGear.first()

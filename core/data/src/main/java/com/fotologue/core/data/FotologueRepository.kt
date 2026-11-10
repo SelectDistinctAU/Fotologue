@@ -502,6 +502,44 @@ class FotologueRepository @Inject constructor(
         }
     }
 
+    suspend fun consolidateRollsFromUri(context: android.content.Context, uri: android.net.Uri): Int {
+        val mimeType = context.contentResolver.getType(uri) ?: ""
+        val isZip = uri.toString().endsWith(".zip", ignoreCase = true) || mimeType.contains("zip", ignoreCase = true)
+
+        val jsonString = if (isZip) {
+            var extractedJson: String? = null
+            try {
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    val zis = java.util.zip.ZipInputStream(inputStream.buffered())
+                    var entry = zis.nextEntry
+                    while (entry != null) {
+                        if (entry.name.endsWith(".json", ignoreCase = true)) {
+                            extractedJson = zis.bufferedReader().readText()
+                            break
+                        }
+                        entry = zis.nextEntry
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            extractedJson
+        } else {
+            try {
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    inputStream.bufferedReader().readText()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+
+        return if (!jsonString.isNullOrBlank()) {
+            consolidateRollsFromJson(jsonString)
+        } else 0
+    }
+
     suspend fun consolidateRollsFromJson(jsonString: String): Int {
         return database.withTransaction {
             val jsonEngine = Json { ignoreUnknownKeys = true; isLenient = true }

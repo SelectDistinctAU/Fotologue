@@ -164,6 +164,18 @@ fun ArchiveScreen(
         }
     }
 
+    // On-Device Film Roll Consolidation Launcher (Multiple ZIP / JSON Selection!)
+    val consolidateRollsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            viewModel.consolidateRollsFromUris(uris)
+            scope.launch {
+                snackbarHostState.showSnackbar("✅ Consolidating ${uris.size} backup files into Darkroom LAB...")
+            }
+        }
+    }
+
     // CSV Summary Export Launcher
     val createCsvLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("text/csv")
@@ -497,6 +509,12 @@ fun ArchiveScreen(
                         )
                     }
 
+                    Text(
+                        text = "💡 Scoped Storage Tip: Select or create a subfolder (e.g. 'Fotologue Backup') for Google Drive sync.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = safelightSubFg
+                    )
+
                     lastBackupStatus?.let { status ->
                         Surface(
                             shape = RoundedCornerShape(8.dp),
@@ -511,6 +529,37 @@ fun ArchiveScreen(
                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                             )
                         }
+                    }
+
+                    val consolidationStatus by viewModel.consolidationStatus.collectAsStateWithLifecycle()
+                    consolidationStatus?.let { status ->
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = status,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+
+                    OutlinedButton(
+                        onClick = { consolidateRollsLauncher.launch(arrayOf("*/*")) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(painterResource(R.drawable.camera_roll_24px), contentDescription = null, tint = safelightPrimary, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "🎞️ Consolidate Film Rolls from Storage / ZIPs",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = safelightPrimary,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
 
                     Row(
