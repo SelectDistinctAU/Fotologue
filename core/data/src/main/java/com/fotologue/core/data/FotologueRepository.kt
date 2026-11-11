@@ -476,7 +476,8 @@ class FotologueRepository @Inject constructor(
         rollNumber: String = "Roll #1",
         targetIso: Int = 400,
         pushPullStops: Float = 0.0f,
-        notes: String = ""
+        notes: String = "",
+        deductFromInventory: Boolean = true
     ): Long {
         return database.withTransaction {
             val currentActive = filmRollSessionDao.getActiveSessionForCameraOnce(cameraId)
@@ -488,6 +489,39 @@ class FotologueRepository @Inject constructor(
                     )
                 )
             }
+
+            // Deduct 1 roll from physical inventory stock if requested
+            if (deductFromInventory) {
+                try {
+                    val film = filmDao.getFilmById(filmId).first()
+                    if (film != null) {
+                        val stockLots = database.stockLotDao().getAllLotsOnce()
+                        val masterItems = database.inventoryMasterDao().getAllMastersOnce()
+                        val matchingMasterIds = masterItems.filter { m ->
+                            m.name.contains(film.name, ignoreCase = true) ||
+                            film.name.contains(m.name, ignoreCase = true)
+                        }.map { it.id }.toSet()
+
+                        val activeLot = stockLots.firstOrNull { lot ->
+                            matchingMasterIds.contains(lot.masterId) && lot.quantity > 0 && lot.status != "EXHAUSTED"
+                        }
+
+                        if (activeLot != null) {
+                            val newQty = activeLot.quantity - 1
+                            val newStatus = if (newQty <= 0) "EXHAUSTED" else activeLot.status
+                            database.stockLotDao().updateLot(
+                                activeLot.copy(
+                                    quantity = newQty.coerceAtLeast(0),
+                                    status = newStatus
+                                )
+                            )
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
             val newSession = FilmRollSession(
                 cameraId = cameraId,
                 filmId = filmId,

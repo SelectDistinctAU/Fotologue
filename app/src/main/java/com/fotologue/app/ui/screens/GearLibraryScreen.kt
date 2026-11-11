@@ -1,5 +1,6 @@
 package com.fotologue.app.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -373,8 +374,8 @@ fun GearLibraryScreen(
                             camera = camera,
                             films = films,
                             onDismiss = { selectedCameraForRoll = null },
-                            onConfirm = { filmId, rollNumber, targetIso, pushPullStops ->
-                                viewModel.loadNewRoll(camera.id, filmId, rollNumber, targetIso, pushPullStops)
+                            onConfirm = { filmId, rollNumber, targetIso, pushPullStops, deductFromInventory ->
+                                viewModel.loadNewRoll(camera.id, filmId, rollNumber, targetIso, pushPullStops, deductFromInventory)
                                 selectedCameraForRoll = null
                             }
                         )
@@ -1583,12 +1584,13 @@ fun LoadNewRollDialog(
     camera: Camera,
     films: List<Film>,
     onDismiss: () -> Unit,
-    onConfirm: (filmId: Long, rollNumber: String, targetIso: Int, pushPullStops: Float) -> Unit
+    onConfirm: (filmId: Long, rollNumber: String, targetIso: Int, pushPullStops: Float, deductFromInventory: Boolean) -> Unit
 ) {
     var selectedFilmId by remember { mutableStateOf(films.firstOrNull()?.id ?: 1L) }
     var rollNumberInput by remember { mutableStateOf("Roll #1") }
     var targetIsoInput by remember { mutableStateOf("400") }
     var pushPullSelection by remember { mutableStateOf("Box Speed (0.0)") }
+    var deductFromInventory by remember { mutableStateOf(true) }
 
     var filmExpanded by remember { mutableStateOf(false) }
     var pushPullExpanded by remember { mutableStateOf(false) }
@@ -1683,6 +1685,25 @@ fun LoadNewRollDialog(
                         }
                     }
                 }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { deductFromInventory = !deductFromInventory }
+                        .padding(vertical = 4.dp)
+                ) {
+                    Checkbox(
+                        checked = deductFromInventory,
+                        onCheckedChange = { deductFromInventory = it }
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Deduct 1 Roll from Inventory Stock",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         },
         confirmButton = {
@@ -1696,7 +1717,7 @@ fun LoadNewRollDialog(
                         "-2.0 Stops Pull" -> -2.0f
                         else -> 0.0f
                     }
-                    onConfirm(selectedFilmId, rollNumberInput.trim(), iso, pushPull)
+                    onConfirm(selectedFilmId, rollNumberInput.trim(), iso, pushPull, deductFromInventory)
                 }
             ) {
                 Text("Load Roll Threshold", fontWeight = FontWeight.Bold)
