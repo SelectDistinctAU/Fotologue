@@ -82,6 +82,8 @@ class FotologueRepository @Inject constructor(
     val allViewfinders: Flow<List<Viewfinder>> = viewfinderDao.getAllViewfinders()
     val allLogEntriesWithGear: Flow<List<LogEntryWithGear>> = logEntryDao.getAllLogEntriesWithGear()
     val allFilmRollSessions: Flow<List<FilmRollSession>> = filmRollSessionDao.getAllSessions()
+    val allStockLots: Flow<List<com.fotologue.core.data.lab.StockLot>> = database.stockLotDao().getAllLots()
+    val allInventoryMasters: Flow<List<com.fotologue.core.data.lab.InventoryMaster>> = database.inventoryMasterDao().getAllMasters()
     val allPerformanceLogs: Flow<List<PerformanceLog>> = performanceLogDao.getAllPerformanceLogs()
     val allLabProcessEvents: Flow<List<LabProcessEvent>> = labProcessEventDao.getAllProcessEvents()
 

@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fotologue.core.data.*
+import com.fotologue.core.data.lab.StockLot
+import com.fotologue.core.data.lab.InventoryMaster
 import com.fotologue.core.data.lab.AssetAvailability
 import com.fotologue.app.ui.viewmodel.GearLibraryViewModel
 import com.fotologue.app.R
@@ -71,6 +73,8 @@ fun GearLibraryScreen(
     val viewfinders by viewModel.allViewfindersWithCameras.collectAsStateWithLifecycle()
     val films by viewModel.allFilms.collectAsStateWithLifecycle()
     val kits by viewModel.allCameraKits.collectAsStateWithLifecycle()
+    val stockLots by viewModel.stockLots.collectAsStateWithLifecycle()
+    val inventoryMasters by viewModel.inventoryMasters.collectAsStateWithLifecycle()
 
     // Strict Hardware Categories: Cameras, Lenses, Films, TCs, Filters, Flashes, Viewfinders, Kit Bags (Last)
     val categories = listOf(
@@ -373,6 +377,8 @@ fun GearLibraryScreen(
                         LoadNewRollDialog(
                             camera = camera,
                             films = films,
+                            stockLots = stockLots,
+                            inventoryMasters = inventoryMasters,
                             onDismiss = { selectedCameraForRoll = null },
                             onConfirm = { filmId, rollNumber, targetIso, pushPullStops, deductFromInventory ->
                                 viewModel.loadNewRoll(camera.id, filmId, rollNumber, targetIso, pushPullStops, deductFromInventory)
@@ -1583,6 +1589,8 @@ private fun ReorderButtons(
 fun LoadNewRollDialog(
     camera: Camera,
     films: List<Film>,
+    stockLots: List<StockLot> = emptyList(),
+    inventoryMasters: List<InventoryMaster> = emptyList(),
     onDismiss: () -> Unit,
     onConfirm: (filmId: Long, rollNumber: String, targetIso: Int, pushPullStops: Float, deductFromInventory: Boolean) -> Unit
 ) {
@@ -1590,7 +1598,21 @@ fun LoadNewRollDialog(
     var rollNumberInput by remember { mutableStateOf("Roll #1") }
     var targetIsoInput by remember { mutableStateOf("400") }
     var pushPullSelection by remember { mutableStateOf("Box Speed (0.0)") }
-    var deductFromInventory by remember { mutableStateOf(true) }
+
+    val availableStockCount = remember(selectedFilmId, stockLots, inventoryMasters) {
+        val film = films.find { it.id == selectedFilmId }
+        if (film != null) {
+            val matchingMasterIds = inventoryMasters.filter { m ->
+                m.name.contains(film.name, ignoreCase = true) ||
+                film.name.contains(m.name, ignoreCase = true)
+            }.map { it.id }.toSet()
+
+            stockLots.filter { matchingMasterIds.contains(it.masterId) && it.status != "EXHAUSTED" }
+                .sumOf { it.quantity }
+        } else 0
+    }
+
+    var deductFromInventory by remember(availableStockCount) { mutableStateOf(availableStockCount > 0) }
 
     var filmExpanded by remember { mutableStateOf(false) }
     var pushPullExpanded by remember { mutableStateOf(false) }
@@ -1686,22 +1708,33 @@ fun LoadNewRollDialog(
                     }
                 }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { deductFromInventory = !deductFromInventory }
-                        .padding(vertical = 4.dp)
-                ) {
-                    Checkbox(
-                        checked = deductFromInventory,
-                        onCheckedChange = { deductFromInventory = it }
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
+                Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { if (availableStockCount > 0) deductFromInventory = !deductFromInventory }
+                    ) {
+                        Checkbox(
+                            checked = deductFromInventory,
+                            onCheckedChange = { if (availableStockCount > 0) deductFromInventory = it },
+                            enabled = availableStockCount > 0
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Deduct 1 Roll from Inventory Stock",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = if (availableStockCount > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Deduct 1 Roll from Inventory Stock",
+                        text = if (availableStockCount > 0) "📦 In Stock: $availableStockCount Rolls Available in Inventory" else "⚠️ Out of Stock (0 Rolls in Inventory). Roll will load without stock deduction.",
                         style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = if (availableStockCount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(start = 36.dp)
                     )
                 }
             }

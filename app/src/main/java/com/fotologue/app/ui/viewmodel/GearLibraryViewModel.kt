@@ -32,6 +32,11 @@ data class GearLibraryUiState(
 
 @HiltViewModel
 class GearLibraryViewModel @Inject constructor(private val repository: FotologueRepository) : ViewModel() {
+    val stockLots = repository.allStockLots
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val inventoryMasters = repository.allInventoryMasters
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     fun loadNewRoll(cameraId: Long, filmId: Long, rollNumber: String, targetIso: Int, pushPullStops: Float, deductFromInventory: Boolean = true) {
         viewModelScope.launch {
             repository.loadNewRoll(cameraId, filmId, rollNumber, targetIso, pushPullStops, notes = "", deductFromInventory = deductFromInventory)
