@@ -179,7 +179,7 @@ fun GearLibraryScreen(
                             },
                             onCameraLongClick = { viewModel.toggleCameraSelection(it) },
                             onMove = viewModel::moveCamera,
-                            onUpdateStatus = { cat, refId, newStatus -> viewModel.updateAssetStatus(cat, refId, newStatus) },
+                            onUpdateStatus = { cat, refId, newStatus, vendor, due -> viewModel.updateAssetStatus(cat, refId, newStatus, reason = null, vendorName = vendor, returnDueDate = due) },
                             onLoadNewRoll = { camera -> selectedCameraForRoll = camera },
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
@@ -193,7 +193,7 @@ fun GearLibraryScreen(
                             },
                             onLensLongClick = { viewModel.toggleLensSelection(it) },
                             onMove = viewModel::moveLens,
-                            onUpdateStatus = { cat, refId, newStatus -> viewModel.updateAssetStatus(cat, refId, newStatus) },
+                            onUpdateStatus = { cat, refId, newStatus, vendor, due -> viewModel.updateAssetStatus(cat, refId, newStatus, reason = null, vendorName = vendor, returnDueDate = due) },
                             bottomPadding = paddingValues.calculateBottomPadding()
                         )
                         2 -> FilmList(
@@ -1169,7 +1169,7 @@ private fun LensList(
     onLensClick: (Long) -> Unit,
     onLensLongClick: (Long) -> Unit,
     onMove: (Int, Int) -> Unit,
-    onUpdateStatus: (String, Long, String) -> Unit = { _, _, _ -> },
+    onUpdateStatus: (String, Long, String, String?, Long?) -> Unit = { _, _, _, _, _ -> },
     bottomPadding: Dp = 0.dp
 ) {
     if (lenses.isEmpty()) {
@@ -1244,11 +1244,25 @@ private fun LensList(
                             val (labelStr, iconRes) = when (availability?.status) {
                                 "IN_TRANSIT" -> Pair("In Transit (N/A)", R.drawable.delivery_truck_speed_24px)
                                 "LOANED_OUT" -> Pair("On Loan (N/A)", R.drawable.patient_list_24px)
+                                "BORROWED_IN" -> Pair(if (availability.borrowedFromVendorName.isNullOrBlank()) "Borrowed In" else "Borrowed: ${availability.borrowedFromVendorName}", R.drawable.patient_list_24px)
                                 "IN_REPAIR" -> Pair("In Repair (N/A)", R.drawable.ic_handyman)
                                 "SOLD" -> Pair("Sold", R.drawable.shopping_cart_24px)
                                 else -> Pair("In Stock & Available", R.drawable.ic_check_circle)
                             }
                             var statusDropdownExpanded by remember { mutableStateOf(false) }
+                            var showBorrowDialog by remember { mutableStateOf(false) }
+
+                            if (showBorrowDialog) {
+                                BorrowEquipmentDialog(
+                                    assetName = displayName,
+                                    onDismiss = { showBorrowDialog = false },
+                                    onConfirm = { owner, dueTime ->
+                                        showBorrowDialog = false
+                                        onUpdateStatus("Lens", lens.id, "BORROWED_IN", owner, dueTime)
+                                    }
+                                )
+                            }
+
                             Box {
                                 AssistChip(
                                     onClick = { statusDropdownExpanded = true },
@@ -1261,8 +1275,8 @@ private fun LensList(
                                     },
                                     label = { Text(if (isAvailable) "Available" else labelStr, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
                                     colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = if (isAvailable) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
-                                        labelColor = if (isAvailable) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onErrorContainer
+                                        containerColor = if (isAvailable) MaterialTheme.colorScheme.primaryContainer else if (availability?.status == "BORROWED_IN") MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.errorContainer,
+                                        labelColor = if (isAvailable) MaterialTheme.colorScheme.onPrimaryContainer else if (availability?.status == "BORROWED_IN") MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onErrorContainer
                                     )
                                 )
                                 DropdownMenu(
@@ -1272,7 +1286,8 @@ private fun LensList(
                                     listOf(
                                         Triple("AVAILABLE", "In Stock & Available", R.drawable.ic_check_circle),
                                         Triple("IN_TRANSIT", "In Transit (Pre-Arrival)", R.drawable.delivery_truck_speed_24px),
-                                        Triple("LOANED_OUT", "On Loan", R.drawable.patient_list_24px),
+                                        Triple("LOANED_OUT", "On Loan (Out)", R.drawable.patient_list_24px),
+                                        Triple("BORROWED_IN", "Borrowed / Rented In", R.drawable.patient_list_24px),
                                         Triple("IN_REPAIR", "In Repair / CLA", R.drawable.ic_handyman),
                                         Triple("SOLD", "Sold / Archived", R.drawable.shopping_cart_24px)
                                     ).forEach { (statusKey, statusLabel, iconResId) ->
@@ -1288,7 +1303,11 @@ private fun LensList(
                                             text = { Text(statusLabel, fontWeight = if (statusKey == (availability?.status ?: "AVAILABLE")) FontWeight.Bold else FontWeight.Normal) },
                                             onClick = {
                                                 statusDropdownExpanded = false
-                                                onUpdateStatus("Lens", lens.id, statusKey)
+                                                if (statusKey == "BORROWED_IN") {
+                                                    showBorrowDialog = true
+                                                } else {
+                                                    onUpdateStatus("Lens", lens.id, statusKey, null, null)
+                                                }
                                             }
                                         )
                                     }
@@ -1320,7 +1339,7 @@ private fun CameraList(
     onCameraClick: (Long) -> Unit,
     onCameraLongClick: (Long) -> Unit,
     onMove: (Int, Int) -> Unit,
-    onUpdateStatus: (String, Long, String) -> Unit = { _, _, _ -> },
+    onUpdateStatus: (String, Long, String, String?, Long?) -> Unit = { _, _, _, _, _ -> },
     onLoadNewRoll: (Camera) -> Unit = {},
     bottomPadding: Dp = 0.dp
 ) {
@@ -1394,11 +1413,25 @@ private fun CameraList(
                             val (labelStr, iconRes) = when (availability?.status) {
                                 "IN_TRANSIT" -> Pair("In Transit (N/A)", R.drawable.delivery_truck_speed_24px)
                                 "LOANED_OUT" -> Pair("On Loan (N/A)", R.drawable.patient_list_24px)
+                                "BORROWED_IN" -> Pair(if (availability.borrowedFromVendorName.isNullOrBlank()) "Borrowed In" else "Borrowed: ${availability.borrowedFromVendorName}", R.drawable.patient_list_24px)
                                 "IN_REPAIR" -> Pair("In Repair (N/A)", R.drawable.ic_handyman)
                                 "SOLD" -> Pair("Sold", R.drawable.shopping_cart_24px)
                                 else -> Pair("In Stock & Available", R.drawable.ic_check_circle)
                             }
                             var statusDropdownExpanded by remember { mutableStateOf(false) }
+                            var showBorrowDialog by remember { mutableStateOf(false) }
+
+                            if (showBorrowDialog) {
+                                BorrowEquipmentDialog(
+                                    assetName = camera.name,
+                                    onDismiss = { showBorrowDialog = false },
+                                    onConfirm = { owner, dueTime ->
+                                        showBorrowDialog = false
+                                        onUpdateStatus("Camera", camera.id, "BORROWED_IN", owner, dueTime)
+                                    }
+                                )
+                            }
+
                             Box {
                                 AssistChip(
                                     onClick = { statusDropdownExpanded = true },
@@ -1411,8 +1444,8 @@ private fun CameraList(
                                     },
                                     label = { Text(if (isAvailable) "Available" else labelStr, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) },
                                     colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = if (isAvailable) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
-                                        labelColor = if (isAvailable) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onErrorContainer
+                                        containerColor = if (isAvailable) MaterialTheme.colorScheme.primaryContainer else if (availability?.status == "BORROWED_IN") MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.errorContainer,
+                                        labelColor = if (isAvailable) MaterialTheme.colorScheme.onPrimaryContainer else if (availability?.status == "BORROWED_IN") MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onErrorContainer
                                     )
                                 )
                                 DropdownMenu(
@@ -1422,7 +1455,8 @@ private fun CameraList(
                                     listOf(
                                         Triple("AVAILABLE", "In Stock & Available", R.drawable.ic_check_circle),
                                         Triple("IN_TRANSIT", "In Transit (Pre-Arrival)", R.drawable.delivery_truck_speed_24px),
-                                        Triple("LOANED_OUT", "On Loan", R.drawable.patient_list_24px),
+                                        Triple("LOANED_OUT", "On Loan (Out)", R.drawable.patient_list_24px),
+                                        Triple("BORROWED_IN", "Borrowed / Rented In", R.drawable.patient_list_24px),
                                         Triple("IN_REPAIR", "In Repair / CLA", R.drawable.ic_handyman),
                                         Triple("SOLD", "Sold / Archived", R.drawable.shopping_cart_24px)
                                     ).forEach { (statusKey, statusLabel, iconResId) ->
@@ -1438,7 +1472,11 @@ private fun CameraList(
                                             text = { Text(statusLabel, fontWeight = if (statusKey == (availability?.status ?: "AVAILABLE")) FontWeight.Bold else FontWeight.Normal) },
                                             onClick = {
                                                 statusDropdownExpanded = false
-                                                onUpdateStatus("Camera", camera.id, statusKey)
+                                                if (statusKey == "BORROWED_IN") {
+                                                    showBorrowDialog = true
+                                                } else {
+                                                    onUpdateStatus("Camera", camera.id, statusKey, null, null)
+                                                }
                                             }
                                         )
                                     }
@@ -1754,6 +1792,68 @@ fun LoadNewRollDialog(
                 }
             ) {
                 Text("Load Roll Threshold", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BorrowEquipmentDialog(
+    assetName: String,
+    onDismiss: () -> Unit,
+    onConfirm: (vendorName: String, returnDueDate: Long?) -> Unit
+) {
+    var vendorNameInput by remember { mutableStateOf("") }
+    var dueDateInput by remember { mutableStateOf("14") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(painterResource(R.drawable.patient_list_24px), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Borrowed / Rented: $assetName", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedTextField(
+                    value = vendorNameInput,
+                    onValueChange = { vendorNameInput = it },
+                    label = { Text("Borrowed / Rented From (Owner / Hire House)") },
+                    placeholder = { Text("e.g. Fitzgerald Photo, Friend Name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = dueDateInput,
+                    onValueChange = { dueDateInput = it },
+                    label = { Text("Return Due In (Days)") },
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val days = dueDateInput.toLongOrNull() ?: 14L
+                    val dueTimestamp = System.currentTimeMillis() + (days * 24 * 60 * 60 * 1000L)
+                    onConfirm(vendorNameInput.trim(), dueTimestamp)
+                }
+            ) {
+                Text("Save Custody Log", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {

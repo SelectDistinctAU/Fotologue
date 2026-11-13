@@ -15,11 +15,14 @@ import kotlinx.coroutines.flow.Flow
 data class AssetAvailability(
     val assetCategory: String, // 'Camera', 'Lens', 'Film Stock', 'Consumable', 'Lab Equipment'
     val assetRefId: Long,       // Foreign Key pointing to c.id, l.id, f.id, etc.
-    val status: String = "AVAILABLE", // 'AVAILABLE', 'IN_TRANSIT', 'LOANED_OUT', 'IN_REPAIR', 'SOLD', 'LOST'
+    val status: String = "AVAILABLE", // 'AVAILABLE', 'IN_TRANSIT', 'LOANED_OUT', 'BORROWED_IN', 'IN_REPAIR', 'SOLD', 'LOST'
     val statusReason: String? = null,
     val activeRefId: Long? = null,
     val statusChangedAt: Long = System.currentTimeMillis(),
-    val expectedResolutionAt: Long? = null
+    val expectedResolutionAt: Long? = null,
+    val borrowedFromContactId: Long? = null,
+    val borrowedFromVendorName: String? = null,
+    val returnDueDate: Long? = null
 )
 
 @Dao

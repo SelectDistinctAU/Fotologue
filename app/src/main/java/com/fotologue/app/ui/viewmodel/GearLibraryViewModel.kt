@@ -43,13 +43,22 @@ class GearLibraryViewModel @Inject constructor(private val repository: Fotologue
         }
     }
 
-    fun updateAssetStatus(category: String, refId: Long, newStatus: String, reason: String? = null) {
+    fun updateAssetStatus(
+        category: String,
+        refId: Long,
+        newStatus: String,
+        reason: String? = null,
+        vendorName: String? = null,
+        returnDueDate: Long? = null
+    ) {
         viewModelScope.launch {
             repository.setAssetAvailability(
                 category = category,
                 refId = refId,
                 status = newStatus,
-                reason = reason
+                reason = reason,
+                borrowedFromVendorName = vendorName,
+                returnDueDate = returnDueDate
             )
         }
     }

@@ -54,7 +54,10 @@ class FotologueRepository @Inject constructor(
         status: String = "AVAILABLE",
         reason: String? = null,
         activeRefId: Long? = null,
-        expectedResolutionAt: Long? = null
+        expectedResolutionAt: Long? = null,
+        borrowedFromContactId: Long? = null,
+        borrowedFromVendorName: String? = null,
+        returnDueDate: Long? = null
     ) {
         assetAvailabilityDao.setAvailability(
             AssetAvailability(
@@ -64,7 +67,10 @@ class FotologueRepository @Inject constructor(
                 statusReason = reason,
                 activeRefId = activeRefId,
                 statusChangedAt = System.currentTimeMillis(),
-                expectedResolutionAt = expectedResolutionAt
+                expectedResolutionAt = expectedResolutionAt,
+                borrowedFromContactId = borrowedFromContactId,
+                borrowedFromVendorName = borrowedFromVendorName,
+                returnDueDate = returnDueDate
             )
         )
     }
