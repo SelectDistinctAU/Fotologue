@@ -604,18 +604,28 @@ private fun LensPresetsBrowser(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        OutlinedCard(
-            onClick = {
-                val targetQuery = lensSearchQueryText.ifBlank { if (selectedBrandFilter != "All") selectedBrandFilter else "Unlisted Lens" }
-                val url = "https://github.com/SelectDistinctAU/Fotologue/issues/new?template=preset_request.md&title=%5BPRESET+REQUEST%5D%3A+" + java.net.URLEncoder.encode(targetQuery, "UTF-8")
-                val browserIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
-                try {
-                    context.startActivity(browserIntent)
-                } catch (_: Exception) {
-                    val emailIntent = android.content.Intent(android.content.Intent.ACTION_SENDTO, android.net.Uri.parse("mailto:fotologue@pm.me?subject=[Preset Request] " + targetQuery))
-                    try { context.startActivity(emailIntent) } catch (_: Exception) {}
+        var showRequestPresetDialog by remember { mutableStateOf(false) }
+
+        if (showRequestPresetDialog) {
+            RequestPresetDialog(
+                initialCategory = "LENS",
+                initialBrand = if (selectedBrandFilter != "All") selectedBrandFilter else "",
+                initialName = lensSearchQueryText,
+                onDismiss = { showRequestPresetDialog = false },
+                onSend = { cat, brand, name, notes ->
+                    showRequestPresetDialog = false
+                    val subject = "[Preset Request] $name (${brand.ifBlank { "Unlisted" }})"
+                    val body = "Fotologue Master Catalog Addition Request:\n------------------------------------------\nCategory: $cat\nBrand: $brand\nModel Name: $name\nNotes / Specs: $notes\n\nSent from Fotologue App"
+                    val intent = android.content.Intent(android.content.Intent.ACTION_SENDTO).apply {
+                        data = android.net.Uri.parse("mailto:fotologue@pm.me?subject=" + android.net.Uri.encode(subject) + "&body=" + android.net.Uri.encode(body))
+                    }
+                    try { context.startActivity(intent) } catch (_: Exception) {}
                 }
-            },
+            )
+        }
+
+        OutlinedCard(
+            onClick = { showRequestPresetDialog = true },
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f))
         ) {

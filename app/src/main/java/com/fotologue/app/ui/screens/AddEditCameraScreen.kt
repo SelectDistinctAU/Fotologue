@@ -58,6 +58,7 @@ fun AddEditCameraScreen(
     var selectedBrandFilter by remember { mutableStateOf(if (uiState.make.isNotBlank() && masterBrands.contains(uiState.make)) uiState.make else "All") }
     var selectedCategoryFilter by remember { mutableStateOf("All") }
     var searchQuery by remember { mutableStateOf("") }
+    var showRequestPresetDialog by remember { mutableStateOf(false) }
 
     var brandDropdownExpanded by remember { mutableStateOf(false) }
     var typeDropdownExpanded by remember { mutableStateOf(false) }
@@ -294,18 +295,26 @@ fun AddEditCameraScreen(
 
                             Spacer(modifier = Modifier.height(6.dp))
 
-                            OutlinedCard(
-                                onClick = {
-                                    val targetQuery = searchQuery.ifBlank { if (selectedBrandFilter != "All") selectedBrandFilter else "Unlisted Camera" }
-                                    val url = "https://github.com/SelectDistinctAU/Fotologue/issues/new?template=preset_request.md&title=%5BPRESET+REQUEST%5D%3A+" + java.net.URLEncoder.encode(targetQuery, "UTF-8")
-                                    val browserIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
-                                    try {
-                                        context.startActivity(browserIntent)
-                                    } catch (_: Exception) {
-                                        val emailIntent = android.content.Intent(android.content.Intent.ACTION_SENDTO, android.net.Uri.parse("mailto:fotologue@pm.me?subject=[Preset Request] " + targetQuery))
-                                        try { context.startActivity(emailIntent) } catch (_: Exception) {}
+                            if (showRequestPresetDialog) {
+                                RequestPresetDialog(
+                                    initialCategory = "CAMERA",
+                                    initialBrand = if (selectedBrandFilter != "All") selectedBrandFilter else "",
+                                    initialName = searchQuery,
+                                    onDismiss = { showRequestPresetDialog = false },
+                                    onSend = { cat, brand, name, notes ->
+                                        showRequestPresetDialog = false
+                                        val subject = "[Preset Request] $name (${brand.ifBlank { "Unlisted" }})"
+                                        val body = "Fotologue Master Catalog Addition Request:\n------------------------------------------\nCategory: $cat\nBrand: $brand\nModel Name: $name\nNotes / Specs: $notes\n\nSent from Fotologue App"
+                                        val intent = android.content.Intent(android.content.Intent.ACTION_SENDTO).apply {
+                                            data = android.net.Uri.parse("mailto:fotologue@pm.me?subject=" + android.net.Uri.encode(subject) + "&body=" + android.net.Uri.encode(body))
+                                        }
+                                        try { context.startActivity(intent) } catch (_: Exception) {}
                                     }
-                                },
+                                )
+                            }
+
+                            OutlinedCard(
+                                onClick = { showRequestPresetDialog = true },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f))
                             ) {
@@ -741,4 +750,111 @@ fun AddEditCameraScreen(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RequestPresetDialog(
+    initialCategory: String = "CAMERA",
+    initialBrand: String = "",
+    initialName: String = "",
+    onDismiss: () -> Unit,
+    onSend: (category: String, brand: String, name: String, notes: String) -> Unit
+) {
+    var category by remember { mutableStateOf(initialCategory) }
+    var brand by remember { mutableStateOf(initialBrand) }
+    var name by remember { mutableStateOf(initialName) }
+    var notes by remember { mutableStateOf("") }
+
+    var categoryExpanded by remember { mutableStateOf(false) }
+    val categoryOptions = listOf("CAMERA", "LENS", "FILM", "CHEMISTRY", "FLASH", "FILTER", "TELECONVERTER", "VIEWFINDER")
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(com.fotologue.core.designsystem.R.drawable.send_time_extension),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Request Preset Addition", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ExposedDropdownMenuBox(
+                    expanded = categoryExpanded,
+                    onExpandedChange = { categoryExpanded = !categoryExpanded }
+                ) {
+                    OutlinedTextField(
+                        value = category,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Preset Category") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                        modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = categoryExpanded,
+                        onDismissRequest = { categoryExpanded = false }
+                    ) {
+                        categoryOptions.forEach { cat ->
+                            DropdownMenuItem(
+                                text = { Text(cat) },
+                                onClick = {
+                                    category = cat
+                                    categoryExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = brand,
+                    onValueChange = { brand = it },
+                    label = { Text("Brand / Manufacturer") },
+                    placeholder = { Text("e.g. KMZ (USSR), Pentax, Leica") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Model Name / Title") },
+                    placeholder = { Text("e.g. Industar-50 FT-2") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = notes,
+                    onValueChange = { notes = it },
+                    label = { Text("Optional Specs / Reference Links") },
+                    placeholder = { Text("e.g. Panoramic 24x110mm, 28mm f/3.5 fixed lens") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSend(category, brand.trim(), name.trim(), notes.trim()) },
+                enabled = name.isNotBlank()
+            ) {
+                Text("Send Request (1-Tap Email)", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
