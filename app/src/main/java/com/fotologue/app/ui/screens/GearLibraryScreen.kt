@@ -75,6 +75,7 @@ fun GearLibraryScreen(
     val kits by viewModel.allCameraKits.collectAsStateWithLifecycle()
     val stockLots by viewModel.stockLots.collectAsStateWithLifecycle()
     val inventoryMasters by viewModel.inventoryMasters.collectAsStateWithLifecycle()
+    val suppliers by viewModel.allLabSuppliers.collectAsStateWithLifecycle(emptyList())
 
     // Strict Hardware Categories: Cameras, Lenses, Films, TCs, Filters, Flashes, Viewfinders, Kit Bags (Last)
     val categories = listOf(
@@ -172,6 +173,7 @@ fun GearLibraryScreen(
                         0 -> CameraList(
                             cameras = cameras,
                             availabilityList = allAvailability,
+                            suppliers = suppliers,
                             selectedIds = uiState.selectedCameraIds,
                             isReorderMode = uiState.isReorderMode,
                             onCameraClick = { id -> 
@@ -186,6 +188,7 @@ fun GearLibraryScreen(
                         1 -> LensList(
                             lenses = lensesWithCameras,
                             availabilityList = allAvailability,
+                            suppliers = suppliers,
                             selectedIds = uiState.selectedLensIds,
                             isReorderMode = uiState.isReorderMode,
                             onLensClick = { id -> 
@@ -1164,6 +1167,7 @@ private fun ViewfinderList(
 private fun LensList(
     lenses: List<LensWithCameras>,
     availabilityList: List<AssetAvailability> = emptyList(),
+    suppliers: List<com.fotologue.core.data.lab.LabSupplier> = emptyList(),
     selectedIds: Set<Long>,
     isReorderMode: Boolean,
     onLensClick: (Long) -> Unit,
@@ -1255,6 +1259,7 @@ private fun LensList(
                             if (showBorrowDialog) {
                                 BorrowEquipmentDialog(
                                     assetName = displayName,
+                                    suppliers = suppliers,
                                     onDismiss = { showBorrowDialog = false },
                                     onConfirm = { owner, dueTime ->
                                         showBorrowDialog = false
@@ -1334,6 +1339,7 @@ private fun LensList(
 private fun CameraList(
     cameras: List<Camera>,
     availabilityList: List<AssetAvailability> = emptyList(),
+    suppliers: List<com.fotologue.core.data.lab.LabSupplier> = emptyList(),
     selectedIds: Set<Long>,
     isReorderMode: Boolean,
     onCameraClick: (Long) -> Unit,
@@ -1424,6 +1430,7 @@ private fun CameraList(
                             if (showBorrowDialog) {
                                 BorrowEquipmentDialog(
                                     assetName = camera.name,
+                                    suppliers = suppliers,
                                     onDismiss = { showBorrowDialog = false },
                                     onConfirm = { owner, dueTime ->
                                         showBorrowDialog = false
@@ -1632,9 +1639,13 @@ fun LoadNewRollDialog(
     onDismiss: () -> Unit,
     onConfirm: (filmId: Long, rollNumber: String, targetIso: Int, pushPullStops: Float, deductFromInventory: Boolean) -> Unit
 ) {
-    var selectedFilmId by remember { mutableStateOf(films.firstOrNull()?.id ?: 1L) }
+    val initialFilm = films.firstOrNull()
+    var selectedFilmId by remember { mutableStateOf(initialFilm?.id ?: 1L) }
     var rollNumberInput by remember { mutableStateOf("Roll #1") }
-    var targetIsoInput by remember { mutableStateOf("400") }
+    var targetIsoInput by remember(selectedFilmId) { 
+        val film = films.find { it.id == selectedFilmId }
+        mutableStateOf(film?.iso?.toString() ?: "400")
+    }
     var pushPullSelection by remember { mutableStateOf("Box Speed (0.0)") }
 
     val availableStockCount = remember(selectedFilmId, stockLots, inventoryMasters) {
@@ -1806,11 +1817,39 @@ fun LoadNewRollDialog(
 @Composable
 fun BorrowEquipmentDialog(
     assetName: String,
+    suppliers: List<com.fotologue.core.data.lab.LabSupplier> = emptyList(),
     onDismiss: () -> Unit,
     onConfirm: (vendorName: String, returnDueDate: Long?) -> Unit
 ) {
-    var vendorNameInput by remember { mutableStateOf("") }
-    var dueDateInput by remember { mutableStateOf("14") }
+    var selectedSupplierName by remember { mutableStateOf(suppliers.firstOrNull()?.name ?: "") }
+    var customVendorNameInput by remember { mutableStateOf("") }
+    var isCustomVendor by remember { mutableStateOf(suppliers.isEmpty()) }
+    var supplierExpanded by remember { mutableStateOf(false) }
+
+    var selectedDueDateMillis by remember { mutableStateOf<Long?>(System.currentTimeMillis() + (14 * 24 * 60 * 60 * 1000L)) }
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDueDateMillis ?: System.currentTimeMillis())
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    selectedDueDateMillis = datePickerState.selectedDateMillis
+                    showDatePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -1826,31 +1865,68 @@ fun BorrowEquipmentDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                OutlinedTextField(
-                    value = vendorNameInput,
-                    onValueChange = { vendorNameInput = it },
-                    label = { Text("Borrowed / Rented From (Owner / Hire House)") },
-                    placeholder = { Text("e.g. Fitzgerald Photo, Friend Name") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                // CONTACT / SUPPLIER SELECTION DROPDOWN
+                ExposedDropdownMenuBox(
+                    expanded = supplierExpanded,
+                    onExpandedChange = { supplierExpanded = !supplierExpanded }
+                ) {
+                    val displayValue = if (isCustomVendor) customVendorNameInput else selectedSupplierName
+                    OutlinedTextField(
+                        value = displayValue,
+                        onValueChange = {
+                            if (isCustomVendor) customVendorNameInput = it
+                        },
+                        readOnly = !isCustomVendor,
+                        label = { Text("Borrowed / Rented From (Owner / Hire House)") },
+                        placeholder = { Text("Select contact or type name") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = supplierExpanded) },
+                        modifier = Modifier.menuAnchor(type = if (isCustomVendor) MenuAnchorType.PrimaryEditable else MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = supplierExpanded,
+                        onDismissRequest = { supplierExpanded = false }
+                    ) {
+                        suppliers.forEach { sup ->
+                            DropdownMenuItem(
+                                text = { Text(sup.name) },
+                                onClick = {
+                                    selectedSupplierName = sup.name
+                                    isCustomVendor = false
+                                    supplierExpanded = false
+                                }
+                            )
+                        }
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("➕ Add Custom Owner / Hire House...", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold) },
+                            onClick = {
+                                isCustomVendor = true
+                                customVendorNameInput = ""
+                                supplierExpanded = false
+                            }
+                        )
+                    }
+                }
 
-                OutlinedTextField(
-                    value = dueDateInput,
-                    onValueChange = { dueDateInput = it },
-                    label = { Text("Return Due In (Days)") },
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
-                    singleLine = true,
+                // RETURN DUE DATE PICKER BUTTON
+                OutlinedButton(
+                    onClick = { showDatePicker = true },
                     modifier = Modifier.fillMaxWidth()
-                )
+                ) {
+                    Icon(painterResource(R.drawable.patient_list_24px), contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    val dateStr = selectedDueDateMillis?.let {
+                        java.text.SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault()).format(java.util.Date(it))
+                    } ?: "Set Return Due Date"
+                    Text("Return Due Date: $dateStr", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                }
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    val days = dueDateInput.toLongOrNull() ?: 14L
-                    val dueTimestamp = System.currentTimeMillis() + (days * 24 * 60 * 60 * 1000L)
-                    onConfirm(vendorNameInput.trim(), dueTimestamp)
+                    val finalVendor = if (isCustomVendor) customVendorNameInput.trim() else selectedSupplierName
+                    onConfirm(finalVendor, selectedDueDateMillis)
                 }
             ) {
                 Text("Save Custody Log", fontWeight = FontWeight.Bold)

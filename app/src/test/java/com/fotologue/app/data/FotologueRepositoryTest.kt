@@ -72,9 +72,11 @@ class FotologueRepositoryTest {
         val assetAvailabilityDao = mockk<AssetAvailabilityDao>(relaxed = true)
         val stockLotDao = mockk<com.fotologue.core.data.lab.StockLotDao>(relaxed = true)
         val inventoryMasterDao = mockk<com.fotologue.core.data.lab.InventoryMasterDao>(relaxed = true)
+        val labSupplierDao = mockk<com.fotologue.core.data.lab.LabSupplierDao>(relaxed = true)
 
         every { db.stockLotDao() } returns stockLotDao
         every { db.inventoryMasterDao() } returns inventoryMasterDao
+        every { db.labSupplierDao() } returns labSupplierDao
 
         repository = FotologueRepository(
             db, cameraDao, filmDao, lensDao, teleconverterDao,

@@ -90,6 +90,7 @@ class FotologueRepository @Inject constructor(
     val allFilmRollSessions: Flow<List<FilmRollSession>> = filmRollSessionDao.getAllSessions()
     val allStockLots: Flow<List<com.fotologue.core.data.lab.StockLot>> = database.stockLotDao().getAllLots()
     val allInventoryMasters: Flow<List<com.fotologue.core.data.lab.InventoryMaster>> = database.inventoryMasterDao().getAllMasters()
+    val allLabSuppliers: Flow<List<com.fotologue.core.data.lab.LabSupplier>> = database.labSupplierDao().getAllSuppliers()
     val allPerformanceLogs: Flow<List<PerformanceLog>> = performanceLogDao.getAllPerformanceLogs()
     val allLabProcessEvents: Flow<List<LabProcessEvent>> = labProcessEventDao.getAllProcessEvents()
 
