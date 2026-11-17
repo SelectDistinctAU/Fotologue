@@ -1,5 +1,7 @@
 package com.fotologue.feature.lab
 
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -75,6 +77,7 @@ fun EnlargerPrintingSessionScreen(
     onSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val masterList by viewModel.masterList.collectAsState()
     val lotList by viewModel.lotList.collectAsState()
     val equipmentList by viewModel.equipmentList.collectAsState()
@@ -83,6 +86,15 @@ fun EnlargerPrintingSessionScreen(
     val allFilms by viewModel.allFilms.collectAsState()
     val filmRollSessions by viewModel.allFilmRollSessions.collectAsState()
     val isSafelightActive by viewModel.isSafelightActive.collectAsState()
+
+    // KEEP SCREEN AWAKE DURING ENLARGER PRINTING SESSION (PREVENT TIMEOUT IN DARKROOM)
+    DisposableEffect(Unit) {
+        val activity = context as? android.app.Activity
+        activity?.window?.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        onDispose {
+            activity?.window?.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+    }
 
     // AUTO-TRIGGER: Turn Safelight Mode ON by default on entering Enlarger Printing Session!
     LaunchedEffect(Unit) {

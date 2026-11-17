@@ -90,6 +90,15 @@ fun FilmProcessingSessionScreen(
     val filmRollSessions by viewModel.allFilmRollSessions.collectAsState()
     val isSafelightActive by viewModel.isSafelightActive.collectAsState()
 
+    // KEEP SCREEN AWAKE DURING FILM DEVELOPMENT SESSION (PREVENT TIMEOUT IN DARKROOM)
+    DisposableEffect(Unit) {
+        val activity = context as? android.app.Activity
+        activity?.window?.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        onDispose {
+            activity?.window?.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+    }
+
     // AUTO-TRIGGER: Turn Safelight Mode ON by default on entering Develop Roll Session!
     LaunchedEffect(Unit) {
         viewModel.setSafelightActive(true)
