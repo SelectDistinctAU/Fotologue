@@ -78,6 +78,7 @@ fun AddEditInventoryMasterScreen(
 
     // BLANK DEFAULTS FOR ADD MODE (initialMaster == null)
     var category by remember { mutableStateOf(initialMaster?.category ?: defaultCategory ?: "Chemistry") }
+    var subCategory by remember { mutableStateOf(initialMaster?.subCategory ?: "Developer (Film)") }
     var name by remember { mutableStateOf(initialMaster?.name ?: "") }
     var manufacturer by remember { mutableStateOf(initialMaster?.manufacturer ?: "") }
     var majorAmountStr by remember { mutableStateOf((initialMaster?.containerSizeAmount ?: 1f).toString()) }
@@ -195,6 +196,7 @@ fun AddEditInventoryMasterScreen(
         return InventoryMaster(
             id = initialMaster?.id ?: 0,
             category = category,
+            subCategory = if (category == "Chemistry") subCategory.ifBlank { "Developer (Film)" } else "",
             name = name,
             manufacturer = manufacturer,
             containerSizeAmount = amt,
@@ -346,6 +348,44 @@ fun AddEditInventoryMasterScreen(
                                 }
                             }
                         )
+                    }
+                }
+            }
+
+            // Chemical Type / Role Dropdown for Chemistry Category
+            if (category == "Chemistry") {
+                var subCategoryExpanded by remember { mutableStateOf(false) }
+                val chemicalTypes = listOf("Developer (Film)", "Developer (Paper)", "Stop Bath", "Fixer", "Wetting Agent / Wash", "Toner", "Bleach", "Other")
+
+                ExposedDropdownMenuBox(
+                    expanded = subCategoryExpanded,
+                    onExpandedChange = { subCategoryExpanded = !subCategoryExpanded }
+                ) {
+                    OutlinedTextField(
+                        value = subCategory.ifBlank { "Developer (Film)" },
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Chemical Type / Function") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = subCategoryExpanded) },
+                        colors = textFieldColors,
+                        modifier = Modifier
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = subCategoryExpanded,
+                        onDismissRequest = { subCategoryExpanded = false },
+                        containerColor = if (isSafelightActive) Color(0xFF1F0000) else MaterialTheme.colorScheme.surfaceContainer
+                    ) {
+                        chemicalTypes.forEach { typeOption ->
+                            DropdownMenuItem(
+                                text = { Text(typeOption, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified) },
+                                onClick = {
+                                    subCategory = typeOption
+                                    subCategoryExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
