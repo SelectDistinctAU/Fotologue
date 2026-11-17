@@ -217,7 +217,7 @@ fun AddEditInventoryMasterScreen(
 
     val customNamesForCategory = itemNamesList.filter { it.category.equals(category, ignoreCase = true) }.map { it.name }
     val defaultPresets = when (category) {
-        "Chemistry" -> listOf("Rapid Fixer", "Multigrade Developer", "ID-11", "D-76", "Rodinal / R09", "Indicator Stop Bath", "Ilfotol Wetting Agent")
+        "Chemistry" -> listOf("Ilford Ilfosol 3 Developer", "Ilford DD-X Developer", "Kodak Xtol Developer", "Kodak HC-110 Developer", "ID-11 Developer", "D-76 Developer", "Rodinal / R09 Developer", "Multigrade Developer", "Rapid Fixer", "Indicator Stop Bath", "Ilfotol Wetting Agent")
         "Paper" -> listOf("Multigrade RC Deluxe Satin 8x10", "Multigrade RC Deluxe Pearl 8x10", "Multigrade FB Glossy 8x10", "Fomabrom Variant FB 8x10", "Adox MCC FB 8x10")
         "Film Stock" -> {
             if (manufacturer.isNotBlank()) {

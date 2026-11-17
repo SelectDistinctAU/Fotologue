@@ -147,15 +147,18 @@ fun FilmProcessingSessionScreen(
     val defaultDevPresets = when (processType) {
         "C41" -> listOf("CineStill CS41 Color Developer (38.0°C)", "Kodak Flexicolor C-41 Developer")
         "E6" -> listOf("Arista E-6 First Developer (38.0°C)", "Kodak E-6 Color Developer")
-        else -> listOf("Kodak D-76 Developer", "Ilford ID-11 Developer", "Adox Rodinal / R09", "Ilford Ilfotec HC", "Ilford Microphen", "Kodak Xtol Developer", "Ilford Perceptol")
+        else -> listOf("Ilford Ilfosol 3 Developer", "Kodak D-76 Developer", "Ilford ID-11 Developer", "Ilford DD-X Developer", "Adox Rodinal / R09", "Ilford Ilfotec HC", "Ilford Microphen", "Kodak Xtol Developer", "Ilford Perceptol")
     }
 
     val developerOptions = remember(activeChemistryLots, defaultDevPresets) {
         val filteredActive = activeChemistryLots.filter { (name, _) ->
             name.contains("Developer", ignoreCase = true) || name.contains("Dev", ignoreCase = true) ||
+            name.contains("Ilfosol", ignoreCase = true) || name.contains("DD-X", ignoreCase = true) ||
             name.contains("D-76", ignoreCase = true) || name.contains("ID-11", ignoreCase = true) ||
             name.contains("Rodinal", ignoreCase = true) || name.contains("HC-110", ignoreCase = true) ||
-            name.contains("Ilfotec", ignoreCase = true) || name.contains("CS41", ignoreCase = true)
+            name.contains("Xtol", ignoreCase = true) || name.contains("Perceptol", ignoreCase = true) ||
+            name.contains("Microphen", ignoreCase = true) || name.contains("Ilfotec", ignoreCase = true) ||
+            name.contains("CS41", ignoreCase = true) || name.contains("Flexicolor", ignoreCase = true)
         }.map { it.second }
         (filteredActive + defaultDevPresets).distinct()
     }

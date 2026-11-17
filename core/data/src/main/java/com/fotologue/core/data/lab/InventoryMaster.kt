@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 data class InventoryMaster(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val category: String, // Chemistry, Paper, Safety Gear, Supplies, Unassigned
+    val subCategory: String = "", // Developer, Stop Bath, Fixer, Wetting Agent, Toner/Bleach
     val name: String, // e.g. Rapid Fixer, Multigrade RC Deluxe
     val manufacturer: String = "", // e.g. Ilford, Kodak, Ansell
     val containerSizeAmount: Float = 1.0f, // Numeric amount (e.g. 100, 1.0, 25)
