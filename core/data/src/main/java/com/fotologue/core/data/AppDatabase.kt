@@ -60,7 +60,7 @@ import com.fotologue.core.data.lab.LabOrderDao
         LabCategory::class, LabUnit::class, LabItemName::class, OrderHistory::class, PerformanceLog::class, LabProcessEvent::class, PrintRecipe::class,
         LabStorageLocation::class, PrintOutcome::class, PrintSession::class, ExposureStep::class, LovEntry::class, LabOrder::class, AssetAvailability::class
     ],
-    version = 53,
+    version = 55,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -344,6 +344,46 @@ abstract class AppDatabase : RoomDatabase() {
                         PRIMARY KEY(`assetCategory`, `assetRefId`)
                     )
                 """.trimIndent())
+            }
+        }
+        val MIGRATION_53_54 = object : Migration(53, 54) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `lab_inventory_masters` ADD COLUMN `subCategory` TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `borrowedFromContactId` INTEGER")
+                db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `borrowedFromVendorName` TEXT")
+                db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `returnDueDate` INTEGER")
+            }
+        }
+        val MIGRATION_54_55 = object : Migration(54, 55) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                try {
+                    db.execSQL("ALTER TABLE `lab_inventory_masters` ADD COLUMN `subCategory` TEXT NOT NULL DEFAULT ''")
+                } catch (_: Exception) {}
+                try {
+                    db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `borrowedFromContactId` INTEGER")
+                } catch (_: Exception) {}
+                try {
+                    db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `borrowedFromVendorName` TEXT")
+                } catch (_: Exception) {}
+                try {
+                    db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `returnDueDate` INTEGER")
+                } catch (_: Exception) {}
+            }
+        }
+        val MIGRATION_53_55 = object : Migration(53, 55) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                try {
+                    db.execSQL("ALTER TABLE `lab_inventory_masters` ADD COLUMN `subCategory` TEXT NOT NULL DEFAULT ''")
+                } catch (_: Exception) {}
+                try {
+                    db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `borrowedFromContactId` INTEGER")
+                } catch (_: Exception) {}
+                try {
+                    db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `borrowedFromVendorName` TEXT")
+                } catch (_: Exception) {}
+                try {
+                    db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `returnDueDate` INTEGER")
+                } catch (_: Exception) {}
             }
         }
     }
