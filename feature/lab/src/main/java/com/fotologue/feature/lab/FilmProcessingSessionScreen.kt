@@ -169,7 +169,12 @@ fun FilmProcessingSessionScreen(
             name.contains("Microphen", ignoreCase = true) || name.contains("Ilfotec", ignoreCase = true) ||
             name.contains("CS41", ignoreCase = true) || name.contains("Flexicolor", ignoreCase = true)
         }.map { it.second }
-        (filteredActive + defaultDevPresets).distinct()
+
+        if (filteredActive.isNotEmpty()) {
+            filteredActive
+        } else {
+            defaultDevPresets
+        }
     }
 
     // 2. STRICT STOP BATH FILTER
@@ -178,7 +183,12 @@ fun FilmProcessingSessionScreen(
         val filteredActive = activeChemistryLots.filter { (name, _) ->
             name.contains("Stop", ignoreCase = true) || name.contains("Rinse", ignoreCase = true) || name.contains("Water", ignoreCase = true)
         }.map { it.second }
-        (filteredActive + defaultStopPresets).distinct()
+
+        if (filteredActive.isNotEmpty()) {
+            filteredActive
+        } else {
+            defaultStopPresets
+        }
     }
 
     // 3. STRICT FIXING CHEMISTRY FILTER (Regular Hypo vs Rapid Fixers vs Blix)
@@ -200,7 +210,12 @@ fun FilmProcessingSessionScreen(
             name.contains("Hypo", ignoreCase = true) || name.contains("Blix", ignoreCase = true) ||
             name.contains("Bleach", ignoreCase = true)
         }.map { it.second }
-        (filteredActive + defaultFixingPresets).distinct()
+
+        if (filteredActive.isNotEmpty()) {
+            filteredActive
+        } else {
+            defaultFixingPresets
+        }
     }
 
     val availableRolls = remember(logEntriesWithGear, filmRollSessions, allCameras, allFilms) {
