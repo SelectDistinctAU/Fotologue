@@ -237,7 +237,22 @@ fun FilmProcessingSessionScreen(
     var selectedStopBathName by remember(stopBathOptions) { mutableStateOf(stopBathOptions.first()) }
     var selectedFixerName by remember(fixingOptions) { mutableStateOf(fixingOptions.first()) }
 
-    var dilutionText by remember { mutableStateOf("1+1") }
+    // Auto-Recommend Standard Developer Dilution based on Selected Developer!
+    val recommendedDilution = remember(selectedDeveloperName) {
+        val devLower = selectedDeveloperName.lowercase()
+        when {
+            devLower.contains("ilfosol") -> "1+9"
+            devLower.contains("dd-x") -> "1+4"
+            devLower.contains("rodinal") || devLower.contains("r09") -> "1+25"
+            devLower.contains("hc-110") || devLower.contains("ilfotec") -> "1+31"
+            devLower.contains("xtol") -> "1+1"
+            devLower.contains("id-11") || devLower.contains("d-76") -> "1+1"
+            devLower.contains("cs41") || devLower.contains("flexicolor") || devLower.contains("color") -> "Stock"
+            else -> "1+9"
+        }
+    }
+
+    var dilutionText by remember(recommendedDilution) { mutableStateOf(recommendedDilution) }
     var tempCelsiusText by remember(processType) { mutableStateOf(if (processType == "BW") "20.0" else "38.0") }
     
     // Auto-Recommend Development Time based on Selected Film & Developer!
