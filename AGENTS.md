@@ -31,6 +31,14 @@ Owner's authority.
 3. **Version catalog**: all dependencies live in `libs.versions.toml`.
    No hardcoded version strings.
 
+## Database Migration & Schema Preservation Controls
+
+4. **Anti-Destructive Migration Rule**:
+   - `fallbackToDestructiveMigration` is **STRICTLY FORBIDDEN** in production code.
+   - Any database schema change must be accompanied by an explicit Room `Migration` definition.
+   - Schema JSONs must be committed to git alongside the commit that bumps `AppDatabase.version`.
+   - Missing migrations must crash loudly in development during test passes, never silently drop user database tables.
+
 ## Design Review & Data Handling
 
 4. Beyond builds and tests passing, a change is not "done" until its
@@ -150,6 +158,44 @@ Owner's authority.
     classes, renaming audience-facing URLs, or restructuring `docs/`
     requires explicit maintainer approval — in writing, from the Project
     Owner.
+
+## Workflow Gates & Accountability
+
+22. **Workflow gates (before any code generation).** No code is generated
+    for a feature or fix until every row of the current gate table is
+    satisfied. The gates for any given task come from the active task brief
+    or release manifest supplied by the Project Owner; at minimum:
+
+    | Check | Required action |
+        |---|---|
+    | Task brief / release manifest | Approved by Project Owner for THIS work |
+    | External contracts | If the change touches an external frozen contract (e.g. the preset relay's schema or endpoint), STOP — those changes go through the relay's freeze-gate process, never this repo |
+    | Database | Any schema change is accompanied by a named Room Migration object AND a MigrationTestHelper test, written BEFORE the version bump merges |
+    | Test plan | The tests that will prove this change are named before implementation begins |
+    | Commit plan | One purpose per commit, declared beforehand; nothing undeclared rides inside a commit |
+
+23. **Bug-fix evidence protocol.** Every submitted fix includes:
+    (a) reproduction — exact command/UI sequence, error output,
+    expected-vs-actual; (b) fix evidence — the same sequence post-fix,
+    shown, not described; (c) automated test coverage for the fix, all
+    existing tests passing; (d) human verification by the Project Owner.
+    Fixes without this protocol are rejected automatically. "It works on my
+    machine" / "should be fine" are not evidence. ASAI has no authority to
+    close bugs without evidence.
+
+24. **Escalation triggers (enumerated, not discretionary).** Pause and ask
+    the Project Owner whenever ANY of these occur — do not proceed first
+    and mention it afterwards:
+    24.1. A schema change is contemplated without its migration test
+    already written.
+    24.2. Work appears to require touching a file, flow, or contract
+    outside the task's declared scope.
+    24.3. Two sources of truth disagree (code vs docs, schema vs constant,
+    local vs remote).
+    24.4. A change would alter data the user cannot reconstruct
+    (deletion, overwrite, reset, migration).
+    24.5. An instruction is ambiguous, or compliance with it would breach
+    any rule in this file.
 
 ## Sign-off Requirement
 
