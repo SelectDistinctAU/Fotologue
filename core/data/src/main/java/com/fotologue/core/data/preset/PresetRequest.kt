@@ -65,6 +65,7 @@ data class PresetRequestPayload(
         val strictJson = Json {
             ignoreUnknownKeys = false
             encodeDefaults = true
+            explicitNulls = false
         }
 
         fun validateAndEncode(payload: PresetRequestPayload): String {
