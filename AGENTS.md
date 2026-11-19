@@ -38,9 +38,6 @@ Owner's authority.
    - Any database schema change must be accompanied by an explicit Room `Migration` definition.
    - Schema JSONs must be committed to git alongside the commit that bumps `AppDatabase.version`.
    - Missing migrations must crash loudly in development during test passes, never silently drop user database tables.
-5. **No Encoded Shell Commands Rule**:
-   - **NEVER** run shell commands using `powershell -EncodedCommand` or base64 wrappers. Windows Defender flags and quarantines encoded PowerShell commands as Trojan threats.
-   - All shell commands must be executed as **plain text** with quoted file paths (e.g. `git add "path/to/File.kt"`).
 
 ## Design Review & Data Handling
 
