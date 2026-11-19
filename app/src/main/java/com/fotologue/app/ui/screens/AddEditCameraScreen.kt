@@ -17,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
@@ -36,6 +37,8 @@ fun AddEditCameraScreen(
     onSavePreArrivalOrder: (String, String, String, Long) -> Unit = { _, _, _, _ -> }
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var isCustomFormView by remember { mutableStateOf(viewModel.cameraId != null) }
     var expanded by remember { mutableStateOf(false) }
@@ -82,6 +85,7 @@ fun AddEditCameraScreen(
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { 
@@ -303,12 +307,30 @@ fun AddEditCameraScreen(
                                     onDismiss = { showRequestPresetDialog = false },
                                     onSend = { cat, brand, name, notes ->
                                         showRequestPresetDialog = false
-                                        val subject = "[Preset Request] $name (${brand.ifBlank { "Unlisted" }})"
-                                        val body = "Fotologue Master Catalog Addition Request:\n------------------------------------------\nCategory: $cat\nBrand: $brand\nModel Name: $name\nNotes / Specs: $notes\n\nSent from Fotologue App"
-                                        val intent = android.content.Intent(android.content.Intent.ACTION_SENDTO).apply {
-                                            data = android.net.Uri.parse("mailto:fotologue@pm.me?subject=" + android.net.Uri.encode(subject) + "&body=" + android.net.Uri.encode(body))
+                                        scope.launch {
+                                            val payload = com.fotologue.core.data.preset.PresetRequestPayload(
+                                                requestType = cat,
+                                                appVersion = com.fotologue.app.BuildConfig.VERSION_NAME,
+                                                platform = "android",
+                                                brand = brand,
+                                                name = name,
+                                                notes = notes.ifBlank { null }
+                                            )
+                                            when (com.fotologue.core.data.preset.PresetRequestSender.sendRequest(context, payload)) {
+                                                is com.fotologue.core.data.preset.SendResult.Success202 -> {
+                                                    snackbarHostState.showSnackbar("Sent. Thanks!")
+                                                }
+                                                is com.fotologue.core.data.preset.SendResult.BadRequest400 -> {
+                                                    snackbarHostState.showSnackbar("Something needs fixing — check the fields.")
+                                                }
+                                                is com.fotologue.core.data.preset.SendResult.RateLimited429 -> {
+                                                    snackbarHostState.showSnackbar("You've sent a few requests quickly — try again in a minute.")
+                                                }
+                                                is com.fotologue.core.data.preset.SendResult.Unavailable503 -> {
+                                                    snackbarHostState.showSnackbar("Couldn't send right now — saved as a draft to try later.")
+                                                }
+                                            }
                                         }
-                                        try { context.startActivity(intent) } catch (_: Exception) {}
                                     }
                                 )
                             }
@@ -761,10 +783,13 @@ fun RequestPresetDialog(
     onDismiss: () -> Unit,
     onSend: (category: String, brand: String, name: String, notes: String) -> Unit
 ) {
-    var category by remember { mutableStateOf(initialCategory) }
-    var brand by remember { mutableStateOf(initialBrand) }
-    var name by remember { mutableStateOf(initialName) }
-    var notes by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val existingDraft = remember(context) { com.fotologue.core.data.preset.PresetRequestDraft.loadDraft(context) }
+    var category by remember { mutableStateOf(existingDraft?.requestType ?: initialCategory) }
+    var brand by remember { mutableStateOf(existingDraft?.brand ?: initialBrand) }
+    var name by remember { mutableStateOf(existingDraft?.name ?: initialName) }
+    var notes by remember { mutableStateOf(existingDraft?.notes ?: "") }
+    var isDraftRestored by remember { mutableStateOf(existingDraft != null) }
 
     var categoryExpanded by remember { mutableStateOf(false) }
     val categoryOptions = listOf("CAMERA", "LENS", "FILM", "CHEMISTRY", "FLASH", "FILTER", "TELECONVERTER", "VIEWFINDER")
@@ -788,6 +813,21 @@ fun RequestPresetDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                if (isDraftRestored) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "💡 Restored draft from your last offline request",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
                 ExposedDropdownMenuBox(
                     expanded = categoryExpanded,
                     onExpandedChange = { categoryExpanded = !categoryExpanded }
