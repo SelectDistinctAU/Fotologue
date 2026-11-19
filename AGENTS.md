@@ -197,6 +197,19 @@ Owner's authority.
     24.5. An instruction is ambiguous, or compliance with it would breach
     any rule in this file.
 
+## Schema & Tool Execution Controls
+
+25. **Anti-Destructive Migration Rule**:
+    - `fallbackToDestructiveMigration` is **STRICTLY FORBIDDEN** in production code.
+    - Any database schema change must be accompanied by an explicit Room `Migration` definition.
+    - Schema JSONs must be committed to git alongside the commit that bumps `AppDatabase.version`.
+    - Missing migrations must crash loudly in development during test passes, never silently drop user database tables.
+
+26. **Plain-Text Shell Commands Rule**:
+    - Command-line tool calls must never use `powershell -EncodedCommand` or base64 wrappers.
+    - All shell commands must be executed as **plain text** with quoted file paths
+      (e.g. `git add "path/to/File.kt"`).
+
 ## Sign-off Requirement
 
 Before releasing ANY code: all verification tasks pass, Project Owner
