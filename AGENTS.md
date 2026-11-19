@@ -210,6 +210,24 @@ Owner's authority.
     - All shell commands must be executed as **plain text** with quoted file paths
       (e.g. `git add "path/to/File.kt"`).
 
+27. **Evidence provenance rule.** Every reported result must carry its
+    provenance class, explicitly:
+    (a) **RAW** — verbatim tool/command/file output, with the command or
+    file path shown, unedited;
+    (b) **DERIVED** — computed or looked-up values (counts, totals,
+    URLs, issue links, hashes), each individually verified against
+    its RAW source before reporting — never reconstructed from
+    memory or pattern;
+    (c) **RECOLLECTION** — anything from memory rather than this
+    session's artifacts, labelled as such and treated as a
+    hypothesis to verify, never as fact.
+    Fabricated or guessed identifiers (issue numbers, links, hashes,
+    file versions, test counts) presented as DERIVED are treated as
+    seriously as a failed test: the report is rejected and the
+    underlying work does not count as evidenced until re-reported with
+    verifiable provenance. If an artifact cannot be verified (e.g. a
+    response that contains no identifier), SAY SO and omit the claim.
+
 ## Sign-off Requirement
 
 Before releasing ANY code: all verification tasks pass, Project Owner
