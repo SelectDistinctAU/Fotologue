@@ -1,7 +1,10 @@
 package com.fotologue.core.data.migration
 
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.fotologue.core.data.AppDatabase
 import com.fotologue.core.data.lab.LabPresets
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
@@ -9,13 +12,33 @@ import org.junit.Test
 class DatabaseSchemaUnitTest {
 
     @Test
-    fun `AppDatabase migrations 36 to 42 are correctly configured`() {
+    fun `AppDatabase migrations 36 to 55 are correctly configured`() {
         assertNotNull(AppDatabase.MIGRATION_36_37)
         assertNotNull(AppDatabase.MIGRATION_41_42)
+        assertNotNull(AppDatabase.MIGRATION_53_54)
+        assertNotNull(AppDatabase.MIGRATION_54_55)
+        assertNotNull(AppDatabase.MIGRATION_53_55)
         assertEquals(36, AppDatabase.MIGRATION_36_37.startVersion)
         assertEquals(37, AppDatabase.MIGRATION_36_37.endVersion)
         assertEquals(41, AppDatabase.MIGRATION_41_42.startVersion)
         assertEquals(42, AppDatabase.MIGRATION_41_42.endVersion)
+        assertEquals(53, AppDatabase.MIGRATION_53_54.startVersion)
+        assertEquals(54, AppDatabase.MIGRATION_53_54.endVersion)
+        assertEquals(54, AppDatabase.MIGRATION_54_55.startVersion)
+        assertEquals(55, AppDatabase.MIGRATION_54_55.endVersion)
+        assertEquals(53, AppDatabase.MIGRATION_53_55.startVersion)
+        assertEquals(55, AppDatabase.MIGRATION_53_55.endVersion)
+    }
+
+    @Test
+    fun `MIGRATION_53_54 executes alter table statements cleanly`() {
+        val mockDb = mockk<SupportSQLiteDatabase>(relaxed = true)
+        AppDatabase.MIGRATION_53_54.migrate(mockDb)
+
+        verify { mockDb.execSQL("ALTER TABLE `lab_inventory_masters` ADD COLUMN `subCategory` TEXT NOT NULL DEFAULT ''") }
+        verify { mockDb.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `borrowedFromContactId` INTEGER") }
+        verify { mockDb.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `borrowedFromVendorName` TEXT") }
+        verify { mockDb.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `returnDueDate` INTEGER") }
     }
 
     @Test

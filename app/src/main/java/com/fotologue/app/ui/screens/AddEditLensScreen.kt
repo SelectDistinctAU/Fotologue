@@ -37,6 +37,8 @@ fun AddEditLensScreen(
     onSavePreArrivalOrder: (String, String, String, Long) -> Unit = { _, _, _, _ -> }
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
     var isCustomFormView by remember { mutableStateOf(viewModel.lensId != null) }
@@ -52,6 +54,7 @@ fun AddEditLensScreen(
     var makeExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { 
@@ -85,6 +88,7 @@ fun AddEditLensScreen(
                 // PRIMARY TARGET: FULL-SCREEN PRESET CATALOG BROWSER
                 LensPresetsBrowser(
                     initialMake = uiState.make,
+                    snackbarHostState = snackbarHostState,
                     onSelectSpec = { spec ->
                         viewModel.onSelectSpec(spec)
                         if (isPreArrivalMode) {
@@ -363,6 +367,7 @@ fun AddEditLensScreen(
 @Composable
 private fun LensPresetsBrowser(
     initialMake: String,
+    snackbarHostState: SnackbarHostState,
     onSelectSpec: (LensSpec) -> Unit,
     onAddCustomLens: () -> Unit
 ) {
@@ -614,12 +619,30 @@ private fun LensPresetsBrowser(
                 onDismiss = { showRequestPresetDialog = false },
                 onSend = { cat, brand, name, notes ->
                     showRequestPresetDialog = false
-                    val subject = "[Preset Request] $name (${brand.ifBlank { "Unlisted" }})"
-                    val body = "Fotologue Master Catalog Addition Request:\n------------------------------------------\nCategory: $cat\nBrand: $brand\nModel Name: $name\nNotes / Specs: $notes\n\nSent from Fotologue App"
-                    val intent = android.content.Intent(android.content.Intent.ACTION_SENDTO).apply {
-                        data = android.net.Uri.parse("mailto:fotologue@pm.me?subject=" + android.net.Uri.encode(subject) + "&body=" + android.net.Uri.encode(body))
+                    scope.launch {
+                        val payload = com.fotologue.core.data.preset.PresetRequestPayload(
+                            requestType = cat,
+                            appVersion = com.fotologue.app.BuildConfig.VERSION_NAME,
+                            platform = "android",
+                            brand = brand,
+                            name = name,
+                            notes = notes.ifBlank { null }
+                        )
+                        when (com.fotologue.core.data.preset.PresetRequestSender.sendRequest(context, payload)) {
+                            is com.fotologue.core.data.preset.SendResult.Success202 -> {
+                                snackbarHostState.showSnackbar("Sent. Thanks!")
+                            }
+                            is com.fotologue.core.data.preset.SendResult.BadRequest400 -> {
+                                snackbarHostState.showSnackbar("Something needs fixing — check the fields.")
+                            }
+                            is com.fotologue.core.data.preset.SendResult.RateLimited429 -> {
+                                snackbarHostState.showSnackbar("You've sent a few requests quickly — try again in a minute.")
+                            }
+                            is com.fotologue.core.data.preset.SendResult.Unavailable503 -> {
+                                snackbarHostState.showSnackbar("Couldn't send right now — saved as a draft to try later.")
+                            }
+                        }
                     }
-                    try { context.startActivity(intent) } catch (_: Exception) {}
                 }
             )
         }
