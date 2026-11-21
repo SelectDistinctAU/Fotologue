@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
@@ -338,7 +339,7 @@ fun LabMaintenanceScreen(
                                 readOnly = true,
                                 label = { Text("Parent Equipment Category") },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = eqCatExpanded) },
-                                modifier = Modifier.menuAnchor().fillMaxWidth()
+                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                             )
                             ExposedDropdownMenu(
                                 expanded = eqCatExpanded,
@@ -433,7 +434,7 @@ fun LabMaintenanceScreen(
                                                     readOnly = true,
                                                     label = { Text("Category") },
                                                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = editEqCatExpanded) },
-                                                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                                                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                                                 )
                                                 ExposedDropdownMenu(
                                                     expanded = editEqCatExpanded,
@@ -527,7 +528,7 @@ fun LabMaintenanceScreen(
                                 label = { Text("Parent Category") },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = itemCatExpanded) },
                                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary),
-                                modifier = Modifier.menuAnchor().fillMaxWidth()
+                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                             )
                             ExposedDropdownMenu(
                                 expanded = itemCatExpanded,
@@ -623,7 +624,7 @@ fun LabMaintenanceScreen(
                                                     label = { Text("Category") },
                                                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = editItemCatExpanded) },
                                                     colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary),
-                                                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                                                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                                                 )
                                                 ExposedDropdownMenu(
                                                     expanded = editItemCatExpanded,
@@ -831,7 +832,7 @@ fun LabMaintenanceScreen(
                                 label = { Text("Unit") },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = catUnitExpanded) },
                                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary),
-                                modifier = Modifier.menuAnchor()
+                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
                             )
                             ExposedDropdownMenu(
                                 expanded = catUnitExpanded,
@@ -901,7 +902,7 @@ fun LabMaintenanceScreen(
                                             label = { Text("Unit") },
                                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = editCatUnitExpanded) },
                                             colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary),
-                                            modifier = Modifier.menuAnchor()
+                                            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
                                         )
                                         ExposedDropdownMenu(
                                             expanded = editCatUnitExpanded,

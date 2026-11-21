@@ -32,6 +32,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -498,7 +499,7 @@ fun EnlargerPrintingSessionScreen(
                     label = { Text("1. Select Developed Film Roll (Top-Level Filter)") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = rollExpanded) },
                     colors = textFieldColors,
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = rollExpanded,
@@ -529,7 +530,7 @@ fun EnlargerPrintingSessionScreen(
                     label = { Text("2. Select Frame to Print (Detailed Layer)") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = frameExpanded) },
                     colors = textFieldColors,
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = frameExpanded,
@@ -561,7 +562,7 @@ fun EnlargerPrintingSessionScreen(
                     label = { Text("Paper Stock Specification") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = masterExpanded) },
                     colors = textFieldColors,
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = masterExpanded,
@@ -592,7 +593,7 @@ fun EnlargerPrintingSessionScreen(
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = enlargerBodyExpanded) },
                     singleLine = true,
                     colors = textFieldColors,
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = enlargerBodyExpanded,
@@ -630,7 +631,7 @@ fun EnlargerPrintingSessionScreen(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = lensExpanded) },
                         singleLine = true,
                         colors = textFieldColors,
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
                         expanded = lensExpanded,
@@ -662,7 +663,7 @@ fun EnlargerPrintingSessionScreen(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = printSizeExpanded) },
                         singleLine = true,
                         colors = textFieldColors,
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
                         expanded = printSizeExpanded,
@@ -947,7 +948,7 @@ fun EnlargerPrintingSessionScreen(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = lightHeadExpanded) },
                         singleLine = true,
                         colors = textFieldColors,
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
                         expanded = lightHeadExpanded,
@@ -978,7 +979,7 @@ fun EnlargerPrintingSessionScreen(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = apertureExpanded) },
                         singleLine = true,
                         colors = textFieldColors,
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
                         expanded = apertureExpanded,
@@ -1015,7 +1016,7 @@ fun EnlargerPrintingSessionScreen(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = developerExpanded) },
                         singleLine = true,
                         colors = textFieldColors,
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
                         expanded = developerExpanded,
@@ -1052,7 +1053,7 @@ fun EnlargerPrintingSessionScreen(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dilutionExpanded) },
                         singleLine = true,
                         colors = textFieldColors,
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
                         expanded = dilutionExpanded,
@@ -1190,7 +1191,7 @@ fun EnlargerPrintingSessionScreen(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = defectExpanded) },
                         singleLine = true,
                         colors = textFieldColors,
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                     )
                     ExposedDropdownMenu(
                         expanded = defectExpanded,

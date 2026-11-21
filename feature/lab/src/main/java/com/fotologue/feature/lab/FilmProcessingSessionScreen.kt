@@ -31,6 +31,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -508,7 +509,7 @@ fun FilmProcessingSessionScreen(
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = rollExpanded) },
                     singleLine = true,
                     colors = textFieldColors,
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = rollExpanded,
@@ -547,7 +548,7 @@ fun FilmProcessingSessionScreen(
                     label = { Text(if (processType == "BW") "1. Developer Chemistry" else "1. Color Developer (38°C)") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = chemicalExpanded) },
                     colors = textFieldColors,
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = chemicalExpanded,
@@ -577,7 +578,7 @@ fun FilmProcessingSessionScreen(
                     label = { Text(if (processType == "BW") "2. Stop Bath / Water Rinse" else "2. Bleach / Blix") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = stopExpanded) },
                     colors = textFieldColors,
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = stopExpanded,
@@ -607,7 +608,7 @@ fun FilmProcessingSessionScreen(
                     label = { Text("3. Fixing Chemistry") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = fixerExpanded) },
                     colors = textFieldColors,
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = fixerExpanded,
