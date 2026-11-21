@@ -1030,10 +1030,8 @@ fun EnlargerPrintingSessionScreen(
                                 enabled = !isSeparator,
                                 text = { Text(devOpt, color = if (isSafelightActive) Color(0xFFFF0000) else Color.Unspecified, fontWeight = if (devOpt.startsWith("📦")) FontWeight.Bold else FontWeight.Normal) },
                                 onClick = {
-                                    if (!isSeparator) {
-                                        developerNameText = cleanVal
-                                        developerExpanded = false
-                                    }
+                                    developerNameText = cleanVal
+                                    developerExpanded = false
                                 }
                             )
                         }
