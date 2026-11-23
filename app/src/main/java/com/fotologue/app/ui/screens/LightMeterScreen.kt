@@ -262,10 +262,16 @@ fun LightMeterScreen(
                     }
 
                     try {
-                        val zoom = (uiState.currentFocalLength?.toFloat() ?: 50f) / 24.0f
-                        camera.cameraControl.setZoomRatio(zoom.coerceIn(1.0f, 8.0f))
+                        val fl = uiState.currentFocalLength?.toFloat()
+                        val gw = uiState.gateWidthMm ?: 36.0f
+                        if (fl != null && fl > 0f) {
+                            val targetRatio = 1.5f / (gw / fl)
+                            val minZoom = camera.cameraInfo.zoomState.value?.minZoomRatio ?: 1.0f
+                            val maxZoom = camera.cameraInfo.zoomState.value?.maxZoomRatio ?: 8.0f
+                            camera.cameraControl.setZoomRatio(targetRatio.coerceIn(minZoom, maxZoom))
+                        }
                     } catch (_: Exception) {
-                        // Zoom ratio handled
+                        // Hardware zoom handled
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -547,24 +553,52 @@ private fun CameraPreviewContent(
     uiState: LightMeterUiState
 ) {
     if (isCameraPermissionGranted) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        val isFramingMatched = uiState.gateWidthMm != null && uiState.gateHeightMm != null && uiState.currentFocalLength != null
+
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val containerWidth = constraints.maxWidth.toFloat()
+            val containerHeight = constraints.maxHeight.toFloat()
+
+            val gateRect = remember(containerWidth, containerHeight, uiState.gateWidthMm, uiState.gateHeightMm) {
+                if (isFramingMatched && containerWidth > 0 && containerHeight > 0) {
+                    val gateAspect = (uiState.gateWidthMm ?: 36f) / (uiState.gateHeightMm ?: 24f)
+                    val containerAspect = containerWidth / containerHeight
+                    val gW: Float
+                    val gH: Float
+                    if (containerAspect > gateAspect) {
+                        gH = containerHeight
+                        gW = gH * gateAspect
+                    } else {
+                        gW = containerWidth
+                        gH = gW / gateAspect
+                    }
+                    val gLeft = (containerWidth - gW) / 2f
+                    val gTop = (containerHeight - gH) / 2f
+                    androidx.compose.ui.geometry.Rect(gLeft, gTop, gLeft + gW, gTop + gH)
+                } else {
+                    androidx.compose.ui.geometry.Rect(0f, 0f, containerWidth, containerHeight)
+                }
+            }
+
             AndroidView(
                 factory = { previewView },
                 modifier = Modifier
                     .fillMaxSize()
-                    .pointerInput(Unit) {
+                    .pointerInput(isFramingMatched, gateRect) {
                         detectTapGestures(
                             onTap = { offset ->
+                                val clampedX = if (isFramingMatched) offset.x.coerceIn(gateRect.left, gateRect.right) else offset.x
+                                val clampedY = if (isFramingMatched) offset.y.coerceIn(gateRect.top, gateRect.bottom) else offset.y
                                 onSpotLocationUpdated(
-                                    offset.x.toInt(),
-                                    offset.y.toInt(),
-                                    size.width,
-                                    size.height
+                                    clampedX.toInt(),
+                                    clampedY.toInt(),
+                                    containerWidth.toInt(),
+                                    containerHeight.toInt()
                                 )
                                 if (uiState.meteringMode == MeteringMode.SPOT) {
                                     onAddSpotSample(
-                                        offset.x / size.width.toFloat(),
-                                        offset.y / size.height.toFloat(),
+                                        clampedX / containerWidth,
+                                        clampedY / containerHeight,
                                         uiState.currentEv
                                     )
                                 }
@@ -572,6 +606,42 @@ private fun CameraPreviewContent(
                         )
                     }
             )
+
+            if (isFramingMatched) {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    // Dark Letterbox Scrim Outside Gate
+                    val outerPath = androidx.compose.ui.graphics.Path().apply {
+                        addRect(androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height))
+                        addRect(gateRect)
+                    }
+                    drawPath(
+                        path = outerPath,
+                        color = Color.Black.copy(alpha = 0.65f),
+                        style = androidx.compose.ui.graphics.drawscope.Fill
+                    )
+                    // Visible Accent Frame-Lines
+                    drawRect(
+                        color = Color.White.copy(alpha = 0.85f),
+                        topLeft = Offset(gateRect.left, gateRect.top),
+                        size = Size(gateRect.width, gateRect.height),
+                        style = Stroke(width = 2.dp.toPx())
+                    )
+                }
+            } else {
+                Surface(
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.9f),
+                    modifier = Modifier.padding(12.dp).align(Alignment.TopStart)
+                ) {
+                    Text(
+                        text = "⚠️ Scene reference only — framing not matched",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
+                }
+            }
 
             if (uiState.isSimulatingFilm) {
                 uiState.film?.let { film ->

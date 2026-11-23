@@ -688,7 +688,10 @@
       "format": "120 (Medium Format)",
       "mount": "Fixed",
       "shutterSpeeds": "1s - 1/500s, B",
-      "fixedLens": "Yashinon 80mm f/3.5 Taking Lens"
+      "fixedLens": "Yashinon 80mm f/3.5 Taking Lens",
+      "focalLengthMm": "80",
+      "gateWidthMm": "56",
+      "gateHeightMm": "56"
     },
     "isDeveloperPreset": true
   },

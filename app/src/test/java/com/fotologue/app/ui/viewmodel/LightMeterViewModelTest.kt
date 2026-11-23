@@ -93,4 +93,29 @@ class LightMeterViewModelTest {
         assertEquals(50, viewModel.uiState.value.currentFocalLength)
         assertEquals(50.0, viewModel.uiState.value.effectiveFocalLength ?: 0.0, 0.1)
     }
+
+    @Test
+    fun `setParams loads fixed lens MAT-124G camera attributes and eliminates starvation`() = runTest {
+        val mat124g = Camera(id = 684L, name = "Yashica Mat-124G", type = CameraType.TLR)
+        every { repository.getCameraById(684L) } returns flowOf(mat124g)
+
+        viewModel.setParams(125, cameraId = 684L)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(80, viewModel.uiState.value.currentFocalLength)
+        assertEquals(56.0f, viewModel.uiState.value.gateWidthMm)
+        assertEquals(56.0f, viewModel.uiState.value.gateHeightMm)
+    }
+
+    @Test
+    fun `camera without gate attributes triggers fallback state`() = runTest {
+        val unknownCam = Camera(id = 999L, name = "Unknown Vintage Camera", type = CameraType.FILM_SLR)
+        every { repository.getCameraById(999L) } returns flowOf(unknownCam)
+
+        viewModel.setParams(100, cameraId = 999L)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(null, viewModel.uiState.value.gateWidthMm)
+        assertEquals(null, viewModel.uiState.value.gateHeightMm)
+    }
 }

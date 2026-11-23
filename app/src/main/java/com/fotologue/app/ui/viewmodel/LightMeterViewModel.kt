@@ -100,8 +100,21 @@ class LightMeterViewModel @Inject constructor(
     ) {
         cameraId?.let { id ->
             viewModelScope.launch {
-                repository.getCameraById(id).collect {
-                    selectedCamera = it
+                repository.getCameraById(id).collect { cam ->
+                    selectedCamera = cam
+                    if (cam != null && lensId == null) {
+                        val presetItem = com.fotologue.core.data.preset.MasterPresetEngine.getPresetsByCategory("CAMERA").find { it.name.equals(cam.name, ignoreCase = true) }
+                        val fl = presetItem?.attributes?.get("focalLengthMm")?.toFloatOrNull()
+                        val gw = presetItem?.attributes?.get("gateWidthMm")?.toFloatOrNull()
+                        val gh = presetItem?.attributes?.get("gateHeightMm")?.toFloatOrNull()
+                        _uiState.update { state ->
+                            state.copy(
+                                currentFocalLength = fl?.toInt() ?: state.currentFocalLength,
+                                gateWidthMm = gw,
+                                gateHeightMm = gh
+                            )
+                        }
+                    }
                     updateSuggestions()
                 }
             }
@@ -491,6 +504,8 @@ data class LightMeterUiState(
     val effectiveFocalLength: Double? = null,
     val effectiveMaxAperture: Double? = null,
     val currentFocalLength: Int? = null,
+    val gateWidthMm: Float? = null,
+    val gateHeightMm: Float? = null,
     val lens: Lens? = null,
     val teleconverter: Teleconverter? = null,
     val filter: Filter? = null,
