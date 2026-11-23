@@ -6,6 +6,8 @@ import android.hardware.camera2.CaptureRequest
 import android.hardware.camera2.TotalCaptureResult
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import android.hardware.camera2.CameraCharacteristics
+import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.camera2.interop.Camera2Interop
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.CameraSelector
@@ -265,7 +267,17 @@ fun LightMeterScreen(
                         val fl = uiState.currentFocalLength?.toFloat()
                         val gw = uiState.gateWidthMm ?: 36.0f
                         if (fl != null && fl > 0f) {
-                            val targetRatio = 1.5f / (gw / fl)
+                            val camera2Info = Camera2CameraInfo.from(camera.cameraInfo)
+                            val sensorSize = camera2Info.getCameraCharacteristic(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
+                            val focalLengths = camera2Info.getCameraCharacteristic(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)
+
+                            val phoneSensorWidthMm = sensorSize?.width ?: 5.6f
+                            val phoneFocalLengthMm = focalLengths?.firstOrNull() ?: 4.3f
+
+                            val sourceFovRatio = phoneSensorWidthMm / (2.0f * phoneFocalLengthMm)
+                            val targetFovRatio = gw / (2.0f * fl)
+
+                            val targetRatio = sourceFovRatio / targetFovRatio
                             val minZoom = camera.cameraInfo.zoomState.value?.minZoomRatio ?: 1.0f
                             val maxZoom = camera.cameraInfo.zoomState.value?.maxZoomRatio ?: 8.0f
                             camera.cameraControl.setZoomRatio(targetRatio.coerceIn(minZoom, maxZoom))
