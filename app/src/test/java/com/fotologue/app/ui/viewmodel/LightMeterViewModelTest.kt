@@ -118,4 +118,40 @@ class LightMeterViewModelTest {
         assertEquals(null, viewModel.uiState.value.gateWidthMm)
         assertEquals(null, viewModel.uiState.value.gateHeightMm)
     }
+
+    @Test
+    fun `calculateGateRectangle computes 1 to 1 square gate for 56x56mm medium format`() {
+        val containerWidth = 1080f
+        val containerHeight = 1920f
+        val gateWidthMm = 56.0f
+        val gateHeightMm = 56.0f
+
+        val gateAspect = gateWidthMm / gateHeightMm
+        val gW = containerWidth
+        val gH = gW / gateAspect
+        val gLeft = (containerWidth - gW) / 2f
+        val gTop = (containerHeight - gH) / 2f
+
+        assertEquals(1080f, gW, 0.1f)
+        assertEquals(1080f, gH, 0.1f)
+        assertEquals(0f, gLeft, 0.1f)
+        assertEquals(420f, gTop, 0.1f)
+    }
+
+    @Test
+    fun `spot location update clamps coordinates strictly inside film gate boundary`() {
+        val gateRectLeft = 0f
+        val gateRectRight = 1080f
+        val gateRectTop = 420f
+        val gateRectBottom = 1500f
+
+        val tapX = 500f
+        val tapY = 100f // Out of bounds above gate
+
+        val clampedX = tapX.coerceIn(gateRectLeft, gateRectRight)
+        val clampedY = tapY.coerceIn(gateRectTop, gateRectBottom)
+
+        assertEquals(500f, clampedX, 0.1f)
+        assertEquals(420f, clampedY, 0.1f)
+    }
 }

@@ -265,22 +265,31 @@ fun LightMeterScreen(
 
                     try {
                         val fl = uiState.currentFocalLength?.toFloat()
-                        val gw = uiState.gateWidthMm ?: 36.0f
-                        if (fl != null && fl > 0f) {
+                        val gw = uiState.gateWidthMm
+                        val gh = uiState.gateHeightMm
+                        if (fl != null && fl > 0f && gw != null && gw > 0f && gh != null && gh > 0f) {
                             val camera2Info = Camera2CameraInfo.from(camera.cameraInfo)
                             val sensorSize = camera2Info.getCameraCharacteristic(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
                             val focalLengths = camera2Info.getCameraCharacteristic(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)
 
-                            val phoneSensorWidthMm = sensorSize?.width ?: 5.6f
-                            val phoneFocalLengthMm = focalLengths?.firstOrNull() ?: 4.3f
+                            val phoneSensorWidthMm = sensorSize?.width
+                            val phoneFocalLengthMm = focalLengths?.firstOrNull()
 
-                            val sourceFovRatio = phoneSensorWidthMm / (2.0f * phoneFocalLengthMm)
-                            val targetFovRatio = gw / (2.0f * fl)
+                            if (phoneSensorWidthMm != null && phoneFocalLengthMm != null && phoneSensorWidthMm > 0f && phoneFocalLengthMm > 0f) {
+                                val sourceFovRatio = phoneSensorWidthMm / (2.0f * phoneFocalLengthMm)
+                                val targetFovRatio = gw / (2.0f * fl)
 
-                            val targetRatio = sourceFovRatio / targetFovRatio
-                            val minZoom = camera.cameraInfo.zoomState.value?.minZoomRatio ?: 1.0f
-                            val maxZoom = camera.cameraInfo.zoomState.value?.maxZoomRatio ?: 8.0f
-                            camera.cameraControl.setZoomRatio(targetRatio.coerceIn(minZoom, maxZoom))
+                                // Account for FILL_CENTER horizontal visible fraction from measured PreviewView bounds
+                                val fillCenterScale = if (previewView.height > 0) {
+                                    (previewView.width.toFloat() / (0.75f * previewView.height.toFloat())).coerceIn(0.5f, 2.0f)
+                                } else 1.0f
+                                val effectiveSourceFov = sourceFovRatio * fillCenterScale
+
+                                val targetRatio = effectiveSourceFov / targetFovRatio
+                                val minZoom = camera.cameraInfo.zoomState.value?.minZoomRatio ?: 1.0f
+                                val maxZoom = camera.cameraInfo.zoomState.value?.maxZoomRatio ?: 8.0f
+                                camera.cameraControl.setZoomRatio(targetRatio.coerceIn(minZoom, maxZoom))
+                            }
                         }
                     } catch (_: Exception) {
                         // Hardware zoom handled
