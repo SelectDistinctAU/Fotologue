@@ -683,20 +683,6 @@ private fun CameraPreviewContent(
                         style = Stroke(width = 2.dp.toPx())
                     )
                 }
-            } else {
-                Surface(
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.9f),
-                    modifier = Modifier.padding(12.dp).align(Alignment.TopStart)
-                ) {
-                    Text(
-                        text = "⚠️ Scene reference only — framing not matched",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onErrorContainer,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
-                    )
-                }
             }
 
             if (uiState.isSimulatingFilm) {
