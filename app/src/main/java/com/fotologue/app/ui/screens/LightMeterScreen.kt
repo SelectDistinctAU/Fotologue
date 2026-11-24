@@ -175,12 +175,46 @@ fun LightMeterScreen(
 
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
-    
     val imageCapture = remember { ImageCapture.Builder().build() }
+    var boundCamera by remember { mutableStateOf<androidx.camera.core.Camera?>(null) }
 
     val previewView = remember {
         PreviewView(context).apply {
             implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+        }
+    }
+
+    LaunchedEffect(boundCamera, uiState.currentFocalLength, uiState.gateWidthMm, uiState.gateHeightMm) {
+        val cam = boundCamera ?: return@LaunchedEffect
+        try {
+            val fl = uiState.currentFocalLength?.toFloat()
+            val gw = uiState.gateWidthMm
+            val gh = uiState.gateHeightMm
+            if (fl != null && fl > 0f && gw != null && gw > 0f && gh != null && gh > 0f) {
+                val camera2Info = Camera2CameraInfo.from(cam.cameraInfo)
+                val sensorSize = camera2Info.getCameraCharacteristic(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
+                val focalLengths = camera2Info.getCameraCharacteristic(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)
+
+                val phoneSensorWidthMm = sensorSize?.width
+                val phoneFocalLengthMm = focalLengths?.firstOrNull()
+
+                if (phoneSensorWidthMm != null && phoneFocalLengthMm != null && phoneSensorWidthMm > 0f && phoneFocalLengthMm > 0f) {
+                    val sourceFovRatio = phoneSensorWidthMm / (2.0f * phoneFocalLengthMm)
+                    val targetFovRatio = gw / (2.0f * fl)
+
+                    val fillCenterScale = if (previewView.height > 0) {
+                        (previewView.width.toFloat() / (0.75f * previewView.height.toFloat())).coerceIn(0.5f, 2.0f)
+                    } else 1.0f
+                    val effectiveSourceFov = sourceFovRatio * fillCenterScale
+
+                    val targetRatio = effectiveSourceFov / targetFovRatio
+                    val minZoom = cam.cameraInfo.zoomState.value?.minZoomRatio ?: 1.0f
+                    val maxZoom = cam.cameraInfo.zoomState.value?.maxZoomRatio ?: 8.0f
+                    cam.cameraControl.setZoomRatio(targetRatio.coerceIn(minZoom, maxZoom))
+                }
+            }
+        } catch (_: Exception) {
+            // Hardware zoom handled
         }
     }
 
@@ -262,6 +296,7 @@ fun LightMeterScreen(
                             imageAnalysis
                         )
                     }
+                    boundCamera = camera
 
                     try {
                         val fl = uiState.currentFocalLength?.toFloat()
