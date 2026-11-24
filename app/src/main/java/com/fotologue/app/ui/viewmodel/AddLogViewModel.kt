@@ -435,22 +435,29 @@ class AddLogViewModel @Inject constructor(
                 if ((camera.type == CameraType.TLR || camera.type == CameraType.MEDIUM_FORMAT) && camera.format != Film.FORMAT_120) {
                     repository.updateCamera(camera.copy(format = Film.FORMAT_120))
                 }
+                val singleLens = filteredLenses.value.let { if (it.size == 1) it.first() else null }
+                val singleFilm = allFilms.value.let { if (it.size == 1) it.first() else null }
+
                 _uiState.update { 
                     it.copy(
                         selectedCameraId = cameraId,
+                        selectedLensId = singleLens?.id ?: it.selectedLensId,
+                        selectedFilmId = singleFilm?.id ?: it.selectedFilmId,
                         selectedKitId = null,
                         availableShutterSpeeds = if (camera.shutterSpeeds.isEmpty()) {
                             ExposureSuggester.defaultShutterSpeeds
                         } else {
                             camera.shutterSpeeds
                         },
-                        availableApertures = if (it.selectedLensId == null) {
+                        availableApertures = if (it.selectedLensId == null && singleLens == null) {
                             ExposureSuggester.commonApertures.map { apertureValue -> "f/${if ((apertureValue % 1.0) == 0.0) apertureValue.toInt() else apertureValue}" }
                         } else {
                             it.availableApertures
                         },
                     )
                 }
+                singleLens?.id?.let { onLensSelected(it, updatePersistent = false) }
+                singleFilm?.let { onFilmSelected(it.id, it.iso, updatePersistent = false) }
                 if (updatePersistent) syncGearToPersistent()
             }
         }

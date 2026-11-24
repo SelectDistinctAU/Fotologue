@@ -347,8 +347,8 @@ fun AddEditCameraScreen(
                                     Icon(painterResource(com.fotologue.core.designsystem.R.drawable.send_time_extension), contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
-                                        Text("Request Addition to Global Catalog", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
-                                        Text("Submit specs for \"${searchQuery.ifBlank { "Unlisted Camera" }}\" to GitHub Hive-Mind Queue", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text("Request New Preset", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                                        Text("Submit specs for \"${searchQuery.ifBlank { "Unlisted Camera" }}\" to Global Catalog", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                 }
                             }
