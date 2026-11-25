@@ -12,12 +12,12 @@ import org.junit.Test
 class DatabaseSchemaUnitTest {
 
     @Test
-    fun `AppDatabase migrations 36 to 55 are correctly configured`() {
+    fun `AppDatabase migrations 36 to 56 are correctly configured`() {
         assertNotNull(AppDatabase.MIGRATION_36_37)
         assertNotNull(AppDatabase.MIGRATION_41_42)
         assertNotNull(AppDatabase.MIGRATION_53_54)
         assertNotNull(AppDatabase.MIGRATION_54_55)
-        assertNotNull(AppDatabase.MIGRATION_53_55)
+        assertNotNull(AppDatabase.MIGRATION_55_56)
         assertEquals(36, AppDatabase.MIGRATION_36_37.startVersion)
         assertEquals(37, AppDatabase.MIGRATION_36_37.endVersion)
         assertEquals(41, AppDatabase.MIGRATION_41_42.startVersion)
@@ -26,8 +26,16 @@ class DatabaseSchemaUnitTest {
         assertEquals(54, AppDatabase.MIGRATION_53_54.endVersion)
         assertEquals(54, AppDatabase.MIGRATION_54_55.startVersion)
         assertEquals(55, AppDatabase.MIGRATION_54_55.endVersion)
-        assertEquals(53, AppDatabase.MIGRATION_53_55.startVersion)
-        assertEquals(55, AppDatabase.MIGRATION_53_55.endVersion)
+        assertEquals(55, AppDatabase.MIGRATION_55_56.startVersion)
+        assertEquals(56, AppDatabase.MIGRATION_55_56.endVersion)
+    }
+
+    @Test
+    fun `MIGRATION_55_56 executes lens focal length auto-corrections cleanly`() {
+        val mockDb = mockk<SupportSQLiteDatabase>(relaxed = true)
+        AppDatabase.MIGRATION_55_56.migrate(mockDb)
+
+        verify { mockDb.execSQL(match { it.contains("UPDATE lenses") && it.contains("minFocalLength = 80") }) }
     }
 
     @Test

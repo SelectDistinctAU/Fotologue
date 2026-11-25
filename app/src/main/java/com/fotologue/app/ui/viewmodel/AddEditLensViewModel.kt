@@ -107,8 +107,8 @@ class AddEditLensViewModel @Inject constructor(
                         maxMagnification = 0.15,
                         minAperture = presetItem.attributes["minAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 22.0,
                         maxAperture = presetItem.attributes["maxAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 1.4,
-                        minFocalLength = presetItem.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50,
-                        maxFocalLength = presetItem.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50
+                        minFocalLength = LensSpec.parseFocalLengthRange(presetItem.attributes["focalLength"]).first,
+                        maxFocalLength = LensSpec.parseFocalLengthRange(presetItem.attributes["focalLength"]).second
                     )
                 }
 

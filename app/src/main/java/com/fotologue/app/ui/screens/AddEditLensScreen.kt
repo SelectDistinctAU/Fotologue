@@ -574,8 +574,8 @@ private fun LensPresetsBrowser(
                         maxMagnification = 0.15,
                         minAperture = res.attributes["minAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 22.0,
                         maxAperture = res.attributes["maxAperture"]?.replace("f/", "")?.toDoubleOrNull() ?: 1.8,
-                        minFocalLength = res.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50,
-                        maxFocalLength = res.attributes["focalLength"]?.replace("mm", "")?.toIntOrNull() ?: 50
+                        minFocalLength = LensSpec.parseFocalLengthRange(res.attributes["focalLength"]).first,
+                        maxFocalLength = LensSpec.parseFocalLengthRange(res.attributes["focalLength"]).second
                     )
 
                     Card(

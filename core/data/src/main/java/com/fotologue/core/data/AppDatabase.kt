@@ -60,7 +60,7 @@ import com.fotologue.core.data.lab.LabOrderDao
         LabCategory::class, LabUnit::class, LabItemName::class, OrderHistory::class, PerformanceLog::class, LabProcessEvent::class, PrintRecipe::class,
         LabStorageLocation::class, PrintOutcome::class, PrintSession::class, ExposureStep::class, LovEntry::class, LabOrder::class, AssetAvailability::class
     ],
-    version = 55,
+    version = 56,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -370,20 +370,28 @@ abstract class AppDatabase : RoomDatabase() {
                 } catch (_: Exception) {}
             }
         }
-        val MIGRATION_53_55 = object : Migration(53, 55) {
+        val MIGRATION_55_56 = object : Migration(55, 56) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                try {
-                    db.execSQL("ALTER TABLE `lab_inventory_masters` ADD COLUMN `subCategory` TEXT NOT NULL DEFAULT ''")
-                } catch (_: Exception) {}
-                try {
-                    db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `borrowedFromContactId` INTEGER")
-                } catch (_: Exception) {}
-                try {
-                    db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `borrowedFromVendorName` TEXT")
-                } catch (_: Exception) {}
-                try {
-                    db.execSQL("ALTER TABLE `asset_availability` ADD COLUMN `returnDueDate` INTEGER")
-                } catch (_: Exception) {}
+                db.execSQL("""
+                    UPDATE lenses 
+                    SET minFocalLength = 80, maxFocalLength = 200 
+                    WHERE model LIKE '%80-200%' AND minFocalLength = 50 AND maxFocalLength = 50
+                """.trimIndent())
+                db.execSQL("""
+                    UPDATE lenses 
+                    SET minFocalLength = 35, maxFocalLength = 105 
+                    WHERE model LIKE '%35-105%' AND minFocalLength = 50 AND maxFocalLength = 50
+                """.trimIndent())
+                db.execSQL("""
+                    UPDATE lenses 
+                    SET minFocalLength = 28, maxFocalLength = 70 
+                    WHERE model LIKE '%28-70%' AND minFocalLength = 50 AND maxFocalLength = 50
+                """.trimIndent())
+                db.execSQL("""
+                    UPDATE lenses 
+                    SET minFocalLength = 70, maxFocalLength = 210 
+                    WHERE model LIKE '%70-210%' AND minFocalLength = 50 AND maxFocalLength = 50
+                """.trimIndent())
             }
         }
     }
