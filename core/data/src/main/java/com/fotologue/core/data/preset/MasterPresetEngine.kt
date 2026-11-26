@@ -77,6 +77,7 @@ object MasterPresetEngine {
     fun getPresetsByCategory(category: String): List<MasterPresetItem> {
         initializeIfNeeded()
         return cachedPresets.filter { it.category.equals(category, ignoreCase = true) }
+            .sortedWith(compareBy({ it.brand }, { it.name }))
     }
 
     fun searchPresets(category: String, query: String, brandFilter: String = "All"): List<MasterPresetItem> {
