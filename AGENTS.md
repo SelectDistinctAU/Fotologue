@@ -227,6 +227,14 @@ Owner's authority.
     underlying work does not count as evidenced until re-reported with
     verifiable provenance. If an artifact cannot be verified (e.g. a
     response that contains no identifier), SAY SO and omit the claim.
+28. **Response Format & Artifact Delivery**
+
+    1. Any ASAI response exceeding short chat length (reports, reconciliation output, analyses, adjudication acknowledgments) is delivered as a single complete Markdown artifact file — not interleaved chat prose. Chat contribution is limited to a one-or-two-line pointer to the artifact.
+    2. Artifact header lines: Subject:, Date:, Responding-to:, Status:.
+    3. Artifact filenames: ASAI_Response_YYYY-MM-DD_<subject-with-underscores>.artifact.md — no em dashes, no spaces.
+    4. Artifacts are deliverables, not code changes. Creating an artifact must never be accompanied by modifications to any other file. A changeset containing an artifact plus unrelated file modifications is a freeze violation and is reverted in full.
+    5. Artifacts landing in the working tree are reviewed individually — never accepted via bulk Keep All.
+    6. Accepted artifacts are committed by the maintainer to Fotologue-internal 01_Governance/ as the exchange record; the artifact in the working tree is a draft copy, discarded after the keeper version is committed.
 
 ## Sign-off Requirement
 
